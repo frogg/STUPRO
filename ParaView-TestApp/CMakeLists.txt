@@ -3,7 +3,7 @@ project(ParaViewCustomApplication)
 
 message(STATUS ${CMAKE_MODULE_PATH})
 
-set (ParaView_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/ParaView-v4.3.1-bin"
+set (ParaView_DIR "/Users/frederikriedel/Desktop/ParaView Stupro/ParaVIew XCode/Build/"
       CACHE PATH
       "Path to ParaView build")
       

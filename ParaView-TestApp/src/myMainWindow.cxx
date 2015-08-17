@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class myMainWindow::pqInternals : public Ui::pqClientMainWindow
 {
+    
 };
 
 //-----------------------------------------------------------------------------
