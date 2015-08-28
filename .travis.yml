@@ -12,7 +12,7 @@ addons:
       # For cmake >= 2.8.8
       - kubuntu-backports
     packages:
-      - libqt4-xmlpatterns
+      - libqt4-dev
       - cmake
       - doxygen
 cache:
