@@ -1,7 +1,9 @@
-notifications:
-  slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
 language: cpp
 compiler:
   - gcc
 os:
   - osx
+notifications:
+  slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
+script:
+  - echo 'test'
