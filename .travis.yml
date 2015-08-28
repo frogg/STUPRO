@@ -12,6 +12,7 @@ addons:
       # For cmake >= 2.8.8 (for CMakePackageConfigHelpers)
       - kubuntu-backports
     packages:
+      - libqt4
       - cmake
 script:
   - make
