@@ -5,5 +5,7 @@ os:
   - osx
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
+before_install:
+  - sudo apt-get install cmake
 script:
   - make
