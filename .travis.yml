@@ -15,5 +15,9 @@ addons:
       - libqt4
       - cmake
       - doxygen
+cache:
+  directories:
+    - bin/paraview-bin
+    - bin/paraview-src
 script:
   - make
