@@ -8,6 +8,9 @@ notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
 addons:
   apt:
+    sources:
+      # For cmake >= 2.8.8 (for CMakePackageConfigHelpers)
+      - kubuntu-backports
     packages:
       - cmake
 script:
