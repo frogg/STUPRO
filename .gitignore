@@ -1,2 +1,5 @@
+# binary files
+bin
 
+# mac stuff
 *.DS_Store

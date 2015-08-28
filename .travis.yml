@@ -1,9 +1,24 @@
 language: cpp
+sudo: false
 compiler:
   - gcc
 os:
-  - osx
+  - linux
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
+addons:
+  apt:
+    sources:
+      # For cmake >= 2.8.8
+      - kubuntu-backports
+    packages:
+      - libqt4-dev
+      - qt4-dev-tools
+      - cmake
+      - doxygen
+cache:
+  directories:
+    - bin/paraview-bin
+    - bin/paraview-src
 script:
-  - echo 'test'
+  - make
