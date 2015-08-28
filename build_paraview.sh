@@ -13,6 +13,9 @@ PARAVIEW_GIT_URL="https://github.com/Kitware/ParaView.git"
 # paraview tag to checkout
 PARAVIEW_TAG="v4.3.1"
 
+# number of cores to use when running make
+NUM_CORES=1
+
 # cmake config variables
 PARAVIEW_CMAKE_VARIABLES="-D CMAKE_BUILD_TYPE=Release -D BUILD_TESTING=OFF -D Module_vtkGeovisCore=ON -D Module_vtkIOGeoJSON=ON -D Module_vtkViewsGeovis=ON"
 
@@ -59,4 +62,4 @@ cmake 1> /dev/null\
 
 # build paraview
 echo "Building Paraview"
-make -j 4
+make -j $NUM_CORES
