@@ -4,6 +4,7 @@ STUPRO 2015
 
 * Satellitengestützte Terrainvisualisierung zur Umweltbeobachtung und Präsentation relevanter Observationen
 * C++
+* beim Bauen in Cmake, die advanced Tools anschalten und folgende Module zusätzlich builden: Module_vtkGeovisCore,  Module_vtkIOGDAL,  Module_vtkIOGeoJSON, Module_vtkViewsGeovis
 
 ## Master branch build status
 
