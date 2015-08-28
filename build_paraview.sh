@@ -14,12 +14,7 @@ PARAVIEW_GIT_URL="https://github.com/Kitware/ParaView.git"
 PARAVIEW_TAG="v4.3.1"
 
 # cmake config variables
-PARAVIEW_CMAKE_VARIABLES="
-  CMAKE_BUILD_TYPE=Release
-  BUILD_TESTING=OFF
-  Module_vtkGeovisCore=ON
-  Module_vtkIOGeoJSON=ON
-  Module_vtkViewsGeovis=ON"
+PARAVIEW_CMAKE_VARIABLES="CMAKE_BUILD_TYPE=Release BUILD_TESTING=OFF Module_vtkGeovisCore=ON Module_vtkIOGeoJSON=ON Module_vtkViewsGeovis=ON"
 
 # ensure bin_dir exists
 if [ ! -d $BIN_DIR ];
