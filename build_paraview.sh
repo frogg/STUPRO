@@ -21,7 +21,8 @@ PARAVIEW_CMAKE_VARIABLES="-D CMAKE_BUILD_TYPE=Release -D BUILD_TESTING=OFF -D Mo
 
 # debug output
 # TODO: remove
-whereis xmlpatterns
+echo "looking for xmlpatterns"
+find -iname xmlpatterns /
 
 
 # ensure bin_dir exists
