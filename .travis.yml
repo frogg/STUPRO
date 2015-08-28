@@ -13,6 +13,7 @@ addons:
       - kubuntu-backports
     packages:
       - libqt4-dev
+      - qt4-dev-tools
       - cmake
       - doxygen
 cache:
