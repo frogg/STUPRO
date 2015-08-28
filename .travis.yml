@@ -9,10 +9,11 @@ notifications:
 addons:
   apt:
     sources:
-      # For cmake >= 2.8.8 (for CMakePackageConfigHelpers)
+      # For cmake >= 2.8.8
       - kubuntu-backports
     packages:
       - libqt4
       - cmake
+      - doxygen
 script:
   - make
