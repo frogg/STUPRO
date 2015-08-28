@@ -6,4 +6,4 @@ os:
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
 script:
-  - echo 'test'
+  - g++ test.cpp
