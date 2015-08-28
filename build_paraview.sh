@@ -14,7 +14,7 @@ PARAVIEW_GIT_URL="https://github.com/Kitware/ParaView.git"
 PARAVIEW_TAG="v4.3.1"
 
 # number of cores to use when running make
-NUM_CORES=1
+NUM_CORES=6
 
 # cmake config variables
 PARAVIEW_CMAKE_VARIABLES="-D CMAKE_BUILD_TYPE=Release -D BUILD_TESTING=OFF -D Module_vtkGeovisCore=ON -D Module_vtkIOGeoJSON=ON -D Module_vtkViewsGeovis=ON"
@@ -26,40 +26,47 @@ then
 fi
 cd $BIN_DIR
 
-# check if source folder already exists
+# make sure source folder already exists
 if [ ! -d $PARAVIEW_SRC_DIR ];
 then
-  echo "Initializing Paraview repository"
-  # clone paraview repository v4.3.1
+  echo "Creating Paraview source folder"
   mkdir -p "$PARAVIEW_SRC_DIR"
-  cd $PARAVIEW_SRC_DIR
-  git init . && git remote add origin $PARAVIEW_GIT_URL
-  cd ../
-else
-  echo "Paraview sources already exist"
 fi
 
+# make sure git repository is initialized
+if [ ! -d $PARAVIEW_SRC_DIR/.git ];
+then
+  echo "Initializing Paraview repository"
+  cd $PARAVIEW_SRC_DIR
+  git init . && git remote add origin $PARAVIEW_GIT_URL
+  # return to bin_dir
+  cd ../
+fi
+
+# update paraview repository
 echo "Updating Paraview sources"
 cd $PARAVIEW_SRC_DIR
 git fetch origin && git checkout $PARAVIEW_TAG
 # update paraview submodules
 git submodule init
 git submodule update
+# return to bin_dir
 cd ../
 
-echo "Building Paraview sources"
-# create paraview-bin directory if it doesn't exist
+# make sure paraview-bin directory exists
 if [ ! -d $PARAVIEW_BUILD_DIR ];
 then
+  echo "Creating directory $PARAVIEW_BUILD_DIR"
   mkdir -p "$PARAVIEW_BUILD_DIR"
 fi
 
 cd $PARAVIEW_BUILD_DIR
 echo "Configuring Paraview"
+# pipe stdout to /dev/null in order to clean up the build log
 cmake 1> /dev/null\
   $PARAVIEW_CMAKE_VARIABLES \
   ../$PARAVIEW_SRC_DIR
 
-# build paraview
+# build paraview (finally)
 echo "Building Paraview"
 make -j $NUM_CORES
