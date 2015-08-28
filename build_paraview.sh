@@ -53,7 +53,7 @@ fi
 
 cd $PARAVIEW_BUILD_DIR
 echo "Configuring Paraview"
-cmake \
+cmake 1> /dev/null\
   $PARAVIEW_CMAKE_VARIABLES \
   ../$PARAVIEW_SRC_DIR
 
