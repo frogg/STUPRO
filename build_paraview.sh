@@ -19,6 +19,11 @@ NUM_CORES=6
 # cmake config variables
 PARAVIEW_CMAKE_VARIABLES="-D CMAKE_BUILD_TYPE=Release -D BUILD_TESTING=OFF -D Module_vtkGeovisCore=ON -D Module_vtkIOGeoJSON=ON -D Module_vtkViewsGeovis=ON"
 
+# debug output
+# TODO: remove
+whereis xmlpatterns
+
+
 # ensure bin_dir exists
 if [ ! -d $BIN_DIR ];
 then
