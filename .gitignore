@@ -1,2 +1,6 @@
+# binary files
+bin/*
+!bin/paraview-src/
 
+# mac stuff
 *.DS_Store
