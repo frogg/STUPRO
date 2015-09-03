@@ -2,5 +2,7 @@
 bin/*
 !bin/paraview-src/
 
+GeoViewTest/bin
+
 # mac stuff
 *.DS_Store
