@@ -22,5 +22,6 @@
 			* make a clean build. This means removing any CMake cache including the bin-directory
 				created in step 1.
 			* make sure to run 'c' (configure) at least two times and 'g' (generate) afterwards.
+
 	5. > make
 		This should build the app and you are done.
