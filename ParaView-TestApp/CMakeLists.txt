@@ -3,9 +3,7 @@ project(ParaViewCustomApplication)
 
 message(STATUS ${CMAKE_MODULE_PATH})
 
-set (ParaView_DIR ""
-      CACHE PATH
-      "Path to ParaView build")
+file (STRINGS "pvdir" ParaView_DIR)
       
 if(EXISTS "${ParaView_DIR}/ParaViewConfig.cmake" OR EXISTS "${ParaView_DIR}/paraview-config.cmake")
    find_package(ParaView REQUIRED)
