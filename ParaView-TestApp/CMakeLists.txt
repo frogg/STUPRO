@@ -3,7 +3,7 @@ project(ParaViewCustomApplication)
 
 message(STATUS ${CMAKE_MODULE_PATH})
 
-set (ParaView_DIR "/Users/larissa/ParaView-bin"
+set (ParaView_DIR ""
       CACHE PATH
       "Path to ParaView build")
       
