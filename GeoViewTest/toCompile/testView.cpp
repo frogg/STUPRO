@@ -42,15 +42,18 @@ int main(int argc, char* argv[]){
 
 #include <vtksys/SystemTools.hxx>
 
+#include "LLGeoSource.h"
+
 #define VTK_CREATE(type,name) \
 vtkSmartPointer<type> name = vtkSmartPointer<type>::New();
 
 int TestGeoView(int argc, char* argv[])
 {
-    char* image2 = vtkTestUtilities::ExpandDataFileName(
-                                                        argc, argv, "Data/masonry-wide.jpg");
-    char* image = vtkTestUtilities::ExpandDataFileName(
-                                                       argc, argv, "Data/NE2_ps_bath_small.jpg");
+    //char* image2 = vtkTestUtilities::ExpandDataFileName(argc, argv, "quappi2.jpg");
+    //char* image = vtkTestUtilities::ExpandDataFileName(argc, argv, "quappi.jpg");
+    const char* image2 = "/Users/larissa/Desktop/test2/VTKData/quappi2.jpg";
+    const char* image = "/Users/larissa/Desktop/test2/VTKData/weltkarte.jpg";
+    //char* image = vtkTestUtilities::ExpandDataFileName("","","VTKData/quappi.jpg");
     vtkStdString imageReadPath = ".";
     vtkStdString imageSavePath = ".";
     vtkStdString imageFile = image;
@@ -104,14 +107,16 @@ int TestGeoView(int argc, char* argv[])
             return 1;
         }
     }
+    //The globe may contain a multi-resolution geometry source (vtkGeoTerrain), multiple multi-resolution image sources (vtkGeoAlignedImageRepresentation), as well as other representations such as vtkRenderedGraphRepresentation.
+    
     // Create the geo view.
     VTK_CREATE(vtkGeoView, view);
     view->DisplayHoverTextOff();
     view->GetRenderWindow()->SetMultiSamples(0);
-    view->GetRenderWindow()->SetSize(400,400);
+    view->GetRenderWindow()->SetSize(600,600);
     
-    vtkSmartPointer<vtkGeoTerrain> terrain =
-    vtkSmartPointer<vtkGeoTerrain>::New();
+    //vtkGeoTerrain contains a multi-resolution tree of geometry representing the globe. It uses a vtkGeoSource subclass to generate the terrain, such as vtkGeoGlobeSource. This source must be set before using the terrain in a vtkGeoView. The terrain also contains an AddActors() method which will update the set of actors representing the globe given the current camera position.
+    vtkSmartPointer<vtkGeoTerrain> terrain = vtkSmartPointer<vtkGeoTerrain>::New();
     vtkSmartPointer<vtkGeoSource> terrainSource;
     vtkGeoGlobeSource* globeSource = vtkGeoGlobeSource::New();
     terrainSource.TakeReference(globeSource);
@@ -119,22 +124,38 @@ int TestGeoView(int argc, char* argv[])
     terrain->SetSource(terrainSource);
     view->SetTerrain(terrain);
     
+    //image anzeigen
+    //vtkGeoAlignedImageRepresentation: image tree
     vtkSmartPointer<vtkGeoAlignedImageRepresentation> imageRep =
     vtkSmartPointer<vtkGeoAlignedImageRepresentation>::New();
     vtkSmartPointer<vtkGeoSource> imageSource;
-    vtkGeoAlignedImageSource* alignedSource = vtkGeoAlignedImageSource::New();
+    //It has an associated vtkGeoSource which is responsible for fetching new data. This class keeps the fetched data in a quad-tree structure organized by latitude and longitude.
+    /*virtual void vtkGeoSource::RequestChildren	(	vtkGeoTreeNode * 	node	)
+    virtual
+    Non-blocking methods for to use from the main application. After calling RequestChildren() for a certain node, GetRequestedNodes() will after a certain period of time return a non-null pointer to a collection of four vtkGeoTreeNode objects, which are the four children of the requested node. The collection is reference counted, so you need to eventually call Delete() on the returned collection pointer (if it is non-null).*/
+    //vtkGeoSource is an abstract superclass for all multi-resolution data sources shown in a geographic view like vtkGeoView or vtkGeoView2D. vtkGeoSource subclasses need to implement the FetchRoot() method, which fills a vtkGeoTreeNode with the low-res data at the root, and FetchChild(), which produces a refinement of a parent node. Other geovis classes such as vtkGeoTerrain, vtkGeoTerrain2D, and vtkGeoAlignedImageSource use a vtkGeoSource subclass to build their geometry or image caches which are stored in trees. The source itself does not maintain the tree, but simply provides a mechanism for generating refined tree nodes.
+    
+    //erbt von GeoSource, ist das was wir überschreiben wollen
+    //vtkGeoAlignedImageSource* alignedSource = vtkGeoAlignedImageSource::New();
+    LLGeoSource *alignedSource = LLGeoSource::New();
+    //liest Bild hochauflösendes von der Festplatte
     vtkSmartPointer<vtkJPEGReader> reader =
     vtkSmartPointer<vtkJPEGReader>::New();
     reader->SetFileName(imageFile.c_str());
     reader->Update();
+    //übergibt Bild an vtkGeoAlignedImageSource, zerstückelt Bild in kleine Teile
     alignedSource->SetImage(reader->GetOutput());
+    
+    //void vtkSmartPointer< T >::TakeReference	(	T * 	t	)
+    //Transfer ownership of one reference to the given VTK object to this smart pointer. This does not increment the reference count of the object, but will decrement it later. The caller is effectively passing ownership of one reference to the smart pointer. This is useful for code like: vtkSmartPointer<vtkFoo> foo; foo.TakeReference(bar->NewFoo()); The input argument may not be another smart pointer.
     imageSource.TakeReference(alignedSource);
     imageSource->Initialize();
+    //vtkGeoAlignedImageRepresentation stellt Baum dem Renderer zur Verfügung
     imageRep->SetSource(imageSource);
     view->AddRepresentation(imageRep);
     
     // Add second image representation
-    VTK_CREATE(vtkJPEGReader, reader2);
+   /* VTK_CREATE(vtkJPEGReader, reader2);
     reader2->SetFileName(image2);
     reader2->Update();
     vtkSmartPointer<vtkGeoAlignedImageSource> imageSource2 =
@@ -145,7 +166,7 @@ int TestGeoView(int argc, char* argv[])
     imageSource2->Initialize();
     imageRep2->SetSource(imageSource2);
     view->AddRepresentation(imageRep2);
-    
+    */
     // Serialize databases
     if (terrainSavePath.length() > 0)
     {
@@ -180,6 +201,8 @@ int TestGeoView(int argc, char* argv[])
     view->GetRenderer()->GetActiveCamera()->Zoom(1.2);
     
     // Add a graph representation
+    //Geodaeten
+    /*
     vtkSmartPointer<vtkGeoRandomGraphSource> graphSource =
     vtkSmartPointer<vtkGeoRandomGraphSource>::New();
     graphSource->SetNumberOfVertices(100);
@@ -192,11 +215,11 @@ int TestGeoView(int argc, char* argv[])
     VTK_CREATE(vtkGeoEdgeStrategy, edgeStrategy);
     graphRep->SetEdgeLayoutStrategy(edgeStrategy);
     view->AddRepresentation(graphRep);
-    
-    vtkViewTheme* theme = vtkViewTheme::New();
+    */
+   /* vtkViewTheme* theme = vtkViewTheme::New();
     view->ApplyViewTheme(theme);
     theme->Delete();
-    
+    */
     view->Render();
     
     // BUG: Need to call it twice in order to show the imagery on the globe.
