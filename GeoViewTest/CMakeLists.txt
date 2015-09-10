@@ -8,5 +8,4 @@ file(GLOB SOURCES
 )
 add_executable(exe ${SOURCES})
 target_link_libraries(exe ${VTK_LIBRARIES})
-
-
+target_link_libraries(exe curl)
