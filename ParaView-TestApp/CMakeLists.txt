@@ -50,7 +50,18 @@ SET(ParaView_SOURCE_FILES
 
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/StuproView
   ${CMAKE_CURRENT_BINARY_DIR})
+
+add_paraview_plugin(
+  StuproViewPlugin "1.0"
+  REQUIRED_ON_SERVER
+  REQUIRED_ON_CLIENT
+  SERVER_MANAGER_SOURCES
+    StuproView/vtkPVStuproView.cxx
+  SERVER_MANAGER_XML
+    StuproView/StuproView.xml
+)
 
 build_paraview_client(paraview_revised
   TITLE "ParaView (ReVisEd)"
@@ -60,6 +71,7 @@ build_paraview_client(paraview_revised
   VERSION_PATCH 1
   PVMAIN_WINDOW myMainWindow
   PVMAIN_WINDOW_INCLUDE myMainWindow.h
+  REQUIRED_PLUGINS StuproViewPlugin
   GUI_CONFIGURATION_XMLS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ParaViewSources.xml
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ParaViewFilters.xml
