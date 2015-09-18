@@ -9,3 +9,7 @@ STUPRO 2015
 ## Master branch build status
 
 [![Build Status](https://magnum.travis-ci.com/quappi/STUPRO.svg?token=Dz9pyxchptypNqzhp5sb&branch=master)](https://magnum.travis-ci.com/quappi/STUPRO)
+
+
+Gutes OpenGL Tutorial:
+https://open.gl/drawing
