@@ -77,8 +77,8 @@ public:
         std::cout << std::endl;
         this->GrabFocus(this->EventCallbackCommand);
         
-        this->GeoCamera->SetLatitude(this->GeoCamera->GetLatitude()+deltaY);
-        this->GeoCamera->SetLongitude(this->GeoCamera->GetLongitude()+deltaX);
+        this->GeoCamera->SetLatitude(this->GeoCamera->GetLatitude()+deltaY*-1);
+        this->GeoCamera->SetLongitude(this->GeoCamera->GetLongitude()+deltaX*-1);
         this->UpdateLights();
         this->ResetCameraClippingRange();
         this->Interactor->Render();
