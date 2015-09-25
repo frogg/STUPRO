@@ -5,52 +5,36 @@
 #include <QFile>
 #include <QObject>
 #include <QTextStream>
+#include <vtkJPEGReader.h>
+#include <vtkSmartPointer.h>
 #include <iostream>
 
 
-GIBSImageCache::GIBSImageCache(GIBSImageSource* imageSource) {
+GIBSImageCache::GIBSImageCache(GIBSDataSource* imageSource) {
 	SetImageSource(imageSource);
 	this->networkManager = new QNetworkAccessManager();
 }
 
-GIBSImageCache::GIBSImageCache() : GIBSImageCache(new GIBSImageSource()) { }
+GIBSImageCache::GIBSImageCache() : GIBSImageCache(new GIBSDataSource()) { }
 
 GIBSImageCache::~GIBSImageCache() {
-	delete this->imageSource;
+//	delete this->imageSource;
 	delete this->networkManager;
 }
 
 
-void GIBSImageCache::SetImageSource(GIBSImageSource* imageSource) {
+void GIBSImageCache::SetImageSource(GIBSDataSource* imageSource) {
 	this->imageSource = imageSource;
 }
 
-GIBSImageCache::GIBSImageSource* GIBSImageCache::GetImageSource() {
+GIBSDataSource* GIBSImageCache::GetImageSource() {
 	return this->imageSource;
 }
 
 const bool GIBSImageCache::DownloadImage(const GIBSImageProperties& imageProperties) {
-	/* create and open the file to which the image should be saved */
-
-	// create the folder in which to save the image
-	char pathBuffer[200];
-	this->buildImageCacheDirectory(pathBuffer, imageProperties);
-	if (!QDir().mkpath(pathBuffer)) {
-		// error creating the path
-		return false;
-	}
-
-	// create and open the image file in write only mode
-	this->buildImageCacheImagePath(pathBuffer, imageProperties);
-	QFile file(pathBuffer);
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-		// error creating and opening the file
-		return false;
-	}
-
 	/* initialise and start the file download */
-	char urlBuffer[200];
-	this->buildImageUrl(urlBuffer, imageProperties);
+	char urlBuffer[PATH_BUFFER_SIZE];
+	this->BuildImageUrl(urlBuffer, imageProperties);
 	QUrl url(urlBuffer);
 
 	QNetworkRequest request(url);
@@ -63,7 +47,24 @@ const bool GIBSImageCache::DownloadImage(const GIBSImageProperties& imagePropert
 	replyLoop.exec();
 
 	if (reply->error() != QNetworkReply::NoError) {
-		// error downloading the file
+		std::cout << "Error downloading image from " << urlBuffer
+				<< ": error code " << reply->error() << std::endl;
+		return false;
+	}
+
+	// create the folder in which to save the image
+	char pathBuffer[PATH_BUFFER_SIZE];
+	this->BuildImageCacheDirectory(pathBuffer, imageProperties);
+	if (!QDir().mkpath(pathBuffer)) {
+		// error creating the path
+		return false;
+	}
+
+	// create and open the image file in write only mode
+	this->BuildImageCacheImagePath(pathBuffer, imageProperties);
+	QFile file(pathBuffer);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+		// error creating and opening the file
 		return false;
 	}
 
@@ -74,32 +75,34 @@ const bool GIBSImageCache::DownloadImage(const GIBSImageProperties& imagePropert
 }
 
 const bool GIBSImageCache::CheckCache(const GIBSImageProperties& imageProperties) {
-	char pathBuffer[200];
-	this->buildImageCacheImagePath(pathBuffer, imageProperties);
+	char pathBuffer[PATH_BUFFER_SIZE];
+	this->BuildImageCacheImagePath(pathBuffer, imageProperties);
 	return QFile(pathBuffer).exists();
 }
 
-const vtkImageData* GIBSImageCache::GetImage(const GIBSImageProperties& imageProperties) {
+vtkImageData* GIBSImageCache::GetImage(const GIBSImageProperties& imageProperties) {
 	if (!this->CheckCache(imageProperties)) {
-		this->DownloadImage(imageProperties);
+		if (!this->DownloadImage(imageProperties)) {
+			// error downloading and saving the image
+			return NULL;
+		}
 	}
 
 	// return the cached image
-	char pathBuffer[200];
-	this->buildImageCacheImagePath(pathBuffer, imageProperties);
-	QFile file(pathBuffer);
-	if (!file.open(QIODevice::Append)) {
-		// error opening the file in append mode
-		return NULL;
-	}
+	char imagePathBuffer[PATH_BUFFER_SIZE];
+	this->BuildImageCacheImagePath(imagePathBuffer, imageProperties);
 
-	QTextStream stream(&file);
-	stream << "test!";
+	vtkSmartPointer<vtkJPEGReader> reader = vtkSmartPointer<vtkJPEGReader>::New();
+	reader->SetFileName(imagePathBuffer);
+	reader->Update();
 
-	return NULL;
+	vtkImageData* test = vtkImageData::New();
+	test->ShallowCopy(reader->GetOutput());
+
+	return test;
 }
 
-void GIBSImageCache::buildImageUrl(char buffer[], const GIBSImageProperties& imageProperties) {
+void GIBSImageCache::BuildImageUrl(char buffer[], const GIBSImageProperties& imageProperties) {
 	sprintf(buffer, API_URL_SCHEME.c_str(),
 			this->imageSource->projection.c_str(),
 			this->imageSource->productName.c_str(),
@@ -113,8 +116,9 @@ void GIBSImageCache::buildImageUrl(char buffer[], const GIBSImageProperties& ima
 			this->imageSource->fileFormat.c_str());
 }
 
-void GIBSImageCache::buildImageCacheDirectory(
+void GIBSImageCache::BuildImageCacheDirectory(
 		char buffer[], const GIBSImageProperties& imageProperties) {
+	std::cout << this->imageSource->projection.c_str() << std::endl;
 	sprintf(buffer, CACHE_DIRECTORY_SCHEME.c_str(),
 			this->imageSource->projection.c_str(),
 			this->imageSource->productName.c_str(),
@@ -126,7 +130,7 @@ void GIBSImageCache::buildImageCacheDirectory(
 			imageProperties.tileRow);
 }
 
-void GIBSImageCache::buildImageCacheImagePath(
+void GIBSImageCache::BuildImageCacheImagePath(
 		char buffer[], const GIBSImageProperties& imageProperties) {
 	sprintf(buffer, (CACHE_DIRECTORY_SCHEME + CACHE_FILE_SCHEME).c_str(),
 			this->imageSource->projection.c_str(),
