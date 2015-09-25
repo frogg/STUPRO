@@ -1,27 +1,25 @@
+#include <QApplication>
 #include <vtkCamera.h>
 #include <vtkGeoAlignedImageRepresentation.h>
-#include <vtkGeoAlignedImageSource.h>
 #include <vtkGeoEdgeStrategy.h>
 #include <vtkGeoGlobeSource.h>
 #include <vtkGeoRandomGraphSource.h>
 #include <vtkGeoTerrain.h>
 #include <vtkGeoView.h>
-#include <vtkJPEGReader.h>
 #include <vtkRandomGraphSource.h>
 #include <vtkRenderedGraphRepresentation.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
-#include <vtkStdString.h>
+
+#include "GIBSImageSource.h"
 
 #define VTK_CREATE(type,name) \
 vtkSmartPointer<type> name = vtkSmartPointer<type>::New();
 
 int TestGeoView(int argc, char* argv[])
 {
-	vtkStdString image = "./earth.jpg";
-
 	// Create the geo view.
 	VTK_CREATE(vtkGeoView, view);
 	view->DisplayHoverTextOff();
@@ -37,18 +35,12 @@ int TestGeoView(int argc, char* argv[])
 	terrain->SetSource(terrainSource);
 	view->SetTerrain(terrain);
 
+	GIBSImageSource* gibsImageSource = GIBSImageSource::New();
+	gibsImageSource->Initialize();
+
 	vtkSmartPointer<vtkGeoAlignedImageRepresentation> imageRep =
 	vtkSmartPointer<vtkGeoAlignedImageRepresentation>::New();
-	vtkSmartPointer<vtkGeoSource> imageSource;
-	vtkGeoAlignedImageSource* alignedSource = vtkGeoAlignedImageSource::New();
-	vtkSmartPointer<vtkJPEGReader> reader =
-	vtkSmartPointer<vtkJPEGReader>::New();
-	reader->SetFileName(image);
-	reader->Update();
-	alignedSource->SetImage(reader->GetOutput());
-	imageSource.TakeReference(alignedSource);
-	imageSource->Initialize();
-	imageRep->SetSource(imageSource);
+	imageRep->SetSource(gibsImageSource);
 	view->AddRepresentation(imageRep);
 
 	view->ResetCamera();
@@ -79,5 +71,6 @@ int TestGeoView(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+	QApplication app(argc, argv);
 	return TestGeoView(argc, argv);
 }
