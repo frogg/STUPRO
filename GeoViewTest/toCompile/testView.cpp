@@ -1,11 +1,17 @@
 #include <QApplication>
+#include <iostream>
+
+#include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
 #include <vtkGeoAlignedImageRepresentation.h>
+#include <vtkGeoCamera.h>
 #include <vtkGeoEdgeStrategy.h>
 #include <vtkGeoGlobeSource.h>
+#include <vtkGeoInteractorStyle.h>
 #include <vtkGeoRandomGraphSource.h>
 #include <vtkGeoTerrain.h>
 #include <vtkGeoView.h>
+#include <vtkObjectFactory.h>
 #include <vtkRandomGraphSource.h>
 #include <vtkRenderedGraphRepresentation.h>
 #include <vtkRenderer.h>
@@ -17,6 +23,80 @@
 
 #define VTK_CREATE(type,name) \
 vtkSmartPointer<type> name = vtkSmartPointer<type>::New();
+
+class interactor : public vtkGeoInteractorStyle
+{
+public:
+    static interactor* New();
+    vtkTypeMacro(interactor, vtkGeoInteractorStyle);
+    int x=0;
+    int y=0;
+    bool leftMouseButtonDown;
+    virtual void OnMouseMove() override
+    {
+        if(!leftMouseButtonDown){
+            return;
+        }
+        this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
+                                this->Interactor->GetEventPosition()[1]);
+        if (this->CurrentRenderer == NULL)
+        {
+            return;
+        }
+        double deltaX=this->Interactor->GetEventPosition()[0]-x;
+        double deltaY=this->Interactor->GetEventPosition()[1]-y;
+        deltaX=deltaX*pow(  1-1/sqrt(this->GeoCamera->GetDistance()/100000)   ,4);
+        deltaY=deltaY*pow(  1-1/sqrt(this->GeoCamera->GetDistance()/100000)   ,4);
+        x=this->Interactor->GetEventPosition()[0];
+        y=this->Interactor->GetEventPosition()[1];
+        
+        std::cout << "x: " << x;
+        
+        std::cout << " deltaX: " << deltaX;
+        std::cout << " deltaY: " << deltaY;
+        
+        std::cout << " y: " << y ;
+        std::cout << " Distance: " << this->GeoCamera->GetDistance() ;
+        std::cout << std::endl;
+        this->GrabFocus(this->EventCallbackCommand);
+        
+        this->GeoCamera->SetLatitude(this->GeoCamera->GetLatitude()+deltaY*-1);
+        this->GeoCamera->SetLongitude(this->GeoCamera->GetLongitude()+deltaX*-1);
+        this->UpdateLights();
+        this->ResetCameraClippingRange();
+        this->Interactor->Render();
+        this->ReleaseFocus();
+        }
+        //-----------------------------------------------------------------------------
+        virtual void OnLeftButtonDown() override
+        {
+            this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
+                                    this->Interactor->GetEventPosition()[1]);
+            if (this->CurrentRenderer == NULL)
+            {
+                return;
+            }
+            x=this->Interactor->GetEventPosition()[0];
+            y=this->Interactor->GetEventPosition()[1];
+            leftMouseButtonDown=true;
+            
+        }
+        
+        //-----------------------------------------------------------------------------
+        virtual void OnLeftButtonUp() override
+        {
+            
+            leftMouseButtonDown=false;
+            if (!this->Interactor)
+            {
+                return;
+            }
+        }
+        
+};
+        vtkStandardNewMacro(interactor);
+
+
 
 int TestGeoView(int argc, char* argv[])
 {
@@ -46,6 +126,16 @@ int TestGeoView(int argc, char* argv[])
 	view->ResetCamera();
 	view->GetRenderer()->GetActiveCamera()->Zoom(1.2);
 
+
+    // Add an interactor
+    
+    vtkSmartPointer<interactor> style =
+    vtkSmartPointer<interactor>::New();
+    style->SetInteractor(view->GetInteractor());
+    style->SetCurrentRenderer(view->GetRenderer());
+    view->SetInteractorStyle(style);
+    
+    
 	// Add a graph representation
 	vtkSmartPointer<vtkGeoRandomGraphSource> graphSource =
 	vtkSmartPointer<vtkGeoRandomGraphSource>::New();
@@ -59,14 +149,15 @@ int TestGeoView(int argc, char* argv[])
 	VTK_CREATE(vtkGeoEdgeStrategy, edgeStrategy);
 	graphRep->SetEdgeLayoutStrategy(edgeStrategy);
 	view->AddRepresentation(graphRep);
-
 	view->Render();
 
 	// BUG: Need to call it twice in order to show the imagery on the globe.
 	view->Render();
+    view->GetInteractor()->Initialize();
+    view->GetInteractor()->Start();
 
-	view->GetInteractor()->Initialize();
-	view->GetInteractor()->Start();
+   
+    return 0;
 }
 
 int main(int argc, char* argv[])
