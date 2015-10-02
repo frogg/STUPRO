@@ -15,4 +15,4 @@ target_link_libraries(exe ${VTK_LIBRARIES})
 target_link_libraries(exe ${QT_LIBRARIES})
 target_link_libraries(exe curl)
 
-set_property(TARGET exe PROPERTY CXX_STANDARD 14)
+#set_property(TARGET exe PROPERTY CXX_STANDARD 14)
