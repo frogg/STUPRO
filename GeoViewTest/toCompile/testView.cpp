@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <iostream>
 
+#include <QImage>
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
 #include <vtkGeoAlignedImageRepresentation.h>
@@ -19,7 +20,7 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 
-#include "GIBSImageSource.h"
+#include "GIBSImageCache.h"
 
 #define VTK_CREATE(type,name) \
 vtkSmartPointer<type> name = vtkSmartPointer<type>::New();
@@ -115,12 +116,12 @@ int TestGeoView(int argc, char* argv[])
 	terrain->SetSource(terrainSource);
 	view->SetTerrain(terrain);
 
-	GIBSImageSource* gibsImageSource = GIBSImageSource::New();
-	gibsImageSource->Initialize();
+//	GIBSImageSource* gibsImageSource = GIBSImageSource::New();
+//	gibsImageSource->Initialize();
 
 	vtkSmartPointer<vtkGeoAlignedImageRepresentation> imageRep =
 	vtkSmartPointer<vtkGeoAlignedImageRepresentation>::New();
-	imageRep->SetSource(gibsImageSource);
+//	imageRep->SetSource(gibsImageSource);
 	view->AddRepresentation(imageRep);
 
 	view->ResetCamera();
@@ -162,6 +163,16 @@ int TestGeoView(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+	// create a QApplication in order to make QT calls work
 	QApplication app(argc, argv);
-	return TestGeoView(argc, argv);
+
+	GIBSImageCache cache;
+	GIBSImageProperties properties;
+	QImage* image = cache.GetImage(properties);
+	cout << "w: " << image->width() << " h: " << image->height() << endl;
+
+	delete image;
+//	return TestGeoView(argc, argv);
+
+
 }
