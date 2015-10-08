@@ -3,6 +3,7 @@
 
 #include <vtkStdString.h>
 #include <vtkImageData.h>
+#include <QImage>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -81,7 +82,8 @@ public:
 
 	const bool DownloadImage(const GIBSImageProperties& imageProperties);
 	const bool CheckCache(const GIBSImageProperties& imageProperties);
-	vtkImageData* GetImage(const GIBSImageProperties& imageProperties);
+	vtkImageData* GetVtkImage(const GIBSImageProperties& imageProperties);
+	QImage* GetImage(const GIBSImageProperties& imageProperties);
 
 private:
 	GIBSDataSource* imageSource;

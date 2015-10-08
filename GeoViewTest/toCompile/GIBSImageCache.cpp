@@ -80,7 +80,7 @@ const bool GIBSImageCache::CheckCache(const GIBSImageProperties& imageProperties
 	return QFile(pathBuffer).exists();
 }
 
-vtkImageData* GIBSImageCache::GetImage(const GIBSImageProperties& imageProperties) {
+vtkImageData* GIBSImageCache::GetVtkImage(const GIBSImageProperties& imageProperties) {
 	if (!this->CheckCache(imageProperties)) {
 		if (!this->DownloadImage(imageProperties)) {
 			// error downloading and saving the image
@@ -100,6 +100,22 @@ vtkImageData* GIBSImageCache::GetImage(const GIBSImageProperties& imagePropertie
 	test->ShallowCopy(reader->GetOutput());
 
 	return test;
+}
+
+QImage* GIBSImageCache::GetImage(const GIBSImageProperties& imageProperties) {
+	if (!this->CheckCache(imageProperties)) {
+		if (!this->DownloadImage(imageProperties)) {
+			// error downloading and saving the image
+			return NULL;
+		}
+	}
+
+	// return the cached image
+	char imagePathBuffer[PATH_BUFFER_SIZE];
+	this->BuildImageCacheImagePath(imagePathBuffer, imageProperties);
+
+	QImage* image = new QImage(imagePathBuffer);
+	return image;
 }
 
 void GIBSImageCache::BuildImageUrl(char buffer[], const GIBSImageProperties& imageProperties) {
