@@ -12,6 +12,8 @@ public:
 
   virtual void Initialize(unsigned int id);
 
+  std::string readFile(std::string filename);
+
 protected:
   vtkPVStuproView();
   ~vtkPVStuproView();
