@@ -1,7 +1,9 @@
 #include <QApplication>
 #include <iostream>
 
+#include <QDebug>
 #include <QImage>
+#include <QImageReader>
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
 #include <vtkGeoAlignedImageRepresentation.h>
@@ -169,7 +171,10 @@ int main(int argc, char* argv[])
 	GIBSImageCache cache;
 	GIBSImageProperties properties;
 	QImage* image = cache.GetImage(properties);
-	cout << "w: " << image->width() << " h: " << image->height() << endl;
+	cout << "in cache: " << cache.CheckCache(properties) << endl;
+	cout << "w: " << image->width() << " h: " << image->height() << " len: " << image->byteCount() << endl;
+
+	qDebug() << "supported formats: " << QImageReader::supportedImageFormats();
 
 	delete image;
 //	return TestGeoView(argc, argv);
