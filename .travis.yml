@@ -1,0 +1,22 @@
+language: cpp
+compiler:
+  - gcc
+os:
+  - osx
+before_install:
+
+notifications:
+  slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
+script:
+  - echo 'test'
+  
+  
+#  - git clone https://github.com/Kitware/ParaView.git ./paraview
+#  - cd paraview
+#  - git checkout v4.3.1
+#  - git submodule init
+#  - git submodule update
+#  - cd ../
+#  - mkdir paraview-bin
+#  - cd $_
+#  - cmake ../paraview
