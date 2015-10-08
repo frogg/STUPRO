@@ -114,7 +114,10 @@ QImage* GIBSImageCache::GetImage(const GIBSImageProperties& imageProperties) {
 	char imagePathBuffer[PATH_BUFFER_SIZE];
 	this->BuildImageCacheImagePath(imagePathBuffer, imageProperties);
 
-	QImage* image = new QImage(imagePathBuffer);
+	QImage* image = new QImage();
+	if (!image->load(imagePathBuffer)) {
+		return NULL;
+	}
 	return image;
 }
 
