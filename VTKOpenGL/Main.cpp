@@ -5,8 +5,6 @@
  *      Author: marukyu
  */
 
-#define vtkRenderingCore_AUTOINIT 4(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingFreeTypeOpenGL,vtkRenderingOpenGL)
-
 #include "vtkPlaneSource.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkRenderWindow.h"
