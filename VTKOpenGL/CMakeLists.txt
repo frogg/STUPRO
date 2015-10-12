@@ -4,6 +4,7 @@ project(exe)
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 file(COPY  ${CMAKE_SOURCE_DIR}/Shader DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY  ${CMAKE_SOURCE_DIR}/Ressources DESTINATION ${CMAKE_BINARY_DIR})
 file(GLOB SOURCES
     Main.cpp
 )
