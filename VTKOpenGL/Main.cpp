@@ -43,7 +43,7 @@ std::string readFile(std::string filename)
 int main()
 {
 	vtkSmartPointer<vtkJPEGReader> jPEGReader = vtkSmartPointer<vtkJPEGReader>::New();
-	jPEGReader->SetFileName("stupid.jpg");
+	jPEGReader->SetFileName("earth.jpg");
 
 	vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
 	texture->SetInputConnection(jPEGReader->GetOutputPort());
@@ -80,7 +80,7 @@ int main()
 
 	vtkSmartPointer<vtkShader2> fshader = vtkShader2::New();
 	fshader->SetType(VTK_SHADER_TYPE_FRAGMENT);
-	fshader->SetSourceCode(readFile("TestShader.fsh").c_str());
+	fshader->SetSourceCode(readFile("Shader/TestShader.fsh").c_str());
 	fshader->SetContext(pgm->GetContext());
 
 	int textureID = 1;
@@ -89,7 +89,7 @@ int main()
 
 	vtkSmartPointer<vtkShader2> vshader = vtkShader2::New();
 	vshader->SetType(VTK_SHADER_TYPE_VERTEX);
-	vshader->SetSourceCode(readFile("TestShader.vsh").c_str());
+	vshader->SetSourceCode(readFile("Shader/TestShader.vsh").c_str());
 	vshader->SetContext(pgm->GetContext());
 
 	float globeRadius = 0.5f;
