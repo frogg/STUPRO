@@ -20,6 +20,8 @@
 #include "vtkUniformVariables.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkInteractorStyleTrackballCamera.h"
+#include "vtkJPEGReader.h"
+#include "vtkTextureMapToPlane.h"
 
 #include <fstream>
 
@@ -40,19 +42,24 @@ std::string readFile(std::string filename)
 
 int main()
 {
-	float lowLim = -0.5;
-	float uppLim = 0.5;
-	
+	vtkSmartPointer<vtkJPEGReader> jPEGReader = vtkSmartPointer<vtkJPEGReader>::New();
+	jPEGReader->SetFileName("stupid.jpg");
+
+	vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
+	texture->SetInputConnection(jPEGReader->GetOutputPort());
+
 	vtkSmartPointer<vtkPlaneSource> plane = vtkPlaneSource::New();
 	plane->SetResolution(100, 100);
-	plane->SetPoint1(uppLim, lowLim, 0);
-	plane->SetPoint2(lowLim, uppLim, 0);
+
+	vtkSmartPointer<vtkTextureMapToPlane> texturePlane = vtkSmartPointer<vtkTextureMapToPlane>::New();
+	texturePlane->SetInputConnection(plane->GetOutputPort());
 
 	vtkSmartPointer<vtkPolyDataMapper> planeMapper = vtkPolyDataMapper::New();
 	planeMapper->SetInputConnection(plane->GetOutputPort());
 
 	vtkSmartPointer<vtkActor> planeActor = vtkActor::New();
 	planeActor->SetMapper(planeMapper);
+	planeActor->SetTexture(texture);
 
 	vtkSmartPointer<vtkRenderer> ren = vtkRenderer::New();
 	ren->AddActor(planeActor);
@@ -65,8 +72,7 @@ int main()
 			vtkSmartPointer<vtkRenderWindowInteractor>::New();
 	renderWindowInteractor->SetRenderWindow(renWin);
 
-	vtkSmartPointer<vtkInteractorStyle> interactor =
-			vtkInteractorStyleTrackballCamera::New();
+	vtkSmartPointer<vtkInteractorStyle> interactor = vtkInteractorStyleTrackballCamera::New();
 	renWin->GetInteractor()->SetInteractorStyle(interactor);
 
 	vtkSmartPointer<vtkShaderProgram2> pgm = vtkShaderProgram2::New();
@@ -74,29 +80,42 @@ int main()
 
 	vtkSmartPointer<vtkShader2> fshader = vtkShader2::New();
 	fshader->SetType(VTK_SHADER_TYPE_FRAGMENT);
-	fshader->SetSourceCode(readFile("Shader/TestShader.fsh").c_str());
+	fshader->SetSourceCode(readFile("TestShader.fsh").c_str());
 	fshader->SetContext(pgm->GetContext());
+
+	int textureID = 1;
+
+	fshader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
 
 	vtkSmartPointer<vtkShader2> vshader = vtkShader2::New();
 	vshader->SetType(VTK_SHADER_TYPE_VERTEX);
-	vshader->SetSourceCode(readFile("Shader/TestShader.vsh").c_str());
+	vshader->SetSourceCode(readFile("TestShader.vsh").c_str());
 	vshader->SetContext(pgm->GetContext());
-	
+
 	float globeRadius = 0.5f;
 	float planeSize = 1.f;
-	
+
 	vshader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
 	vshader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
 
 	pgm->GetShaders()->AddItem(fshader);
 	pgm->GetShaders()->AddItem(vshader);
 
-	vtkSmartPointer<vtkOpenGLProperty> openGLproperty =
-			static_cast<vtkOpenGLProperty*>(planeActor->GetProperty());
+	vtkSmartPointer<vtkOpenGLProperty> openGLproperty = static_cast<vtkOpenGLProperty*>(planeActor->GetProperty());
 	openGLproperty->SetPropProgram(pgm);
 	openGLproperty->ShadingOn();
 
 	renWin->GetInteractor()->Start();
+
+	/*
+	 while (renWin->Is)
+	 {
+	 //float num = i / 100.f;
+	 //vshader->GetUniformVariables()->SetUniformf("bla", 1, &num);
+	 renWin->Render();
+	 //ren->GetActiveCamera()->Azimuth(1);
+	 }
+	 */
 
 	return 0;
 }
