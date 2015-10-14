@@ -56,7 +56,7 @@ vtkSmartPointer<vtkTexture> getTextureForImageName(std::string picture, std::str
     imageReader->SetFileName(("Resources/" + picture).c_str());
     
     vtkSmartPointer<vtkJPEGReader> imageReaderHeight = vtkSmartPointer<vtkJPEGReader>::New();
-    imageReader->SetFileName(("Resources/" + heightPicture).c_str());
+    imageReaderHeight->SetFileName(("Resources/" + heightPicture).c_str());
     
     vtkSmartPointer<vtkImageExtractComponents> extractRedFilter = vtkSmartPointer<vtkImageExtractComponents>::New();
     extractRedFilter->SetInputConnection(imageReader->GetOutputPort());
