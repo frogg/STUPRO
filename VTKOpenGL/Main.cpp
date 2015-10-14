@@ -20,7 +20,7 @@
 #include "vtkUniformVariables.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkInteractorStyleTrackballCamera.h"
-#include "vtkJPEGReader.h"
+#include "vtkPNGReader.h"
 #include "vtkTextureMapToPlane.h"
 #include "vtkCommand.h"
 #include "vtkCallbackCommand.h"
@@ -45,19 +45,24 @@ std::string readFile(std::string filename)
 	return content;
 }
 
+vtkSmartPointer<vtkTexture> getTextureForImageName(std::string filename)
+{
+    vtkSmartPointer<vtkPNGReader> imageReader = vtkSmartPointer<vtkPNGReader>::New();
+    imageReader->SetFileName(("Resources/" + filename).c_str());
+    
+    vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
+    texture->SetInputConnection(imageReader->GetOutputPort());
+    return texture;
+    
+}
+
+
 int main()
 {
-	vtkSmartPointer<vtkJPEGReader> jPEGReader = vtkSmartPointer<vtkJPEGReader>::New();
-	jPEGReader->SetFileName("Ressources/earth.jpg");
-
-	vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
-	texture->SetInputConnection(jPEGReader->GetOutputPort());
-
+    vtkSmartPointer<vtkTexture> texture = getTextureForImageName("earth.png");
+    
 	vtkSmartPointer<vtkPlaneSource> plane = vtkPlaneSource::New();
-	plane->SetResolution(100, 100);
-
-	vtkSmartPointer<vtkTextureMapToPlane> texturePlane = vtkSmartPointer<vtkTextureMapToPlane>::New();
-	texturePlane->SetInputConnection(plane->GetOutputPort());
+	plane->SetResolution(150, 150);
 
 	vtkSmartPointer<vtkPolyDataMapper> planeMapper = vtkPolyDataMapper::New();
 	planeMapper->SetInputConnection(plane->GetOutputPort());
@@ -80,7 +85,7 @@ int main()
 	clipFunc(ren, 0, 0, 0);
 
 	vtkSmartPointer<vtkRenderWindow> renWin = vtkRenderWindow::New();
-	renWin->SetWindowName("VTK Shader Test");
+	renWin->SetWindowName("Famous Globe");
 	renWin->AddRenderer(ren);
 
 	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
@@ -109,10 +114,13 @@ int main()
 	float globeRadius = 0.5f;
 	float planeSize = 1.f;
 	float interpolation = 0.f;
-
+    float heightOffset = 0.05f;
+    
+	vshader->GetUniformVariables()->SetUniformf("interpolation", 1, &interpolation);
+    vshader->GetUniformVariables()->SetUniformf("heightOffset", 1, &heightOffset);
 	vshader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
 	vshader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
-	vshader->GetUniformVariables()->SetUniformf("interpolation", 1, &interpolation);
+    vshader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
 
 	pgm->GetShaders()->AddItem(fshader);
 	pgm->GetShaders()->AddItem(vshader);
