@@ -106,7 +106,9 @@ int main()
 
 	float globeRadius = 0.5f;
 	float planeSize = 1.f;
-
+    float heightOffset = 1.f;
+    
+    vshader->GetUniformVariables()->SetUniformf("heightOffset", 1, &heightOffset);
 	vshader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
 	vshader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
 
