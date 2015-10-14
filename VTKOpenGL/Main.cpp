@@ -46,7 +46,7 @@ std::string readFile(std::string filename)
 int main()
 {
 	vtkSmartPointer<vtkJPEGReader> jPEGReader = vtkSmartPointer<vtkJPEGReader>::New();
-	jPEGReader->SetFileName("Resources/earth.jpg");
+	jPEGReader->SetFileName("Resources/height.jpg");
 
 	vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
 	texture->SetInputConnection(jPEGReader->GetOutputPort());
@@ -106,11 +106,13 @@ int main()
 
 	float globeRadius = 0.5f;
 	float planeSize = 1.f;
-    float heightOffset = 1.f;
+    float heightOffset = 0.2f;
     
     vshader->GetUniformVariables()->SetUniformf("heightOffset", 1, &heightOffset);
 	vshader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
 	vshader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
+    vshader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
+
 
 	pgm->GetShaders()->AddItem(fshader);
 	pgm->GetShaders()->AddItem(vshader);
