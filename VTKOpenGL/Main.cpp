@@ -43,19 +43,24 @@ std::string readFile(std::string filename)
 	return content;
 }
 
+vtkSmartPointer<vtkTexture> getTextureForImageName(std::string filename)
+{
+    vtkSmartPointer<vtkJPEGReader> jPEGReader = vtkSmartPointer<vtkJPEGReader>::New();
+    jPEGReader->SetFileName(("Resources/" + filename).c_str());
+    
+    vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
+    texture->SetInputConnection(jPEGReader->GetOutputPort());
+    return texture;
+    
+}
+
+
 int main()
 {
-	vtkSmartPointer<vtkJPEGReader> jPEGReader = vtkSmartPointer<vtkJPEGReader>::New();
-	jPEGReader->SetFileName("Resources/height.jpg");
-
-	vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
-	texture->SetInputConnection(jPEGReader->GetOutputPort());
-
+    vtkSmartPointer<vtkTexture> texture = getTextureForImageName("height.jpg");
+    
 	vtkSmartPointer<vtkPlaneSource> plane = vtkPlaneSource::New();
-	plane->SetResolution(100, 100);
-
-	vtkSmartPointer<vtkTextureMapToPlane> texturePlane = vtkSmartPointer<vtkTextureMapToPlane>::New();
-	texturePlane->SetInputConnection(plane->GetOutputPort());
+	plane->SetResolution(150, 150);
 
 	vtkSmartPointer<vtkPolyDataMapper> planeMapper = vtkPolyDataMapper::New();
 	planeMapper->SetInputConnection(plane->GetOutputPort());
@@ -78,7 +83,7 @@ int main()
 	*/
 
 	vtkSmartPointer<vtkRenderWindow> renWin = vtkRenderWindow::New();
-	renWin->SetWindowName("VTK Shader Test");
+	renWin->SetWindowName("Famous Globe");
 	renWin->AddRenderer(ren);
 
 	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
