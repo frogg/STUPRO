@@ -22,8 +22,11 @@
 #include "vtkInteractorStyleTrackballCamera.h"
 #include "vtkJPEGReader.h"
 #include "vtkTextureMapToPlane.h"
+#include "vtkCommand.h"
+#include "vtkCallbackCommand.h"
 
 #include <fstream>
+#include <functional>
 
 std::string readFile(std::string filename)
 {
@@ -63,6 +66,16 @@ int main()
 
 	vtkSmartPointer<vtkRenderer> ren = vtkRenderer::New();
 	ren->AddActor(planeActor);
+	
+	/*
+	auto clipFunc = [ren](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
+	{
+		ren->ResetCameraClippingRange(-10, 10, -10, 10, -10, 10);
+	};
+	vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
+	clipCallback->SetCallback(clipFunc);
+	ren->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, clipCallback);
+	*/
 
 	vtkSmartPointer<vtkRenderWindow> renWin = vtkRenderWindow::New();
 	renWin->SetWindowName("VTK Shader Test");
@@ -83,8 +96,7 @@ int main()
 	fshader->SetSourceCode(readFile("Shader/TestShader.fsh").c_str());
 	fshader->SetContext(pgm->GetContext());
 
-	int textureID = 1;
-
+	int textureID = texture->GetTextureUnit();
 	fshader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
 
 	vtkSmartPointer<vtkShader2> vshader = vtkShader2::New();
