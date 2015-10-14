@@ -3,14 +3,16 @@ project(ParaViewCustomApplication)
 
 message(STATUS ${CMAKE_MODULE_PATH})
 
-set (ParaView_DIR "/Users/larissa/ParaView-bin"
+set (ParaView_DIR "/paraview-bin/"
       CACHE PATH
       "Path to ParaView build")
       
 if(EXISTS "${ParaView_DIR}/ParaViewConfig.cmake" OR EXISTS "${ParaView_DIR}/paraview-config.cmake")
    find_package(ParaView REQUIRED)
 else()
-   message (FATAL_ERROR "ParaView not found, enter the path to a ParaView build dir in ParaView_DIR")
+   message (FATAL_ERROR
+	"ParaView not found, enter the path "
+	"to a ParaView build dir in ParaView_DIR")
 endif()
    
 include(${PARAVIEW_USE_FILE})
@@ -50,18 +52,23 @@ SET(ParaView_SOURCE_FILES
 
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/StuproView
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/StuproView
   ${CMAKE_CURRENT_BINARY_DIR})
 
+#Required for the ParaView plugin
 add_paraview_plugin(
   StuproViewPlugin "1.0"
   REQUIRED_ON_SERVER
   REQUIRED_ON_CLIENT
   SERVER_MANAGER_SOURCES
-    StuproView/vtkPVStuproView.cxx
+    src/StuproView/vtkPVStuproView.cxx
   SERVER_MANAGER_XML
-    StuproView/StuproView.xml
+    src/StuproView/StuproView.xml
 )
+
+#Copy the needed files to the output
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/StuproView/Shader DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/StuproView/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 build_paraview_client(paraview_revised
   TITLE "ParaView (ReVisEd)"
