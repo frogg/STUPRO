@@ -43,7 +43,7 @@ std::string readFile(std::string filename)
 int main()
 {
 	vtkSmartPointer<vtkJPEGReader> jPEGReader = vtkSmartPointer<vtkJPEGReader>::New();
-	jPEGReader->SetFileName("Ressources/earth.jpg");
+	jPEGReader->SetFileName("Resources/earth.jpg");
 
 	vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
 	texture->SetInputConnection(jPEGReader->GetOutputPort());
