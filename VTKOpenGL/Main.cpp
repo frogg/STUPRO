@@ -96,7 +96,7 @@ vtkSmartPointer<vtkOpenGLTexture> getTextureForImageName(std::string picture, st
 
 int main()
 {
-    vtkSmartPointer<vtkOpenGLTexture> texture = getTextureForImageName("earth.jpg", "height.jpg");
+    vtkSmartPointer<vtkOpenGLTexture> texture = getTextureForImageName("bigearth.jpg", "bigheight.jpg");
     
 	vtkSmartPointer<vtkPlaneSource> plane = vtkPlaneSource::New();
 	plane->SetResolution(150, 150);
