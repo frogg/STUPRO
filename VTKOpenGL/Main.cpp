@@ -45,10 +45,19 @@ std::string readFile(std::string filename)
 	return content;
 }
 
-vtkSmartPointer<vtkTexture> getTextureForImageName(std::string filename)
+vtkSmartPointer<vtkTexture> getTextureForImageName(std::string picture, std::string heightPicture)
 {
-    vtkSmartPointer<vtkPNGReader> imageReader = vtkSmartPointer<vtkPNGReader>::New();
-    imageReader->SetFileName(("Resources/" + filename).c_str());
+    vtkSmartPointer<vtkJPEGReader> imageReader = vtkSmartPointer<vtkJPEGReader>::New();
+    imageReader->SetFileName(("Resources/" + picture).c_str());
+    
+    vtkSmartPointer<vtkJPEGReader> imageReaderHeight = vtkSmartPointer<vtkJPEGReader>::New();
+    imageReader->SetFileName(("Resources/" + heightPicture).c_str());
+    /*
+    vtkSmartPointer<vtkImageAppendComponents> appendFilter = vtkSmartPointer<vtkImageAppendComponents>::New();
+    appendFilter->SetInputConnection(0, picture->GetOutputPort());
+    appendFilter->AddInputConnection(0, heightPicture->GetOutputPort());
+    appendFilter->Update();
+    */
     
     vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
     texture->SetInputConnection(imageReader->GetOutputPort());
@@ -59,7 +68,7 @@ vtkSmartPointer<vtkTexture> getTextureForImageName(std::string filename)
 
 int main()
 {
-    vtkSmartPointer<vtkTexture> texture = getTextureForImageName("earth.png");
+    vtkSmartPointer<vtkTexture> texture = getTextureForImageName("earth.jpg", "height.jpg");
     
 	vtkSmartPointer<vtkPlaneSource> plane = vtkPlaneSource::New();
 	plane->SetResolution(150, 150);
