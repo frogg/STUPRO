@@ -2,6 +2,8 @@
 #define __vtkPVStuproView_h
 
 #include "vtkPVRenderView.h"
+#include "vtkSmartPointer.h"
+#include "vtkTexture.h"
 
 class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView
 {
@@ -13,6 +15,8 @@ public:
   virtual void Initialize(unsigned int id);
 
   std::string readFile(std::string filename);
+
+  vtkSmartPointer<vtkTexture> getTextureForImageName(std::string picture, std::string heightPicture);
 
 protected:
   vtkPVStuproView();
