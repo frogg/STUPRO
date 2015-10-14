@@ -21,10 +21,10 @@
 #include "vtkRenderWindowInteractor.h"
 #include "vtkInteractorStyleTrackballCamera.h"
 #include "vtkPNGReader.h"
-#include "vtkTextureMapToPlane.h"
 #include "vtkCommand.h"
 #include "vtkCallbackCommand.h"
 #include "vtkObject.h"
+#include "vtkOpenGLTexture.h"
 
 #include <iostream>
 #include <fstream>
@@ -50,7 +50,7 @@ std::string readFile(std::string filename)
 	return content;
 }
 
-vtkSmartPointer<vtkTexture> getTextureForImageName(std::string picture, std::string heightPicture)
+vtkSmartPointer<vtkOpenGLTexture> getTextureForImageName(std::string picture, std::string heightPicture)
 {
     vtkSmartPointer<vtkJPEGReader> imageReader = vtkSmartPointer<vtkJPEGReader>::New();
     imageReader->SetFileName(("Resources/" + picture).c_str());
@@ -87,7 +87,7 @@ vtkSmartPointer<vtkTexture> getTextureForImageName(std::string picture, std::str
     appendFilter->Update();
 
     
-    vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
+    vtkSmartPointer<vtkOpenGLTexture> texture = vtkSmartPointer<vtkOpenGLTexture>::New();
     texture->SetInputConnection(appendFilter->GetOutputPort());
     return texture;
     
@@ -96,7 +96,7 @@ vtkSmartPointer<vtkTexture> getTextureForImageName(std::string picture, std::str
 
 int main()
 {
-    vtkSmartPointer<vtkTexture> texture = getTextureForImageName("earth.jpg", "height.jpg");
+    vtkSmartPointer<vtkOpenGLTexture> texture = getTextureForImageName("earth.jpg", "height.jpg");
     
 	vtkSmartPointer<vtkPlaneSource> plane = vtkPlaneSource::New();
 	plane->SetResolution(150, 150);
