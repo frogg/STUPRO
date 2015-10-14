@@ -4,10 +4,9 @@
 #include <QEventLoop>
 #include <QFile>
 #include <QObject>
-#include <QTextStream>
+#include <QDebug>
 #include <vtkJPEGReader.h>
 #include <vtkSmartPointer.h>
-#include <iostream>
 
 
 GIBSImageCache::GIBSImageCache(GIBSDataSource* imageSource) {
@@ -18,17 +17,16 @@ GIBSImageCache::GIBSImageCache(GIBSDataSource* imageSource) {
 GIBSImageCache::GIBSImageCache() : GIBSImageCache(new GIBSDataSource()) { }
 
 GIBSImageCache::~GIBSImageCache() {
-//	delete this->imageSource;
 	delete this->networkManager;
 }
 
 
-void GIBSImageCache::SetImageSource(GIBSDataSource* imageSource) {
-	this->imageSource = imageSource;
+void GIBSImageCache::SetImageSource(GIBSDataSource* dataSource) {
+	this->dataSource = dataSource;
 }
 
-GIBSDataSource* GIBSImageCache::GetImageSource() {
-	return this->imageSource;
+GIBSDataSource* GIBSImageCache::GetDataSource() {
+	return this->dataSource;
 }
 
 const bool GIBSImageCache::DownloadImage(const GIBSImageProperties& imageProperties) {
@@ -36,6 +34,8 @@ const bool GIBSImageCache::DownloadImage(const GIBSImageProperties& imagePropert
 	char urlBuffer[PATH_BUFFER_SIZE];
 	this->BuildImageUrl(urlBuffer, imageProperties);
 	QUrl url(urlBuffer);
+
+	qDebug() << "GIBSImageCache::DownloadImage: Downloading " << urlBuffer;
 
 	QNetworkRequest request(url);
 	QNetworkReply* reply = this->networkManager->get(request);
@@ -86,6 +86,8 @@ vtkImageData* GIBSImageCache::GetVtkImage(const GIBSImageProperties& imageProper
 			// error downloading and saving the image
 			return NULL;
 		}
+	} else {
+		qDebug() << "GIBSImageCache::GetVtkImage: Cache hit";
 	}
 
 	// return the cached image
@@ -123,28 +125,28 @@ QImage* GIBSImageCache::GetImage(const GIBSImageProperties& imageProperties) {
 
 void GIBSImageCache::BuildImageUrl(char buffer[], const GIBSImageProperties& imageProperties) {
 	sprintf(buffer, API_URL_SCHEME.c_str(),
-			this->imageSource->projection.c_str(),
-			this->imageSource->productName.c_str(),
+			this->dataSource->projection.c_str(),
+			this->dataSource->productName.c_str(),
 			imageProperties.year,
 			imageProperties.month,
 			imageProperties.day,
-			this->imageSource->tileMatrixSet.c_str(),
+			this->dataSource->tileMatrixSet.c_str(),
 			imageProperties.zoomLevel,
 			imageProperties.tileRow,
 			imageProperties.tileCol,
-			this->imageSource->fileFormat.c_str());
+			this->dataSource->fileFormat.c_str());
 }
 
 void GIBSImageCache::BuildImageCacheDirectory(
 		char buffer[], const GIBSImageProperties& imageProperties) {
-	std::cout << this->imageSource->projection.c_str() << std::endl;
+	std::cout << this->dataSource->projection.c_str() << std::endl;
 	sprintf(buffer, CACHE_DIRECTORY_SCHEME.c_str(),
-			this->imageSource->projection.c_str(),
-			this->imageSource->productName.c_str(),
+			this->dataSource->projection.c_str(),
+			this->dataSource->productName.c_str(),
 			imageProperties.year,
 			imageProperties.month,
 			imageProperties.day,
-			this->imageSource->tileMatrixSet.c_str(),
+			this->dataSource->tileMatrixSet.c_str(),
 			imageProperties.zoomLevel,
 			imageProperties.tileRow);
 }
@@ -152,14 +154,14 @@ void GIBSImageCache::BuildImageCacheDirectory(
 void GIBSImageCache::BuildImageCacheImagePath(
 		char buffer[], const GIBSImageProperties& imageProperties) {
 	sprintf(buffer, (CACHE_DIRECTORY_SCHEME + CACHE_FILE_SCHEME).c_str(),
-			this->imageSource->projection.c_str(),
-			this->imageSource->productName.c_str(),
+			this->dataSource->projection.c_str(),
+			this->dataSource->productName.c_str(),
 			imageProperties.year,
 			imageProperties.month,
 			imageProperties.day,
-			this->imageSource->tileMatrixSet.c_str(),
+			this->dataSource->tileMatrixSet.c_str(),
 			imageProperties.zoomLevel,
 			imageProperties.tileRow,
 			imageProperties.tileCol,
-			this->imageSource->fileFormat.c_str());
+			this->dataSource->fileFormat.c_str());
 }

@@ -73,24 +73,87 @@ public:
 
 	const int PATH_BUFFER_SIZE = 512;
 
+	/**
+	 * Creates a new GIBSImageCache instance using the default data source.
+	 */
 	GIBSImageCache();
-	GIBSImageCache(GIBSDataSource* imageSource);
+
+	/**
+	 * Creates a new GIBSImageCache instance using the given data source.
+	 * @param dataSource GIBSDataSource to use for this image cache.
+	 */
+	GIBSImageCache(GIBSDataSource* dataSource);
 	~GIBSImageCache();
 
-	GIBSDataSource* GetImageSource();
+
+	/**
+	 * @return the GIBSDataSource used for this image cache
+	 */
+	GIBSDataSource* GetDataSource();
+	/**
+	 * @param imageSource the GIBSDataSource to use for this image cache
+	 */
 	void SetImageSource(GIBSDataSource* imageSource);
 
+	/**
+	 * Tries to download the GIBS image with the given properties.
+	 * This method is synchronous, i.e. it returns after the image has been
+	 * downloaded (which can take a while).
+	 * @param imageProperties the properties of the image to download
+	 * @return true if the download was successful
+	 */
 	const bool DownloadImage(const GIBSImageProperties& imageProperties);
+	/**
+	 * Checks if an image with the given properties is already cached on the
+	 * hard drive.
+	 * @param imageProperties the properties of the image to download
+	 * @return true if the image exists on the hard drive
+	 */
 	const bool CheckCache(const GIBSImageProperties& imageProperties);
+	/**
+	 * Returns the GIBS image with the given properties in the VTK format.
+	 * Checks if the image is already cached, downloads it if it is not, loads
+	 * the image from the disk and returns it.
+	 * @param imageProperties the properties of the image to download
+	 * @return the loaded VTK image
+	 */
 	vtkImageData* GetVtkImage(const GIBSImageProperties& imageProperties);
+	/**
+	 * Returns the GIBS image with the given properties as a QImage.
+	 * Checks if the image is already cached, downloads it if it is not, loads
+	 * the image from the disk and returns it.
+	 * @param imageProperties the properties of the image to download
+	 * @return the loaded QImage
+	 */
 	QImage* GetImage(const GIBSImageProperties& imageProperties);
 
 private:
-	GIBSDataSource* imageSource;
+	/**
+	 * The data source to use for all requests on this cache.
+	 */
+	GIBSDataSource* dataSource;
+	/**
+	 * The network manager used to download files from the GIBS API
+	 */
 	QNetworkAccessManager* networkManager;
 
+	/**
+	 * Builds the image URL using the given image properties
+	 * @param buffer the buffer in which to store the URL
+	 * @param imageProperties the image properties with which to build the URL
+	 */
 	void BuildImageUrl(char buffer[], const GIBSImageProperties& imageProperties);
+	/**
+	 * Builds the image cache folder path using the given image properties
+	 * @param buffer the buffer in which to store the path
+	 * @param imageProperties the image properties with which to build the path
+	 */
 	void BuildImageCacheDirectory(char buffer[], const GIBSImageProperties& imageProperties);
+	/**
+	 * Builds the image file cache path using the given image properties
+	 * @param buffer the buffer in which to store the file's path
+	 * @param imageProperties the image properties with which to build the path
+	 */
 	void BuildImageCacheImagePath(char buffer[], const GIBSImageProperties& imageProperties);
 };
 
