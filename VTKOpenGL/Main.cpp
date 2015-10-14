@@ -30,6 +30,11 @@
 #include <fstream>
 #include <functional>
 
+#include <vtkImageAppendComponents.h>
+#include <vtkJPEGReader.h>
+#include <vtkImageExtractComponents.h>
+
+
 std::string readFile(std::string filename)
 {
 	std::string content;
@@ -52,15 +57,38 @@ vtkSmartPointer<vtkTexture> getTextureForImageName(std::string picture, std::str
     
     vtkSmartPointer<vtkJPEGReader> imageReaderHeight = vtkSmartPointer<vtkJPEGReader>::New();
     imageReader->SetFileName(("Resources/" + heightPicture).c_str());
-    /*
+    
+    vtkSmartPointer<vtkImageExtractComponents> extractRedFilter = vtkSmartPointer<vtkImageExtractComponents>::New();
+    extractRedFilter->SetInputConnection(imageReader->GetOutputPort());
+    extractRedFilter->SetComponents(0);
+    extractRedFilter->Update();
+    
+    vtkSmartPointer<vtkImageExtractComponents> extractGreenFilter = vtkSmartPointer<vtkImageExtractComponents>::New();
+    extractGreenFilter->SetInputConnection(imageReader->GetOutputPort());
+    extractGreenFilter->SetComponents(1);
+    extractGreenFilter->Update();
+    
+    vtkSmartPointer<vtkImageExtractComponents> extractBlueFilter = vtkSmartPointer<vtkImageExtractComponents>::New();
+    extractBlueFilter->SetInputConnection(imageReader->GetOutputPort());
+    extractBlueFilter->SetComponents(2);
+    extractBlueFilter->Update();
+    
+    vtkSmartPointer<vtkImageExtractComponents> extractHeightFilter = vtkSmartPointer<vtkImageExtractComponents>::New();
+    extractHeightFilter->SetInputConnection(imageReaderHeight->GetOutputPort());
+    extractHeightFilter->SetComponents(0);
+    extractHeightFilter->Update();
+    
+    
     vtkSmartPointer<vtkImageAppendComponents> appendFilter = vtkSmartPointer<vtkImageAppendComponents>::New();
-    appendFilter->SetInputConnection(0, picture->GetOutputPort());
-    appendFilter->AddInputConnection(0, heightPicture->GetOutputPort());
+    appendFilter->SetInputConnection(0, extractRedFilter->GetOutputPort());
+    appendFilter->AddInputConnection(0, extractGreenFilter->GetOutputPort());
+    appendFilter->AddInputConnection(0, extractBlueFilter->GetOutputPort());
+    appendFilter->AddInputConnection(0, extractHeightFilter->GetOutputPort());
     appendFilter->Update();
-    */
+
     
     vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
-    texture->SetInputConnection(imageReader->GetOutputPort());
+    texture->SetInputConnection(appendFilter->GetOutputPort());
     return texture;
     
 }
