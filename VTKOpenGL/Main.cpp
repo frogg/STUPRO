@@ -26,6 +26,8 @@
 #include "vtkCallbackCommand.h"
 #include "vtkObject.h"
 
+#include <vtkSphereSource.h>
+
 #include <iostream>
 #include <fstream>
 #include <functional>
@@ -33,6 +35,16 @@
 #include <vtkImageAppendComponents.h>
 #include <vtkJPEGReader.h>
 #include <vtkImageExtractComponents.h>
+
+#include <vtkSmartPointer.h>
+#include <vtkSphereSource.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
+#include <vtkPointData.h>
+#include <vtkLine.h>
+#include <vtkOBBTree.h>
+#include <vtkCamera.h>
+#include <fstream>
 
 
 std::string readFile(std::string filename)
@@ -110,16 +122,82 @@ int main()
 
 	vtkSmartPointer<vtkRenderer> ren = vtkRenderer::New();
 	ren->AddActor(planeActor);
+    
+    vtkSmartPointer<vtkSphereSource> sphereSource =
+    vtkSmartPointer<vtkSphereSource>::New();
+    sphereSource->SetRadius(.5f);
+    sphereSource->SetThetaResolution(100);
+    sphereSource->SetPhiResolution(100);
+
+    vtkSmartPointer<vtkPolyDataMapper> sphereMapper = vtkPolyDataMapper::New();
+    sphereMapper->SetInputConnection(sphereSource->GetOutputPort());
+    
+    vtkSmartPointer<vtkActor> sphereActor = vtkActor::New();
+    sphereActor->SetMapper(sphereMapper);
+    
+    ren->AddActor(sphereActor);
+
+    vtkSmartPointer<vtkOBBTree> tree =
+    vtkSmartPointer<vtkOBBTree>::New();
+    tree->SetDataSet(sphereSource->GetOutput());
+    tree->BuildLocator();
+
+
+    
 	
 	auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
 	{
 		float range = 2.f;
 		((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
+        
+     
+        
+        double cameraPosition[3];
+        ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
+        
+        double eyePosition[3];
+        ((vtkRenderer*)caller)->GetActiveCamera()->GetEyePosition(eyePosition);
+        
+        vtkSmartPointer<vtkPoints> intersectPoints =
+        vtkSmartPointer<vtkPoints>::New();
+        
+        (((vtkRenderer*)caller)->GetActors()->get);
+        
+        
+        std::cout << "Camera Position "
+        << cameraPosition[0] << ", "
+        << cameraPosition[1] << ", "
+        << cameraPosition[2] << std::endl;
+    
+        
+        vtkSmartPointer<vtkOBBTree> tree =
+        vtkSmartPointer<vtkOBBTree>::New();
+        tree->SetDataSet(vtkRenderer->GetOutput());
+        tree->BuildLocator();
+    
+         tree->IntersectWithLine(lineP0, lineP1, intersectPoints, NULL);
+        
+        double intersection[3];
+        for(int i = 0; i < intersectPoints->GetNumberOfPoints(); i++ )
+        {
+            intersectPoints->GetPoint(i, intersection);
+            std::cout << "Intersection " << i << ": "
+            << intersection[0] << ", "
+            << intersection[1] << ", "
+            << intersection[2] << std::endl;
+        }
+        
+        
 	};
+    
+
+    
 	vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
 	clipCallback->SetCallback(clipFunc);
 	ren->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, clipCallback);
 	clipFunc(ren, 0, 0, 0);
+    
+    
 
 	vtkSmartPointer<vtkRenderWindow> renWin = vtkRenderWindow::New();
 	renWin->SetWindowName("Famous Globe");
@@ -176,6 +254,7 @@ int main()
 	
 	auto interpolateFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
 	{
+        
 		InterpolateClient & cld = *(InterpolateClient*)clientData;
 		vtkRenderWindowInteractor * interactor = (vtkRenderWindowInteractor*)caller;
 		if (interactor->GetKeyCode() == 49) {
@@ -196,6 +275,10 @@ int main()
 	interpolateCallback->SetClientData(&interpolateClient);
 	renWin->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent, interpolateCallback);
 
+    
+    ren->GetActiveCamera()->GetPosition();
+    
+    
 	renWin->GetInteractor()->Start();
 
 	return 0;
