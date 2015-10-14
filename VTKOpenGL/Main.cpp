@@ -24,7 +24,9 @@
 #include "vtkTextureMapToPlane.h"
 #include "vtkCommand.h"
 #include "vtkCallbackCommand.h"
+#include "vtkObject.h"
 
+#include <iostream>
 #include <fstream>
 #include <functional>
 
@@ -67,15 +69,15 @@ int main()
 	vtkSmartPointer<vtkRenderer> ren = vtkRenderer::New();
 	ren->AddActor(planeActor);
 	
-	/*
-	auto clipFunc = [ren](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
+	auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
 	{
-		ren->ResetCameraClippingRange(-10, 10, -10, 10, -10, 10);
+		float range = 2.f;
+		((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
 	};
 	vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
 	clipCallback->SetCallback(clipFunc);
 	ren->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, clipCallback);
-	*/
+	clipFunc(ren, 0, 0, 0);
 
 	vtkSmartPointer<vtkRenderWindow> renWin = vtkRenderWindow::New();
 	renWin->SetWindowName("VTK Shader Test");
@@ -106,9 +108,11 @@ int main()
 
 	float globeRadius = 0.5f;
 	float planeSize = 1.f;
+	float interpolation = 0.f;
 
 	vshader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
 	vshader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
+	vshader->GetUniformVariables()->SetUniformf("interpolation", 1, &interpolation);
 
 	pgm->GetShaders()->AddItem(fshader);
 	pgm->GetShaders()->AddItem(vshader);
@@ -116,18 +120,38 @@ int main()
 	vtkSmartPointer<vtkOpenGLProperty> openGLproperty = static_cast<vtkOpenGLProperty*>(planeActor->GetProperty());
 	openGLproperty->SetPropProgram(pgm);
 	openGLproperty->ShadingOn();
+	
+	struct InterpolateClient
+	{
+		vtkUniformVariables * vars;
+		float * interpolation;
+		float amount;
+		vtkRenderWindow * ren;
+	};
+	
+	auto interpolateFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
+	{
+		InterpolateClient & cld = *(InterpolateClient*)clientData;
+		vtkRenderWindowInteractor * interactor = (vtkRenderWindowInteractor*)caller;
+		if (interactor->GetKeyCode() == 49) {
+			*cld.interpolation -= cld.amount;
+		} else if (interactor->GetKeyCode() == 50) {
+			*cld.interpolation += cld.amount;
+		}
+		if (*cld.interpolation > 1.0)
+			*cld.interpolation = 1.0;
+		if (*cld.interpolation < 0.0)
+			*cld.interpolation = 0.0;
+		cld.vars->SetUniformf("interpolation", 1, cld.interpolation);
+		cld.ren->Render();
+	};
+	InterpolateClient interpolateClient = {vshader->GetUniformVariables(), &interpolation, 0.01, renWin};
+	vtkSmartPointer<vtkCallbackCommand> interpolateCallback = vtkSmartPointer<vtkCallbackCommand>::New();
+	interpolateCallback->SetCallback(interpolateFunc);
+	interpolateCallback->SetClientData(&interpolateClient);
+	renWin->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent, interpolateCallback);
 
 	renWin->GetInteractor()->Start();
-
-	/*
-	 while (renWin->Is)
-	 {
-	 //float num = i / 100.f;
-	 //vshader->GetUniformVariables()->SetUniformf("bla", 1, &num);
-	 renWin->Render();
-	 //ren->GetActiveCamera()->Azimuth(1);
-	 }
-	 */
 
 	return 0;
 }
