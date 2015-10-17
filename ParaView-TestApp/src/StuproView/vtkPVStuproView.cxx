@@ -43,18 +43,16 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	vtkSmartPointer<vtkPlaneSource> plane = vtkPlaneSource::New();
 	plane->SetResolution(150, 150);
 	
-	//vtkSmartPointer<vtkTexture> texture = getTextureForImageName("earth.jpg", "height.jpg");
+	vtkSmartPointer<vtkTexture> texture = getTextureForImageName("earth.jpg", "height.jpg");
 
 	vtkSmartPointer<vtkPolyDataMapper> planeMapper = vtkPolyDataMapper::New();
 	planeMapper->SetInputConnection(plane->GetOutputPort());
 
 	vtkSmartPointer<vtkActor> planeActor = vtkActor::New();
 	planeActor->SetMapper(planeMapper);
-	//planeActor->SetTexture(texture);
+	planeActor->SetTexture(texture);
 
 	GetRenderer()->AddActor(planeActor);
-
-
 
 	vtkSmartPointer<vtkShaderProgram2> pgm = vtkShaderProgram2::New();
 	pgm->SetContext(GetRenderWindow());
@@ -66,16 +64,24 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	fshader->SetSourceCode(readFile("Shader/TestShader.fsh").c_str());
 	fshader->SetContext(pgm->GetContext());
 
+	int textureID = 0; // texture->GetTextureUnit();
+	fshader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
+
 	vtkSmartPointer<vtkShader2> vshader = vtkShader2::New();
 	vshader->SetType(VTK_SHADER_TYPE_VERTEX);
 	vshader->SetSourceCode(readFile("Shader/TestShader.vsh").c_str());
 	vshader->SetContext(pgm->GetContext());
 
-	float globeRadius = .5f;
+	float globeRadius = 0.5f;
 	float planeSize = 1.f;
+	float interpolation = 0.f;
+	float heightOffset = 0.05f;
 
+	vshader->GetUniformVariables()->SetUniformf("interpolation", 1, &interpolation);
+	vshader->GetUniformVariables()->SetUniformf("heightOffset", 1, &heightOffset);
 	vshader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
 	vshader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
+	vshader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
 
 	pgm->GetShaders()->AddItem(fshader);
 	pgm->GetShaders()->AddItem(vshader);
