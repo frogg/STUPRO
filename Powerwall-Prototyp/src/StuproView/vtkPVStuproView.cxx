@@ -24,10 +24,10 @@
 #include <fstream>
 #include <functional>
 
-
+vtkStandardNewMacro(vtkPVStuproView);
 //----------------------------------------------------------------------------
 vtkPVStuproView::vtkPVStuproView()
-{
+{ 
 }
 
 //----------------------------------------------------------------------------

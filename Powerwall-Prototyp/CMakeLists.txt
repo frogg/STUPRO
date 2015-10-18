@@ -6,7 +6,7 @@ message(STATUS ${CMAKE_MODULE_PATH})
 set (ParaView_DIR "/paraview-bin/"
       CACHE PATH
       "Path to ParaView build")
-      
+
 if(EXISTS "${ParaView_DIR}/ParaViewConfig.cmake" OR EXISTS "${ParaView_DIR}/paraview-config.cmake")
    find_package(ParaView REQUIRED)
 else()
@@ -14,7 +14,7 @@ else()
 	"ParaView not found, enter the path "
 	"to a ParaView build dir in ParaView_DIR")
 endif()
-   
+
 include(${PARAVIEW_USE_FILE})
 if (NOT PARAVIEW_BUILD_QT_GUI)
   message(FATAL_ERROR
@@ -73,7 +73,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/StuproView/Resources DESTINATION ${CMA
 build_paraview_client(paraview_revised
   TITLE "ParaView (ReVisEd)"
   ORGANIZATION  "Kitware Inc."
-  VERSION_MAJOR 1 
+  VERSION_MAJOR 1
   VERSION_MINOR 1
   VERSION_PATCH 1
   PVMAIN_WINDOW myMainWindow
