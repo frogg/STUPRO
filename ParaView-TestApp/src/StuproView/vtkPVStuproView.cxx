@@ -15,10 +15,12 @@
 #include "vtkJPEGReader.h"
 #include "vtkImageExtractComponents.h"
 #include "vtkImageAppendComponents.h"
-#include "vtkTexture.h"
+#include "vtkOpenGLTexture.h"
 #include "vtkCallbackCommand.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
+#include "vtkInteractorStyle.h"
+#include "vtkInteractorStyleTerrain.h"
 
 #include <iostream>
 #include <fstream>
@@ -40,60 +42,184 @@ void vtkPVStuproView::Initialize(unsigned int id)
 {
 	this->Superclass::Initialize(id);
 
+	initParameters();
+	initGlobe();
+	initRenderer();
+	initShaders();
+	initCallbacks();
+}
+
+//----------------------------------------------------------------------------
+void vtkPVStuproView::initParameters()
+{
+	// Initialize parameters.
+	myDisplayMode = DisplayGlobe;
+	myGlobeRadius = 0.5f;
+	myPlaneSize = 1.f;
+	myDisplayModeInterpolation = 0.f;
+	myHeightFactor = 0.05f;
+}
+
+//----------------------------------------------------------------------------
+void vtkPVStuproView::initGlobe()
+{
+	// Load the texture from RGB and heightmap data.
+	vtkSmartPointer<vtkOpenGLTexture> texture = loadAlphaTexture("Resources/bigearth.jpg", "Resources/bigheight.jpg");
+
+	// Create plane source for transformation into globe.
 	vtkSmartPointer<vtkPlaneSource> plane = vtkPlaneSource::New();
 	plane->SetResolution(150, 150);
-	
-	vtkSmartPointer<vtkTexture> texture = getTextureForImageName("earth.jpg", "height.jpg");
 
+	// Create polygon mapper for plane.
 	vtkSmartPointer<vtkPolyDataMapper> planeMapper = vtkPolyDataMapper::New();
 	planeMapper->SetInputConnection(plane->GetOutputPort());
 
-	vtkSmartPointer<vtkActor> planeActor = vtkActor::New();
-	planeActor->SetMapper(planeMapper);
-	planeActor->SetTexture(texture);
+	// Create actor for plane/globe.
+	myPlaneActor = vtkActor::New();
+	myPlaneActor->SetMapper(planeMapper);
+	myPlaneActor->SetTexture(texture);
+}
 
-	GetRenderer()->AddActor(planeActor);
+//----------------------------------------------------------------------------
+void vtkPVStuproView::initRenderer()
+{
+	// Create renderer with actor for the globe.
+	// myRenderer = vtkRenderer::New(); // not needed here
+	GetRenderer()->AddActor(myPlaneActor);
 
-	vtkSmartPointer<vtkShaderProgram2> pgm = vtkShaderProgram2::New();
-	pgm->SetContext(GetRenderWindow());
+	// needed later for own interactor style
+	// Create interactor for render window.
+	vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<
+		vtkRenderWindowInteractor>::New();
+	interactor->SetRenderWindow(GetRenderWindow());
 
-	//Shader files have to be in the working directory of the compiler or
-	//the directory of the executable to be found
-	vtkSmartPointer<vtkShader2> fshader = vtkShader2::New();
-	fshader->SetType(VTK_SHADER_TYPE_FRAGMENT);
-	fshader->SetSourceCode(readFile("Shader/TestShader.fsh").c_str());
-	fshader->SetContext(pgm->GetContext());
+	// Create interactor style for render window.
+	vtkSmartPointer<vtkInteractorStyle> interactorStyle = vtkInteractorStyleTerrain::New();
+	interactor->SetInteractorStyle(interactorStyle);
+}
 
-	int textureID = 0; // texture->GetTextureUnit();
-	fshader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
+//----------------------------------------------------------------------------
+void vtkPVStuproView::initShaders()
+{
+	// Create shader program.
+	vtkSmartPointer<vtkShaderProgram2> shaderProgram = vtkShaderProgram2::New();
+	shaderProgram->SetContext(GetRenderWindow());
 
-	vtkSmartPointer<vtkShader2> vshader = vtkShader2::New();
-	vshader->SetType(VTK_SHADER_TYPE_VERTEX);
-	vshader->SetSourceCode(readFile("Shader/TestShader.vsh").c_str());
-	vshader->SetContext(pgm->GetContext());
+	// Create and load fragment shader.
+	myFragmentShader = vtkShader2::New();
+	myFragmentShader->SetType(VTK_SHADER_TYPE_FRAGMENT);
+	myFragmentShader->SetSourceCode(readFile("Shader/TestShader.fsh").c_str());
+	myFragmentShader->SetContext(shaderProgram->GetContext());
 
-	float globeRadius = 0.5f;
-	float planeSize = 1.f;
-	float interpolation = 0.f;
-	float heightOffset = 0.05f;
+	// Create and load vertex shader.
+	myVertexShader = vtkShader2::New();
+	myVertexShader->SetType(VTK_SHADER_TYPE_VERTEX);
+	myVertexShader->SetSourceCode(readFile("Shader/TestShader.vsh").c_str());
+	myVertexShader->SetContext(shaderProgram->GetContext());
 
-	vshader->GetUniformVariables()->SetUniformf("interpolation", 1, &interpolation);
-	vshader->GetUniformVariables()->SetUniformf("heightOffset", 1, &heightOffset);
-	vshader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
-	vshader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
-	vshader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
+	// TODO: Find a way to get texture ID (VTK's GetTextureUnit() always returns 0).
+	int textureID = 0;
+	myFragmentShader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
 
-	pgm->GetShaders()->AddItem(fshader);
-	pgm->GetShaders()->AddItem(vshader);
+	// Assign uniform variables.
+	myVertexShader->GetUniformVariables()->SetUniformf("globeRadius", 1, &myGlobeRadius);
+	myVertexShader->GetUniformVariables()->SetUniformf("planeSize", 1, &myPlaneSize);
+	myVertexShader->GetUniformVariables()->SetUniformf("interpolation", 1,
+													   &myDisplayModeInterpolation);
+	myVertexShader->GetUniformVariables()->SetUniformf("heightOffset", 1, &myHeightFactor);
+	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
 
+	// Add shaders to shader program.
+	shaderProgram->GetShaders()->AddItem(myFragmentShader);
+	shaderProgram->GetShaders()->AddItem(myVertexShader);
+
+	// Add shader to globe actor.
 	vtkSmartPointer<vtkOpenGLProperty> openGLproperty =
-		static_cast<vtkOpenGLProperty*>(planeActor->GetProperty());
-	openGLproperty->SetPropProgram(pgm);
+		static_cast<vtkOpenGLProperty*>(myPlaneActor->GetProperty());
+	openGLproperty->SetPropProgram(shaderProgram);
 	openGLproperty->ShadingOn();
 }
 
 //----------------------------------------------------------------------------
-std::string vtkPVStuproView::readFile(std::string filename)
+void vtkPVStuproView::initCallbacks()
+{
+	// Create callback function that corrects the camera clipping range to work around a VTK bug.
+	auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
+	{
+		float range = 2.f;
+		((vtkRenderer*) caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
+	};
+
+	// Create and assign callback for clipping function.
+	vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
+	clipCallback->SetCallback(clipFunc);
+	GetRenderer()->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, clipCallback);
+
+	// Call the function once to correct the clipping range immediately.
+	clipFunc(GetRenderer(), 0, 0, 0);
+
+	// Create callback function that corrects the camera clipping range to work around a VTK bug.
+	auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
+	{
+		vtkPVStuproView& client = *((vtkPVStuproView*) clientData);
+
+		// Determine target interpolation based on display mode.
+		float interpolationTarget = client.myDisplayMode == DisplayGlobe ? 0.f : 1.f;
+
+		// Check if change is significant enough to be re-rendered.
+		if(std::abs(interpolationTarget - client.myDisplayModeInterpolation) > 0.000001f)
+		{
+			// Controls the speed of the globe-map transition.
+			float effectSpeed = 2.f;
+
+			// Smoothly transition interpolation value based on previous and target value.
+			client.myDisplayModeInterpolation = (interpolationTarget * effectSpeed +
+												 client.myDisplayModeInterpolation) / (effectSpeed + 1.f);
+			client.myVertexShader->GetUniformVariables()->SetUniformf("interpolation", 1,
+																	  &client.myDisplayModeInterpolation);
+
+			// Update renderer.
+			client.GetRenderWindow()->Render();
+		}
+	};
+
+	// Create and assign callback for clipping function.
+	vtkSmartPointer<vtkCallbackCommand> timerCallback = vtkSmartPointer<vtkCallbackCommand>::New();
+	timerCallback->SetCallback(timerFunc);
+	timerCallback->SetClientData(this);
+
+	// Enable timer on the render window.
+	GetRenderWindow()->GetInteractor()->CreateRepeatingTimer(17);
+	GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::TimerEvent, timerCallback);
+
+	// Create callback function to switch display modes (using the '1' and '2' keys)
+	auto modeSwitchFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
+	{
+		vtkPVStuproView & client = *((vtkPVStuproView*) clientData);
+
+		// Get the interactor to determine the pressed key.
+		vtkRenderWindowInteractor * interactor = (vtkRenderWindowInteractor*) caller;
+
+		if(interactor->GetKeyCode() == 49)// 1 key
+		{
+			client.myDisplayMode = DisplayGlobe;
+		}
+		else if(interactor->GetKeyCode() == 50) // 2 key
+		{
+			client.myDisplayMode = DisplayMap;
+		}
+	};
+
+	// Create and assign callback for mode switch function.
+	vtkSmartPointer<vtkCallbackCommand> modeSwitchCallback =
+		vtkSmartPointer<vtkCallbackCommand>::New();
+	modeSwitchCallback->SetCallback(modeSwitchFunc);
+	modeSwitchCallback->SetClientData(this);
+	GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent, modeSwitchCallback);
+}
+
+//----------------------------------------------------------------------------
+std::string vtkPVStuproView::readFile(std::string filename) const
 {
 	std::string content;
 	std::ifstream file(filename);
@@ -110,13 +236,13 @@ std::string vtkPVStuproView::readFile(std::string filename)
 }
 
 //----------------------------------------------------------------------------
-vtkSmartPointer<vtkTexture> vtkPVStuproView::getTextureForImageName(std::string picture, std::string heightPicture)
+vtkSmartPointer<vtkOpenGLTexture> vtkPVStuproView::loadAlphaTexture(std::string rgbFile, std::string alphaFile) const
 {
 	vtkSmartPointer<vtkJPEGReader> imageReader = vtkSmartPointer<vtkJPEGReader>::New();
-	imageReader->SetFileName(("Resources/" + picture).c_str());
+	imageReader->SetFileName((rgbFile).c_str());
 
 	vtkSmartPointer<vtkJPEGReader> imageReaderHeight = vtkSmartPointer<vtkJPEGReader>::New();
-	imageReaderHeight->SetFileName(("Resources/" + heightPicture).c_str());
+	imageReaderHeight->SetFileName((alphaFile).c_str());
 
 	vtkSmartPointer<vtkImageExtractComponents> extractRedFilter = vtkSmartPointer<vtkImageExtractComponents>::New();
 	extractRedFilter->SetInputConnection(imageReader->GetOutputPort());
@@ -147,7 +273,7 @@ vtkSmartPointer<vtkTexture> vtkPVStuproView::getTextureForImageName(std::string 
 	appendFilter->Update();
 
 
-	vtkSmartPointer<vtkTexture> texture = vtkSmartPointer<vtkTexture>::New();
+	vtkSmartPointer<vtkOpenGLTexture> texture = vtkSmartPointer<vtkOpenGLTexture>::New();
 	texture->SetInputConnection(appendFilter->GetOutputPort());
 	return texture;
 }
