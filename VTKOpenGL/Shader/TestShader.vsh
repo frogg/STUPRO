@@ -25,8 +25,8 @@ vec3 transformLatLong(float lat, float lon, float radiusChange)
 	float cosLon = cos(lon);
 	float sinLon = sin(lon);
     float x = ((radiusChange*heightOffset)+globeRadius) * cosLat * cosLon;
-	float y = ((radiusChange*heightOffset)+globeRadius) * cosLat * sinLon;
-	float z = ((radiusChange*heightOffset)+globeRadius) * sinLat;
+	float y = ((radiusChange*heightOffset)+globeRadius) * sinLat;
+	float z = -((radiusChange*heightOffset)+globeRadius) * cosLat * sinLon;
 	
 	return vec3(x, y, z);
 }
