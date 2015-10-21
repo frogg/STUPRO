@@ -19,7 +19,7 @@
 #include "vtkOpenGLProperty.h"
 #include "vtkUniformVariables.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkInteractorStyleTrackballCamera.h"
+#include "vtkInteractorStyleTerrain.h"
 #include "vtkPNGReader.h"
 #include "vtkCommand.h"
 #include "vtkCallbackCommand.h"
@@ -248,7 +248,7 @@ void VTKOpenGL::initRenderer()
 	interactor->SetRenderWindow(myRenderWindow);
 
 	// Create interactor style for render window.
-	vtkSmartPointer<vtkInteractorStyle> interactorStyle = vtkInteractorStyleTrackballCamera::New();
+	vtkSmartPointer<vtkInteractorStyle> interactorStyle = vtkInteractorStyleTerrain::New();
 	interactor->SetInteractorStyle(interactorStyle);
 }
 
