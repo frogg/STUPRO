@@ -5,8 +5,9 @@ uniform float globeRadius;
 uniform float heightOffset;
 
 uniform float planeSize;
+//interpolation value, determines whether the earth or the map is displayed (or something in between)
 uniform float interpolation;
-
+//texture where we get the height
 uniform sampler2D heightTexture;
 
 float pi = 3.14159265;
@@ -33,10 +34,17 @@ vec3 transformLatLong(float lat, float lon, float radiusChange)
 //main function in OpenGL
 void propFuncVS()
 {
+    //?
     gl_TexCoord[0].xy = vec2(gl_Vertex.y / planeSize + 0.5, gl_Vertex.x / planeSize + 0.5);
+    //get height value in the alpha channel of the texture
 	float heightSample = texture2D(heightTexture, gl_TexCoord[0].xy).a;
-	vec3 pos = transformLatLong(gl_Vertex.x, gl_Vertex.y, heightSample);
-	pos = mix(pos, vec3(gl_Vertex.xy, -heightSample * heightOffset), interpolation);
+	//get globe position
+    vec3 globePosition = transformLatLong(gl_Vertex.x, gl_Vertex.y, heightSample);
+    //position on the flat map
+    vec3 mapPostition = vec3(gl_Vertex.xy, -heightSample * heightOffset);
+    //linear interpolation between new position  (pos) and old position (vec)
+	vec3 pos = mix(globePosition, mapPostition , interpolation);
+    //old OpenGl set glPosition (position of the vertex), mult for transformation of camera
 	gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * vec4(pos.xyz, 1);
 	float shading = 1.0;
 	gl_FrontColor = vec4(shading, shading, shading, 1.0);
