@@ -185,6 +185,8 @@ private:
     vtkSmartPointer<vtkRenderWindow> myRenderWindow;
     vtkSmartPointer<vtkActor> myPlaneActor;
     
+    vtkSmartPointer<vtkOBBTree> myTree;
+
     vtkSmartPointer<vtkShader2> myVertexShader;
     vtkSmartPointer<vtkShader2> myFragmentShader;
     
@@ -344,6 +346,15 @@ void VTKOpenGL::initCallbacks()
         double rightCorner[3] = {viewEdgeDistance,0,0};
         double leftCorner[3] = {-viewEdgeDistance,0,0};
         
+        Coordinate coord1 = VTKOpenGL::getCoordinates(uppperCorner);
+        std::cout << "Intersection; " << "long: " << coord1.longitude << "lat: " << coord1.latitude << std::endl;
+        Coordinate coord2 = VTKOpenGL::getCoordinates(lowOrigin);
+        std::cout << "Intersection; " << "long: " << coord2.longitude << "lat: " << coord2.latitude << std::endl;
+        Coordinate coord3 = VTKOpenGL::getCoordinates(rightCorner);
+        std::cout << "Intersection; " << "long: " << coord3.longitude << "lat: " << coord3.latitude << std::endl;
+        Coordinate coord4 = VTKOpenGL::getCoordinates(leftCorner);
+        std::cout << "Intersection; " << "long: " << coord4.longitude << "lat: " << coord4.latitude << std::endl;
+        
         
         
     };
@@ -356,19 +367,19 @@ void VTKOpenGL::initCallbacks()
     sphereSource->Update();
     
     // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
-    vtkSmartPointer<vtkOBBTree> tree = vtkSmartPointer<vtkOBBTree>::New();
-    tree->SetDataSet(sphereSource->GetOutput());
-    tree->BuildLocator();
+    myTree = vtkSmartPointer<vtkOBBTree>::New();
+    myTree->SetDataSet(sphereSource->GetOutput());
+    myTree->BuildLocator();
     
     
     // Create and assign callback for clipping function.
     vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
     clipCallback->SetCallback(clipFunc);
-    clipCallback->SetClientData(tree);
+    clipCallback->SetClientData(myTree);
     myRenderer->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, clipCallback);
     
     // Call the function once to correct the clipping range immediately.
-    clipFunc(myRenderer, 0, tree, 0);
+    clipFunc(myRenderer, 0, myTree, 0);
     
     
     // Create callback function that corrects the camera clipping range to work around a VTK bug.
