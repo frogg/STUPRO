@@ -147,6 +147,11 @@ Vector3<T> & operator/=(Vector3<T> & v, Vector3<T> v2)
 
 typedef Vector3<double> Vector3d;
 
+struct Coordinate{
+    double latitude;
+    double longitude;
+};
+
 class VTKOpenGL
 {
 	public:
@@ -300,6 +305,40 @@ void VTKOpenGL::initCallbacks()
 	{
 		float range = 2.f;
 		((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
+        
+        double cameraPosition[3];
+        ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
+        
+        double cameraViewangle =  ((vtkRenderer*)caller)->GetActiveCamera()->GetViewAngle();
+        double globeOrigin[3] = {0,0,0};
+        
+        double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
+                
+                double viewEdgeDistance = tan(15) * distanceCameraGlobe;
+                std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
+          
+        
+
+
+
+        
+        vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
+        
+        vtkOBBTree * tree = (vtkOBBTree*)clientData;
+        
+        tree->IntersectWithLine(cameraPosition, globeCenter, intersectPoints, NULL);
+        
+        
+        double intersection[3];
+                intersectPoints->GetPoint(0, intersection);
+        
+        Coordinate coord = VTKOpenGL.getCooridinates(intersection);
+        std::cout << "Intersection; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+        double uppperCorner[3] = {0,viewEdgeDistance,0};
+        double lowOrigin[3] = {0,-viewEdgeDistance,0};
+        double rightCorner[3] = {viewEdgeDistance,0,0};
+        double leftCorner[3] = {-viewEdgeDistance,0,0};
+        
 	};
 
 	// Create and assign callback for clipping function.
@@ -369,6 +408,14 @@ void VTKOpenGL::initCallbacks()
 	modeSwitchCallback->SetClientData(this);
 	myRenderWindow->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent, modeSwitchCallback);
 }
+
+static Coordinate VTKOpenGL::getCooridinates(double[] point){
+    Coordinate coordinate;
+    coordinate.latitude = ((asin(point[0] / .5f)) / 6.28) * 360;
+    coordinate.longitude = ((atan2(point[2], point[1])) / 6.28) * 360;
+    return coordinate;
+}
+
 
 vtkSmartPointer<vtkOpenGLTexture> VTKOpenGL::loadAlphaTexture(std::string rgbFile,
         std::string alphaFile) const
