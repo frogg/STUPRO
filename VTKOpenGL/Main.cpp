@@ -322,7 +322,7 @@ void VTKOpenGL::initCallbacks()
         
         double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
         
-        double viewEdgeDistance = tan(15) * distanceCameraGlobe;
+        double viewEdgeDistance = tan(3.14159265358979323846264338327950288 / 12.0) * distanceCameraGlobe;
 
         std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
@@ -347,13 +347,13 @@ void VTKOpenGL::initCallbacks()
         double leftCorner[3] = {-viewEdgeDistance,0,0};
         
         Coordinate coord1 = VTKOpenGL::getCoordinates(uppperCorner);
-        std::cout << "Intersection; " << "long: " << coord1.longitude << "lat: " << coord1.latitude << std::endl;
+        std::cout << "uppperCorner; " << "long: " << coord1.longitude << "lat: " << coord1.latitude << std::endl;
         Coordinate coord2 = VTKOpenGL::getCoordinates(lowOrigin);
-        std::cout << "Intersection; " << "long: " << coord2.longitude << "lat: " << coord2.latitude << std::endl;
+        std::cout << "lowOrigin; " << "long: " << coord2.longitude << "lat: " << coord2.latitude << std::endl;
         Coordinate coord3 = VTKOpenGL::getCoordinates(rightCorner);
-        std::cout << "Intersection; " << "long: " << coord3.longitude << "lat: " << coord3.latitude << std::endl;
+        std::cout << "rightCorner; " << "long: " << coord3.longitude << "lat: " << coord3.latitude << std::endl;
         Coordinate coord4 = VTKOpenGL::getCoordinates(leftCorner);
-        std::cout << "Intersection; " << "long: " << coord4.longitude << "lat: " << coord4.latitude << std::endl;
+        std::cout << "leftCorner; " << "long: " << coord4.longitude << "lat: " << coord4.latitude << std::endl;
         
         
         
