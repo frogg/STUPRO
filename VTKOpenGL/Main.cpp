@@ -27,6 +27,7 @@
 #include "vtkOpenGLTexture.h"
 
 #include "vtkOBBTree.h"
+#include "vtkSphereSource.h"
 
 #include <iostream>
 #include <fstream>
@@ -36,6 +37,8 @@
 #include <vtkImageAppendComponents.h>
 #include <vtkJPEGReader.h>
 #include <vtkImageExtractComponents.h>
+
+
 
 std::string readFile(std::string filename)
 {
