@@ -322,10 +322,6 @@ void VTKOpenGL::initCallbacks()
         std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
         
-        
-        
-        
-        
         vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
         
         vtkOBBTree * tree = (vtkOBBTree*)clientData;
@@ -349,13 +345,28 @@ void VTKOpenGL::initCallbacks()
         
     };
     
+    // an artificial Sphere is created as a stand in for our globe in our raycasting Method.
+    vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
+    sphereSource->SetRadius(.5f);
+    sphereSource->SetThetaResolution(100);
+    sphereSource->SetPhiResolution(100);
+    sphereSource->Update();
+    
+    // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
+    vtkSmartPointer<vtkOBBTree> tree = vtkSmartPointer<vtkOBBTree>::New();
+    tree->SetDataSet(sphereSource->GetOutput());
+    tree->BuildLocator();
+    
+    
     // Create and assign callback for clipping function.
     vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
     clipCallback->SetCallback(clipFunc);
+    clipCallback->SetClientData(tree);
     myRenderer->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, clipCallback);
     
     // Call the function once to correct the clipping range immediately.
-    clipFunc(myRenderer, 0, 0, 0);
+    clipFunc(myRenderer, 0, tree, 0);
+    
     
     // Create callback function that corrects the camera clipping range to work around a VTK bug.
     auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
