@@ -343,17 +343,31 @@ void VTKOpenGL::initCallbacks()
         
         double uppperCorner[3] = {0,viewEdgeDistance,0};
         double lowOrigin[3] = {0,-viewEdgeDistance,0};
-        double rightCorner[3] = {viewEdgeDistance,0,0};
-        double leftCorner[3] = {-viewEdgeDistance,0,0};
+        double rightCorner[3] = {0,0,viewEdgeDistance};
+        double leftCorner[3] = {0,0,-viewEdgeDistance};
         
-        Coordinate coord1 = VTKOpenGL::getCoordinates(uppperCorner);
-        std::cout << "uppperCorner; " << "long: " << coord1.longitude << "lat: " << coord1.latitude << std::endl;
-        Coordinate coord2 = VTKOpenGL::getCoordinates(lowOrigin);
-        std::cout << "lowOrigin; " << "long: " << coord2.longitude << "lat: " << coord2.latitude << std::endl;
-        Coordinate coord3 = VTKOpenGL::getCoordinates(rightCorner);
-        std::cout << "rightCorner; " << "long: " << coord3.longitude << "lat: " << coord3.latitude << std::endl;
-        Coordinate coord4 = VTKOpenGL::getCoordinates(leftCorner);
-        std::cout << "leftCorner; " << "long: " << coord4.longitude << "lat: " << coord4.latitude << std::endl;
+        tree->IntersectWithLine(cameraPosition, uppperCorner, intersectPoints, NULL);
+        intersectPoints->GetPoint(0, intersection);
+        coord = VTKOpenGL::getCoordinates(intersection);
+        std::cout << "upperCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+        
+        tree->IntersectWithLine(cameraPosition, lowOrigin, intersectPoints, NULL);
+        intersectPoints->GetPoint(0, intersection);
+        coord = VTKOpenGL::getCoordinates(intersection);
+        std::cout << "lowOrigin; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+        
+        tree->IntersectWithLine(cameraPosition, rightCorner, intersectPoints, NULL);
+        intersectPoints->GetPoint(0, intersection);
+        coord = VTKOpenGL::getCoordinates(intersection);
+        std::cout << "rightCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+        
+        tree->IntersectWithLine(cameraPosition, leftCorner, intersectPoints, NULL);
+        intersectPoints->GetPoint(0, intersection);
+        coord = VTKOpenGL::getCoordinates(intersection);
+        std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+        
+        
+       
         
         
         
