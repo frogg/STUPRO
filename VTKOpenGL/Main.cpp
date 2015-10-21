@@ -25,6 +25,7 @@
 #include "vtkCallbackCommand.h"
 #include "vtkObject.h"
 #include "vtkOpenGLTexture.h"
+#include "vtkObjectFactory.h"
 
 #include <iostream>
 #include <fstream>
@@ -147,6 +148,18 @@ Vector3<T> & operator/=(Vector3<T> & v, Vector3<T> v2)
 
 typedef Vector3<double> Vector3d;
 
+class StuproInteractor : public vtkInteractorStyleTerrain
+{
+public:
+	static StuproInteractor *New();
+	
+	vtkTypeMacro(StuproInteractor,vtkInteractorStyleTerrain);
+	
+	void OnTimer() override {}
+};
+
+vtkStandardNewMacro(StuproInteractor);
+
 class VTKOpenGL
 {
 	public:
@@ -236,6 +249,10 @@ void VTKOpenGL::initRenderer()
 	// Create renderer with actor for the globe.
 	myRenderer = vtkRenderer::New();
 	myRenderer->AddActor(myPlaneActor);
+	
+	// Set camera clipping range.
+	float r = myGlobeRadius * 4.f;
+	myRenderer->ResetCameraClippingRange(-r, r, -r, r, -r, r);
 
 	// Create render window with renderer.
 	myRenderWindow = vtkRenderWindow::New();
@@ -248,7 +265,8 @@ void VTKOpenGL::initRenderer()
 	interactor->SetRenderWindow(myRenderWindow);
 
 	// Create interactor style for render window.
-	vtkSmartPointer<vtkInteractorStyle> interactorStyle = vtkInteractorStyleTerrain::New();
+	vtkSmartPointer<vtkInteractorStyle> interactorStyle = StuproInteractor::New();
+	interactorStyle->SetAutoAdjustCameraClippingRange(false);
 	interactor->SetInteractorStyle(interactorStyle);
 }
 
@@ -295,21 +313,6 @@ void VTKOpenGL::initShaders()
 
 void VTKOpenGL::initCallbacks()
 {
-	// Create callback function that corrects the camera clipping range to work around a VTK bug.
-	auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
-	{
-		float range = 2.f;
-		((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
-	};
-
-	// Create and assign callback for clipping function.
-	vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
-	clipCallback->SetCallback(clipFunc);
-	myRenderer->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, clipCallback);
-
-	// Call the function once to correct the clipping range immediately.
-	clipFunc(myRenderer, 0, 0, 0);
-
 	// Create callback function that corrects the camera clipping range to work around a VTK bug.
 	auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
 	{
