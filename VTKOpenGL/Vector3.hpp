@@ -97,8 +97,8 @@ template<typename T>
 const Vector3<T> Vector3<T>::Zero = Vector3<T>(0, 0, 0);
 template<typename T>
 const Vector3<T> Vector3<T>::Invalid = Vector3<T>(std::numeric_limits<T>::signaling_NaN(),
-                                      std::numeric_limits<T>::signaling_NaN(),
-                                      std::numeric_limits<T>::signaling_NaN());
+                                                  std::numeric_limits<T>::signaling_NaN(),
+                                                  std::numeric_limits<T>::signaling_NaN());
 
 template<typename T>
 Vector3<T> operator-(Vector3<T> v)

@@ -81,12 +81,28 @@ class Rect
 		{
 			return w * h;
 		}
+		
+		bool invalid() const
+		{
+			return x != x || y != y || w != w || h != h;
+		}
 
 		T x;
 		T y;
 		T w;
 		T h;
+		
+		static const Rect<T> Zero;
+		static const Rect<T> Invalid;
 };
+
+template<typename T>
+const Rect<T> Rect<T>::Zero = Rect<T>(0, 0, 0, 0);
+template<typename T>
+const Rect<T> Rect<T>::Invalid = Rect<T>(std::numeric_limits<T>::signaling_NaN(),
+                                         std::numeric_limits<T>::signaling_NaN(),
+                                         std::numeric_limits<T>::signaling_NaN(),
+                                         std::numeric_limits<T>::signaling_NaN());
 
 template<typename T>
 Rect<T> operator+(Rect<T> r, Vector2<T> v)
@@ -123,7 +139,7 @@ Rect<T> operator/(Rect<T> r, Vector2<T> v)
 {
 	if (v.x == 0 || v.y == 0)
 	{
-		return Rect<T>();
+		return Rect<T>::Invalid;
 	}
 	return Rect<T>(r.x, r.y, r.w / v.x, r.h / v.y);
 }
