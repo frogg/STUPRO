@@ -18,8 +18,13 @@
 
 void VTKOpenGL::run()
 {
+	// Perform initialization.
 	init();
 
+	// Update renderer.
+	myRenderWindow->Render();
+	
+	// Start displaying!
 	myRenderWindow->GetInteractor()->Start();
 }
 
@@ -113,9 +118,9 @@ void VTKOpenGL::initShaders()
 	// Assign uniform variables.
 	myVertexShader->GetUniformVariables()->SetUniformf("globeRadius", 1, &myGlobeRadius);
 	myVertexShader->GetUniformVariables()->SetUniformf("planeSize", 1, &myPlaneSize);
-	myVertexShader->GetUniformVariables()->SetUniformf("interpolation", 1,
+	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1,
 	        &myDisplayModeInterpolation);
-	myVertexShader->GetUniformVariables()->SetUniformf("heightOffset", 1, &myHeightFactor);
+	myVertexShader->GetUniformVariables()->SetUniformf("heightFactor", 1, &myHeightFactor);
 	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
 
 	// Add shaders to shader program.
@@ -143,12 +148,12 @@ void VTKOpenGL::initCallbacks()
 		if (std::abs(interpolationTarget - client.myDisplayModeInterpolation) > 0.000001f)
 		{
 			// Controls the speed of the globe-map transition.
-			float effectSpeed = 2.f;
+			float effectSpeed = .2f;
 
 			// Smoothly transition interpolation value based on previous and target value.
 			client.myDisplayModeInterpolation = (interpolationTarget * effectSpeed +
 					client.myDisplayModeInterpolation) / (effectSpeed + 1.f);
-			client.myVertexShader->GetUniformVariables()->SetUniformf("interpolation", 1,
+			client.myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1,
 					&client.myDisplayModeInterpolation);
 
 			// Update renderer.

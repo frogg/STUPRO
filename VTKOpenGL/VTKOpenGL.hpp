@@ -11,6 +11,7 @@
 
 #include <functional>
 #include <cmath>
+#include <string>
 
 #include "StuproInteractor.hpp"
 
