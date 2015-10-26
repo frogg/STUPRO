@@ -10,10 +10,13 @@
 #include <vtkPlaneSource.h>
 #include <vtkShader2.h>
 
+/**
+ * Represents a "square" tile as part of the earth globe/map.
+ */
 class GlobeTile
 {
 public:
-
+	
 	/**
 	 * Holds the position and zoom level of a tile.
 	 */
@@ -25,7 +28,7 @@ public:
 				latitude(latitude)
 		{
 		}
-
+		
 		/**
 		 * Determines the tile size in terms of earth subdivisions.
 		 * 
@@ -57,26 +60,72 @@ public:
 		RectF getBounds() const;
 	};
 
-	GlobeTile(const GlobeManager & manager, Location location);
+	/**
+	 * Creates a globe tile belonging to a specific globe at the specified location.
+	 */
+	GlobeTile(const Globe & manager, Location location);
 
+	/**
+	 * Returns the location corresponding to this globe tile.
+	 */
 	Location getLocation() const;
+
+	/**
+	 * Returns the longitude/latitude/width/height of this tile.
+	 */
 	RectF getBounds() const;
 
+	/**
+	 * Assigns a combined color/heightmap texture to this tile.
+	 * 
+	 * The RGB channels are interpreted as color information, the alpha channel is interpreted as
+	 * height information.
+	 */
 	void setTexture(vtkSmartPointer<vtkTexture> texture);
+
+	/**
+	 * Returns this tile's texture.
+	 */
 	vtkSmartPointer<vtkTexture> getTexture() const;
 
+	/**
+	 * Assigns the height (in meters) corresponding to an alpha value of 0 in this tile's
+	 * heightmap.
+	 */
 	void setLowerHeight(float lower);
+
+	/**
+	 * Returns the height (in meters) corresponding to an alpha value of 0 in this tile's
+	 * heightmap.
+	 */
 	float getLowerHeight() const;
 
+	/**
+	 * Assigns the height (in meters) corresponding to an alpha value of 255 in this tile's
+	 * heightmap.
+	 */
 	void setUpperHeight(float upper);
+
+	/**
+	 * Returns the height (in meters) corresponding to an alpha value of 255 in this tile's
+	 * heightmap.
+	 */
 	float getUpperHeight() const;
 
+	/**
+	 * Returns the Actor corresponding to this globe tile.
+	 */
 	vtkSmartPointer<vtkActor> getActor() const;
 
 private:
-
-	const GlobeManager & myManager;
 	
+	/**
+	 * Initializes the globe tile's shaders.
+	 */
+	void initShaders();
+	
+	const Globe & myGlobe;
+
 	Location myLocation;
 
 	float myLowerHeight;
@@ -85,7 +134,7 @@ private:
 	vtkSmartPointer<vtkActor> myActor;
 	vtkSmartPointer<vtkShader2> myVertexShader;
 	vtkSmartPointer<vtkShader2> myFragmentShader;
-
+	
 };
 
 #endif

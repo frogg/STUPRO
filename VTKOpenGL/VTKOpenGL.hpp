@@ -17,41 +17,40 @@
 
 class VTKOpenGL
 {
-	public:
+public:
+	
+	void run();
 
-		void run();
+private:
+	
+	enum DisplayMode
+	{
+		DisplayGlobe, DisplayMap
+	};
 
-	private:
+	void init();
+	void initParameters();
+	void initGlobe();
+	void initRenderer();
+	void initShaders();
+	void initCallbacks();
 
-		enum DisplayMode
-		{
-			DisplayGlobe, DisplayMap
-		};
+	vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(std::string rgbFile,
+	        std::string alphaFile) const;
 
-		void init();
-		void initParameters();
-		void initGlobe();
-		void initRenderer();
-		void initShaders();
-		void initCallbacks();
+	vtkSmartPointer<vtkRenderer> myRenderer;
+	vtkSmartPointer<vtkRenderWindow> myRenderWindow;
+	vtkSmartPointer<vtkActor> myPlaneActor;
 
-		vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(std::string rgbFile,
-		        std::string alphaFile) const;
+	vtkSmartPointer<vtkShader2> myVertexShader;
+	vtkSmartPointer<vtkShader2> myFragmentShader;
 
-		vtkSmartPointer<vtkRenderer> myRenderer;
-		vtkSmartPointer<vtkRenderWindow> myRenderWindow;
-		vtkSmartPointer<vtkActor> myPlaneActor;
+	DisplayMode myDisplayMode;
 
-		vtkSmartPointer<vtkShader2> myVertexShader;
-		vtkSmartPointer<vtkShader2> myFragmentShader;
-
-		DisplayMode myDisplayMode;
-
-		float myGlobeRadius;
-		float myPlaneSize;
-		float myDisplayModeInterpolation;
-		float myHeightFactor;
+	float myGlobeRadius;
+	float myPlaneSize;
+	float myDisplayModeInterpolation;
+	float myHeightFactor;
 };
-
 
 #endif
