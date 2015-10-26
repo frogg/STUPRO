@@ -57,7 +57,7 @@ public:
 		RectF getBounds() const;
 	};
 
-	GlobeTile(Location location);
+	GlobeTile(const GlobeManager & manager, Location location);
 
 	Location getLocation() const;
 	RectF getBounds() const;
@@ -75,13 +75,14 @@ public:
 
 private:
 
+	const GlobeManager & myManager;
+	
 	Location myLocation;
 
-	Vector2u myResolution;
+	float myLowerHeight;
+	float myUpperHeight;
 
 	vtkSmartPointer<vtkActor> myActor;
-	vtkSmartPointer<vtkTexture> myTexture;
-	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
 	vtkSmartPointer<vtkShader2> myVertexShader;
 	vtkSmartPointer<vtkShader2> myFragmentShader;
 

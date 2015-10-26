@@ -10,6 +10,7 @@ public:
 	void setResolution(Vector2u resolution);
 	Vector2u getResolution() const;
 
+	vtkSmartPointer<vtkPlaneSource> getPlaneSource() const;
 	
 private:
 	
