@@ -1,0 +1,36 @@
+# braces
+--style=bsd
+
+# tab indent equals 4 spaces
+--indent=force-tab=4
+
+# class/switch/namespace indent
+--indent-classes
+--indent-switches
+--indent-namespaces
+
+# indent preprocessor directives
+--indent-preproc-block
+--indent-preproc-define
+
+# spaces around operators and if/while/for, but not around parenthesis and angle brackets
+--pad-oper
+--pad-header
+--unpad-paren
+--close-templates
+
+# align pointer operators * and & to the name
+--align-pointer=name
+
+# add braces to single line if/while/for statements
+--add-brackets
+
+# convert all whitespaces into tabs (if possible)#
+--convert-tabs
+
+# max line length
+--max-code-length=100
+
+# other options
+#--recursive
+--formatted
