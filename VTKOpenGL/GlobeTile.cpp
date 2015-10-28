@@ -12,8 +12,8 @@
 
 GlobeTile::Location GlobeTile::Location::getNormalized() const
 {
-	return Location(zoomLevel, absMod<int>(longitude, zoomLevel * 2),
-	        absMod<int>(latitude, zoomLevel));
+	return Location(zoomLevel, absMod<int>(longitude, (1 << zoomLevel) * 2),
+	        absMod<int>(latitude, (1 << zoomLevel)));
 }
 
 RectF GlobeTile::Location::getBounds() const
@@ -85,7 +85,6 @@ vtkSmartPointer<vtkActor> GlobeTile::getActor() const
 
 void GlobeTile::initShaders()
 {
-
 	// Create shader program.
 	vtkSmartPointer<vtkShaderProgram2> shaderProgram = vtkShaderProgram2::New();
 	shaderProgram->SetContext(&myGlobe.getRenderWindow());
@@ -109,20 +108,30 @@ void GlobeTile::initShaders()
 	float displayModeInterpolation = 0.f;
 	float heightFactor = 0.05f;
 	
+	Vector2f startBounds = myLocation.getBounds().x1y1();
+	Vector2f endBounds = myLocation.getBounds().x2y2();
+	
 	// Assign uniform variables.
+	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
+	
 	myVertexShader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
 	myVertexShader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
 	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1,
 	        &displayModeInterpolation);
 	myVertexShader->GetUniformVariables()->SetUniformf("heightFactor", 1, &heightFactor);
-	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
+	
+	myVertexShader->GetUniformVariables()->SetUniformf("longStart", 1, &startBounds.x);
+	myVertexShader->GetUniformVariables()->SetUniformf("longEnd", 1, &endBounds.x);
+	myVertexShader->GetUniformVariables()->SetUniformf("latStart", 1, &startBounds.y);
+	myVertexShader->GetUniformVariables()->SetUniformf("latEnd", 1, &endBounds.y);
+	
 	myFragmentShader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
 	
 	// Add shaders to shader program.
 	shaderProgram->GetShaders()->AddItem(myFragmentShader);
 	shaderProgram->GetShaders()->AddItem(myVertexShader);
 	
-	// Add shader to globe actor.
+	// Add shader to globe tile actor.
 	vtkSmartPointer<vtkOpenGLProperty> openGLproperty =
 	        static_cast<vtkOpenGLProperty*>(myActor->GetProperty());
 	openGLproperty->SetPropProgram(shaderProgram);

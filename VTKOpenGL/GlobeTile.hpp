@@ -76,6 +76,12 @@ public:
 	 * Returns the longitude/latitude/width/height of this tile.
 	 */
 	RectF getBounds() const;
+	
+	/**
+	 * Loads the combined color/heightmap texture from the file corresponding to this tile's
+	 * location.
+	 */
+	void loadTexture();
 
 	/**
 	 * Assigns a combined color/heightmap texture to this tile.

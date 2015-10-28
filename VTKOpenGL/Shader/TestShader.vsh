@@ -10,16 +10,16 @@ uniform float heightFactor;
 uniform float planeSize;
 
 // Starting/ending latitude/longitude values (lat=-90~+90; long=-180~+180)
-/*
 uniform float latStart;
 uniform float latEnd;
 uniform float longStart;
 uniform float longEnd;
-*/
+/*
 float latStart = -90.0;
 float latEnd = 90.0;
 float longStart = -180.0;
 float longEnd = 180.0;
+*/
 
 // Interpolation value, determines whether globe or map is displayed (or something in between)
 uniform float displayMode;
