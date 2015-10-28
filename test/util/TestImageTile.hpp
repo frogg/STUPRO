@@ -3,7 +3,7 @@
 
 #include <QtTest/QtTest>
 
-#include <../../include/ImageTile.hpp>
+//#include <../../include/ImageTile.hpp>
 
 class TestImageTile: public QObject
 {
