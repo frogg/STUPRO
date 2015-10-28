@@ -72,6 +72,7 @@ void VTKOpenGL::initRenderer()
 	// Create renderer with actor for the globe.
 	myRenderer = vtkRenderer::New();
 	myRenderer->AddActor(myPlaneActor);
+	myRenderer->SetBackground(.5, .5, .5);
 	
 	// Set camera clipping range.
 	float r = myGlobeRadius * 4.f;
