@@ -1,5 +1,5 @@
 # include QT
-find_package(Qt4 REQUIRED QtTest)
+find_package(Qt4 REQUIRED QtTest QtCore QtGui QtNetwork)
 include(${QT_USE_FILE})
 
 # test sources
