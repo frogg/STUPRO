@@ -8,6 +8,7 @@
 #include "VTKOpenGL.hpp"
 #include "GlobeTile.hpp"
 
+
 int main()
 {
     VTKOpenGL client;
