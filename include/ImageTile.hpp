@@ -11,7 +11,7 @@ public:
   /**
    * Create a new ImageTile.
    */
-  ImageTile();
+  // ImageTile();
 
   /**
    * Create a new ImageTile

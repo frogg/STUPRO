@@ -6,14 +6,16 @@
 #include <QMap>
 
 ImageTile::ImageTile(const QMap<QString, QImage>& layers, int zoomLevel, int tileX, int tileY) {
-
+  this->setLayers(layers);
+  this->setZoomLevel(zoomLevel);
+  this->setTileX(tileX);
+  this->setTileY(tileY);
 }
 
+// ImageTile::ImageTile() : ImageTile(const QMap<QString, QImage>& layers, 0, 0, 0) { }
+
 ImageTile::~ImageTile() {
-	// delete this->layers;
-  // delete this->zoomLevel;
-  // delete this->tileX;
-  // delete this->tileY;
+	//delete *this->layers;
 }
 
 QMap<QString, QImage>& ImageTile::getLayers() {

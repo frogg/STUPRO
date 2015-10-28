@@ -6,7 +6,8 @@
 class TestImageTile
 {
 	public:
-		void testInitialization();
+		int testMetaData();
+		int testLayers();
 };
 
 #endif
