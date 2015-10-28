@@ -160,7 +160,7 @@ void VTKOpenGL::initCallbacks()
         double viewEdgeDistance = tan(3.14159265358979323846264338327950288 / 12.0) * distanceCameraGlobe;
       //  std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
-        std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
+     //   std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
         
         vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
@@ -174,7 +174,7 @@ void VTKOpenGL::initCallbacks()
         intersectPoints->GetPoint(0, intersection);
         
         Coordinate coord = VTKOpenGL::getCoordinates(intersection);
-        std::cout << "Intersection; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+      //  std::cout << "Intersection; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
         double uppperCorner[3] = {0,viewEdgeDistance,0};
         double lowOrigin[3] = {0,-viewEdgeDistance,0};
@@ -350,22 +350,13 @@ Coordinate VTKOpenGL::getCoordinates(double point[]){
         Coordinate coordinate;
     float radius = 0.5f;
     float PI = 3.14159268;
-       // coordinate.latitude = ((asin(point[0] / .5f)) / 6.28) * 360;
-        coordinate.latitude = (asin(point[2] / radius))*(180/PI);
-        std::cout << "Point 0: " << point[0] << "," << coordinate.latitude  << std::endl;
-        std::cout << "Point 0: " << point[0] << std::endl << "Point 1: " << point[1] << std::endl << "Point 2: " << point[2]  << std::endl;
-                               if(point[0]>0){
-                                    coordinate.longitude = (atan(point[2]/point[1]))*(180/PI);
-                                                            }else if(point[1]>0){
-                                                                coordinate.longitude = (atan(point[2]/point[1]))*(180/PI) +180;
-                                                                                        }else{
-                                                                                           coordinate.longitude = (atan(point[2]/point[1]))*(180/PI) -180;
-                                                                                        }
-                              
-      //  coordinate.longitude = ((atan2(point[2], point[1])) / 6.28) * 360;
-        std::cout << coordinate.latitude  << std::endl << coordinate.longitude << std::endl ;
-
-
+    //coordinate system are not the same as in math formulas
+    float x = point[0];
+    float y = point[2];
+    float z = point[1];
+    coordinate.latitude = asin(z/radius) *180/PI;
+    coordinate.longitude =  atan2(x, y)  * 180/PI;
+    std::cout << "test" << coordinate.longitude << std::endl << coordinate.latitude;
         return coordinate;
 }
 
