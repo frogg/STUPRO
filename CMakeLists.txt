@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 project(kronos)
 
 add_subdirectory(src)
-add_subdirectory(include)
 add_subdirectory(test)
 
 # enable ctest capabilities
