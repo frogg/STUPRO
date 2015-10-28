@@ -3,7 +3,8 @@
 #include <iostream>
 #include <QDebug>
 
-int TestClass::testMethod() {
-  qDebug() << "test";
-  return 0;
+int TestClass::testMethod()
+{
+	qDebug() << "test";
+	return 0;
 }

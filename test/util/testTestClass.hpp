@@ -7,9 +7,9 @@
 
 class TestTestClass: public QObject
 {
-    Q_OBJECT
-private slots:
-    void testMethod();
+		Q_OBJECT
+	private slots:
+		void testMethod();
 };
 
 #endif

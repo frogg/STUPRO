@@ -2,8 +2,8 @@
 
 void TestTestClass::testMethod()
 {
-    TestClass test;
-    QCOMPARE(test.testMethod(), 0);
+	TestClass test;
+	QCOMPARE(test.testMethod(), 0);
 }
 
 QTEST_MAIN(TestTestClass)
