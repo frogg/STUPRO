@@ -6,8 +6,8 @@ find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
 include(${QT_USE_FILE})
 
 # sources
-file(GLOB Library_SOURCES ./**/*.cpp)
-file(GLOB Library_HEADERS ./**/*.hpp ../include/**/*.hpp)
+file(GLOB Library_SOURCES ./*.cpp ./**/*.cpp)
+file(GLOB Library_HEADERS ./*.hpp ./**/*.hpp ../include/*.hpp ../include/**/*.hpp)
 
 # exclude the main class from the library files
 list(REMOVE_ITEM Library_SOURCES MAIN_CLASS)
