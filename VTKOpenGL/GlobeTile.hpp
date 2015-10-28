@@ -10,6 +10,8 @@
 #include <vtkPlaneSource.h>
 #include <vtkShader2.h>
 
+#include "Globe.hpp"
+
 /**
  * Represents a "square" tile as part of the earth globe/map.
  */

@@ -11,6 +11,7 @@ file(GLOB SOURCES
     StuproInteractor.cpp
     Utils.cpp
     GlobeTile.cpp
+    Globe.cpp
 )
 add_executable(exe ${SOURCES})
 target_link_libraries(exe ${VTK_LIBRARIES})

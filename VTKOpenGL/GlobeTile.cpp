@@ -1,6 +1,12 @@
 #include "GlobeTile.hpp"
 #include "Utils.hpp"
 
+
+#include <vtkShaderProgram2.h>
+#include <vtkUniformVariables.h>
+#include <vtkShader2Collection.h>
+#include <vtkOpenGLProperty.h>
+
 GlobeTile::Location GlobeTile::Location::getNormalized() const
 {
 	return Location(zoomLevel, absMod<int>(longitude, zoomLevel * 2),
@@ -14,10 +20,9 @@ RectF GlobeTile::Location::getBounds() const
 }
 
 GlobeTile::GlobeTile(const Globe & globe, Location location) :
-		myGlobe(globe)
+        myGlobe(globe), myLocation(location)
 {
 	// Initialize members.
-	myLocation = location;
 	myLowerHeight = 0.f;
 	myUpperHeight = 1.f;
 	

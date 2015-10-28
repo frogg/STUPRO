@@ -14,6 +14,16 @@ Globe::Globe(vtkRenderWindow & renderWindow) :
 
 Globe::~Globe()
 {
-	// TODO Auto-generated destructor stub
+    // TODO Auto-generated destructor stub
+}
+
+vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper() const
+{
+
+}
+
+vtkRenderWindow &Globe::getRenderWindow() const
+{
+    return myRenderWindow;
 }
 
