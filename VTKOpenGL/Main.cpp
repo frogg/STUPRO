@@ -4,16 +4,14 @@
  *  Created on: Sep 23, 2015
  *      Author: marukyu
  */
- 
-#include "VTKOpenGL.hpp"
-#include "GlobeTile.hpp"
+
+#include "StuproApplication.hpp"
 
 int main()
 {
-	VTKOpenGL client;
+	StuproApplication client;
 
 	client.run();
 
 	return 0;
 }
-

@@ -1,14 +1,13 @@
 #ifndef STUPRO_GLOBETILE_HPP
 #define STUPRO_GLOBETILE_HPP
 
-#include "Rect.hpp"
-#include "Vector3.hpp"
-
-#include <vtkSmartPointer.h>
 #include <vtkActor.h>
-#include <vtkTexture.h>
-#include <vtkPlaneSource.h>
 #include <vtkShader2.h>
+#include <vtkSmartPointer.h>
+#include <vtkTexture.h>
+
+#include "Globe.hpp"
+#include "Rect.hpp"
 
 class Globe;
 
@@ -34,9 +33,12 @@ public:
 		/**
 		 * Determines the tile size in terms of earth subdivisions.
 		 * 
-		 * zoomLevel 0 = 2x1 tiles
-		 * zoomLevel 1 = 4x2 tiles
-		 * zoomLevel 2 = 8x4 tiles
+		 * zoomLevel 0 =  2x 1 tiles
+		 * zoomLevel 1 =  4x 2 tiles
+		 * zoomLevel 2 =  8x 4 tiles
+		 * zoomLevel 3 = 16x 8 tiles
+		 * zoomLevel 4 = 32x16 tiles
+		 * zoomLevel 5 = 64x32 tiles
 		 * etc.
 		 */
 		unsigned int zoomLevel;
@@ -64,8 +66,15 @@ public:
 
 	/**
 	 * Creates a globe tile belonging to a specific globe at the specified location.
+	 * 
+	 * Adds the actor to the globe's renderer.
 	 */
 	GlobeTile(const Globe & manager, Location location);
+	
+	/**
+	 * Destroys the globe tile and cleans up the actor.
+	 */
+	~GlobeTile();
 
 	/**
 	 * Returns the location corresponding to this globe tile.

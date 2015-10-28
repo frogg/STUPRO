@@ -70,10 +70,11 @@ void propFuncVS()
 	
 	// Calculate position for single globe/map vertex.
 	vec3 transformedPos = transformLatLong(inPos.x + 0.75, inPos.y * 2.0 - 1.0, heightSample);
-	vec3 flatPos = vec3((inPos - vec2(0.5, 0.5)) * vec2(2.0, 1.0), heightSample * heightFactor);
+	vec3 flatPos = vec3((inPos - vec2(0.5, 0.5)) * vec2(2.0 * globeRadius, 1.0 * globeRadius), heightSample * heightFactor);
 	
 	// Linear interpolation between map and globe positions.
-	vec3 pos = mix(transformedPos, flatPos, displayMode);
+	//vec3 pos = mix(transformedPos, flatPos, displayMode);
+	vec3 pos = flatPos;
 	
 	// Transform vertex position by camera matrix.
 	gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * vec4(pos.xyz, 1);
@@ -81,7 +82,7 @@ void propFuncVS()
 	// Use constant shading for now.
 	//float shading = gl_Vertex.y + 0.5;
 	//gl_FrontColor = vec4(shading, shading, shading, 1.0);
-	//gl_FrontColor = vec4(gl_Vertex.x + 0.5, gl_Vertex.y + 0.5, 0.0, 1.0);
-	gl_FrontColor = vec4(1.0, 1.0, 1.0, 1.0);
+	gl_FrontColor = vec4(gl_Vertex.x + 0.5, gl_Vertex.y + 0.5, 0.0, 1.0);
+	//gl_FrontColor = vec4(1.0, 1.0, 1.0, 1.0);
 }
 

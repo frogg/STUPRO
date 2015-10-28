@@ -1,14 +1,16 @@
 #include "GlobeTile.hpp"
-#include "Globe.hpp"
-#include "Utils.hpp"
 
-#include <vtkPlaneSource.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkShaderProgram2.h>
-#include <vtkShader2Collection.h>
-#include <vtkUniformVariables.h>
-#include <vtkOpenGLRenderWindow.h>
+#include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
+#include <vtkProperty.h>
+#include <vtkShader2Collection.h>
+#include <vtkShaderProgram2.h>
+#include <vtkUniformVariables.h>
+#include <vtkRenderer.h>
+#include <string>
+
+#include "Utils.hpp"
+#include "Vector2.hpp"
 
 GlobeTile::Location GlobeTile::Location::getNormalized() const
 {
@@ -35,7 +37,14 @@ GlobeTile::GlobeTile(const Globe & globe, Location location) :
 	
 	myActor->SetMapper(myGlobe.getPlaneMapper());
 	
+	myGlobe.getRenderer().AddActor(myActor);
+	
 	initShaders();
+}
+
+GlobeTile::~GlobeTile()
+{
+	myGlobe.getRenderer().RemoveActor(myActor);
 }
 
 GlobeTile::Location GlobeTile::getLocation() const
@@ -108,8 +117,9 @@ void GlobeTile::initShaders()
 	float displayModeInterpolation = 0.f;
 	float heightFactor = 0.05f;
 	
-	Vector2f startBounds = myLocation.getBounds().x1y1();
-	Vector2f endBounds = myLocation.getBounds().x2y2();
+	RectF bounds = myLocation.getBounds();
+	Vector2f startBounds = bounds.x1y1();
+	Vector2f endBounds = bounds.x2y2();
 	
 	// Assign uniform variables.
 	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
@@ -136,4 +146,8 @@ void GlobeTile::initShaders()
 	        static_cast<vtkOpenGLProperty*>(myActor->GetProperty());
 	openGLproperty->SetPropProgram(shaderProgram);
 	openGLproperty->ShadingOn();
+}
+
+void GlobeTile::loadTexture()
+{
 }

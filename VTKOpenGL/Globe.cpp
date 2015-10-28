@@ -7,14 +7,22 @@
 
 #include "Globe.hpp"
 
-Globe::Globe(vtkRenderWindow & renderWindow) :
-		myRenderWindow(renderWindow),
-		myZoomLevel(0)
+#include <vtkAlgorithm.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+
+#include "GlobeTile.hpp"
+#include "MakeUnique.hpp"
+
+Globe::Globe(vtkRenderer & renderer) :
+		myRenderer(renderer), myZoomLevel(0)
 {
 	myPlaneSource = vtkPlaneSource::New();
-	
+
 	myPlaneMapper = vtkPolyDataMapper::New();
 	myPlaneMapper->SetInputConnection(myPlaneSource->GetOutputPort());
+
+	createTiles();
 }
 
 Globe::~Globe()
@@ -40,15 +48,49 @@ vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper() const
 
 vtkRenderWindow& Globe::getRenderWindow() const
 {
-	return myRenderWindow;
+	return *myRenderer.GetRenderWindow();
+}
+
+vtkRenderer& Globe::getRenderer() const
+{
+	return myRenderer;
 }
 
 void Globe::setZoomLevel(unsigned int zoomLevel)
 {
-	myZoomLevel = 0;
+	myZoomLevel = zoomLevel;
 }
 
 unsigned int Globe::getZoomLevel() const
 {
 	return myZoomLevel;
+}
+
+GlobeTile & Globe::getTileAt(int lon, int lat) const
+{
+	return *myTiles[getTileIndex(lon, lat)];
+}
+
+unsigned int Globe::getTileIndex(int lon, int lat) const
+{
+	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getNormalized();
+
+	return (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
+}
+
+void Globe::createTiles()
+{
+	unsigned int height = 1 << myZoomLevel;
+	unsigned int width = height * 2;
+
+	myTiles.resize(width * height * 2);
+
+	for (unsigned int lat = 0; lat < height; ++lat)
+	{
+		for (unsigned int lon = 0; lon < width; ++lon)
+		{
+			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this,
+			        GlobeTile::Location(myZoomLevel, lon, lat));
+		}
+	}
 }

@@ -1,19 +1,20 @@
 #ifndef STUPRO_GLOBE_HPP
 #define STUPRO_GLOBE_HPP
 
-#include <vtkSmartPointer.h>
-#include <vtkPolyDataMapper.h>
 #include <vtkPlaneSource.h>
-#include <vtkRenderWindow.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkSmartPointer.h>
+#include <memory>
 #include <vector>
 
-#include "GlobeTile.hpp"
 #include "Vector2.hpp"
+
+class GlobeTile;
 
 class Globe
 {
 public:
-	Globe(vtkRenderWindow & renderWindow);
+	Globe(vtkRenderer & renderer);
 	virtual ~Globe();
 
 	void setResolution(Vector2u resolution);
@@ -22,22 +23,25 @@ public:
 	vtkSmartPointer<vtkPolyDataMapper> getPlaneMapper() const;
 	
 	vtkRenderWindow & getRenderWindow() const;
+	vtkRenderer & getRenderer() const;
 	
 	void setZoomLevel(unsigned int zoomLevel);
 	unsigned int getZoomLevel() const;
 	
-	void getTileAt(int lon, int lat);
+	GlobeTile & getTileAt(int lon, int lat) const;
 
 private:
 	
+	unsigned int getTileIndex(int lon, int lat) const;
+	
 	void createTiles();
 	
-	vtkRenderWindow & myRenderWindow;
+	vtkRenderer & myRenderer;
 	
 	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
 	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;
 	
-	std::vector<GlobeTile> myTiles;
+	std::vector<std::unique_ptr<GlobeTile> > myTiles;
 	
 	unsigned int myZoomLevel;
 };

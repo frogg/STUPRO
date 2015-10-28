@@ -1,20 +1,22 @@
 #include "VTKOpenGL.hpp"
-#include "Utils.hpp"
 
-#include <vtkCommand.h>
+#include <vtkAlgorithm.h>
 #include <vtkCallbackCommand.h>
-#include <vtkPlaneSource.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkCamera.h>
-#include <vtkShaderProgram2.h>
-#include <vtkShader2Collection.h>
-#include <vtkOpenGLRenderWindow.h>
-#include <vtkOpenGLProperty.h>
-#include <vtkRenderWindowInteractor.h>
+#include <vtkCommand.h>
 #include <vtkImageAppendComponents.h>
 #include <vtkImageExtractComponents.h>
+#include <vtkInteractorStyle.h>
 #include <vtkJPEGReader.h>
-#include <vtkObject.h>
+#include <vtkOpenGLProperty.h>
+#include <vtkPlaneSource.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkProperty.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkShader2Collection.h>
+#include <vtkShaderProgram2.h>
+#include <vtkWindow.h>
+
+#include "Utils.hpp"
 
 void VTKOpenGL::run()
 {
