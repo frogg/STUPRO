@@ -145,8 +145,9 @@ void VTKOpenGL::initCallbacks()
       //  ((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
         
         double cameraPosition[3];
-        ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
-        
+       // ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
+        (ClientData*) _clientdata = clientdata;
+        clientdata.vtkRenderer->GetActiveCamera()->GetPosition(cameraPosition);
         double cameraViewangle =  ((vtkRenderer*)caller)->GetActiveCamera()->GetViewAngle();
         double globeOrigin[3] = {0,0,0};
         
@@ -159,8 +160,8 @@ void VTKOpenGL::initCallbacks()
         
         vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
         
-        vtkOBBTree * tree = (vtkOBBTree*)clientData;
-        
+      //  vtkOBBTree * tree = (vtkOBBTree*)clientData;
+        vtkOBBTree * tree = _clientdata.tree;
         tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
         
         
@@ -212,12 +213,17 @@ void VTKOpenGL::initCallbacks()
     myTree->SetDataSet(sphereSource->GetOutput());
     myTree->BuildLocator();
     
+    clientdata.tree = myTree;
+    clientdata.rendered = myRenderer;
     
     // Create and assign callback for clipping function.
     vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
     clipCallback->SetCallback(clipFunc);
-    clipCallback->SetClientData(myTree);
-    myRenderer->AddObserver(vtkCommand::MouseMoveEvent, clipCallback);
+    clipCallback->SetClientData(clientdata);
+//    clipCallback->SetClientData(myTree);
+//    myRenderer->AddObserver(vtkCommand::MouseMoveEvent, clipCallback);
+    myRenderWindow->GetInteractor()->CreateRepeatingTimer(17);
+    myRenderWindow->GetInteractor()->AddObserver(vtkCommand::MouseMoveEvent, clipCallback);
     
     // Call the function once to correct the clipping range immediately.
     clipFunc(myRenderer, 0, myTree, 0);
