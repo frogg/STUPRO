@@ -1,9 +1,14 @@
 #include "TestImageTile.hpp"
 
-void TestImageTile::testInitialization()
+int TestImageTile::testInitialization()
 {
 	//ImageTile tile = new ImageTile();
-	QCOMPARE(0, 0);
+
 }
 
-QTEST_MAIN(TestImageTile)
+int main(int argc, char* argv[]) {
+	TestImageTile tile;
+	tile.testInitialization();
+
+	return tile.testInitialization();
+}

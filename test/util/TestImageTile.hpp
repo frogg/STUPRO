@@ -1,14 +1,11 @@
 #ifndef KRONOS_TEST_TESTIMAGETILE_HPP
 #define KRONOS_TEST_TESTIMAGETILE_HPP
 
-#include <QtTest/QtTest>
+#include <ImageTile.hpp>
 
-//#include <../../include/ImageTile.hpp>
-
-class TestImageTile: public QObject
+class TestImageTile
 {
-		Q_OBJECT
-	private slots:
+	public:
 		void testInitialization();
 };
 
