@@ -20,10 +20,6 @@ struct Coordinate{
         double latitude;
         double longitude;
 };
-struct ClientData{
-        vtkSmartPointer<vtkOBBTree> tree;
-        vtkRenderer renderer;
-};
 
 class VTKOpenGL
 {
@@ -54,8 +50,7 @@ private:
 
 	vtkSmartPointer<vtkShader2> myVertexShader;
 	vtkSmartPointer<vtkShader2> myFragmentShader;
-    //vtkSmartPointer<vtkOBBTree> myTree;
-    vtkSmartPointer<ClientData> clientdata;
+    vtkSmartPointer<vtkOBBTree> myTree;
     
 	DisplayMode myDisplayMode;
 
