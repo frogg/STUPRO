@@ -7,7 +7,7 @@ include(${QT_USE_FILE})
 
 # sources
 file(GLOB Library_SOURCES ./**/*.cpp)
-file(GLOB Library_HEADERS ./**/*.hpp)
+file(GLOB Library_HEADERS ./**/*.hpp ../include/**/*.hpp)
 
 # exclude the main class from the library files
 list(REMOVE_ITEM Library_SOURCES MAIN_CLASS)
