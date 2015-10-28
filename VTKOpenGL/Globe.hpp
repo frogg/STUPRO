@@ -6,6 +6,8 @@
 #include <vtkPlaneSource.h>
 #include <vtkRenderWindow.h>
 
+#include "Vector2.hpp"
+
 class Globe
 {
 public:

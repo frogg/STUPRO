@@ -17,3 +17,19 @@ Globe::~Globe()
 	// TODO Auto-generated destructor stub
 }
 
+void Globe::setResolution(Vector2u resolution)
+{
+}
+
+Vector2u Globe::getResolution() const
+{
+}
+
+vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper() const
+{
+}
+
+vtkRenderWindow& Globe::getRenderWindow() const
+{
+	return myRenderWindow;
+}

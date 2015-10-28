@@ -1,5 +1,14 @@
 #include "GlobeTile.hpp"
+#include "Globe.hpp"
 #include "Utils.hpp"
+
+#include <vtkPlaneSource.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkShaderProgram2.h>
+#include <vtkShader2Collection.h>
+#include <vtkUniformVariables.h>
+#include <vtkOpenGLRenderWindow.h>
+#include <vtkOpenGLProperty.h>
 
 GlobeTile::Location GlobeTile::Location::getNormalized() const
 {
@@ -14,10 +23,10 @@ RectF GlobeTile::Location::getBounds() const
 }
 
 GlobeTile::GlobeTile(const Globe & globe, Location location) :
-		myGlobe(globe)
+		myGlobe(globe),
+		myLocation(location)
 {
 	// Initialize members.
-	myLocation = location;
 	myLowerHeight = 0.f;
 	myUpperHeight = 1.f;
 	
@@ -95,17 +104,19 @@ void GlobeTile::initShaders()
 	
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
-	myFragmentShader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
+	float globeRadius = 1.f;
+	float planeSize = 0.5f;
+	float displayModeInterpolation = 0.f;
+	float heightFactor = 0.05f;
 	
 	// Assign uniform variables.
-	/*
-	myVertexShader->GetUniformVariables()->SetUniformf("globeRadius", 1, &myGlobeRadius);
-	myVertexShader->GetUniformVariables()->SetUniformf("planeSize", 1, &myPlaneSize);
+	myVertexShader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
+	myVertexShader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
 	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1,
-	        &myDisplayModeInterpolation);
-	myVertexShader->GetUniformVariables()->SetUniformf("heightFactor", 1, &myHeightFactor);
+	        &displayModeInterpolation);
+	myVertexShader->GetUniformVariables()->SetUniformf("heightFactor", 1, &heightFactor);
 	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
-	*/
+	myFragmentShader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
 	
 	// Add shaders to shader program.
 	shaderProgram->GetShaders()->AddItem(myFragmentShader);
