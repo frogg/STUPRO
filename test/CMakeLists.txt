@@ -8,6 +8,7 @@ file(GLOB Test_HEADERS ./**/*.hpp)
 
 # include main library headers
 include_directories(../src/util/)
+include_directories(../include/)
 
 # go through every test source file and create a seperate executable for it
 # in order to allow ctest to find the tests
