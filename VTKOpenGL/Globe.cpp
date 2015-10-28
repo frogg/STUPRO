@@ -14,7 +14,7 @@ Globe::Globe(vtkRenderWindow & renderWindow) :
 
 Globe::~Globe()
 {
-	// TODO Auto-generated destructor stub
+    // TODO Auto-generated destructor stub
 }
 
 void Globe::setResolution(Vector2u resolution)

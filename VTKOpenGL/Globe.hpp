@@ -5,6 +5,7 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkPlaneSource.h>
 #include <vtkRenderWindow.h>
+#include "Vector2.hpp"
 
 #include "Vector2.hpp"
 
