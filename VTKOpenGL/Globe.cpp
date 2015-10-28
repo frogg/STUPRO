@@ -23,10 +23,12 @@ void Globe::setResolution(Vector2u resolution)
 
 Vector2u Globe::getResolution() const
 {
+	return NULL;
 }
 
 vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper() const
 {
+	return NULL;
 }
 
 vtkRenderWindow& Globe::getRenderWindow() const
