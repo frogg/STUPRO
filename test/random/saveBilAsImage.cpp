@@ -55,7 +55,8 @@ void SaveBilAsImage::saveBilAsImage() {
 
 // QTEST_MAIN(SaveBilAsImage)
 int main(int argc, char* argv[]) {
-  SaveBilAsImage::saveBilAsImage();
+  SaveBilAsImage saver;
+  saver.saveBilAsImage();
 
   return 0;
 }

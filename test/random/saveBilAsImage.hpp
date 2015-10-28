@@ -3,10 +3,9 @@
 
 #include <QtTest/QtTest>
 
-class SaveBilAsImage: public QObject
+class SaveBilAsImage
 {
-	Q_OBJECT
-private slots:
+public:
 	void saveBilAsImage();
 };
 
