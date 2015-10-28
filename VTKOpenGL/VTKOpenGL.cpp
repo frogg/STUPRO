@@ -144,12 +144,15 @@ void VTKOpenGL::initCallbacks()
     //   float range = 2.f;
       //  ((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
         
-        
-        std::cout << "Intersection; " << "long: " << std::endl;
 
         
-      /*  double cameraPosition[3];
-        ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
+    
+
+        
+        double cameraPosition[3];
+        // ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
+        ClientData* _clientdata = (ClientData*)clientData;
+        _clientdata->renderer->GetActiveCamera()->GetPosition(cameraPosition);
         
         
         double cameraViewangle =  ((vtkRenderer*)caller)->GetActiveCamera()->GetViewAngle();
@@ -164,10 +167,12 @@ void VTKOpenGL::initCallbacks()
         
         vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
         
-        vtkOBBTree * tree = (vtkOBBTree*)clientData;
-        
+      //  vtkOBBTree * tree = (vtkOBBTree*)clientData;
+        vtkOBBTree * tree = _clientdata->tree;
         tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
         
+        asin(0.5);
+        atan(0.5);
         
         double intersection[3];
         
@@ -201,7 +206,7 @@ void VTKOpenGL::initCallbacks()
         coord = VTKOpenGL::getCoordinates(intersection);
         std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
 
-        */
+
     };
 
     
@@ -213,23 +218,27 @@ void VTKOpenGL::initCallbacks()
     sphereSource->Update();
     
     // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
-    myTree = vtkSmartPointer<vtkOBBTree>::New();
+    vtkSmartPointer<vtkOBBTree> myTree = vtkSmartPointer<vtkOBBTree>::New();
     myTree->SetDataSet(sphereSource->GetOutput());
     myTree->BuildLocator();
     
+    clientdata->tree = myTree;
+    clientdata->renderer = myRenderer;
     
     // Create and assign callback for clipping function.
     vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
     clipCallback->SetCallback(clipFunc);
-    clipCallback->SetClientData(myTree);
+
+    clipCallback->SetClientData(clientdata);
     //myRenderWindow->GetInteractor()->CreateRepeatingTimer(1000);
     myRenderWindow->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, clipCallback);
 
 //    myRenderer->GetRenderWindow()->GetInteractor()->CreateRepeatingTimer(17);
 //    myRenderer->AddObserver(vtkCommand::TimerEvent, clipCallback);
+
     
     // Call the function once to correct the clipping range immediately.
-    clipFunc(myRenderer, 0, myTree, 0);
+    clipFunc(myRenderer, 0, clientdata, 0);
     
 	// Create callback function that corrects the camera clipping range to work around a VTK bug.
 	auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
