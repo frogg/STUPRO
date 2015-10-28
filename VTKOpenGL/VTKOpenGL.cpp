@@ -141,11 +141,16 @@ void VTKOpenGL::initCallbacks()
     // Create callback function that corrects the camera clipping range to work around a VTK bug.
     auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
     {
-     //   float range = 2.f;
+    //   float range = 2.f;
       //  ((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
         
-        double cameraPosition[3];
+        
+        std::cout << "Intersection; " << "long: " << std::endl;
+
+        
+      /*  double cameraPosition[3];
         ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
+        
         
         double cameraViewangle =  ((vtkRenderer*)caller)->GetActiveCamera()->GetViewAngle();
         double globeOrigin[3] = {0,0,0};
@@ -196,7 +201,7 @@ void VTKOpenGL::initCallbacks()
         coord = VTKOpenGL::getCoordinates(intersection);
         std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
 
-        
+        */
     };
 
     
@@ -217,14 +222,19 @@ void VTKOpenGL::initCallbacks()
     vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
     clipCallback->SetCallback(clipFunc);
     clipCallback->SetClientData(myTree);
-    myRenderer->AddObserver(vtkCommand::MouseMoveEvent, clipCallback);
+    //myRenderWindow->GetInteractor()->CreateRepeatingTimer(1000);
+    myRenderWindow->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, clipCallback);
+
+//    myRenderer->GetRenderWindow()->GetInteractor()->CreateRepeatingTimer(17);
+//    myRenderer->AddObserver(vtkCommand::TimerEvent, clipCallback);
     
     // Call the function once to correct the clipping range immediately.
     clipFunc(myRenderer, 0, myTree, 0);
     
 	// Create callback function that corrects the camera clipping range to work around a VTK bug.
 	auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
-	{	
+	{
+        
 		VTKOpenGL & client = *((VTKOpenGL*)clientData);
 
 		// Determine target interpolation based on display mode.
