@@ -21,6 +21,4 @@ cache:
     - bin
 script:
   - ./.formatter-check.sh
-  - ./.configure.sh
-  - cd bin && make
-  - cd bin && make test
+  - ./.build.sh
