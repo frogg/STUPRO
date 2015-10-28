@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<pvx>
+	<Process Type="client" />
+	<Process Type="server">
+		<EyeSeparation Value="0.065"/>
+		<Machine Name="keshiki02" Geometry="200x200+0+0" FullScreen="0" ShowBorders="0" LowerLeft="-1.000000 0.000000 -1.000000" LowerRight="-0.777778 0.000000 -1.000000" UpperRight="-0.777778 1.000000 -1.000000" />
+		<Machine Name="keshiki02" Geometry="200x200+80+0" FullScreen="0" ShowBorders="0" LowerLeft="-0.777778 0.000000 -1.000000" LowerRight="-0.555556 0.000000 -1.000000" UpperRight="-0.555556 1.000000 -1.000000" />
+		<Machine Name="keshiki02" Geometry="200x200+0+120" FullScreen="0" ShowBorders="0" LowerLeft="-1.000000 -1.000000 -1.000000" LowerRight="-0.777778 -1.000000 -1.000000" UpperRight="-0.777778 0.000000 -1.000000" />
+		<Machine Name="keshiki02" Geometry="200x200+80+120" FullScreen="0" ShowBorders="0" LowerLeft="-0.777778 -1.000000 -1.000000" LowerRight="-0.555556 -1.000000 -1.000000" UpperRight="-0.555556 0.000000 -1.000000" />
+		<Machine Name="keshiki04" Geometry="200x200+0+0" FullScreen="0" ShowBorders="0" LowerLeft="-0.611111 0.000000 -1.000000" LowerRight="-0.388889 0.000000 -1.000000" UpperRight="-0.388889 1.000000 -1.000000" />
+		<Machine Name="keshiki04" Geometry="200x200+80+0" FullScreen="0" ShowBorders="0" LowerLeft="-0.388889 0.000000 -1.000000" LowerRight="-0.166667 0.000000 -1.000000" UpperRight="-0.166667 1.000000 -1.000000" />
+		<Machine Name="keshiki04" Geometry="200x200+0+120" FullScreen="0" ShowBorders="0" LowerLeft="-0.611111 -1.000000 -1.000000" LowerRight="-0.388889 -1.000000 -1.000000" UpperRight="-0.388889 0.000000 -1.000000" />
+		<Machine Name="keshiki04" Geometry="200x200+80+120" FullScreen="0" ShowBorders="0" LowerLeft="-0.388889 -1.000000 -1.000000" LowerRight="-0.166667 -1.000000 -1.000000" UpperRight="-0.166667 0.000000 -1.000000" />
+		<Machine Name="keshiki06" Geometry="200x200+0+0" FullScreen="0" ShowBorders="0" LowerLeft="-0.222222 0.000000 -1.000000" LowerRight="0.000000 0.000000 -1.000000" UpperRight="0.000000 1.000000 -1.000000" />
+		<Machine Name="keshiki06" Geometry="200x200+80+0" FullScreen="0" ShowBorders="0" LowerLeft="0.000000 0.000000 -1.000000" LowerRight="0.222222 0.000000 -1.000000" UpperRight="0.222222 1.000000 -1.000000" />
+		<Machine Name="keshiki06" Geometry="200x200+0+120" FullScreen="0" ShowBorders="0" LowerLeft="-0.222222 -1.000000 -1.000000" LowerRight="0.000000 -1.000000 -1.000000" UpperRight="0.000000 0.000000 -1.000000" />
+		<Machine Name="keshiki06" Geometry="200x200+80+120" FullScreen="0" ShowBorders="0" LowerLeft="0.000000 -1.000000 -1.000000" LowerRight="0.222222 -1.000000 -1.000000" UpperRight="0.222222 0.000000 -1.000000" />
+		<Machine Name="keshiki08" Geometry="200x200+0+0" FullScreen="0" ShowBorders="0" LowerLeft="0.166667 0.000000 -1.000000" LowerRight="0.388889 0.000000 -1.000000" UpperRight="0.388889 1.000000 -1.000000" />
+		<Machine Name="keshiki08" Geometry="200x200+80+0" FullScreen="0" ShowBorders="0" LowerLeft="0.388889 0.000000 -1.000000" LowerRight="0.611111 0.000000 -1.000000" UpperRight="0.611111 1.000000 -1.000000" />
+		<Machine Name="keshiki08" Geometry="200x200+0+120" FullScreen="0" ShowBorders="0" LowerLeft="0.166667 -1.000000 -1.000000" LowerRight="0.388889 -1.000000 -1.000000" UpperRight="0.388889 0.000000 -1.000000" />
+		<Machine Name="keshiki08" Geometry="200x200+80+120" FullScreen="0" ShowBorders="0" LowerLeft="0.388889 -1.000000 -1.000000" LowerRight="0.611111 -1.000000 -1.000000" UpperRight="0.611111 0.000000 -1.000000" />
+		<Machine Name="keshiki10" Geometry="200x200+0+0" FullScreen="0" ShowBorders="0" LowerLeft="0.555556 0.000000 -1.000000" LowerRight="0.777778 0.000000 -1.000000" UpperRight="0.777778 1.000000 -1.000000" />
+		<Machine Name="keshiki10" Geometry="200x200+80+0" FullScreen="0" ShowBorders="0" LowerLeft="0.777778 0.000000 -1.000000" LowerRight="1.000000 0.000000 -1.000000" UpperRight="1.000000 1.000000 -1.000000" />
+		<Machine Name="keshiki10" Geometry="200x200+0+120" FullScreen="0" ShowBorders="0" LowerLeft="0.555556 -1.000000 -1.000000" LowerRight="0.777778 -1.000000 -1.000000" UpperRight="0.777778 0.000000 -1.000000" />
+		<Machine Name="keshiki10" Geometry="200x200+80+120" FullScreen="0" ShowBorders="0" LowerLeft="0.777778 -1.000000 -1.000000" LowerRight="1.000000 -1.000000 -1.000000" UpperRight="1.000000 0.000000 -1.000000" />
+	</Process>
+</pvx>

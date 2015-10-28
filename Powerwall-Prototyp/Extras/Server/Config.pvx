@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<pvx>
+ <Process Type="client" />
+ <Process Type="server">
+ <EyeSeparation Value="0.065"/>
+  <Machine Name="Mitte"
+           Environment="DISPLAY=:0"
+           LowerLeft=" -1 -1 -4"
+           LowerRight=" 1 -1 -4"
+           UpperRight=" 1  1 -4" />
+  <Machine Name="Left"
+           Environment="DISPLAY=:0"
+           LowerLeft="  -3 -1 -4"
+           LowerRight=" -1 -1 -4"
+           UpperRight=" -1  1 -4" />
+  <Machine Name="Right"
+           Environment="DISPLAY=:0"
+           LowerLeft="  1 -1 -4"
+           LowerRight=" 3 -1 -4"
+           UpperRight=" 3  1 -4"/>
+
+  </Process>
+</pvx>

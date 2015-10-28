@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Job Version="3.000" Id="2570" State="Configuring" CreateTime="08.05.2014 14:29:42" Name="ParaView" IsExclusive="true" RunUntilCanceled="false" UnitType="Node" Owner="VISUS\vesta-interactive" UserName="" Project="" JobType="Batch" JobTemplate="Default" Priority="Normal" RequestedNodes="KESHIKI01,KESHIKI02,KESHIKI03,KESHIKI04,KESHIKI05,KESHIKI06,KESHIKI07,KESHIKI08,KESHIKI09,KESHIKI10,VESTA01,VESTA02,VESTA03,VESTA04,VESTA05" OrderBy="" RequeueCount="0" AutoRequeueCount="0" PendingReason="None" AutoCalculateMax="false" AutoCalculateMin="false" FailOnTaskFailure="false" Progress="0" ProgressMessage="" MinNodes="10" MaxNodes="74" NotifyOnStart="false" NotifyOnCompletion="false" xmlns="http://schemas.microsoft.com/HPCS2008R2/scheduler/">
+    <EnvironmentVariables>
+        <Variable>
+            <Name>HPC_ATTACHTOSESSION</Name>
+            <Value>True</Value>
+        </Variable>
+    </EnvironmentVariables>
+    <Dependencies>
+        <Parent GroupId="2641">
+            <Child GroupId="2642" />
+        </Parent>
+    </Dependencies>
+    <Tasks>
+        <Task Version="3.000" Id="9425" ParentJobId="2570" State="Configuring" UnitType="Node" WorkDirectory="\\visus\vestastore\Entwicklung\panagias\paraview\ParaView-x64.vc10_MSMPI_2008_R2\install\bin" NiceId="1" CommandLine="mpiexec -configfile mpiexec-config.txt" StdOutFilePath="output.txt" StdErrFilePath="error.txt" RequeueCount="0" PendingReason="None" StartValue="0" EndValue="0" IncrementValue="1" GroupId="2641" CreateTime="08.05.2014 14:29:42" IsExclusive="true" MinNodes="5" MaxNodes="74" AutoRequeueCount="0" Type="Basic">
+            <EnvironmentVariables>
+                <Variable>
+                    <Name>HPC_ATTACHTOSESSION</Name>
+                    <Value>True</Value>
+                </Variable>
+            </EnvironmentVariables>
+        </Task>
+    </Tasks>
+</Job>
