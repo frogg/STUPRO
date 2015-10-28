@@ -1,0 +1,24 @@
+#!/bin/bash
+
+FORMATTER_DIRS=( "src" "test" "include" )
+
+if [[ $1 == "" ]]; then
+	COMMAND=astyle
+else
+	COMMAND=$1
+fi
+
+
+ERROR=0
+
+for i in "${FORMATTER_DIRS[@]}"
+do
+  output=$($COMMAND --options=.astyle-options-v2 --recursive --dry-run "$i/*.cpp" "$i/*.hpp" "$i/*.?sh" 2>&1 | egrep 'Formatted|command not found')
+  if [[ $output ]]; then
+  	echo "Formatting error in $i:"
+  	echo "$output"
+  	ERROR=1
+  fi
+done
+
+exit $ERROR
