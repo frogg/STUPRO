@@ -152,11 +152,13 @@ void VTKOpenGL::initCallbacks()
         
         client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
         double cameraViewangle =  client.myRenderer->GetActiveCamera()->GetViewAngle();
+     //   std::cout << "View Angle: " << cameraViewangle << std::endl;
         double globeOrigin[3] = {0,0,0};
         
         double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
         
         double viewEdgeDistance = tan(3.14159265358979323846264338327950288 / 12.0) * distanceCameraGlobe;
+      //  std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
         std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
@@ -182,22 +184,22 @@ void VTKOpenGL::initCallbacks()
          client.myTree->IntersectWithLine(cameraPosition, uppperCorner, intersectPoints, NULL);
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
-        std::cout << "upperCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+   //     std::cout << "upperCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
          client.myTree->IntersectWithLine(cameraPosition, lowOrigin, intersectPoints, NULL);
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
-        std::cout << "lowOrigin; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+    //    std::cout << "lowOrigin; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
          client.myTree->IntersectWithLine(cameraPosition, rightCorner, intersectPoints, NULL);
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
-        std::cout << "rightCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+     //   std::cout << "rightCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
          client.myTree->IntersectWithLine(cameraPosition, leftCorner, intersectPoints, NULL);
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
-        std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+     //   std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
 
         
     };
@@ -346,8 +348,24 @@ vtkSmartPointer<vtkOpenGLTexture> VTKOpenGL::loadAlphaTexture(std::string rgbFil
 
 Coordinate VTKOpenGL::getCoordinates(double point[]){
         Coordinate coordinate;
-        coordinate.latitude = ((asin(point[0] / .5f)) / 6.28) * 360;
-        coordinate.longitude = ((atan2(point[2], point[1])) / 6.28) * 360;
+    float radius = 0.5f;
+    float PI = 3.14159268;
+       // coordinate.latitude = ((asin(point[0] / .5f)) / 6.28) * 360;
+        coordinate.latitude = (asin(point[2] / radius))*(180/PI);
+        std::cout << "Point 0: " << point[0] << "," << coordinate.latitude  << std::endl;
+        std::cout << "Point 0: " << point[0] << std::endl << "Point 1: " << point[1] << std::endl << "Point 2: " << point[2]  << std::endl;
+                               if(point[0]>0){
+                                    coordinate.longitude = (atan(point[2]/point[1]))*(180/PI);
+                                                            }else if(point[1]>0){
+                                                                coordinate.longitude = (atan(point[2]/point[1]))*(180/PI) +180;
+                                                                                        }else{
+                                                                                           coordinate.longitude = (atan(point[2]/point[1]))*(180/PI) -180;
+                                                                                        }
+                              
+      //  coordinate.longitude = ((atan2(point[2], point[1])) / 6.28) * 360;
+        std::cout << coordinate.latitude  << std::endl << coordinate.longitude << std::endl ;
+
+
         return coordinate;
 }
 
