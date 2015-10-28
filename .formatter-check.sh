@@ -21,4 +21,8 @@ do
   fi
 done
 
+if [ $ERROR == 0 ]; then
+	echo "Formatting seems fine"
+fi
+
 exit $ERROR
