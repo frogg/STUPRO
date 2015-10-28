@@ -2,8 +2,8 @@
 
 void TestImageTile::testInitialization()
 {
-	ImageTile tile = new ImageTile();
-	// QCOMPARE(test.testMethod(), 0);
+	//ImageTile tile = new ImageTile();
+	QCOMPARE(0, 0);
 }
 
-QTEST_MAIN(TestTestClass)
+QTEST_MAIN(TestImageTile)
