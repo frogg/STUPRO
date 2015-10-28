@@ -12,10 +12,8 @@ ImageTile::ImageTile(const QMap<QString, QImage>& layers, int zoomLevel, int til
   this->setTileY(tileY);
 }
 
-// ImageTile::ImageTile() : ImageTile(const QMap<QString, QImage>& layers, 0, 0, 0) { }
-
 ImageTile::~ImageTile() {
-	//delete *this->layers;
+  this->layers.clear();
 }
 
 QMap<QString, QImage>& ImageTile::getLayers() {

@@ -9,11 +9,6 @@
 class ImageTile {
 public:
   /**
-   * Create a new ImageTile.
-   */
-  // ImageTile();
-
-  /**
    * Create a new ImageTile
    * @param configuration The configuration of this downloader in JSON notation
    */
