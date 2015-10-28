@@ -150,12 +150,22 @@ void VTKOpenGL::initCallbacks()
 
         
         double cameraPosition[3];
+<<<<<<< HEAD
         // ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
         ClientData* _clientdata = (ClientData*)clientData;
         _clientdata->renderer->GetActiveCamera()->GetPosition(cameraPosition);
         
         
         double cameraViewangle =  ((vtkRenderer*)caller)->GetActiveCamera()->GetViewAngle();
+=======
+        
+        VTKOpenGL & client = *((VTKOpenGL*)clientData);
+       // ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
+       // (ClientData*) _clientdata = clientdata;
+        
+        client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
+        double cameraViewangle =  client.myRenderer->GetActiveCamera()->GetViewAngle();
+>>>>>>> 3d1162b0804599e0543b2c7d77881b7d1a589f0c
         double globeOrigin[3] = {0,0,0};
         
         double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
@@ -168,8 +178,12 @@ void VTKOpenGL::initCallbacks()
         vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
         
       //  vtkOBBTree * tree = (vtkOBBTree*)clientData;
+<<<<<<< HEAD
         vtkOBBTree * tree = _clientdata->tree;
         tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
+=======
+        client.myTree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
+>>>>>>> 3d1162b0804599e0543b2c7d77881b7d1a589f0c
         
         asin(0.5);
         atan(0.5);
@@ -186,22 +200,22 @@ void VTKOpenGL::initCallbacks()
         double rightCorner[3] = {0,0,viewEdgeDistance};
         double leftCorner[3] = {0,0,-viewEdgeDistance};
         
-        tree->IntersectWithLine(cameraPosition, uppperCorner, intersectPoints, NULL);
+         client.myTree->IntersectWithLine(cameraPosition, uppperCorner, intersectPoints, NULL);
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
         std::cout << "upperCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
-        tree->IntersectWithLine(cameraPosition, lowOrigin, intersectPoints, NULL);
+         client.myTree->IntersectWithLine(cameraPosition, lowOrigin, intersectPoints, NULL);
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
         std::cout << "lowOrigin; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
-        tree->IntersectWithLine(cameraPosition, rightCorner, intersectPoints, NULL);
+         client.myTree->IntersectWithLine(cameraPosition, rightCorner, intersectPoints, NULL);
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
         std::cout << "rightCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
-        tree->IntersectWithLine(cameraPosition, leftCorner, intersectPoints, NULL);
+         client.myTree->IntersectWithLine(cameraPosition, leftCorner, intersectPoints, NULL);
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
         std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
@@ -224,6 +238,7 @@ void VTKOpenGL::initCallbacks()
     
     clientdata->tree = myTree;
     clientdata->renderer = myRenderer;
+
     
     // Create and assign callback for clipping function.
     vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
@@ -239,6 +254,14 @@ void VTKOpenGL::initCallbacks()
     
     // Call the function once to correct the clipping range immediately.
     clipFunc(myRenderer, 0, clientdata, 0);
+    clipCallback->SetClientData(this);
+//    clipCallback->SetClientData(myTree);
+//    myRenderer->AddObserver(vtkCommand::MouseMoveEvent, clipCallback);
+  //  myRenderWindow->GetInteractor()->CreateRepeatingTimer(17);
+    myRenderWindow->GetInteractor()->AddObserver(vtkCommand::MouseMoveEvent, clipCallback);
+    
+    // Call the function once to correct the clipping range immediately.
+    clipFunc(myRenderer, 0, this, 0);
     
 	// Create callback function that corrects the camera clipping range to work around a VTK bug.
 	auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
