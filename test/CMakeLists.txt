@@ -1,6 +1,8 @@
 # include QT
-find_package(Qt4 REQUIRED QtTest QtCore QtGui QtNetwork)
-include(${QT_USE_FILE})
+find_package(Qt5Core)
+find_package(Qt5Gui)
+find_package(Qt5Network)
+find_package(Qt5Widgets)
 
 # test sources
 file(GLOB Test_SOURCES ./**/*.cpp)
@@ -24,5 +26,5 @@ foreach(testSourceFile ${Test_SOURCES})
   add_executable(${testName} ${testSourceFile} ${testHeaderFile})
 
   # link the executable
-  target_link_libraries(${testName} ${QT_LIBRARIES} libKronos)
+  target_link_libraries(${testName} libKronos Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets)
 endforeach(testSourceFile ${Test_SOURCES})

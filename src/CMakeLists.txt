@@ -2,8 +2,10 @@
 set(MAIN_CLASS ./main.cpp)
 
 # include QT
-find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
-include(${QT_USE_FILE})
+find_package(Qt5Core)
+find_package(Qt5Gui)
+find_package(Qt5Network)
+find_package(Qt5Widgets)
 
 # sources
 file(GLOB Library_SOURCES ./*.cpp ./**/*.cpp)
@@ -20,8 +22,8 @@ add_library(libKronos ${Library_SOURCES} ${Library_HEADERS})
 add_executable(kronos ${MAIN_CLASS})
 
 # link qt to the kronos lib and the main application
-target_link_libraries(libKronos ${QT_LIBRARIES})
-target_link_libraries(kronos ${QT_LIBRARIES})
+target_link_libraries(libKronos Qt5::Core Qt5::Gui Qt5::Network)
+target_link_libraries(kronos Qt5::Widgets)
 
 # link the library to the main executable
 target_link_libraries(kronos libKronos)
