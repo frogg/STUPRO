@@ -11,6 +11,8 @@ fi
 
 ERROR=0
 
+echo "Running $($COMMAND --version)"
+
 for i in "${FORMATTER_DIRS[@]}"
 do
   output=$($COMMAND --options=.astyle-options-v2 --recursive --dry-run "$i/*.cpp" "$i/*.hpp" "$i/*.?sh" 2>&1 | egrep 'Formatted|command not found')

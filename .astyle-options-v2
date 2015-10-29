@@ -10,8 +10,8 @@
 --indent-namespaces
 
 # indent preprocessor directives
-#--indent-preproc-block
-#--indent-preproc-define
+--indent-preproc-block
+--indent-preproc-define
 
 # spaces around operators and if/while/for, but not around parenthesis and angle brackets
 --pad-oper
