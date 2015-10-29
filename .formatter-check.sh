@@ -18,6 +18,8 @@ do
   	echo "Formatting error in $i:"
   	echo "$output"
   	ERROR=1
+	else
+		echo "$output"
   fi
 done
 
