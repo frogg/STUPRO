@@ -16,10 +16,9 @@ do
   output=$($COMMAND --options=.astyle-options-v2 --recursive --dry-run "$i/*.cpp" "$i/*.hpp" "$i/*.?sh" 2>&1 | egrep 'Formatted|command not found')
   if [[ $output ]]; then
   	echo "Formatting error in $i:"
-  	echo "$output"
   	ERROR=1
 	else
-		echo "$output"
+		$COMMAND --options=.astyle-options-v2 --recursive --dry-run "$i/*.cpp" "$i/*.hpp" "$i/*.?sh"
   fi
 done
 
