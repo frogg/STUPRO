@@ -10,8 +10,7 @@ addons:
       # For cmake >= 2.8.8
       - kubuntu-backports
     packages:
-      - qt5-default
-      - libqt5-dev
+      - qtbase5-dev
       - libcppunit-dev
       - cmake
       - astyle
