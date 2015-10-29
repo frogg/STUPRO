@@ -7,23 +7,10 @@ before_install:
   - sudo apt-get -qq install qtbase5-dev
   - sudo apt-get -qq install astyle
 script:
+  - ./.formatter-check.sh
   - ./.build.sh
-# addons:
-#   apt:
-#     sources:
-#       # For cmake >= 2.8.8
-#       # - debian-sid
-#       - kubuntu-backports
-#     packages:
-#       - astyle
-#       - libcppunit-dev
-#       - cmake
-#       - qtbase5-dev
-# notifications:
-#   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
-# cache:
-#   directories:
-#     - bin
-# script:
-#   - ./.formatter-check.sh
-#   - ./.build.sh
+notifications:
+  slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
+cache:
+  directories:
+    - bin
