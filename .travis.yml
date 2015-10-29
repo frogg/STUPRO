@@ -1,20 +1,26 @@
 language: cpp
-sudo: false
+sudo: required
+dist: trusty
 compiler:
   - gcc
 os:
   - linux
-addons:
-  apt:
-    sources:
-      # For cmake >= 2.8.8
-      # - debian-sid
-      - kubuntu-backports
-    packages:
-      - astyle
-      - libcppunit-dev
-      - cmake
-      - qtbase5-dev
+before_install:
+  - sudo apt-get install astyle
+  - sudo apt-get install libcppunit-dev
+  - sudo apt-get install cmake
+  - sudo apt-get install qtbase5-dev
+# addons:
+#   apt:
+#     sources:
+#       # For cmake >= 2.8.8
+#       # - debian-sid
+#       - kubuntu-backports
+#     packages:
+#       - astyle
+#       - libcppunit-dev
+#       - cmake
+#       - qtbase5-dev
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
 cache:
