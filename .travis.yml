@@ -9,7 +9,9 @@ addons:
     sources:
       # For cmake >= 2.8.8
       - kubuntu-backports
+      - debian-sid
     packages:
+      - qt5-default
       - qtbase5-dev
       - libcppunit-dev
       - cmake
