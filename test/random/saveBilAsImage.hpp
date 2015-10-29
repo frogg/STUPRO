@@ -6,7 +6,11 @@
 class SaveBilAsImage
 {
 public:
-	void saveBilAsImage();
+	static void saveBilAsImage();
+private:
+	static QRgb colorScale(int min, int max, int value);
+	static QString toBinaryString(short number);
+	static QString toBinaryString(char number);
 };
 
 #endif
