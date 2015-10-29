@@ -1,7 +1,8 @@
 #ifndef KRONOS_TEST_SAVEBILASIMAGE_HPP
 #define KRONOS_TEST_SAVEBILASIMAGE_HPP
 
-#include <QtTest/QtTest>
+#include <QImage>
+#include <QString>
 
 class SaveBilAsImage
 {

@@ -1,9 +1,8 @@
 #include "saveBilAsImage.hpp"
 
-// #include <QFile>
-// #include <QImage>
-// #include <QDebug>
-// #include <QDataStream>
+#include <QFile>
+#include <QDebug>
+#include <QDataStream>
 
 QRgb SaveBilAsImage::colorScale(int min, int max, int value) {
   if (value > max / 2) {
