@@ -2,24 +2,18 @@
 
 #include <QDebug>
 
-int TestImageTile::testMetaData()
+void TestImageTile::testMetaData()
 {
-	int testResult = 0;
-
 	QMap<QString, QImage> layers;
 	ImageTile tile(layers, 10, 2, 3);
 
-	testResult += static_cast<int>(tile.getZoomLevel() == 10);
-	testResult += static_cast<int>(tile.getTileX() == 2);
-	testResult += static_cast<int>(tile.getTileY() == 3);
-
-	return static_cast<int>(testResult == 3);
+	CPPUNIT_ASSERT(tile.getZoomLevel() == 10);
+	CPPUNIT_ASSERT(tile.getTileX() == 2);
+	CPPUNIT_ASSERT(tile.getTileY() == 3);
 }
 
-int TestImageTile::testLayers()
+void TestImageTile::testLayers()
 {
-	int testResult = 0;
-
 	QMap<QString, QImage> layers;
 	QImage imageOne(512, 512, QImage::Format_RGB32);
 	QImage imageTwo(512, 512, QImage::Format_RGB32);
@@ -27,23 +21,12 @@ int TestImageTile::testLayers()
 	layers.insert("layerTwo", imageTwo);
 	ImageTile tile(layers, 10, 2, 3);
 
-	testResult += static_cast<int>(tile.getLayers().size() == 2);
-	testResult += static_cast<int>(tile.getLayers().contains("layerOne"));
-	testResult += static_cast<int>(tile.getLayers().contains("layerTwo"));
-	testResult += static_cast<int>(tile.getLayers().value("layerOne").width() == 512
-									&& tile.getLayers().value("layerOne").height() == 512);
-	testResult += static_cast<int>(tile.getLayers().value("layerTwo").width() == 512
-									&& tile.getLayers().value("layerTwo").height() == 512);
-
-	return static_cast<int>(testResult == 5);
+	CPPUNIT_ASSERT(tile.getLayers().size() == 2);
+	CPPUNIT_ASSERT(tile.getLayers().contains("layerOne"));
+	CPPUNIT_ASSERT(tile.getLayers().contains("layerTwo"));
+	CPPUNIT_ASSERT(tile.getLayers().contains("layerTwo"));
+	CPPUNIT_ASSERT(tile.getLayers().value("layerOne").width() == 512
+	&& tile.getLayers().value("layerOne").height() == 512);
+	CPPUNIT_ASSERT(tile.getLayers().value("layerTwo").width() == 512
+	&& tile.getLayers().value("layerTwo").height() == 512);
 }
-
-// int main(int argc, char* argv[]) {
-// 	TestImageTile testImageTile;
-// 	int testResult = 0;
-//
-// 	testResult += testImageTile.testMetaData();
-// 	testResult += testImageTile.testLayers();
-//
-// 	return static_cast<int>(!(testResult == 2));
-// }
