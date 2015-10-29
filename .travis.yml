@@ -1,15 +1,12 @@
-language: cpp
 sudo: required
 dist: trusty
-compiler:
-  - gcc
-os:
-  - linux
 before_install:
   - sudo apt-get install astyle
   - sudo apt-get install libcppunit-dev
   - sudo apt-get install cmake
   - sudo apt-get install qtbase5-dev
+script:
+  - ./.build.sh
 # addons:
 #   apt:
 #     sources:
@@ -21,11 +18,11 @@ before_install:
 #       - libcppunit-dev
 #       - cmake
 #       - qtbase5-dev
-notifications:
-  slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
-cache:
-  directories:
-    - bin
-script:
-  - ./.formatter-check.sh
-  - ./.build.sh
+# notifications:
+#   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
+# cache:
+#   directories:
+#     - bin
+# script:
+#   - ./.formatter-check.sh
+#   - ./.build.sh
