@@ -8,13 +8,13 @@ addons:
   apt:
     sources:
       # For cmake >= 2.8.8
-      - debian-sid
+      # - debian-sid
       - kubuntu-backports
     packages:
       - astyle
       - libcppunit-dev
       - cmake
-      - qt5-default
+      # - qt5-default
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
 cache:
