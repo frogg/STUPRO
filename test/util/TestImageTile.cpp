@@ -38,12 +38,12 @@ int TestImageTile::testLayers()
 	return static_cast<int>(testResult == 5);
 }
 
-int main(int argc, char* argv[]) {
-	TestImageTile testImageTile;
-	int testResult = 0;
-
-	testResult += testImageTile.testMetaData();
-	testResult += testImageTile.testLayers();
-
-	return static_cast<int>(!(testResult == 2));
-}
+// int main(int argc, char* argv[]) {
+// 	TestImageTile testImageTile;
+// 	int testResult = 0;
+//
+// 	testResult += testImageTile.testMetaData();
+// 	testResult += testImageTile.testLayers();
+//
+// 	return static_cast<int>(!(testResult == 2));
+// }
