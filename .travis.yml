@@ -1,10 +1,10 @@
 sudo: required
 dist: trusty
 before_install:
-  - sudo apt-get -qq install astyle
   - sudo apt-get -qq install libcppunit-dev
   - sudo apt-get -qq install cmake
   - sudo apt-get -qq install qtbase5-dev
+  - sudo apt-get -qq install astyle
 script:
   - ./.build.sh
 # addons:
