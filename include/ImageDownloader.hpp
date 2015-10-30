@@ -2,6 +2,7 @@
 #define KRONOS_IMAGEDOWNLOADER_HPP
 
 #include "ImageTile.hpp"
+#include "ImageCache.hpp"
 #include "ImageLayerDescription.hpp"
 
 #include <functional>
@@ -12,27 +13,30 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QString>
-#include <QList>
+#include <QMap>
 
 class ImageDownloader {
 public:
 
 	/**
-	 * Type used for the image fetched callback.
+	 * Type used for the tile fetched callback.
 	 */
 	typedef std::function<void(ImageTile& tile)> tileFetchedCbType;
 
 	/**
 	 * Create a new ImageDownloader using the standard configuration.
 	 */
-	ImageDownloader(tileFetchedCbType imageFetchedCb);
+	ImageDownloader(tileFetchedCbType tileFetchedCb);
 
 	/**
 	 * Create a new ImageDownloader using the specified configuration.
 	 * @param configuration The configuration of this downloader in JSON notation
 	 */
-	ImageDownloader(tileFetchedCbType imageFetchedCb, QList<ImageLayerDescription> imageLayers);
+	ImageDownloader(tileFetchedCbType tileFetchedCb, QMap<QString, ImageLayerDescription> imageLayers);
 	~ImageDownloader();
+
+	void getTile(int zoomLevel, int tileX, int tileY);
+	void getTile(QString &layer, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Get an image tile of a data layer.
@@ -43,7 +47,7 @@ public:
 	 * @param tileY Vertical position of the requested tile
 	 * @return The requested image tile as a QImage pointer
 	 */
-	QImage* getImage(QString* layer, int zoomLevel, int tileX, int tileY);
+	void getTile(QList<QString> layers, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Get a list of available image layers.
@@ -56,13 +60,13 @@ private:
 	/**
 	 * An object holding all configuration information.
 	 */
-	QList<ImageLayerDescription> imageLayers;
+	QMap<QString, ImageLayerDescription> imageLayers;
 
 	/**
 	 * Callback function to be called when a requested tile was downloaded or fetched from the file
 	 * system.
 	 */
-	tileFetchedCbType imageFetchedCb;
+	tileFetchedCbType tileFetchedCb;
 
 	/**
 	 * Network access manager used to make requests to the image API.
@@ -70,12 +74,18 @@ private:
 	static QNetworkAccessManager networkManager;
 
 	/**
+	 * Image cache used to save and retrieve downloaded tiles.
+	 */
+	static ImageCache imageCache;
+
+	QString buildTileDownloadUrl(QString layer, int zoomLevel, int tileX, int tileY);
+
+	/**
 	 * Download an image from a specified URL.
 	 * @param imageUrl URL of the image
 	 * @return The image downloaded from the specified URL
 	 */
-	QImage downloadImage(QUrl& imageUrl);
-
+	QImage downloadImageSync(QUrl& imageUrl);
 };
 
 #endif
