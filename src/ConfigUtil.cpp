@@ -22,6 +22,7 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 	while(!in.atEnd()) {
     QString line = in.readLine();
     QStringList fields = line.split(' ');
+
 		ImageLayerDescription description = {fields.at(1), fields.at(2), fields.at(3).toInt()};
 		layers.insert(fields.at(0), description);
 	}

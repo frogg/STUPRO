@@ -12,10 +12,16 @@ void TestConfigUtil::testLoadConfig()
 	try {
 		layers = ConfigUtil::loadConfigFile("./src/res/layers.cfg");
 	} catch(FileOpenException e) {
-		std::cout << "Could not open the file: " << e.what() << std::endl;
+		CPPUNIT_FAIL(e.what());
 	}
 
-	std::cout << layers.value("satellite-imagery").baseUrl.toUtf8().constData() << std::endl;
+	CPPUNIT_ASSERT(layers.size() == 2);
 
-	CPPUNIT_ASSERT(512 == 511);
+	CPPUNIT_ASSERT(layers.value("satellite-imagery").baseUrl == "http://worldwind25.arc.nasa.gov/wms?service=WMS&request=GetMap&version=1.3.0&crs=CRS:84&layers=esat&styles=&transparent=FALSE");
+	CPPUNIT_ASSERT(layers.value("satellite-imagery").format == "image/jpeg");
+	CPPUNIT_ASSERT(layers.value("satellite-imagery").tileSize == 512);
+
+	CPPUNIT_ASSERT(layers.value("heightmap").baseUrl == "http://worldwind26.arc.nasa.gov/wms?service=WMS&request=GetMap&version=1.3.0&crs=CRS:84&layers=NASA_SRTM30_900m_Tiled,aster_v2,USGS-NED&styles=");
+	CPPUNIT_ASSERT(layers.value("heightmap").format == "image/jpeg");
+	CPPUNIT_ASSERT(layers.value("heightmap").tileSize == 512);
 }
