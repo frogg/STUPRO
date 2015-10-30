@@ -1,6 +1,7 @@
 #include "StuproApplication.hpp"
 
 #include <vtkCallbackCommand.h>
+#include <vtkCamera.h>
 #include <vtkCommand.h>
 #include <vtkInteractorStyle.h>
 #include <vtkRenderWindowInteractor.h>
@@ -45,8 +46,9 @@ void StuproApplication::initRenderer()
 	myRenderer = vtkRenderer::New();
 
 	// Set camera clipping range.
-	float r = myGlobeRadius * 100.f;
-	myRenderer->ResetCameraClippingRange(-r, r, -r, r, -r, r);
+	float r1 = myGlobeRadius * 100.f;
+	float r2 = 0.001f;
+	myRenderer->ResetCameraClippingRange(r1, r2, r1, r2, r1, r2);
 
 	// Create render window with renderer.
 	myRenderWindow = vtkRenderWindow::New();
@@ -59,9 +61,13 @@ void StuproApplication::initRenderer()
 	interactor->SetRenderWindow(myRenderWindow);
 
 	// Create interactor style for render window.
-	vtkSmartPointer<vtkInteractorStyle> interactorStyle = StuproInteractor::New();
+	vtkSmartPointer<StuproInteractor> interactorStyle = StuproInteractor::New();
 	interactorStyle->SetAutoAdjustCameraClippingRange(false);
 	interactor->SetInteractorStyle(interactorStyle);
+	
+	// Zoom out.
+	myRenderWindow->Render();
+	interactorStyle->zoomWithFactor(-1800.f);
 }
 
 void StuproApplication::initCallbacks()

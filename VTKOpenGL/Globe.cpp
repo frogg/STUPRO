@@ -22,7 +22,7 @@ Globe::Globe(vtkRenderer & renderer) :
 	myPlaneSource->SetPoint1(-getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
 	myPlaneSource->SetPoint2(getPlaneSize() / 2.f, getPlaneSize() / 2.f, 0.f);
 
-	setResolution(Vector2u(50, 50));
+	setResolution(Vector2u(128, 128));
 
 	myPlaneMapper = vtkPolyDataMapper::New();
 	myPlaneMapper->SetInputConnection(myPlaneSource->GetOutputPort());
@@ -101,6 +101,7 @@ void Globe::createTiles()
 		{
 			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this,
 			        GlobeTile::Location(myZoomLevel, lon, lat));
+			myTiles[getTileIndex(lon, lat)]->loadTexture();
 		}
 	}
 }

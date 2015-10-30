@@ -3,12 +3,13 @@
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
 #include <vtkProperty.h>
+#include <vtkRenderer.h>
 #include <vtkShader2Collection.h>
 #include <vtkShaderProgram2.h>
 #include <vtkUniformVariables.h>
-#include <vtkRenderer.h>
 #include <string>
 
+#include "TextureLoad.hpp"
 #include "Utils.hpp"
 #include "Vector2.hpp"
 
@@ -25,20 +26,19 @@ RectF GlobeTile::Location::getBounds() const
 }
 
 GlobeTile::GlobeTile(const Globe & globe, Location location) :
-		myGlobe(globe),
-		myLocation(location)
+		myGlobe(globe), myLocation(location)
 {
 	// Initialize members.
 	myLowerHeight = 0.f;
 	myUpperHeight = 1.f;
-	
+
 	// Create and initialize actor.
 	myActor = vtkActor::New();
-	
+
 	myActor->SetMapper(myGlobe.getPlaneMapper());
-	
+
 	myGlobe.getRenderer().AddActor(myActor);
-	
+
 	initShaders();
 }
 
@@ -97,50 +97,49 @@ void GlobeTile::initShaders()
 	// Create shader program.
 	vtkSmartPointer<vtkShaderProgram2> shaderProgram = vtkShaderProgram2::New();
 	shaderProgram->SetContext(&myGlobe.getRenderWindow());
-	
+
 	// Create and load fragment shader.
 	myFragmentShader = vtkShader2::New();
 	myFragmentShader->SetType(VTK_SHADER_TYPE_FRAGMENT);
 	myFragmentShader->SetSourceCode(readFile("Shader/TestShader.fsh").c_str());
 	myFragmentShader->SetContext(shaderProgram->GetContext());
-	
+
 	// Create and load vertex shader.
 	myVertexShader = vtkShader2::New();
 	myVertexShader->SetType(VTK_SHADER_TYPE_VERTEX);
 	myVertexShader->SetSourceCode(readFile("Shader/TestShader.vsh").c_str());
 	myVertexShader->SetContext(shaderProgram->GetContext());
-	
+
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
 	float globeRadius = 2.f / 3.f;
 	float planeSize = myGlobe.getPlaneSize();
 	float displayModeInterpolation = 0.f;
 	float heightFactor = 0.05f;
-	
+
 	RectF bounds = myLocation.getBounds();
 	Vector2f startBounds = bounds.x1y1();
 	Vector2f endBounds = bounds.x2y2();
-	
+
 	// Assign uniform variables.
 	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
-	
+
 	myVertexShader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
 	myVertexShader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
-	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1,
-	        &displayModeInterpolation);
+	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1, &displayModeInterpolation);
 	myVertexShader->GetUniformVariables()->SetUniformf("heightFactor", 1, &heightFactor);
-	
+
 	myVertexShader->GetUniformVariables()->SetUniformf("longStart", 1, &startBounds.x);
 	myVertexShader->GetUniformVariables()->SetUniformf("longEnd", 1, &endBounds.x);
 	myVertexShader->GetUniformVariables()->SetUniformf("latStart", 1, &startBounds.y);
 	myVertexShader->GetUniformVariables()->SetUniformf("latEnd", 1, &endBounds.y);
-	
+
 	myFragmentShader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
-	
+
 	// Add shaders to shader program.
 	shaderProgram->GetShaders()->AddItem(myFragmentShader);
 	shaderProgram->GetShaders()->AddItem(myVertexShader);
-	
+
 	// Add shader to globe tile actor.
 	vtkSmartPointer<vtkOpenGLProperty> openGLproperty =
 	        static_cast<vtkOpenGLProperty*>(myActor->GetProperty());
@@ -150,11 +149,15 @@ void GlobeTile::initShaders()
 
 void GlobeTile::loadTexture()
 {
+	std::string tileName = std::to_string(myLocation.zoomLevel) + "_"
+	        + std::to_string(myLocation.longitude) + "_" + std::to_string(myLocation.latitude);
+	setTexture(
+	        loadAlphaTexture("Tiles/rgb_" + tileName + ".jpg",
+	                "Tiles/height_" + tileName + ".jpg"));
 }
 
 void GlobeTile::updateUniforms()
 {
 	float displayModeInterpolation = myGlobe.getDisplayModeInterpolation();
-	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1,
-	        &displayModeInterpolation);
+	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1, &displayModeInterpolation);
 }

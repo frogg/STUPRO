@@ -8,8 +8,6 @@
 
 #include <vtkObjectFactory.h>
 
-vtkStandardNewMacro(StuproInteractor);
-
 
 void StuproInteractor::OnMouseWheelForward() {
 	this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
@@ -56,4 +54,9 @@ void StuproInteractor::zoomWithFactor(float factor)
 	}
 
 	rwi->Render();
+}
+
+StuproInteractor* StuproInteractor::New()
+{
+	return new StuproInteractor;
 }
