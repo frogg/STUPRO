@@ -2,19 +2,32 @@
 #define KRONOS_CONFIGUTIL_HPP
 
 #include <QString>
-#include <QFile>
-#include <QIODevice>
+#include <QMap>
+
+#include <exception>
 
 #include "ImageLayerDescription.hpp"
+
+struct FileOpenException : public std::exception
+{
+	QString message;
+
+	FileOpenException(QString message) : message(message) { }
+
+  const char * what () const throw ()
+  {
+    return message.toStdString().c_str();
+  }
+};
 
 class ConfigUtil {
 public:
   /**
    * Load layer information from a file.
    * @param file Path of the file to be read
-   * @return A list of layers as read from the file
+   * @return A map of layer identifiers and layers as read from the file
    */
-  static const QList<ImageLayerDescription> loadConfigFile(const QString &file);
+  static const QMap<QString, ImageLayerDescription> loadConfigFile(const QString &file);
 };
 
 #endif
