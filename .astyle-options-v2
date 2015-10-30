@@ -1,5 +1,5 @@
 # braces
---style=bsd
+--style=java
 
 # tab indent equals 4 spaces
 --indent=force-tab=4
