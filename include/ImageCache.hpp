@@ -54,7 +54,6 @@ public:
    * @param tileY Vertical position of the requested tile
    */
   void cacheImage(QImage* image, QString* layer, int zoomLevel, int tileX, int tileY);
-  
 };
 
 #endif
