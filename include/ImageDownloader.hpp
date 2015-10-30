@@ -1,6 +1,9 @@
 #ifndef KRONOS_IMAGEDOWNLOADER_HPP
 #define KRONOS_IMAGEDOWNLOADER_HPP
 
+#include "ImageTile.hpp"
+
+#include <functional>
 #include <QImage>
 #include <QFile>
 #include <QUrl>
@@ -13,16 +16,22 @@
 
 class ImageDownloader {
 public:
+
+  /**
+   * Type used for the image fetched callback.
+   */
+  typedef std::function<void(ImageTile& tile)> tileFetchedCbType;
+
   /**
    * Create a new ImageDownloader using the standard configuration.
    */
-  ImageDownloader();
+  ImageDownloader(tileFetchedCbType imageFetchedCb);
 
   /**
    * Create a new ImageDownloader using the specified configuration.
    * @param configuration The configuration of this downloader in JSON notation
    */
-  ImageDownloader(QJsonObject* configuration);
+  ImageDownloader(tileFetchedCbType imageFetchedCb, QJsonObject* configuration);
 	~ImageDownloader();
 
   /**
@@ -47,7 +56,18 @@ private:
   /**
    * A JSON file holding all configuration information.
    */
-  const QFile configFile;
+  QFile configFile;
+
+  /**
+   * Callback function to be called when a requested tile was downloaded or fetched from the file
+   * system.
+   */
+  tileFetchedCbType imageFetchedCb;
+
+  /**
+   * Network access manager used to make requests to the image API.
+   */
+  static QNetworkAccessManager networkManager;
 
   /**
    * Download an image from a specified URL.
