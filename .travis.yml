@@ -5,14 +5,15 @@ before_install:
   - sudo apt-get -qq install libcppunit-dev
   - sudo apt-get -qq install cmake
   - sudo apt-get -qq install qtbase5-dev
-#  - sudo apt-get -qq install astyle
-  - pwd
+  
+  # build astyle because the astyle version in the official repos is outdated
+  - cd ../..
   - wget http://sourceforge.net/code-snapshots/svn/a/as/astyle/code/astyle-code-486-tags-2.05.1.zip && unzip astyle-code-486-tags-2.05.1.zip && cd astyle-code-486-tags-2.05.1 
   - cd AStyle/build/gcc
   - make release
   - sudo make install
-  - cd ../../../..
-  - pwd
+  - cd ../../../../quappi/STUPRO
+  
 script:
   - ./.formatter-check.sh
   - ./.build.sh
