@@ -5,7 +5,7 @@
 --indent=force-tab=4
 
 # class/switch/namespace indent
---indent-classes
+#--indent-classes
 --indent-switches
 --indent-namespaces
 
