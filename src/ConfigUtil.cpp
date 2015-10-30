@@ -8,23 +8,22 @@
 
 #include <iostream>
 
-const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QString &file)
-{
+const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QString &file) {
 	QMap<QString, ImageLayerDescription> layers;
 
 	QFile configFile(file);
-	if(!configFile.open(QIODevice::ReadOnly)) {
-			throw FileOpenException(configFile.errorString());
+	if (!configFile.open(QIODevice::ReadOnly)) {
+		throw FileOpenException(configFile.errorString());
 	}
 
 	QTextStream in(&configFile);
 
-	while(!in.atEnd()) {
-    QString line = in.readLine();
-    QStringList fields = line.split(' ');
+	while (!in.atEnd()) {
+		QString line = in.readLine();
+		QStringList fields = line.split(' ');
 
-		if(fields.size() > 0) {
-			if(fields.size() < 4 || fields.at(0).startsWith('#')) {
+		if (fields.size() > 0) {
+			if (fields.size() < 4 || fields.at(0).startsWith('#')) {
 				continue;
 			}
 		} else {
@@ -37,5 +36,5 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 
 	configFile.close();
 
-  return layers;
+	return layers;
 }

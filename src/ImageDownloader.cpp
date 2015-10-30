@@ -13,7 +13,7 @@ ImageDownloader::ImageDownloader(tileFetchedCbType tileFetchedCb) {
 }
 
 ImageDownloader::ImageDownloader(tileFetchedCbType tileFetchedCb,
-		QMap<QString, ImageLayerDescription> imageLayers) {
+								 QMap<QString, ImageLayerDescription> imageLayers) {
 	this->tileFetchedCb = tileFetchedCb;
 	this->imageLayers = imageLayers;
 }
@@ -39,7 +39,7 @@ void ImageDownloader::getTile(QList<QString> layers, int zoomLevel, int tileX, i
 	std::thread fetchThread([&]() {
 		// build up a queue
 		QQueue<QString> layerFetchQueue;
-		foreach(QString layer, layers) {
+		foreach (QString layer, layers) {
 			layerFetchQueue.enqueue(layer);
 		}
 

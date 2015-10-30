@@ -5,8 +5,7 @@
 
 #include <ConfigUtil.hpp>
 
-class TestConfigUtil : public CppUnit::TestFixture
-{
+class TestConfigUtil : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(TestConfigUtil);
 	CPPUNIT_TEST(testLoadConfig);
 	CPPUNIT_TEST_SUITE_END();

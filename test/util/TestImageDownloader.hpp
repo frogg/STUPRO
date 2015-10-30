@@ -5,8 +5,7 @@
 
 #include <ImageDownloader.hpp>
 
-class TestImageDownloader : public CppUnit::TestFixture
-{
+class TestImageDownloader : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(TestImageDownloader);
 	CPPUNIT_TEST(testGetAvailableLayers);
 	CPPUNIT_TEST(testGetTile);

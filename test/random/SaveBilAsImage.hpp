@@ -4,8 +4,7 @@
 #include <QImage>
 #include <QString>
 
-class SaveBilAsImage
-{
+class SaveBilAsImage {
 public:
 	static void saveBilAsImage();
 private:

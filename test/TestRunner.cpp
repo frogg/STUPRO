@@ -5,8 +5,7 @@
 
 using namespace CppUnit;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	TextTestRunner runner;
 	TestFactoryRegistry &registry = TestFactoryRegistry::getRegistry();
 
@@ -14,8 +13,7 @@ int main(int argc, char *argv[])
 	Test *testToRun = registry.makeTest();
 	TestSuite *suite = dynamic_cast<TestSuite *>(testToRun);
 
-	if (argc > 1)
-	{
+	if (argc > 1) {
 		testToRun = testToRun->findTest(argv[1]);
 	}
 

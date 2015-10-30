@@ -2,7 +2,6 @@
 
 #include <QDebug>
 
-void TestImageCache::testCacheImage()
-{
+void TestImageCache::testCacheImage() {
 	CPPUNIT_ASSERT(3 == 3);
 }

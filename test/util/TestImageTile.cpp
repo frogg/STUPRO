@@ -2,8 +2,7 @@
 
 #include <QDebug>
 
-void TestImageTile::testMetaData()
-{
+void TestImageTile::testMetaData() {
 	QMap<QString, QImage> layers;
 	ImageTile tile(layers, 10, 2, 3);
 
@@ -12,8 +11,7 @@ void TestImageTile::testMetaData()
 	CPPUNIT_ASSERT(tile.getTileY() == 3);
 }
 
-void TestImageTile::testLayers()
-{
+void TestImageTile::testLayers() {
 	QMap<QString, QImage> layers;
 	QImage imageOne(512, 512, QImage::Format_RGB32);
 	QImage imageTwo(512, 512, QImage::Format_RGB32);
