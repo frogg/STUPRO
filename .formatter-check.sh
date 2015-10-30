@@ -19,8 +19,6 @@ do
   if [[ $output ]]; then
   	echo "Formatting error in $i:"
   	ERROR=1
-	else
-		$COMMAND --options=.astyle-options-v2 --recursive --dry-run "$i/*.cpp" "$i/*.hpp" "$i/*.?sh"
   fi
 done
 
