@@ -9,7 +9,7 @@ ImageCache ImageDownloader::imageCache;
 
 ImageDownloader::ImageDownloader(tileFetchedCbType tileFetchedCb) {
 	this->tileFetchedCb = tileFetchedCb;
-	this->imageLayers = ConfigUtil::loadConfigFile("./src/res/config.cfg");
+	this->imageLayers = ConfigUtil::loadConfigFile("./src/res/layers.cfg");
 }
 
 ImageDownloader::ImageDownloader(tileFetchedCbType tileFetchedCb,
