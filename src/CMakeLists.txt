@@ -41,3 +41,7 @@ endif()
 
 # link the library to the main executable
 target_link_libraries(kronos libKronos)
+
+# copy resource directory to the build directory
+file(REMOVE_RECURSE ./res)
+file(COPY ../res DESTINATION ./)
