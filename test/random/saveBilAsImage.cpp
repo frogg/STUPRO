@@ -98,7 +98,6 @@ void SaveBilAsImage::saveBilAsImage() {
   heightmap.save("./heightmap-uk.png", "PNG");
 }
 
-// QTEST_MAIN(SaveBilAsImage)
 int main(int argc, char* argv[]) {
   SaveBilAsImage::saveBilAsImage();
 
