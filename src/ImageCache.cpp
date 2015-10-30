@@ -1,4 +1,5 @@
 #include "../include/ImageCache.hpp"
+#include "../include/ConfigUtil.hpp"
 #include "../include/ImageLayerDescription.hpp"
 
 #include <QImage>
@@ -14,7 +15,7 @@ ImageCache::ImageCache(QList<ImageLayerDescription> imageLayers) {
   // TODO: Read configuration
 }
 
-ImageCache::ImageCache() : ImageCache() { }
+ImageCache::ImageCache() : ImageCache(ConfigUtil::loadConfigFile("./res/layers.cfg")) { }
 
 ImageCache::~ImageCache() {
   // TODO: Delete stuff
