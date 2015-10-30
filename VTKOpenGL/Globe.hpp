@@ -29,6 +29,11 @@ public:
 	unsigned int getZoomLevel() const;
 	
 	GlobeTile & getTileAt(int lon, int lat) const;
+	
+	float getPlaneSize() const;
+	
+	void setDisplayModeInterpolation(float displayMode);
+	float getDisplayModeInterpolation() const;
 
 private:
 	
@@ -42,8 +47,10 @@ private:
 	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;
 	
 	std::vector<std::unique_ptr<GlobeTile> > myTiles;
-	
+		
 	unsigned int myZoomLevel;
+	
+	float myDisplayModeInterpolation;
 };
 
 #endif

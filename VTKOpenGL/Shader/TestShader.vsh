@@ -61,20 +61,21 @@ void propFuncVS()
 	
 	// Calculate lat-long subrectangle transformation.
 	vec2 inPos = gl_Vertex.xy / planeSize + vec2(0.5, 0.5);
-	inPos.x /= (longEnd - longStart) / 360.0;
-	inPos.x += longStart / 360.0 + 0.5;
+	inPos.x *= (longEnd - longStart) / 360.0;
+	inPos.x += longStart / 360.0;
 	//inPos.x = 1.0 - inPos.x;
-	inPos.y /= (latEnd - latStart) / 180.0;
-	inPos.y += latStart / 180.0 + 0.5;
+	inPos.y *= (latEnd - latStart) / 180.0;
+	inPos.y += latStart / 180.0;
 	//inPos.y = 1.0 - inPos.y;
 	
 	// Calculate position for single globe/map vertex.
-	vec3 transformedPos = transformLatLong(inPos.x + 0.75, inPos.y * 2.0 - 1.0, heightSample);
-	vec3 flatPos = vec3((inPos - vec2(0.5, 0.5)) * vec2(2.0 * globeRadius, 1.0 * globeRadius), heightSample * heightFactor);
+	vec3 transformedPos = transformLatLong(inPos.x + 0.25, inPos.y * 2.0, heightSample);
+	vec3 flatPos = vec3((inPos) * vec2(4.0 * globeRadius, 2.0 * globeRadius), heightSample * heightFactor);
+	//vec3 flatPos = vec3(inPos, 0.0);
 	
 	// Linear interpolation between map and globe positions.
-	//vec3 pos = mix(transformedPos, flatPos, displayMode);
-	vec3 pos = flatPos;
+	vec3 pos = mix(transformedPos, flatPos, displayMode);
+	//vec3 pos = flatPos;
 	
 	// Transform vertex position by camera matrix.
 	gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * vec4(pos.xyz, 1);

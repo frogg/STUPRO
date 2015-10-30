@@ -133,6 +133,11 @@ public:
 	 * Returns the Actor corresponding to this globe tile.
 	 */
 	vtkSmartPointer<vtkActor> getActor() const;
+	
+	/**
+	 * Updates the uniform variables of this globe tile's shader.
+	 */
+	void updateUniforms();
 
 private:
 	

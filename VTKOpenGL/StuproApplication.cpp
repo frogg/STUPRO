@@ -36,7 +36,6 @@ void StuproApplication::initParameters()
 	myDisplayMode = DisplayGlobe;
 	myGlobeRadius = 0.5f;
 	myPlaneSize = 1.f;
-	myDisplayModeInterpolation = 0.f;
 	myHeightFactor = 0.05f;
 }
 
@@ -73,24 +72,22 @@ void StuproApplication::initCallbacks()
 		StuproApplication & client = *((StuproApplication*)clientData);
 
 		// Determine target interpolation based on display mode.
-		float interpolationTarget = client.myDisplayMode == DisplayGlobe ? 0.f : 1.f;
+		    float interpolationTarget = client.myDisplayMode == DisplayGlobe ? 0.f : 1.f;
 
-		// Check if change is significant enough to be re-rendered.
-		if (std::abs(interpolationTarget - client.myDisplayModeInterpolation) > 0.000001f)
-		{
-			// Controls the speed of the globe-map transition.
-			float effectSpeed = .2f;
+		    // Check if change is significant enough to be re-rendered.
+		    if (std::abs(interpolationTarget - client.myGlobe->getDisplayModeInterpolation()) > 0.000001f)
+		    {
+			    // Controls the speed of the globe-map transition.
+			    float effectSpeed = .2f;
 
-			// Smoothly transition interpolation value based on previous and target value.
-			client.myDisplayModeInterpolation = (interpolationTarget * effectSpeed +
-					client.myDisplayModeInterpolation) / (effectSpeed + 1.f);
-			//client.myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1,
-			//	    &client.myDisplayModeInterpolation);
+			    // Smoothly transition interpolation value based on previous and target value.
+			    client.myGlobe->setDisplayModeInterpolation((interpolationTarget * effectSpeed +
+							    client.myGlobe->getDisplayModeInterpolation()) / (effectSpeed + 1.f));
 
-			// Update renderer.
-			client.myRenderWindow->Render();
-		}
-	};
+			    // Update renderer.
+			    client.myRenderWindow->Render();
+		    }
+	    };
 
 	// Create and assign callback for clipping function.
 	vtkSmartPointer<vtkCallbackCommand> timerCallback = vtkSmartPointer<vtkCallbackCommand>::New();
@@ -100,7 +97,7 @@ void StuproApplication::initCallbacks()
 	// Workaround for a VTK bug involving a missing Xt App Context causing a segfault in
 	// CreateRepeatingTimer.
 	myRenderWindow->Render();
-	
+
 	// Enable timer on the render window.
 	myRenderWindow->GetInteractor()->CreateRepeatingTimer(17);
 	myRenderWindow->GetInteractor()->AddObserver(vtkCommand::TimerEvent, timerCallback);

@@ -15,9 +15,14 @@
 #include "MakeUnique.hpp"
 
 Globe::Globe(vtkRenderer & renderer) :
-		myRenderer(renderer), myZoomLevel(0)
+		myRenderer(renderer), myZoomLevel(0), myDisplayModeInterpolation(0)
 {
 	myPlaneSource = vtkPlaneSource::New();
+	myPlaneSource->SetOrigin(getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
+	myPlaneSource->SetPoint1(-getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
+	myPlaneSource->SetPoint2(getPlaneSize() / 2.f, getPlaneSize() / 2.f, 0.f);
+
+	setResolution(Vector2u(50, 50));
 
 	myPlaneMapper = vtkPolyDataMapper::New();
 	myPlaneMapper->SetInputConnection(myPlaneSource->GetOutputPort());
@@ -78,12 +83,17 @@ unsigned int Globe::getTileIndex(int lon, int lat) const
 	return (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
 }
 
+float Globe::getPlaneSize() const
+{
+	return 1.f;
+}
+
 void Globe::createTiles()
 {
 	unsigned int height = 1 << myZoomLevel;
 	unsigned int width = height * 2;
 
-	myTiles.resize(width * height * 2);
+	myTiles.resize(width * height);
 
 	for (unsigned int lat = 0; lat < height; ++lat)
 	{
@@ -93,4 +103,22 @@ void Globe::createTiles()
 			        GlobeTile::Location(myZoomLevel, lon, lat));
 		}
 	}
+}
+
+void Globe::setDisplayModeInterpolation(float displayMode)
+{
+	myDisplayModeInterpolation = displayMode;
+
+	for (const auto & tile : myTiles)
+	{
+		if (tile)
+		{
+			tile->updateUniforms();
+		}
+	}
+}
+
+float Globe::getDisplayModeInterpolation() const
+{
+	return myDisplayModeInterpolation;
 }
