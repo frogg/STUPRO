@@ -23,7 +23,7 @@ public:
    * Create a new ImageCache using the specified configuration.
    * @param imageLayers A list of layer descriptions
    */
-  ImageCache(QList<ImageLayerDescription> imageLayers);
+  ImageCache(QMap<QString, ImageLayerDescription> imageLayers);
   ~ImageCache();
 
   /**
