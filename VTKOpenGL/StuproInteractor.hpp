@@ -12,6 +12,22 @@ public:
 	vtkTypeMacro(StuproInteractor,vtkInteractorStyleTerrain);
 
 	void OnTimer() override {}
+
+	/*
+	void OnMiddleButtonDown() override {}
+
+	void OnMiddleButtonUp() override {}
+
+	void OnRightButtonDown() override {}
+
+	void OnRightButtonUp() override {}
+	*/
+
+	void OnMouseWheelForward() override;
+
+	void OnMouseWheelBackward() override;
+
+	void zoomWithFactor(float factor);
 };
 
 #endif

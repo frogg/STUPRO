@@ -2,6 +2,7 @@
 
 #include <vtkAlgorithm.h>
 #include <vtkCallbackCommand.h>
+#include <vtkCamera.h>
 #include <vtkCommand.h>
 #include <vtkImageAppendComponents.h>
 #include <vtkImageExtractComponents.h>
@@ -14,6 +15,7 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkShader2Collection.h>
 #include <vtkShaderProgram2.h>
+#include <vtkViewport.h>
 #include <vtkWindow.h>
 
 #include "Utils.hpp"
@@ -74,6 +76,7 @@ void VTKOpenGL::initRenderer()
 	// Create renderer with actor for the globe.
 	myRenderer = vtkRenderer::New();
 	myRenderer->AddActor(myPlaneActor);
+	myRenderer->SetBackground(.5, .5, .5);
 	
 	// Set camera clipping range.
 	float r = myGlobeRadius * 4.f;
@@ -160,7 +163,8 @@ void VTKOpenGL::initCallbacks()
 
 			    // Update renderer.
 			    client.myRenderWindow->Render();
-		    }
+			}
+
 	    };
 	
 	// Create and assign callback for clipping function.
@@ -183,12 +187,14 @@ void VTKOpenGL::initCallbacks()
 
 		        if (interactor->GetKeyCode() == 49)// 1 key
 		        {	
-			        client.myDisplayMode = DisplayGlobe;
-		        }
+					client.myRenderer->GetActiveCamera()->SetPosition(0, 0, 2.8);
+					client.myDisplayMode = DisplayGlobe;
+				}
 		        else if (interactor->GetKeyCode() == 50) // 2 key
 		        {	
-			        client.myDisplayMode = DisplayMap;
-		        }
+					client.myRenderer->GetActiveCamera()->SetPosition(0, 0, 2.8);
+					client.myDisplayMode = DisplayMap;
+				}
 	        };
 	
 	// Create and assign callback for mode switch function.
