@@ -6,9 +6,9 @@ ImageDownloader::ImageDownloader(tileFetchedCbType imageFetchedCb) {
 	this->imageFetchedCb = imageFetchedCb;
 }
 
-ImageDownloader::ImageDownloader(tileFetchedCbType imageFetchedCb, QJsonObject *configuration) {
+ImageDownloader::ImageDownloader(tileFetchedCbType imageFetchedCb, QList<ImageLayerDescription> imageLayers) {
 	this->imageFetchedCb = imageFetchedCb;
-	this->config = configuration;
+	this->imageLayers = imageLayers;
 }
 
 ImageDownloader::~ImageDownloader() {
@@ -28,6 +28,7 @@ QList<QString> ImageDownloader::getAvailableLayers() {
 	return availableLayers;
 }
 
-QImage *ImageDownloader::downloadImage(QUrl *imageUrl) {
-
+QImage ImageDownloader::downloadImage(QUrl &imageUrl) {
+	QImage dummyImage(512, 512, QImage::Format_RGB32);
+	return dummyImage;
 }

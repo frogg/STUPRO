@@ -2,6 +2,7 @@
 #define KRONOS_IMAGEDOWNLOADER_HPP
 
 #include "ImageTile.hpp"
+#include "ImageLayerDescription.hpp"
 
 #include <functional>
 #include <QImage>
@@ -12,7 +13,6 @@
 #include <QNetworkReply>
 #include <QString>
 #include <QList>
-#include <QJsonObject>
 
 class ImageDownloader {
 public:
@@ -31,7 +31,7 @@ public:
 	 * Create a new ImageDownloader using the specified configuration.
 	 * @param configuration The configuration of this downloader in JSON notation
 	 */
-	ImageDownloader(tileFetchedCbType imageFetchedCb, QJsonObject* configuration);
+	ImageDownloader(tileFetchedCbType imageFetchedCb, QList<ImageLayerDescription> imageLayers);
 	~ImageDownloader();
 
 	/**
@@ -54,9 +54,9 @@ public:
 
 private:
 	/**
-	 * A JSON object holding all configuration information.
+	 * An object holding all configuration information.
 	 */
-	QJsonObject *config;
+	QList<ImageLayerDescription> imageLayers;
 
 	/**
 	 * Callback function to be called when a requested tile was downloaded or fetched from the file
@@ -74,7 +74,7 @@ private:
 	 * @param imageUrl URL of the image
 	 * @return The image downloaded from the specified URL
 	 */
-	QImage* downloadImage(QUrl* imageUrl);
+	QImage downloadImage(QUrl& imageUrl);
 
 };
 
