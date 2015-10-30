@@ -9,9 +9,9 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QString>
-#include <QList>
+#include <QMap>
 
-ImageCache::ImageCache(QList<ImageLayerDescription> imageLayers) {
+ImageCache::ImageCache(QMap<QString, ImageLayerDescription> imageLayers) {
   // TODO: Read configuration
 }
 
