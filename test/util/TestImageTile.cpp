@@ -26,7 +26,7 @@ void TestImageTile::testLayers()
 	CPPUNIT_ASSERT(tile.getLayers().contains("layerTwo"));
 	CPPUNIT_ASSERT(tile.getLayers().contains("layerTwo"));
 	CPPUNIT_ASSERT(tile.getLayers().value("layerOne").width() == 512
-	&& tile.getLayers().value("layerOne").height() == 512);
+				   && tile.getLayers().value("layerOne").height() == 512);
 	CPPUNIT_ASSERT(tile.getLayers().value("layerTwo").width() == 512
-	&& tile.getLayers().value("layerTwo").height() == 512);
+				   && tile.getLayers().value("layerTwo").height() == 512);
 }

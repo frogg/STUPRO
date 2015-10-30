@@ -5,15 +5,16 @@
 
 #include <ImageTile.hpp>
 
-class TestImageTile : public CppUnit::TestFixture {
+class TestImageTile : public CppUnit::TestFixture
+{
 	CPPUNIT_TEST_SUITE(TestImageTile);
-    CPPUNIT_TEST(testMetaData);
-    CPPUNIT_TEST(testLayers);
-  CPPUNIT_TEST_SUITE_END();
+	CPPUNIT_TEST(testMetaData);
+	CPPUNIT_TEST(testLayers);
+	CPPUNIT_TEST_SUITE_END();
 
-	public:
-		void testMetaData();
-		void testLayers();
+public:
+	void testMetaData();
+	void testLayers();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestImageTile);
