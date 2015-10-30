@@ -141,27 +141,31 @@ void VTKOpenGL::initCallbacks()
     // Create callback function that corrects the camera clipping range to work around a VTK bug.
     auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
     {
-     //   float range = 2.f;
-      //  ((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
-        
-        double cameraPosition[3];
         
         VTKOpenGL & client = *((VTKOpenGL*)clientData);
-       // ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
-       // (ClientData*) _clientdata = clientdata;
         
+        double cameraPosition[3];
         client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
         double cameraViewangle =  client.myRenderer->GetActiveCamera()->GetViewAngle();
-     //   std::cout << "View Angle: " << cameraViewangle << std::endl;
+        std::cout << "View Angle: " << cameraViewangle << std::endl;
+        double cameraParalled =  client.myRenderer->GetActiveCamera()->GetParallelScale();
+        std::cout << "Parallel: " << cameraParalled << std::endl;
+
         double globeOrigin[3] = {0,0,0};
         
         double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
-        
+        std::cout << "Camera Position: " << distanceCameraGlobe << std::endl;
+
         double viewEdgeDistance = tan(3.14159265358979323846264338327950288 / 12.0) * distanceCameraGlobe;
       //  std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
-     //   std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
-        
+        double test = 1.0;
+        double test1 = 1.0;
+        double test2 = 1.0;
+
+        client.myRenderer->GetActiveCamera()->GetScreenBottomLeft(test,test1,test2);
+        std::cout << "Camera Bottom Left: " << test << test1 << test2; // << " ; " << test[1]  << " ; " << test[2] << std::endl;
+
         
         vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
         
@@ -174,8 +178,10 @@ void VTKOpenGL::initCallbacks()
         intersectPoints->GetPoint(0, intersection);
         
         Coordinate coord = VTKOpenGL::getCoordinates(intersection);
-      //  std::cout << "Intersection; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
+        
+      //  std::cout << "Intersection; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+        /*
         double uppperCorner[3] = {0,viewEdgeDistance,0};
         double lowOrigin[3] = {0,-viewEdgeDistance,0};
         double rightCorner[3] = {0,0,viewEdgeDistance};
@@ -200,7 +206,7 @@ void VTKOpenGL::initCallbacks()
         intersectPoints->GetPoint(0, intersection);
         coord = VTKOpenGL::getCoordinates(intersection);
      //   std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
-
+         */
         
     };
 
@@ -356,7 +362,7 @@ Coordinate VTKOpenGL::getCoordinates(double point[]){
     float z = point[1];
     coordinate.latitude = asin(z/radius) *180/PI;
     coordinate.longitude =  atan2(x, y)  * 180/PI;
-    std::cout << "test" << coordinate.longitude << std::endl << coordinate.latitude;
+    std::cout << "Koordinaten" << coordinate.longitude << std::endl << coordinate.latitude;
         return coordinate;
 }
 
