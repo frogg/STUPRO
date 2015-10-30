@@ -9,12 +9,12 @@ class TestImageDownloader : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(TestImageDownloader);
 	CPPUNIT_TEST(testGetAvailableLayers);
-	CPPUNIT_TEST(testGetImage);
+	CPPUNIT_TEST(testGetTile);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	void testGetAvailableLayers();
-	void testGetImage();
+	void testGetTile();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestImageDownloader);

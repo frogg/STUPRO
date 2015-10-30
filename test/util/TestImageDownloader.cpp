@@ -13,7 +13,7 @@ void TestImageDownloader::testGetAvailableLayers() {
 	CPPUNIT_ASSERT(availableLayers.contains("heightmap"));
 }
 
-void TestImageDownloader::testGetImage() {
+void TestImageDownloader::testGetTile() {
 	ImageDownloader downloader([](ImageTile & tile) {
 		// TODO: somehow make cppunit wait until the callback completes
 		CPPUNIT_ASSERT(tile.getZoomLevel() == 0);
@@ -22,5 +22,5 @@ void TestImageDownloader::testGetImage() {
 	});
 
 	QString layerName = downloader.getAvailableLayers()[0];
-	downloader.getImage(&layerName, 0, 0, 0);
+	downloader.getTile(layerName, 0, 0, 0);
 }
