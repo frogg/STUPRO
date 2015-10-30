@@ -54,9 +54,9 @@ public:
 
 private:
   /**
-   * A JSON file holding all configuration information.
+   * A JSON object holding all configuration information.
    */
-  QFile configFile;
+  QJsonObject *config;
 
   /**
    * Callback function to be called when a requested tile was downloaded or fetched from the file
