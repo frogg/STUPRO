@@ -1,11 +1,26 @@
 #include "TestImageDownloader.hpp"
 
-void TestImageDownloader::testGetAvailableLayers()
-{
-	CPPUNIT_ASSERT(5 == 5);
+#include <ImageTile.hpp>
+
+void TestImageDownloader::testGetAvailableLayers() {
+	ImageDownloader downloader([](ImageTile & tile) {
+
+	});
+
+	QList<QString> availableLayers = downloader.getAvailableLayers();
+
+	CPPUNIT_ASSERT(availableLayers.contains("satellite-imagery"));
+	CPPUNIT_ASSERT(availableLayers.contains("heightmap"));
 }
 
-void TestImageDownloader::testGetImage()
-{
-	CPPUNIT_ASSERT(1 == 1);
+void TestImageDownloader::testGetImage() {
+	ImageDownloader downloader([](ImageTile & tile) {
+		// TODO: somehow make cppunit wait until the callback completes
+		CPPUNIT_ASSERT(tile.getZoomLevel() == 0);
+		CPPUNIT_ASSERT(tile.getTileX() == 0);
+		CPPUNIT_ASSERT(tile.getTileY() == 0);
+	});
+
+	QString layerName = downloader.getAvailableLayers()[0];
+	downloader.getImage(&layerName, 0, 0, 0);
 }
