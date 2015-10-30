@@ -1,6 +1,8 @@
 #ifndef KRONOS_IMAGECACHE_HPP
 #define KRONOS_IMAGECACHE_HPP
 
+#include "ImageLayerDescription.hpp"
+
 #include <QImage>
 #include <QFile>
 #include <QUrl>
@@ -9,7 +11,6 @@
 #include <QNetworkReply>
 #include <QString>
 #include <QList>
-#include <QJsonObject>
 
 class ImageCache {
 public:
@@ -20,9 +21,9 @@ public:
 
   /**
    * Create a new ImageCache using the specified configuration.
-   * @param configuration The configuration of this downloader in JSON notation
+   * @param imageLayers A list of layer descriptions
    */
-  ImageCache(QJsonObject* configuration);
+  ImageCache(QList<ImageLayerDescription> imageLayers);
   ~ImageCache();
 
   /**

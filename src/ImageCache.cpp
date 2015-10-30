@@ -1,4 +1,5 @@
 #include "../include/ImageCache.hpp"
+#include "../include/ImageLayerDescription.hpp"
 
 #include <QImage>
 #include <QFile>
@@ -8,9 +9,8 @@
 #include <QNetworkReply>
 #include <QString>
 #include <QList>
-#include <QJsonObject>
 
-ImageCache::ImageCache(QJsonObject* configuration) {
+ImageCache::ImageCache(QList<ImageLayerDescription> imageLayers) {
   // TODO: Read configuration
 }
 
