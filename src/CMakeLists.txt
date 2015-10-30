@@ -12,6 +12,8 @@ elseif(${KRONOS_QT_VERSION} EQUAL 5)
     find_package(Qt5Widgets REQUIRED)
 endif()
 
+find_package(Threads)
+
 # sources
 file(GLOB Library_SOURCES ./*.cpp ./**/*.cpp)
 file(GLOB Library_HEADERS ./*.hpp ./**/*.hpp ../include/*.hpp ../include/**/*.hpp)
@@ -29,6 +31,8 @@ add_executable(kronos ${MAIN_CLASS})
 # set C++ standard to C++11
 set_property(TARGET libKronos PROPERTY CXX_STANDARD 11)
 set_property(TARGET kronos PROPERTY CXX_STANDARD 11)
+
+target_link_libraries(libKronos ${CMAKE_THREAD_LIBS_INIT})
 
 # link against Qt libraries
 if(${KRONOS_QT_VERSION} EQUAL 4)
