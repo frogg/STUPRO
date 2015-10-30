@@ -16,6 +16,8 @@
 #include <vtkJPEGReader.h>
 #include <vtkObject.h>
 #include "vtkSphereSource.h"
+#include <vtkCoordinate.h>
+#include <vtkRendererCollection.h>
 
 void VTKOpenGL::run()
 {
@@ -150,7 +152,7 @@ void VTKOpenGL::initCallbacks()
         
         
         double cameraPosition[3];
-       
+        
         
         VTKOpenGL & client = *((VTKOpenGL*)clientData);
         // ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
@@ -159,8 +161,60 @@ void VTKOpenGL::initCallbacks()
         client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
         double cameraViewangle =  client.myRenderer->GetActiveCamera()->GetViewAngle();
         
-        //   std::cout << "View Angle: " << cameraViewangle << std::endl;
+        vtkSmartPointer<vtkCoordinate> coordinate =
+                vtkSmartPointer<vtkCoordinate>::New();
+        
+        
+        
+        coordinate->SetCoordinateSystemToDisplay();
+        coordinate->SetValue(0,1,0);
+        
+        // This doesn't produce the right value if the sphere is zoomed in???
+        
+        double* world = coordinate->GetComputedWorldValue(client.myRenderWindow->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
+        std::cout << "World coordinate oben: " << world[0] << ", " << world[1] << ", " << world[2] << std::endl;
+         
+        
+        double direction[3] = {world[0]+100*(world[0]-cameraPosition[0]),world[1]+100*(world[1]-cameraPosition[1]),world[2]+100*(world[2]-cameraPosition[2])};
+        
+        vtkSmartPointer<vtkPoints> intersectPoints2 = vtkSmartPointer<vtkPoints>::New();
+        client.myTree->IntersectWithLine(world, direction, intersectPoints2, NULL);
+        
+        double intersection2[3];
+        
+        
+            intersectPoints2->GetPoint(0, intersection2);
+        Coordinate coord1 = VTKOpenGL::getCoordinates(intersection2);
 
+        
+            std::cout << "Intersection; " << intersection2[0] << "," << intersection2[2] << "," << intersection2[2] << std::endl;
+        
+        coordinate->SetValue(1,0,0);
+        // This doesn't produce the right value if the sphere is zoomed in???
+        
+        world = coordinate->GetComputedWorldValue(client.myRenderWindow->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
+        std::cout << "World coordinate rechts: " << world[0] << ", " << world[1] << ", " << world[2] << std::endl;
+        
+        
+        
+        coordinate->SetValue(0,-1,0);
+        // This doesn't produce the right value if the sphere is zoomed in???
+        
+        world = coordinate->GetComputedWorldValue(client.myRenderWindow->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
+        std::cout << "World coordinate unten: " << world[0] << ", " << world[1] << ", " << world[2] << std::endl;
+        
+        
+        coordinate->SetValue(-1,0,0);
+        // This doesn't produce the right value if the sphere is zoomed in???
+        
+        world = coordinate->GetComputedWorldValue(client.myRenderWindow->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
+        std::cout << "World coordinate links: " << world[0] << ", " << world[1] << ", " << world[2] << std::endl;
+        std::cout << "Camera: " << cameraPosition[0] << ", " << cameraPosition[1] << ", " << cameraPosition[2] << std::endl;
+        
+        
+        
+        //   std::cout << "View Angle: " << cameraViewangle << std::endl;
+        
         double globeOrigin[3] = {0,0,0};
         
         double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
@@ -168,7 +222,7 @@ void VTKOpenGL::initCallbacks()
         double viewEdgeDistance = tan(3.14159265358979323846264338327950288 / 12.0) * distanceCameraGlobe;
         //  std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
-        std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
+        //   std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
         
         
         vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
@@ -177,14 +231,14 @@ void VTKOpenGL::initCallbacks()
         
         client.myTree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
         
-  
+        
         
         double intersection[3];
         
         intersectPoints->GetPoint(0, intersection);
         
         Coordinate coord = VTKOpenGL::getCoordinates(intersection);
-        std::cout << "Intersection; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
+        //  std::cout << "Intersection; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
         
         double uppperCorner[3] = {0,viewEdgeDistance,0};
         double lowOrigin[3] = {0,-viewEdgeDistance,0};
@@ -233,24 +287,24 @@ void VTKOpenGL::initCallbacks()
     vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
     clipCallback->SetCallback(clipFunc);
     
-    clipCallback->SetClientData(this);
+  //  clipCallback->SetClientData(this);
     //myRenderWindow->GetInteractor()->CreateRepeatingTimer(1000);
-    myRenderWindow->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, clipCallback);
+//    myRenderWindow->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, clipCallback);
     
     //    myRenderer->GetRenderWindow()->GetInteractor()->CreateRepeatingTimer(17);
     //    myRenderer->AddObserver(vtkCommand::TimerEvent, clipCallback);
     
     
     // Call the function once to correct the clipping range immediately.
-    clipFunc(myRenderer, 0, this, 0);
+    //clipFunc(myRenderer, 0, this, 0);
     clipCallback->SetClientData(this);
     //    clipCallback->SetClientData(myTree);
     //    myRenderer->AddObserver(vtkCommand::MouseMoveEvent, clipCallback);
     //  myRenderWindow->GetInteractor()->CreateRepeatingTimer(17);
-    myRenderWindow->GetInteractor()->AddObserver(vtkCommand::MouseMoveEvent, clipCallback);
+    myRenderWindow->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, clipCallback);
     
     // Call the function once to correct the clipping range immediately.
-    clipFunc(myRenderer, 0, this, 0);
+    //clipFunc(myRenderer, 0, this, 0);
     
     // Create callback function that corrects the camera clipping range to work around a VTK bug.
     auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
@@ -370,25 +424,17 @@ vtkSmartPointer<vtkOpenGLTexture> VTKOpenGL::loadAlphaTexture(std::string rgbFil
 }
 
 Coordinate VTKOpenGL::getCoordinates(double point[]){
-        Coordinate coordinate;
+    Coordinate coordinate;
     float radius = 0.5f;
     float PI = 3.14159268;
-       // coordinate.latitude = ((asin(point[0] / .5f)) / 6.28) * 360;
-    coordinate.latitude = (asin(point[2] / radius))*(180/PI);
- //   std::cout << "Point 0: " << point[0] << "," << coordinate.latitude  << std::endl;
-    std::cout << "Point 0: " << point[0] << std::endl << "Point 1: " << point[1] << std::endl << "Point 2: " << point[2]  << std::endl;
-    if(point[0]>0){
-        coordinate.longitude = (atan(point[1]/point[0]))*(180/PI);
-    }else if(point[1]>0){
-        coordinate.longitude = (atan(point[1]/point[0]))*(180/PI) +180;
-    }else{
-        coordinate.longitude = (atan(point[1]/point[0]))*(180/PI) -180;
-    }
+    //coordinate system are not the same as in math formulas
+    float x = point[0];
+    float y = point[2];
+    float z = point[1];
+    coordinate.latitude = asin(z/radius) *180/PI;
+    coordinate.longitude =  atan2(x, y)  * 180/PI;
+    std::cout << "test" << coordinate.longitude << std::endl << coordinate.latitude;
     
-      //  coordinate.longitude = ((atan2(point[2], point[1])) / 6.28) * 360;
-    std::cout << coordinate.latitude  << std::endl << coordinate.longitude << std::endl ;
-    
-    
-        return coordinate;
+    return coordinate;
 }
 
