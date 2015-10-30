@@ -3,11 +3,18 @@ set(MAIN_CLASS ./TestRunner.cpp)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-# include QT
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Network REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+# find Qt headers and libraries
+if(${KRONOS_QT_VERSION} EQUAL 4)
+    find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
+    include(${QT_USE_FILE})
+elseif(${KRONOS_QT_VERSION} EQUAL 5)
+    find_package(Qt5Core REQUIRED)
+    find_package(Qt5Gui REQUIRED)
+    find_package(Qt5Network REQUIRED)
+    find_package(Qt5Widgets REQUIRED)
+endif()
+
+# find CppUnit headers and libraries
 find_package(CppUnit REQUIRED)
 
 # test sources
@@ -27,8 +34,19 @@ add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES} ${Test_HEADERS})
 # set C++ standard to C++11
 set_property(TARGET UnitTester PROPERTY CXX_STANDARD 11)
 
+# link against kronos and CppUnit libraries
 target_link_libraries(UnitTester
   libKronos
-  Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets
   cppunit
 )
+
+# link against Qt libraries
+if(${KRONOS_QT_VERSION} EQUAL 4)
+    target_link_libraries(UnitTester
+        ${QT_LIBRARIES}
+    )
+elseif(${KRONOS_QT_VERSION} EQUAL 5)
+    target_link_libraries(UnitTester
+        Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets
+    )
+endif()

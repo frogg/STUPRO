@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(kronos)
 
+set(KRONOS_QT_VERSION 4)
+
 add_subdirectory(src)
 add_subdirectory(test)
 
