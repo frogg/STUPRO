@@ -23,6 +23,10 @@ include_directories(${CPPUNIT_INCLUDE_DIR})
 
 # create an executable for the test runner
 add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES} ${Test_HEADERS})
+
+# set C++ standard to C++11
+set_property(TARGET UnitTester PROPERTY CXX_STANDARD 11)
+
 target_link_libraries(UnitTester
   libKronos
   Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets

@@ -21,6 +21,10 @@ add_library(libKronos ${Library_SOURCES} ${Library_HEADERS})
 # register the main executable
 add_executable(kronos ${MAIN_CLASS})
 
+# set C++ standard to C++11
+set_property(TARGET libKronos PROPERTY CXX_STANDARD 11)
+set_property(TARGET kronos PROPERTY CXX_STANDARD 11)
+
 # link qt to the kronos lib and the main application
 target_link_libraries(libKronos Qt5::Core Qt5::Gui Qt5::Network)
 target_link_libraries(kronos Qt5::Widgets)
