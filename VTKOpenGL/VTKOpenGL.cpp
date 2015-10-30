@@ -159,7 +159,8 @@ void VTKOpenGL::initCallbacks()
 
 			    // Update renderer.
 			    client.myRenderWindow->Render();
-		    }
+			}
+
 	    };
 	
 	// Create and assign callback for clipping function.
@@ -182,12 +183,14 @@ void VTKOpenGL::initCallbacks()
 
 		        if (interactor->GetKeyCode() == 49)// 1 key
 		        {	
-			        client.myDisplayMode = DisplayGlobe;
-		        }
+					client.myRenderer->GetActiveCamera()->SetPosition(0, 0, 2.8);
+					client.myDisplayMode = DisplayGlobe;
+				}
 		        else if (interactor->GetKeyCode() == 50) // 2 key
 		        {	
-			        client.myDisplayMode = DisplayMap;
-		        }
+					client.myRenderer->GetActiveCamera()->SetPosition(0, 0, 2.8);
+					client.myDisplayMode = DisplayMap;
+				}
 	        };
 	
 	// Create and assign callback for mode switch function.
