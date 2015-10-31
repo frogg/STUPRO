@@ -26,6 +26,7 @@ public:
    * Load layer information from a file.
    * @param file Path of the file to be read
    * @return A map of layer identifiers and layers as read from the file
+	 * @throws FileOpenException If the config could not be opened
    */
   static const QMap<QString, ImageLayerDescription> loadConfigFile(const QString &file);
 };
