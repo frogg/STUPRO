@@ -54,6 +54,26 @@ struct InvalidTilePositionException : public InvalidTileLocationException {
 	}
 };
 
+struct InvalidLayerException : public std::exception {
+	QString givenLayer;
+	QList<QString> availableLayers;
+
+	InvalidLayerException(QString givenLayer, QList<QString> availableLayers)
+		: givenLayer(givenLayer), availableLayers(availableLayers) { }
+
+	const char * what() const throw() {
+		QString message("The given layer wasn't recognized. Expected one of { ");
+		for (int i = 0; i < availableLayers.size(); i++) {
+			message += availableLayers[i];
+			if (i < availableLayers.size() - 1) {
+				message += ", ";
+			}
+		}
+		message += " }. Was given " + givenLayer + ".";
+		return message.toStdString().c_str();
+	}
+};
+
 class ImageDownloader {
 public:
 	/**
