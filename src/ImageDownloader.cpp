@@ -36,6 +36,7 @@ void ImageDownloader::getTile(const QString &layer, int zoomLevel, int tileX, in
 void ImageDownloader::getTile(const QList<QString> layers, int zoomLevel,
 							  int tileX, int tileY) const {
 	validateTileLocation(zoomLevel, tileX, tileY);
+	validateLayersAvailable(layers);
 
 	// TODO: add check if all provided layers are in the available layers list
 
@@ -105,6 +106,15 @@ void ImageDownloader::validateTileLocation(int zoomLevel, int tileX, int tileY) 
 	int maxY = HEIGHT_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL) - 1;
 	if (tileX < 0 || tileX > maxX || tileY < 0 || tileY > maxY) {
 		throw InvalidTilePositionException(zoomLevel, 0, maxX, tileX, 0, maxY, tileY);
+	}
+}
+
+void ImageDownloader::validateLayersAvailable(const QList<QString> &layers) const {
+	QList<QString> availableLayers = this->getAvailableLayers();
+	for (QString layer : layers) {
+		if (!availableLayers.contains(layer)) {
+			throw InvalidLayerException(layer, availableLayers);
+		}
 	}
 }
 
