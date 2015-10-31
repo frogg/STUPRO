@@ -24,7 +24,7 @@ public:
 	 * @param dirName The name of the directory to be removed
 	 * @return The result of the operation
 	 */
-	static bool removeDir(const QString& dirName);
+	static bool removeDir(const QString &dirName);
 
 	void setUp() {
 		TestImageCache::removeDir(QDir("cache").absolutePath());
