@@ -5,5 +5,5 @@ $(wget -O astyle_2.05.1_linux.tar.gz http://downloads.sourceforge.net/project/as
 tar zxf astyle_2.05.1_linux.tar.gz
 cd astyle/build/gcc/
 make release -j 4
-# make install
+sudo make install
 cd ../../../../..
