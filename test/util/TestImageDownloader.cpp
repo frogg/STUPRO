@@ -6,7 +6,7 @@
 #include <future>
 
 void TestImageDownloader::testGetAvailableLayers() {
-	ImageDownloader downloader([](ImageTile & tile) {
+	ImageDownloader downloader([](ImageTile tile) {
 
 	});
 
@@ -20,7 +20,7 @@ void TestImageDownloader::testGetTile() {
 	std::promise<ImageTile> promise;
 	std::future<ImageTile> future = promise.get_future();
 
-	ImageDownloader downloader([&](ImageTile & tile) {
+	ImageDownloader downloader([&](ImageTile tile) {
 		promise.set_value(tile);
 	});
 
@@ -30,7 +30,17 @@ void TestImageDownloader::testGetTile() {
 	future.wait();
 	ImageTile tile = future.get();
 
-	CPPUNIT_ASSERT(tile.getZoomLevel() == 0);
-	CPPUNIT_ASSERT(tile.getTileX() == 0);
-	CPPUNIT_ASSERT(tile.getTileY() == 0);
+	CPPUNIT_ASSERT_EQUAL(0, tile.getZoomLevel());
+	CPPUNIT_ASSERT_EQUAL(0, tile.getTileX());
+	CPPUNIT_ASSERT_EQUAL(0, tile.getTileY());
+
+	CPPUNIT_ASSERT_EQUAL(1, tile.getLayers().size());
+
+	MetaImage metaImage = tile.getLayers()[layerName];
+	CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMinimumHeight());
+	CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMaximumHeight());
+
+	QImage image = metaImage.getImage();
+	CPPUNIT_ASSERT_EQUAL(512, image.width());
+	CPPUNIT_ASSERT_EQUAL(512, image.height());
 }
