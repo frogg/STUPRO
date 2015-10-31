@@ -25,9 +25,8 @@ void TestImageDownloader::testGetTile() {
 	});
 
 	QString layerName = downloader.getAvailableLayers()[0];
-	downloader.getTile(layerName, 0, 0, 0);
+	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(layerName, 0, 0, 0));
 
-	future.wait();
 	ImageTile tile = future.get();
 
 	CPPUNIT_ASSERT_EQUAL(0, tile.getZoomLevel());
@@ -43,4 +42,18 @@ void TestImageDownloader::testGetTile() {
 	QImage image = metaImage.getImage();
 	CPPUNIT_ASSERT_EQUAL(512, image.width());
 	CPPUNIT_ASSERT_EQUAL(512, image.height());
+
+	CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, -1, 0, 0), InvalidTileZoomException);
+	CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, 16, 0, 0), InvalidTileZoomException);
+
+	for (int zoom = 0; zoom < 16; zoom++) {
+		CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, -1, 0), InvalidTilePositionException);
+		CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, 8 << zoom, 0),
+							 InvalidTilePositionException);
+		CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, 0, -1), InvalidTilePositionException);
+		CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, 0, 4 << zoom),
+							 InvalidTilePositionException);
+	}
+
+	CPPUNIT_ASSERT_THROW(downloader.getTile("non-existing layer", 0, 0, 0), InvalidLayerException);
 }
