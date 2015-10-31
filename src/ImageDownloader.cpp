@@ -37,14 +37,14 @@ void ImageDownloader::getTile(QList<QString> layers, int zoomLevel, int tileX, i
 	// calls the tileFetchedCb with the results
 	std::thread fetchThread([ = ]() {
 		// build up a queue
-		QMap<QString, MetaImage> fetchedTiles;
+		QMap<QString, MetaImage *> fetchedTiles;
 
 		foreach (QString layerName, layers) {
 			// if (ImageCache::isImageCached(layerName, zoomLevel, tileX, tileY)) {
-			// 	QImage tile = ImageCache::getCachedImage(layerName, zoomLevel, tileX, tileY);
-			// 	fetchedTiles.insert(layerName, tile);
+			//  QImage tile = ImageCache::getCachedImage(layerName, zoomLevel, tileX, tileY);
+			//  fetchedTiles.insert(layerName, tile);
 			// } else {
-			// 	// trigger the download of the image
+			//  // trigger the download of the image
 			// }
 		}
 
