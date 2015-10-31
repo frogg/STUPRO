@@ -65,6 +65,12 @@ void ImageDownloader::validateTileLocation(int zoomLevel, int tileX, int tileY) 
 		throw InvalidTileZoomException(zoomLevel, 0, 15);
 	}
 
+	// check tile position range
+	int maxX = WIDTH_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL) - 1;
+	int maxY = HEIGHT_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL) - 1;
+	if (tileX < 0 || tileX > maxX || tileY < 0 || tileY > maxY) {
+		throw InvalidTilePositionException(zoomLevel, 0, maxX, tileX, 0, maxY, tileY);
+	}
 }
 
 QString ImageDownloader::calculateBoundingBox(int zoomLevel, int tileX, int tileY) {
