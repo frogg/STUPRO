@@ -10,8 +10,8 @@ before_install:
   - cd scripts/ && download-and-install-astyle.sh
 
 script:
-  - ./.formatter-check.sh
-  - ./.build.sh
+  - ./scripts/formatter-check.sh
+  - ./scripts/build.sh
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
 cache:
