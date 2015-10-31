@@ -177,6 +177,13 @@ private:
 	static void validateTileLocation(int zoomLevel, int tileX, int tileY);
 
 	/**
+	 * Checks if all layers in the given list are in the available layers list.
+	 *
+	 * @param layers a list containing layer names
+	 */
+	void validateLayersAvailable(const QList<QString> &layers) const;
+
+	/**
 	 * Calculates the bounding box in lat-long from the given tile location.
 	 * Assumes that the given tile location is valid.
 	 *
