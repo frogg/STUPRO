@@ -20,7 +20,7 @@ void TestImageDownloader::testGetTile() {
 	std::promise<ImageTile> promise;
 	std::future<ImageTile> future = promise.get_future();
 
-	ImageDownloader downloader([&](ImageTile &tile) {
+	ImageDownloader downloader([&](ImageTile & tile) {
 		promise.set_value(tile);
 	});
 
