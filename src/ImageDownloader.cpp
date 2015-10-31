@@ -38,8 +38,6 @@ void ImageDownloader::getTile(const QList<QString> layers, int zoomLevel,
 	validateTileLocation(zoomLevel, tileX, tileY);
 	validateLayersAvailable(layers);
 
-	// TODO: add check if all provided layers are in the available layers list
-
 	std::promise<void> layersProcessed;
 
 	// create a thread that kicks off all image requests, waits until all of them are completed and
