@@ -34,12 +34,12 @@ struct InvalidTileZoomException : public InvalidTileLocationException {
 	}
 };
 
-struct InvalidTilePosition : public InvalidTileLocationException {
+struct InvalidTilePositionException : public InvalidTileLocationException {
 	int zoomLevel;
 	int xMin, xMax, xActual;
 	int yMin, yMax, yActual;
 
-	InvalidTilePosition(int zoomLevel, int xMin, int xMax, int xActual, int yMin, int yMax, int yActual)
+	InvalidTilePositionException(int zoomLevel, int xMin, int xMax, int xActual, int yMin, int yMax, int yActual)
 		: zoomLevel(zoomLevel), xMin(xMin), xMax(xMax), xActual(xActual),
 		  yMin(yMin), yMax(yMax), yActual(yActual) { }
 
@@ -63,8 +63,8 @@ public:
 
 	static const int MIN_ZOOM_LEVEL = 0;
 	static const int MAX_ZOOM_LEVEL = 15;
-	static const int WIDTH_ON_MIN_ZOOM = 8;
-	static const int HEIGHT_ON_MIN_ZOOM = 4;
+	static const int WIDTH_AT_MIN_ZOOM = 8;
+	static const int HEIGHT_AT_MIN_ZOOM = 4;
 
 	/**
 	 * Creates a new ImageDownloader using the default configuration.
@@ -163,6 +163,7 @@ private:
 
 	/**
 	 * Calculates the bounding box in lat-long from the given tile location.
+	 * Assumes that the given tile location is valid.
 	 *
 	 * @param zoomLevel how deep to dive into the quad-tree
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
