@@ -8,6 +8,7 @@
 
 #include <exception>
 #include <functional>
+#include <future>
 #include <QFile>
 #include <QUrl>
 #include <QNetworkAccessManager>
@@ -149,7 +150,7 @@ private:
 	static QNetworkAccessManager networkManager;
 
 	/**
-	 * Chechs if the given tile location is valid for the underlying quad-tree.
+	 * Checks if the given tile location is valid for the underlying quad-tree.
 	 *
 	 * @param zoomLevel how deep to dive into the quad-tree
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
@@ -191,7 +192,7 @@ private:
 	 * @param imageUrl URL of the image
 	 * @return The image downloaded from the specified URL
 	 */
-	void downloadImage(QUrl &imageUrl, ImageDownloadedCb imageDownloadedCb);
+	std::future<MetaImage> downloadImage(QUrl &imageUrl);
 };
 
 #endif

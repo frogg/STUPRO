@@ -1,8 +1,12 @@
 #include "../include/ImageDownloader.hpp"
 #include "../include/ConfigUtil.hpp"
 
-#include <QImage>
+#include <map>
 #include <thread>
+#include <mutex>
+#include <QImage>
+
+#include <iostream>
 
 QNetworkAccessManager ImageDownloader::networkManager;
 
@@ -30,22 +34,32 @@ void ImageDownloader::getTile(QString &layer, int zoomLevel, int tileX, int tile
 }
 
 void ImageDownloader::getTile(QList<QString> layers, int zoomLevel, int tileX, int tileY) {
+	validateTileLocation(zoomLevel, tileX, tileY);
+
 	// TODO: check cache hit, if so, get image from cache, otherwise download it
 	// (this->downloadImage) and store it in the cache
 
 	// create a thread that kicks off all image requests, waits until all are completed and
 	// calls the tileFetchedCb with the results
 	std::thread fetchThread([ = ]() {
-		// build up a queue
-		QMap<QString, MetaImage> fetchedTiles;
+		std::map<QString, std::future<MetaImage>> fetchFutures;
 
-		foreach (QString layerName, layers) {
+		for (QString layerName : layers) {
+			// TODO: wait until the ImageCache is implemented
 			// if (ImageCache::isImageCached(layerName, zoomLevel, tileX, tileY)) {
 			//  QImage tile = ImageCache::getCachedImage(layerName, zoomLevel, tileX, tileY);
 			//  fetchedTiles.insert(layerName, tile);
 			// } else {
-			//  // trigger the download of the image
+
+			// trigger the download of the image
+			QUrl imageUrl = this->buildTileDownloadUrl(layerName, zoomLevel, tileX, tileY);
+			fetchFutures[layerName] = this->downloadImage(imageUrl);
 			// }
+		}
+
+		QMap<QString, MetaImage> fetchedTiles;
+		for (auto iterator = fetchFutures.begin(); iterator != fetchFutures.end(); ++iterator) {
+			iterator->second.wait();
 		}
 
 		ImageTile tile(fetchedTiles, zoomLevel, tileX, tileY);
@@ -85,7 +99,11 @@ QString ImageDownloader::calculateBoundingBox(int zoomLevel, int tileX, int tile
 	float longMin = (tileWidthAtZoomLevel * tileX) - 180.0;
 	float longMax = (tileWidthAtZoomLevel * (tileX + 1)) - 180.0;
 
-	return QString("%1,%3,%2,%4").arg(latMin, latMax, longMin, longMax);
+	QString ret("%1,%3,%2,%4");
+	ret = ret.arg(QString::number(latMin), QString::number(latMax));
+	ret = ret.arg(QString::number(longMin), QString::number(longMax));
+
+	return ret;
 }
 
 QUrl ImageDownloader::buildTileDownloadUrl(QString layer, int zoomLevel, int tileX, int tileY) {
@@ -108,9 +126,17 @@ QUrl ImageDownloader::buildTileDownloadUrl(QString layer, int zoomLevel, int til
 	return QUrl(urlString);
 }
 
-void ImageDownloader::downloadImage(QUrl &imageUrl, ImageDownloadedCb imageDownloadedCb) {
-	QImage dummyImage(512, 512, QImage::Format_RGB32);
-	MetaImage dummyMetaImage(dummyImage, 0, 0);
+std::future<MetaImage> ImageDownloader::downloadImage(QUrl &imageUrl) {
+	std::promise<MetaImage> imageDownloadedPromise;
+
 	// TODO: actually download the image
-	imageDownloadedCb(dummyImage);
+	// this shouldn't be a thread later on when actually using QNetworkAccessManager to download the image
+	std::thread([&imageDownloadedPromise, imageUrl]() {
+		// TODO: check content type and load the image accordingly, either through QImage or convert it from bil16
+		QImage dummyImage(512, 512, QImage::Format_RGB32);
+		MetaImage dummyMetaImage(dummyImage, 0, 0);
+		imageDownloadedPromise.set_value_at_thread_exit(dummyMetaImage);
+	}).detach();
+
+	return imageDownloadedPromise.get_future();
 }
