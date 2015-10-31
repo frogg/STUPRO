@@ -19,6 +19,7 @@ public:
    */
   MetaImage(const QImage &image);
 
+  MetaImage();
 	~MetaImage();
 
   /**
