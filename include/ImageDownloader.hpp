@@ -64,12 +64,12 @@ struct InvalidLayerException : public std::exception {
 	const char * what() const throw() {
 		QString message("The given layer wasn't recognized. Expected one of { ");
 		for (int i = 0; i < availableLayers.size(); i++) {
-			message += availableLayers[i];
+			message += "'" + availableLayers[i] + "'";
 			if (i < availableLayers.size() - 1) {
 				message += ", ";
 			}
 		}
-		message += " }. Was given " + givenLayer + ".";
+		message += " }. Was given '" + givenLayer + "'.";
 		return message.toStdString().c_str();
 	}
 };
