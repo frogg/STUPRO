@@ -1,6 +1,6 @@
 #include "../include/ImageTile.hpp"
 
-ImageTile::ImageTile(const QMap<QString, MetaImage *> &layers, int zoomLevel, int tileX,
+ImageTile::ImageTile(const QMap<QString, MetaImage> &layers, int zoomLevel, int tileX,
 					 int tileY) {
 	this->setLayers(layers);
 	this->setZoomLevel(zoomLevel);
@@ -12,11 +12,11 @@ ImageTile::~ImageTile() {
 	this->layers.clear();
 }
 
-QMap<QString, MetaImage *> &ImageTile::getLayers() {
+QMap<QString, MetaImage> &ImageTile::getLayers() {
 	return this->layers;
 }
 
-void ImageTile::setLayers(const QMap<QString, MetaImage *> &layers) {
+void ImageTile::setLayers(const QMap<QString, MetaImage> &layers) {
 	this->layers = layers;
 }
 
