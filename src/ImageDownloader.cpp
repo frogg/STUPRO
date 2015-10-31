@@ -74,8 +74,8 @@ void ImageDownloader::validateTileLocation(int zoomLevel, int tileX, int tileY) 
 }
 
 QString ImageDownloader::calculateBoundingBox(int zoomLevel, int tileX, int tileY) {
-	float horizontalTilesAtZoomLevel = (float) (WIDTH_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL));
-	float verticalTilesAtZoomLevel = (float) (HEIGHT_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL));
+	float horizontalTilesAtZoomLevel = (float)(WIDTH_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL));
+	float verticalTilesAtZoomLevel = (float)(HEIGHT_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL));
 
 	float tileWidthAtZoomLevel = 360.0 / horizontalTilesAtZoomLevel;
 	float tileHeightAtZoomLevel = 180.0 / verticalTilesAtZoomLevel;

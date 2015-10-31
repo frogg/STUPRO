@@ -1,0 +1,7 @@
+#!/bin/sh
+FORMATTER_CHECK=$(./scripts/formatter-check.sh)
+if [ $? != 0 ]; then
+    echo "Found formatting errors in source files, aborting commit"
+    exit 1
+fi
+echo "Formatting seems fine"
