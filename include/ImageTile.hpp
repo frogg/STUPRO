@@ -1,31 +1,34 @@
 #ifndef KRONOS_IMAGETILE_HPP
 #define KRONOS_IMAGETILE_HPP
 
-#include <QImage>
+#include "MetaImage.hpp"
+
 #include <QString>
-#include <QList>
 #include <QMap>
 
 class ImageTile {
 public:
   /**
-   * Create a new ImageTile
-   * @param configuration The configuration of this downloader in JSON notation
+   * Create a new ImageTile.
+   * @param layers A map of layer identifiers and the corresponding image
+   * @param zoomLevel The zoom level of this image tile
+   * @param tileX The horizontal position of this tile
+   * @param tileY The vertical position of this tile
    */
-  ImageTile(const QMap<QString, QImage> &layers, int zoomLevel, int tileX, int tileY);
+  ImageTile(const QMap<QString, MetaImage> &layers, int zoomLevel, int tileX, int tileY);
 	~ImageTile();
 
   /**
    * Get the map of layers saved in this image tile.
    * @return A map of layer identifiers and corresponding images
    */
-  QMap<QString, QImage>& getLayers();
+  QMap<QString, MetaImage>& getLayers();
 
   /**
    * Set the map of layers saved in this image tile.
    * @param layers A map of layer identifiers and corresponding images
    */
-  void setLayers(const QMap<QString, QImage> &layers);
+  void setLayers(const QMap<QString, MetaImage> &layers);
 
   /**
    * Get the zoom level of this image tile.
@@ -64,7 +67,7 @@ public:
   void setTileY(int tileY);
 
 private:
-  QMap<QString, QImage> layers;
+  QMap<QString, MetaImage> layers;
   int zoomLevel;
   int tileX;
   int tileY;

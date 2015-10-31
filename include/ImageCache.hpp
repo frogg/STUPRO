@@ -1,7 +1,8 @@
 #ifndef KRONOS_IMAGECACHE_HPP
 #define KRONOS_IMAGECACHE_HPP
 
-#include <QImage>
+#include "MetaImage.hpp"
+
 #include <QString>
 
 class ImageCache {
@@ -24,7 +25,7 @@ public:
    * @param tileY Vertical position of the requested tile
    * @return A pointer to the image loaded from the cache
    */
-  static const QImage getCachedImage(QString &layer, int zoomLevel, int tileX, int tileY);
+  static const MetaImage getCachedImage(QString &layer, int zoomLevel, int tileX, int tileY);
 
   /**
    * Save an existing image to the cache.
@@ -34,7 +35,7 @@ public:
    * @param tileX Horizontal position of the requested tile
    * @param tileY Vertical position of the requested tile
    */
-  static const void cacheImage(QImage &image, QString &layer, int zoomLevel, int tileX, int tileY);
+  static const void cacheImage(MetaImage &image, QString &layer, int zoomLevel, int tileX, int tileY);
 };
 
 #endif
