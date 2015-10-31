@@ -4,7 +4,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -qq install libcppunit-dev
   - sudo apt-get -qq install cmake
-  - sudo apt-get -qq install qtbase5-dev
+  # - sudo apt-get -qq install qtbase5-dev
 
   # build astyle because the astyle version in the official repos is outdated
   - cd ./scripts/ && ./download-and-install-astyle.sh && cd ../
