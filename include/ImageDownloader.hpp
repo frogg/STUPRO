@@ -46,7 +46,6 @@ struct InvalidTilePositionException : public InvalidTileLocationException {
 
 	const char * what() const throw() {
 		QString message("The given tile position is invalid. Valid tile positions for zoom level %1 must be within x%2 to x%3 and y%5 to y%6. Was given x%4 y%7.");
-		// message = message.arg(QString::number(zoomLevel), xMin, xMax, xActual, yMin, yMax, yActual);
 		message = message.arg(zoomLevel);
 		message = message.arg(xMin, xMax, xActual);
 		message = message.arg(yMin, yMax, yActual);
@@ -60,7 +59,7 @@ public:
 	/**
 	 * Type used for the tile fetched callback.
 	 */
-	typedef std::function<void(ImageTile& tile)> TileFetchedCb;
+	typedef std::function<void(ImageTile tile)> TileFetchedCb;
 
 	static const int MIN_ZOOM_LEVEL = 0;
 	static const int MAX_ZOOM_LEVEL = 15;
@@ -93,7 +92,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(int zoomLevel, int tileX, int tileY);
+	void getTile(int zoomLevel, int tileX, int tileY) const;
 
 	/**
 	 * Fetches the image of the given layer at the given location.
@@ -105,7 +104,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(QString &layer, int zoomLevel, int tileX, int tileY);
+	void getTile(const QString &layer, int zoomLevel, int tileX, const int tileY) const;
 
 	/**
 	 * Fetches the images of the given layers at the given location.
@@ -117,7 +116,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(QList<QString> layers, int zoomLevel, int tileX, int tileY);
+	void getTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY) const;
 
 	/**
 	 * Returns a list of available image layers.
@@ -125,14 +124,9 @@ public:
 	 * @returns a list containing the names of all available image layers as read from the config
 	 *          file
 	 */
-	QList<QString> getAvailableLayers();
+	QList<QString> getAvailableLayers() const;
 
 private:
-	/**
-	 * Type used for the image downloaded callback.
-	 */
-	typedef std::function<void(MetaImage)> ImageDownloadedCb;
-
 	/**
 	 * An object holding all configuration information.
 	 */
@@ -184,7 +178,7 @@ private:
 	 *
 	 * @returns a URL pointing to the image with the given properties
 	 */
-	QUrl buildTileDownloadUrl(QString layer, int zoomLevel, int tileX, int tileY);
+	QUrl buildTileDownloadUrl(const QString &layer, int zoomLevel, int tileX, int tileY) const;
 
 	/**
 	 * Download an image from a specified URL.
@@ -192,7 +186,7 @@ private:
 	 * @param imageUrl URL of the image
 	 * @return The image downloaded from the specified URL
 	 */
-	std::future<MetaImage> downloadImage(QUrl &imageUrl);
+	std::future<MetaImage> downloadImage(const QUrl &imageUrl) const;
 };
 
 #endif
