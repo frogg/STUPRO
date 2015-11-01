@@ -286,6 +286,15 @@ void VTKOpenGL::initCallbacks()
         std::cout << "Camera Position: " << cameraPosition[0] << ", " << cameraPosition[1] << ", " <<cameraPosition[2]<< "DistanceToCenter" << distanceCameraGlobe << std::endl;
 */
         
+        //Test View Frustum
+         double aspect;
+         double planes[24];
+        
+         client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
+         std::cout << planes[0] << "*x   " << planes[1] << "*y   " << planes[2] << "*z + " << planes[3]<< std::endl;
+        for(int i=0; i<25; i++){
+            std::cout << planes[i]<< std::endl;
+        }
     };
     
     
