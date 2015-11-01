@@ -291,16 +291,22 @@ void VTKOpenGL::initCallbacks()
          double planes[24];
         
          client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
-         std::cout << "Left equation" << planes[0] << "*x   " << planes[1] << "*y   " << planes[2] << "*z + " << planes[3]<< std::endl;
-        std::cout << "Bottom equation" << planes[8] << "*x   " << planes[9] << "*y   " << planes[10] << "*z + " << planes[11]<< std::endl;
+        // std::cout << "Left equation" << planes[0] << "*x   " << planes[1] << "*y   " << planes[2] << "*z + " << planes[3]<< std::endl;
+     //   std::cout << "Bottom equation" << planes[8] << "*x   " << planes[9] << "*y   " << planes[10] << "*z + " << planes[11]<< std::endl;
+        //Get all planes of view frustum
         double planeLeft[4]  = {planes[0],  planes[1], planes[2], planes[3]};
+        double planeRight[4]  = {planes[4],  planes[5], planes[6], planes[7]};
         double planeBottom[4]  = {planes[8],  planes[9], planes[10], planes[11]};
+        double planeTop[4]  = {planes[12],  planes[13], planes[14], planes[15]};
+        double planeFar[4]  = {planes[16],  planes[17], planes[18], planes[19]};
+        double planeNear[4]  = {planes[20],  planes[21], planes[22], planes[23]};
+
 
         double intersectionVector[3];
         VTKOpenGL::getIntersectionLineFromPlane(planeLeft, planeBottom, intersectionVector);
         std::cout << "IntersectionDirection" << intersectionVector[0] << " ,  " << intersectionVector[1] << "  , " << intersectionVector[2] << std::endl;
 
-        
+        //direction of the line => calculate Point behind earth and then calculate the intersecti
         double pointOnLine[3] = {cameraPosition[0]-100*(intersectionVector[0]),cameraPosition[1]-100*(intersectionVector[1]),cameraPosition[2]-100*(intersectionVector[2])};
         
     
