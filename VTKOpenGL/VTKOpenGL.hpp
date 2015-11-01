@@ -55,6 +55,7 @@ private:
 	DisplayMode myDisplayMode;
 
     static Coordinate getCoordinates(double point[]);
+    static void getIntersectionLineFromPlane(double firstPlane[], double secondPlane[], double lineDirection[]);
 	float myGlobeRadius;
 	float myPlaneSize;
 	float myDisplayModeInterpolation;

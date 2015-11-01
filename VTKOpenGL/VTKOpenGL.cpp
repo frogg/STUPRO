@@ -287,14 +287,33 @@ void VTKOpenGL::initCallbacks()
 */
         
         //Test View Frustum
-         double aspect;
+         double aspect = 1;
          double planes[24];
         
          client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
-         std::cout << planes[0] << "*x   " << planes[1] << "*y   " << planes[2] << "*z + " << planes[3]<< std::endl;
-        for(int i=0; i<25; i++){
-            std::cout << planes[i]<< std::endl;
-        }
+         std::cout << "Left equation" << planes[0] << "*x   " << planes[1] << "*y   " << planes[2] << "*z + " << planes[3]<< std::endl;
+        std::cout << "Bottom equation" << planes[8] << "*x   " << planes[9] << "*y   " << planes[10] << "*z + " << planes[11]<< std::endl;
+        double planeLeft[4]  = {planes[0],  planes[1], planes[2], planes[3]};
+        double planeBottom[4]  = {planes[8],  planes[9], planes[10], planes[11]};
+
+        double intersectionVector[3];
+        VTKOpenGL::getIntersectionLineFromPlane(planeLeft, planeBottom, intersectionVector);
+        std::cout << "IntersectionDirection" << intersectionVector[0] << " ,  " << intersectionVector[1] << "  , " << intersectionVector[2] << std::endl;
+
+        
+        double pointOnLine[3] = {cameraPosition[0]-100*(intersectionVector[0]),cameraPosition[1]-100*(intersectionVector[1]),cameraPosition[2]-100*(intersectionVector[2])};
+        
+    
+        vtkSmartPointer<vtkPoints> intersectPoints2 = vtkSmartPointer<vtkPoints>::New();
+        client.myTree->IntersectWithLine(cameraPosition, pointOnLine, intersectPoints2, NULL);
+        
+        double intersection2[3];
+        intersectPoints2->GetPoint(0, intersection2);
+        Coordinate coord1 = VTKOpenGL::getCoordinates(intersection2);
+    
+        std::cout << "Left; " << intersection2[0] << "," << intersection2[1] << "," << intersection2[2] << std::endl;
+
+        
     };
     
     
@@ -396,6 +415,27 @@ void VTKOpenGL::initCallbacks()
     modeSwitchCallback->SetClientData(this);
     myRenderWindow->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent, modeSwitchCallback);
 }
+
+//not completly correct
+//problem falls x2 = 0;
+void VTKOpenGL::getIntersectionLineFromPlane(double firstPlane[], double secondPlane[], double lineDirection[]){
+   
+    double factor =  secondPlane[0]/firstPlane[0];
+    secondPlane[0] = 0;
+    secondPlane[1] = secondPlane[1] - factor*firstPlane[1];
+    secondPlane[2] = secondPlane[2] - factor*firstPlane[2];
+    secondPlane[3] = secondPlane[3] - factor*firstPlane[3];
+    
+    double x2    = 1;
+    double x3 = (- secondPlane[3]- secondPlane[1]*x2)/secondPlane[2];
+    double x1 = (- firstPlane[3]- firstPlane[1]*x2 - firstPlane[2]*x3)/firstPlane[0];
+    
+    lineDirection[0] = x1;
+    lineDirection[1] = x2;
+    lineDirection[2] = x3;
+}
+
+
 
 vtkSmartPointer<vtkOpenGLTexture> VTKOpenGL::loadAlphaTexture(std::string rgbFile,
                                                               std::string alphaFile) const
