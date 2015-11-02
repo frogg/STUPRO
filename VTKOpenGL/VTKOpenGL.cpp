@@ -143,156 +143,36 @@ void VTKOpenGL::initCallbacks()
     // Create callback function that corrects the camera clipping range to work around a VTK bug.
     auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
     {
-
-        //   float range = 2.f;
-        //  ((vtkRenderer*)caller)->ResetCameraClippingRange(-range, range, -range, range, -range, range);
-        
         
         VTKOpenGL & client = *((VTKOpenGL*)clientData);
-
-        // ((vtkRenderer*)caller)->GetActiveCamera()->GetPosition(cameraPosition);
-        // (ClientData*) _clientdata = clientdata;
-
-        
         double cameraPosition[3];
         client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
-       // client.myRenderer->GetActiveCamera()->GetRoll(); //Azimuth
-/*        double cameraViewangle =  client.myRenderer->GetActiveCamera()->GetRoll();
-        std::cout << "View Angle: " << cameraViewangle << std::endl;
-        double cameraViewangle1 =  client.myRenderer->GetActiveCamera()->GetAzimuth();
-        std::cout << "View Angle Azimutz: " << cameraViewangle1 << std::endl;
-        double cameraParalled =  client.myRenderer->GetActiveCamera()->GetParallelScale();
-        std::cout << "Parallel: " << cameraParalled << std::endl;
-*/
-        /*
-        vtkSmartPointer<vtkCoordinate> coordinate =
-                vtkSmartPointer<vtkCoordinate>::New();
-        
-        
-        
-        coordinate->SetCoordinateSystemToDisplay();
-        coordinate->SetValue(0,0,0);
-        
-        // This doesn't produce the right value if the sphere is zoomed in???
-        
-        double* world = coordinate->GetComputedWorldValue(client.myRenderWindow->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
-        std::cout << "Middlepoint " << world[0] << ", " << world[1] << ", " << world[2] << std::endl;
-         //ViewToWorld
-        
-        //double world =
-        //client.myRenderer->GetViewport()->SetDisplayPoint()
-        double direction[3] = {world[0]+100*(world[0]-cameraPosition[0]),world[1]+100*(world[1]-cameraPosition[1]),world[2]+100*(world[2]-cameraPosition[2])};
-        
-        vtkSmartPointer<vtkPoints> intersectPoints2 = vtkSmartPointer<vtkPoints>::New();
-        client.myTree->IntersectWithLine(world, direction, intersectPoints2, NULL);
-        
-        double intersection2[3];
-        
-        
-            intersectPoints2->GetPoint(0, intersection2);
-        Coordinate coord1 = VTKOpenGL::getCoordinates(intersection2);
-
-        
-            std::cout << "IntersectionMiddlePoint; " << intersection2[0] << "," << intersection2[1] << "," << intersection2[2] << std::endl;
-       */
-         /*
-        coordinate->SetValue(1,0,0);
-        // This doesn't produce the right value if the sphere is zoomed in???
-        
-        world = coordinate->GetComputedWorldValue(client.myRenderWindow->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
-        std::cout << "World coordinate rechts: " << world[0] << ", " << world[1] << ", " << world[2] << std::endl;
-        
-        
-        
-        coordinate->SetValue(0,-1,0);
-        // This doesn't produce the right value if the sphere is zoomed in???
-        
-        world = coordinate->GetComputedWorldValue(client.myRenderWindow->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
-        std::cout << "World coordinate unten: " << world[0] << ", " << world[1] << ", " << world[2] << std::endl;
-        
-        
-        coordinate->SetValue(-1,0,0);
-        // This doesn't produce the right value if the sphere is zoomed in???
-        
-        world = coordinate->GetComputedWorldValue(client.myRenderWindow->GetInteractor()->GetRenderWindow()->GetRenderers()->GetFirstRenderer());
-        std::cout << "World coordinate links: " << world[0] << ", " << world[1] << ", " << world[2] << std::endl;
-        std::cout << "Camera: " << cameraPosition[0] << ", " << cameraPosition[1] << ", " << cameraPosition[2] << std::endl;
-        
-        */
-        
-        //   std::cout << "View Angle: " << cameraViewangle << std::endl;
-        
         double globeOrigin[3] = {0,0,0};
         
-        double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
+       // double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
     //    std::cout << "Camera Position: " << cameraPosition[0] << ", " << cameraPosition[1] << ", " <<cameraPosition[2]<< "DistanceToCenter" << distanceCameraGlobe << std::endl;
 
-        //double viewEdgeDistance = tan(3.14159265358979323846264338327950288 / 12.0) * distanceCameraGlobe;
-        //  std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
-        
-
-        //   std::cout << "View Edge Distance: " << viewEdgeDistance << std::endl;
-        
-        
         vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
-        
-        //  vtkOBBTree * tree = (vtkOBBTree*)clientData;
         
         client.myTree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
         
+        double centerPoint[3];
         
+        intersectPoints->GetPoint(0, centerPoint);
         
-        double intersection[3];
-        
-        intersectPoints->GetPoint(0, intersection);
-        
-        Coordinate coord = VTKOpenGL::getCoordinates(intersection);
+        Coordinate coord = VTKOpenGL::getCoordinates(centerPoint);
         std::cout << "Intersection; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
-        /*
-        double uppperCorner[3] = {0,viewEdgeDistance,0};
-        double lowOrigin[3] = {0,-viewEdgeDistance,0};
-        double rightCorner[3] = {0,0,viewEdgeDistance};
-        double leftCorner[3] = {0,0,-viewEdgeDistance};
         
-        client.myTree->IntersectWithLine(cameraPosition, uppperCorner, intersectPoints, NULL);
-        intersectPoints->GetPoint(0, intersection);
-        coord = VTKOpenGL::getCoordinates(intersection);
-        //     std::cout << "upperCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
-        
-        client.myTree->IntersectWithLine(cameraPosition, lowOrigin, intersectPoints, NULL);
-        intersectPoints->GetPoint(0, intersection);
-        coord = VTKOpenGL::getCoordinates(intersection);
-        //    std::cout << "lowOrigin; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
-        
-        client.myTree->IntersectWithLine(cameraPosition, rightCorner, intersectPoints, NULL);
-        intersectPoints->GetPoint(0, intersection);
-        coord = VTKOpenGL::getCoordinates(intersection);
-        //   std::cout << "rightCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
-        
-        client.myTree->IntersectWithLine(cameraPosition, leftCorner, intersectPoints, NULL);
-        intersectPoints->GetPoint(0, intersection);
-        coord = VTKOpenGL::getCoordinates(intersection);
-     //   std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
-         */
-        //   std::cout << "leftCorner; " << "long: " << coord.longitude << "lat: " << coord.latitude << std::endl;
-        
-    /*
-        
-        //Test 101
-        double viewUp[3];
-        client.myRenderer->GetActiveCamera()->GetViewUp(viewUp); //ist konstant
-        std::cout << "ViewUP" << viewUp[0] << "; " << viewUp[1] << ";" << viewUp[2] << std::endl;
-        
-        std::cout << "Camera Position: " << cameraPosition[0] << ", " << cameraPosition[1] << ", " <<cameraPosition[2]<< "DistanceToCenter" << distanceCameraGlobe << std::endl;
-*/
         
         //Test View Frustum
+        //get aspect from sizes
          double aspect = 1;
          double planes[24];
         
          client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
         // std::cout << "Left equation" << planes[0] << "*x   " << planes[1] << "*y   " << planes[2] << "*z + " << planes[3]<< std::endl;
      //   std::cout << "Bottom equation" << planes[8] << "*x   " << planes[9] << "*y   " << planes[10] << "*z + " << planes[11]<< std::endl;
+  
         //Get all planes of view frustum
         double planeLeft[4]  = {planes[0],  planes[1], planes[2], planes[3]};
         double planeRight[4]  = {planes[4],  planes[5], planes[6], planes[7]};
@@ -301,12 +181,14 @@ void VTKOpenGL::initCallbacks()
         double planeFar[4]  = {planes[16],  planes[17], planes[18], planes[19]};
         double planeNear[4]  = {planes[20],  planes[21], planes[22], planes[23]};
 
-
+        
         double intersectionVector[3];
+      
+        //getIntersectionLineFromPlane
         VTKOpenGL::getIntersectionLineFromPlane(planeLeft, planeBottom, intersectionVector);
         std::cout << "IntersectionDirection" << intersectionVector[0] << " ,  " << intersectionVector[1] << "  , " << intersectionVector[2] << std::endl;
 
-        //direction of the line => calculate Point behind earth and then calculate the intersecti
+        //direction of the line => calculate Point behind earth and then calculate the intersection
         double pointOnLine[3] = {cameraPosition[0]-100*(intersectionVector[0]),cameraPosition[1]-100*(intersectionVector[1]),cameraPosition[2]-100*(intersectionVector[2])};
         
     
@@ -319,7 +201,7 @@ void VTKOpenGL::initCallbacks()
     
         std::cout << "Left; " << intersection2[0] << "," << intersection2[1] << "," << intersection2[2] << std::endl;
 
-        
+       
     };
     
     
@@ -512,6 +394,9 @@ Coordinate VTKOpenGL::getCoordinates(double point[]){
         return coordinate;
   
     return coordinate;
+}
+
+double[] VTKOpenGL::getIntersectionPoint(double plane1[], double plane2[], double plane3[], double cameraPosition[],vtkSmartPointer<vtkOBBTree> tree){
 
 }
 

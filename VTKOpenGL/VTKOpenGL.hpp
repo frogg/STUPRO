@@ -56,6 +56,7 @@ private:
 
     static Coordinate getCoordinates(double point[]);
     static void getIntersectionLineFromPlane(double firstPlane[], double secondPlane[], double lineDirection[]);
+    static double[] getIntersectionPoint(double plane1[], double plane2[], double plane3[], double cameraPosition[],vtkSmartPointer<vtkOBBTree> tree);
 	float myGlobeRadius;
 	float myPlaneSize;
 	float myDisplayModeInterpolation;
