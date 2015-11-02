@@ -1,11 +1,12 @@
 #version 110
 
+// Input texture with earth's RGB data.
 uniform sampler2D texture;
 
+// Main function.
 void propFuncFS()
 {
-	//gl_FragColor = vec4(gl_TexCoord[0].xy, 0.0, 1.0);
+	// Sample texture color, ignoring alpha channel (reserved for heightmap).
 	gl_FragColor = gl_Color * vec4(texture2D(texture, gl_TexCoord[0].xy).rgb, 1.0);
-    //gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-    //glFragColor = gl_Color;
+	//gl_FragColor = gl_Color;
 }

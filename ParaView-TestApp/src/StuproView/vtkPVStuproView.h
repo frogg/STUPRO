@@ -4,52 +4,45 @@
 #include "vtkPVRenderView.h"
 #include "vtkSmartPointer.h"
 
-#include "vtkOpenGLTexture.h"
-#include "vtkActor.h"
-#include "vtkShader2.h"
+#include "Globe.hpp"
+
+#include <memory>
 
 class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView
 {
 public:
-  static vtkPVStuproView* New();
-  vtkTypeMacro(vtkPVStuproView, vtkPVRenderView);
-  void PrintSelf(ostream& os, vtkIndent indent);
+	static vtkPVStuproView* New();
+	vtkTypeMacro(vtkPVStuproView, vtkPVRenderView);
+	void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual void Initialize(unsigned int id);
+	virtual void Initialize(unsigned int id);
 
 protected:
-  vtkPVStuproView();
-  ~vtkPVStuproView();
+	vtkPVStuproView();
+	~vtkPVStuproView();
 
 private:
-  vtkPVStuproView(const vtkPVStuproView&); // Not implemented
-  void operator=(const vtkPVStuproView&); // Not implemented
+	vtkPVStuproView(const vtkPVStuproView&); // Not implemented
+	void operator=(const vtkPVStuproView&); // Not implemented
 
-  enum DisplayMode
-  {
-	  DisplayGlobe, DisplayMap
-  };
+	enum DisplayMode
+	{
+		DisplayGlobe, DisplayMap
+	};
 
-  std::string readFile(std::string filename) const;
-  vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(std::string rgbFile, std::string alphaFile) const;
+	void initParameters();
+	void initGlobe();
+	void initRenderer();
+	void initCallbacks();
 
-  void initParameters();
-  void initGlobe();
-  void initRenderer();
-  void initShaders();
-  void initCallbacks();
+	DisplayMode myDisplayMode;
 
-  vtkSmartPointer<vtkActor> myPlaneActor;
+	std::unique_ptr<Globe> myGlobe;
 
-  vtkSmartPointer<vtkShader2> myVertexShader;
-  vtkSmartPointer<vtkShader2> myFragmentShader;
-
-  DisplayMode myDisplayMode;
-
-  float myGlobeRadius;
-  float myPlaneSize;
-  float myDisplayModeInterpolation;
-  float myHeightFactor;
+	float myGlobeRadius;
+	float myPlaneSize;
+	float myDisplayModeInterpolation;
+	float myHeightFactor;
 };
 
 #endif
