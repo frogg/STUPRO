@@ -2,140 +2,16 @@
 #define KRONOS_IMAGEDOWNLOADER_HPP
 
 #include "ImageTile.hpp"
-#include "ImageCache.hpp"
 #include "ImageLayerDescription.hpp"
 #include "MetaImage.hpp"
 
-#include <exception>
 #include <functional>
-#include <future>
-#include <QFile>
-#include <QUrl>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QString>
+#include <QByteArray>
+#include <QList>
 #include <QMap>
-
-struct InvalidTileLocationException : public std::exception { };
-
-struct InvalidTileZoomException : public InvalidTileLocationException {
-	int givenZoomLevel;
-	int minZoomLevel;
-	int maxZoomLevel;
-
-	InvalidTileZoomException(int given, int min, int max)
-		: givenZoomLevel(given), minZoomLevel(min), maxZoomLevel(max) { }
-
-	const char * what() const throw() {
-		QString message("The given zoomLevel is invalid. Expected value between (including) %1 and %2. Was given %3.");
-		message = message.arg(minZoomLevel, maxZoomLevel, givenZoomLevel);
-
-		return message.toStdString().c_str();
-	}
-};
-
-struct InvalidTilePositionException : public InvalidTileLocationException {
-	int zoomLevel;
-	int xMin, xMax, xActual;
-	int yMin, yMax, yActual;
-
-	InvalidTilePositionException(int zoomLevel, int xMin, int xMax, int xActual, int yMin, int yMax, int yActual)
-		: zoomLevel(zoomLevel), xMin(xMin), xMax(xMax), xActual(xActual),
-		  yMin(yMin), yMax(yMax), yActual(yActual) { }
-
-	const char * what() const throw() {
-		QString message("The given tile position is invalid. Valid tile positions for zoom level %1 must be within x%2 to x%3 and y%5 to y%6. Was given x%4 y%7.");
-		message = message.arg(zoomLevel);
-		message = message.arg(xMin, xMax, xActual);
-		message = message.arg(yMin, yMax, yActual);
-
-		return message.toStdString().c_str();
-	}
-};
-
-struct InvalidLayerException : public std::exception {
-	QString givenLayer;
-	QList<QString> availableLayers;
-
-	InvalidLayerException(QString givenLayer, QList<QString> availableLayers)
-		: givenLayer(givenLayer), availableLayers(availableLayers) { }
-
-	const char * what() const throw() {
-		QString message("The given layer wasn't recognized. Expected one of { ");
-		for (int i = 0; i < availableLayers.size(); i++) {
-			message += "'" + availableLayers[i] + "'";
-			if (i < availableLayers.size() - 1) {
-				message += ", ";
-			}
-		}
-		message += " }. Was given '" + givenLayer + "'.";
-		return message.toStdString().c_str();
-	}
-};
-
-struct DownloadFailedException : public std::exception { };
-
-struct ConnectionFailedException : public DownloadFailedException {
-	QUrl url;
-	QNetworkReply::NetworkError error;
-
-	ConnectionFailedException(QUrl url, QNetworkReply::NetworkError error) : url(url), error(error) { }
-
-	const char * what() const throw() {
-		QString message("An error occurred during the network request. Url: '%1', Error code: %2.");
-		message += " (See http://doc.qt.io/qt-4.8/qnetworkreply.html#NetworkError-enum)";
-		return message.arg(url.toString(), error).toStdString().c_str();
-	}
-};
-
-struct BadStatusCodeException : public DownloadFailedException {
-	QNetworkReply *reply;
-
-	BadStatusCodeException(QNetworkReply *reply) : reply(reply) { }
-
-	const char * what() const throw() {
-		QString message("The network request returned with an unexpected status code. Url: '%1'");
-		message += ", Status code: %2 %3.";
-		int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-		QString statusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-		message = message.arg(reply->url().toString(), QString::number(statusCode), statusMessage);
-		return message.toStdString().c_str();
-	}
-};
-
-struct UnknownContentTypeException : public DownloadFailedException {
-	QString dataFormat;
-
-	UnknownContentTypeException(QString dataFormat) : dataFormat(dataFormat) { }
-
-	const char * what() const throw() {
-		QString message("The returned content type cannot be processed. Was given %1.");
-		return message.arg(dataFormat).toStdString().c_str();
-	}
-};
-
-struct ImageDecodingFailedException : public DownloadFailedException {
-	QUrl url;
-
-	ImageDecodingFailedException(QUrl url) : url(url) { }
-
-	const char * what() const throw() {
-		QString message("Failed decoding the image returned from '%1'");
-		return message.arg(url.toString()).toStdString().c_str();
-	}
-};
-
-struct Bil16DecodingFailedException : public DownloadFailedException {
-	QString reason;
-
-	Bil16DecodingFailedException(QString reason) : reason(reason) { }
-
-	const char * what() const throw() {
-		return ("Error decoding bil16: " + reason).toStdString().c_str();
-	}
-};
-
+#include <QString>
+#include <QThreadPool>
+#include <QUrl>
 
 
 class ImageDownloader {
@@ -144,11 +20,6 @@ public:
 	 * Type used for the tile fetched callback.
 	 */
 	typedef std::function<void(ImageTile tile)> TileFetchedCb;
-
-	static const int MIN_ZOOM_LEVEL = 0;
-	static const int MAX_ZOOM_LEVEL = 15;
-	static const int WIDTH_AT_MIN_ZOOM = 8;
-	static const int HEIGHT_AT_MIN_ZOOM = 4;
 
 	/**
 	 * Creates a new ImageDownloader using the default configuration.
@@ -176,7 +47,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(int zoomLevel, int tileX, int tileY) const;
+	void getTile(int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Fetches the image of the given layer at the given location.
@@ -188,7 +59,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(const QString &layer, int zoomLevel, int tileX, const int tileY) const;
+	void getTile(const QString layer, int zoomLevel, int tileX, const int tileY);
 
 	/**
 	 * Fetches the images of the given layers at the given location.
@@ -200,7 +71,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY) const;
+	void getTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Returns a list of available image layers.
@@ -210,7 +81,19 @@ public:
 	 */
 	QList<QString> getAvailableLayers() const;
 
+	/**
+	 * Returns a map of available image layers and their description structs.
+	 *
+	 * @returns a map containing a map of all available image layers as read from the config file
+	 */
+	QMap<QString, ImageLayerDescription> getAvailableLayerDescriptions() const;
+
 private:
+	/**
+	 * Threadpool used to fetch individual tiles in an asynchronous manner.
+	 */
+    QThreadPool fetchThreadPool;
+
 	/**
 	 * An object holding all configuration information.
 	 */
@@ -221,67 +104,6 @@ private:
 	 * system.
 	 */
 	TileFetchedCb tileFetchedCb;
-
-	/**
-	 * Checks if the given tile location is valid for the underlying quad-tree.
-	 *
-	 * @param zoomLevel how deep to dive into the quad-tree
-	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
-	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
-	 *
-	 * @throws InvalidTileZoomException if the zoom level is out of bounds
-	 * @throws InvalidTilePosition      if the x or y position of the tile is out of bounds for the
-	 *                                  given zoom level
-	 */
-	static void validateTileLocation(int zoomLevel, int tileX, int tileY);
-
-	/**
-	 * Checks if all layers in the given list are in the available layers list.
-	 *
-	 * @param layers a list containing layer names
-	 */
-	void validateLayersAvailable(const QList<QString> &layers) const;
-
-	/**
-	 * Calculates the bounding box in lat-long from the given tile location.
-	 * Assumes that the given tile location is valid.
-	 *
-	 * @param zoomLevel how deep to dive into the quad-tree
-	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
-	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
-	 *
-	 * @returns a string representation of the lat-long bounding box
-	 */
-	static QString calculateBoundingBox(int zoomLevel, int tileX, int tileY);
-
-	/**
-	 * Returns the URL at which the image with the given properties can be found.
-	 *
-	 * @param layer     the layer from which to get the image
-	 * @param zoomLevel how deep to dive into the quad-tree
-	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
-	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
-	 *
-	 * @returns a URL pointing to the image with the given properties
-	 */
-	QUrl buildTileDownloadUrl(const QString &layer, int zoomLevel, int tileX, int tileY) const;
-
-	/**
-	 * Download an image from a specified URL.
-	 *
-	 * @param imageUrl URL of the image
-	 * @return The image downloaded from the specified URL
-	 */
-	std::future<MetaImage> downloadImage(const QUrl &imageUrl, int width, int height) const;
-
-	/**
-	 * Decodes a raw data array holding bil16 data into a MetaImage.
-	 *
-	 * @param rawData the byte-array holding raw bil16 data
-	 *
-	 * @returns a MetaImage containing the normalized bil16 image, along with min and max heights
-	 */
-	static MetaImage decodeBil16(const QByteArray& rawData, int width, int height);
 };
 
 #endif
