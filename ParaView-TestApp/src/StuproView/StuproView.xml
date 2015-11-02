@@ -4,6 +4,10 @@
         label="STUPRO View"
         processes="client|renderserver|dataserver"
         base_proxygroup="views" base_proxyname="RenderView">
+		
+		<Property name="SwitchCurrentDisplaymode"
+			animateable="1"
+			command="switchCurrentDisplayMode" />
     </RenderViewProxy>
   </ProxyGroup>
 </ServerManagerConfiguration>

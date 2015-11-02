@@ -17,6 +17,8 @@ public:
 
 	virtual void Initialize(unsigned int id);
 
+	void switchCurrentDisplayMode();
+
 protected:
 	vtkPVStuproView();
 	~vtkPVStuproView();

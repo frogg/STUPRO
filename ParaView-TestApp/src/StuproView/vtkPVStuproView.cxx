@@ -141,6 +141,15 @@ void vtkPVStuproView::initGlobe()
 }
 
 //----------------------------------------------------------------------------
+void vtkPVStuproView::switchCurrentDisplayMode()
+{
+	myDisplayMode = myDisplayMode == DisplayGlobe ? DisplayMap : DisplayGlobe;
+	myGlobe->setDisplayModeInterpolation(myDisplayMode == DisplayGlobe ? 0.f : 1.f);
+
+	GetRenderWindow()->Render();
+}
+
+//----------------------------------------------------------------------------
 void vtkPVStuproView::PrintSelf(ostream& os, vtkIndent indent)
 {
 	this->Superclass::PrintSelf(os, indent);
