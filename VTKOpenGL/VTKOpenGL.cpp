@@ -384,12 +384,13 @@ void VTKOpenGL::getIntersectionPoint(double plane1[4], double plane2[4], double 
     }
 
     cutPlanes(planes, intersectionOfPlanes);
-/*
+
     for (int i = 0; i < 3; i++) {
         //intersection of 3 planes
-        intersectionOfPlanes[i] = cut[i];
+        std::cout << "Intersection " << intersectionOfPlanes[i] << std::endl;
+        //intersectionOfPlanes[i] = cut[i];
     }
-*/
+
     vtkSmartPointer<vtkPoints> intersectionPointsWithWorld = vtkSmartPointer<vtkPoints>::New();
     tree->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectionPointsWithWorld, NULL);
 
