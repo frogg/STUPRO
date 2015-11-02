@@ -351,8 +351,6 @@ Coordinate VTKOpenGL::getCoordinates(double point[]){
     coordinate.latitude = asin(z/radius) *180/PI;
     coordinate.longitude =  atan2(x, y)  * 180/PI;
     std::cout << "Koordinaten: Lati: " << coordinate.longitude << "Long:" << coordinate.latitude;
-        return coordinate;
-
     return coordinate;
 }
 
