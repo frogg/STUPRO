@@ -1,6 +1,8 @@
 # main entry point of the application
 set(MAIN_CLASS ./main.cpp)
 
+set(CMAKE_AUTOMOC TRUE)
+
 # find Qt headers and libraries
 if(${KRONOS_QT_VERSION} EQUAL 4)
     find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
