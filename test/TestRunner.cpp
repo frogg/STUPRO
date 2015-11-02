@@ -2,10 +2,18 @@
 #include <cppunit/ui/text/TextTestRunner.h>
 
 #include <iostream>
+#include <thread>
+#include <QApplication>
 
 using namespace CppUnit;
 
 int main(int argc, char *argv[]) {
+	std::thread qtAppThread([ & ]() {
+		// initialize and run a QApplication which is needed for some QT functionality
+		QApplication app(argc, argv);
+		app.exec();
+	});
+
 	TextTestRunner runner;
 	TestFactoryRegistry &registry = TestFactoryRegistry::getRegistry();
 
@@ -20,5 +28,7 @@ int main(int argc, char *argv[]) {
 	runner.addTest(testToRun);
 
 	bool failed = runner.run();
+
+	qtAppThread.join(); // may never complete since the app.exec() call never returns
 	return !failed;
 }
