@@ -350,7 +350,7 @@ Coordinate VTKOpenGL::getCoordinates(double point[]){
     float z = point[1];
     coordinate.latitude = asin(z/radius) *180/PI;
     coordinate.longitude =  atan2(x, y)  * 180/PI;
-    std::cout << "Koordinaten: Lati: " << coordinate.longitude << "Long:" << coordinate.latitude;
+    std::cout << "Koordinaten: Lati: " << coordinate.longitude << "Long:" << coordinate.latitude << std::endl;
     return coordinate;
 }
 
@@ -373,43 +373,33 @@ void VTKOpenGL::cutPlanes(double planes[3][4], double cut [3]) {
 }
 
 void VTKOpenGL::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]){
-//#define Tobi
-#ifdef Tobi
+
     double planes[3][4];
-    double cut[3];
+    double intersectionOfPlanes[3];
+    //double cut[3];
     for (int i = 0; i < 4; i++) {
         planes[0][i] = plane1[i];
         planes[1][i] = plane2[i];
         planes[2][i] = plane3[i];
     }
 
-    cutPlanes(planes, cut);
-
+    cutPlanes(planes, intersectionOfPlanes);
+/*
     for (int i = 0; i < 3; i++) {
-        intersection[i] = cut[i];
+        //intersection of 3 planes
+        intersectionOfPlanes[i] = cut[i];
     }
-#else
+*/
+    vtkSmartPointer<vtkPoints> intersectionPointsWithWorld = vtkSmartPointer<vtkPoints>::New();
+    tree->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectionPointsWithWorld, NULL);
 
-    double intersectionVector[3];
-    //getIntersectionLineFromPlane
-    VTKOpenGL::getIntersectionLineFromPlane(plane1, plane2, intersectionVector);
-    //    std::cout << "IntersectionDirection" << intersectionVector[0] << " ,  " << intersectionVector[1] << "  , " << intersectionVector[2] << std::endl;
-
-    //direction of the line => calculate Point behind earth and then calculate the intersection
-    double pointOnLine[3] = {cameraPosition[0]-100*(intersectionVector[0]),cameraPosition[1]-100*(intersectionVector[1]),cameraPosition[2]-100*(intersectionVector[2])};
-
-    vtkSmartPointer<vtkPoints> intersectPoints2 = vtkSmartPointer<vtkPoints>::New();
-    tree->IntersectWithLine(cameraPosition, pointOnLine, intersectPoints2, NULL);
-
-    if(intersectPoints2->GetNumberOfPoints()>0){
-        intersectPoints2->GetPoint(0, intersection);
+    if(intersectionPointsWithWorld->GetNumberOfPoints()>0){
+        intersectionPointsWithWorld->GetPoint(0, intersection);
     }else{
         intersection[0]=0;
         intersection[1]=0;
         intersection[2]=0;
     }
-
-#endif
 
 }
 void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double planes[24]){
