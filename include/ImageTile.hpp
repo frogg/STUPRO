@@ -15,7 +15,7 @@ public:
    * @param tileX The horizontal position of this tile
    * @param tileY The vertical position of this tile
    */
-  ImageTile(const QMap<QString, MetaImage> &layers, int zoomLevel, int tileX, int tileY);
+  ImageTile(const QMap<QString, MetaImage> layers, int zoomLevel, int tileX, int tileY);
 	~ImageTile();
 
   /**
@@ -28,7 +28,7 @@ public:
    * Set the map of layers saved in this image tile.
    * @param layers A map of layer identifiers and corresponding images
    */
-  void setLayers(const QMap<QString, MetaImage> &layers);
+  void setLayers(const QMap<QString, MetaImage> layers);
 
   /**
    * Get the zoom level of this image tile.
