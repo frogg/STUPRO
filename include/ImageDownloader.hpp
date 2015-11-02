@@ -74,6 +74,70 @@ struct InvalidLayerException : public std::exception {
 	}
 };
 
+struct DownloadFailedException : public std::exception { };
+
+struct ConnectionFailedException : public DownloadFailedException {
+	QUrl url;
+	QNetworkReply::NetworkError error;
+
+	ConnectionFailedException(QUrl url, QNetworkReply::NetworkError error) : url(url), error(error) { }
+
+	const char * what() const throw() {
+		QString message("An error occurred during the network request. Url: '%1', Error code: %2.");
+		message += " (See http://doc.qt.io/qt-4.8/qnetworkreply.html#NetworkError-enum)";
+		return message.arg(url.toString(), error).toStdString().c_str();
+	}
+};
+
+struct BadStatusCodeException : public DownloadFailedException {
+	QNetworkReply *reply;
+
+	BadStatusCodeException(QNetworkReply *reply) : reply(reply) { }
+
+	const char * what() const throw() {
+		QString message("The network request returned with an unexpected status code. Url: '%1'");
+		message += ", Status code: %2 %3.";
+		int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		QString statusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+		message = message.arg(reply->url().toString(), QString::number(statusCode), statusMessage);
+		return message.toStdString().c_str();
+	}
+};
+
+struct UnknownContentTypeException : public DownloadFailedException {
+	QString dataFormat;
+
+	UnknownContentTypeException(QString dataFormat) : dataFormat(dataFormat) { }
+
+	const char * what() const throw() {
+		QString message("The returned content type cannot be processed. Was given %1.");
+		return message.arg(dataFormat).toStdString().c_str();
+	}
+};
+
+struct ImageDecodingFailedException : public DownloadFailedException {
+	QUrl url;
+
+	ImageDecodingFailedException(QUrl url) : url(url) { }
+
+	const char * what() const throw() {
+		QString message("Failed decoding the image returned from '%1'");
+		return message.arg(url.toString()).toStdString().c_str();
+	}
+};
+
+struct Bil16DecodingFailedException : public DownloadFailedException {
+	QString reason;
+
+	Bil16DecodingFailedException(QString reason) : reason(reason) { }
+
+	const char * what() const throw() {
+		return ("Error decoding bil16: " + reason).toStdString().c_str();
+	}
+};
+
+
+
 class ImageDownloader {
 public:
 	/**
@@ -159,11 +223,6 @@ private:
 	TileFetchedCb tileFetchedCb;
 
 	/**
-	 * Network access manager used to make requests to the image API.
-	 */
-	static QNetworkAccessManager networkManager;
-
-	/**
 	 * Checks if the given tile location is valid for the underlying quad-tree.
 	 *
 	 * @param zoomLevel how deep to dive into the quad-tree
@@ -213,7 +272,16 @@ private:
 	 * @param imageUrl URL of the image
 	 * @return The image downloaded from the specified URL
 	 */
-	std::future<MetaImage> downloadImage(const QUrl &imageUrl) const;
+	std::future<MetaImage> downloadImage(const QUrl &imageUrl, int width, int height) const;
+
+	/**
+	 * Decodes a raw data array holding bil16 data into a MetaImage.
+	 *
+	 * @param rawData the byte-array holding raw bil16 data
+	 *
+	 * @returns a MetaImage containing the normalized bil16 image, along with min and max heights
+	 */
+	static MetaImage decodeBil16(const QByteArray& rawData, int width, int height);
 };
 
 #endif

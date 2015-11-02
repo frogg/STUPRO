@@ -24,8 +24,7 @@ void TestImageDownloader::testGetTile() {
 		promise.set_value(tile);
 	});
 
-	QString layerName = downloader.getAvailableLayers()[0];
-	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(layerName, 0, 0, 0));
+	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(15, 0, 0));
 
 	ImageTile tile = future.get();
 
@@ -35,6 +34,7 @@ void TestImageDownloader::testGetTile() {
 
 	CPPUNIT_ASSERT_EQUAL(1, tile.getLayers().size());
 
+	QString layerName = downloader.getAvailableLayers()[0];
 	MetaImage metaImage = tile.getLayers()[layerName];
 	CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMinimumHeight());
 	CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMaximumHeight());

@@ -1,14 +1,15 @@
 #include "../include/ImageDownloader.hpp"
 #include "../include/ConfigUtil.hpp"
 
+#include <climits>
 #include <map>
 #include <thread>
 #include <mutex>
+#include <QEventLoop>
 #include <QImage>
+#include <QRegExp>
 
 #include <iostream>
-
-QNetworkAccessManager ImageDownloader::networkManager;
 
 ImageDownloader::ImageDownloader(TileFetchedCb tileFetchedCb) {
 	this->tileFetchedCb = tileFetchedCb;
@@ -55,7 +56,8 @@ void ImageDownloader::getTile(const QList<QString> layers, int zoomLevel,
 			} else {
 				// trigger the download of the image
 				QUrl imageUrl = this->buildTileDownloadUrl(layerName, zoomLevel, tileX, tileY);
-				fetchFutures[layerName] = this->downloadImage(imageUrl);
+				int tileSize = this->imageLayers[layerName].tileSize;
+				fetchFutures[layerName] = this->downloadImage(imageUrl, tileSize, tileSize);
 			}
 		}
 
@@ -156,21 +158,104 @@ QUrl ImageDownloader::buildTileDownloadUrl(const QString &layer, int zoomLevel, 
 	return QUrl(urlString);
 }
 
-std::future<MetaImage> ImageDownloader::downloadImage(const QUrl &imageUrl) const {
+std::future<MetaImage> ImageDownloader::downloadImage(const QUrl &imageUrl, int width,
+		int height) const {
 	std::promise<std::future<MetaImage>> imageDownloadedFuturePromise;
 
-	// TODO: actually download the image
-	// this shouldn't be a thread later on when actually using QNetworkAccessManager to download the image
-	std::thread([&imageDownloadedFuturePromise, imageUrl]() {
+	std::thread([this, &imageDownloadedFuturePromise, imageUrl, width, height]() {
 		std::promise<MetaImage> imageDownloadedPromise;
 		imageDownloadedFuturePromise.set_value(imageDownloadedPromise.get_future());
+		try {
+			QNetworkRequest request(imageUrl);
+			QNetworkAccessManager networkManager;
+			QNetworkReply *reply = networkManager.get(request);
 
-		// TODO: check content type and load the image accordingly, either through QImage or convert it from bil16
-		QImage dummyImage(512, 512, QImage::Format_RGB32);
-		MetaImage dummyMetaImage(dummyImage, 0, 0);
+			QEventLoop replyLoop;
+			QObject::connect(reply, SIGNAL(finished()), &replyLoop, SLOT(quit()));
 
-		imageDownloadedPromise.set_value_at_thread_exit(dummyMetaImage);
+			// wait until the download is finished
+			replyLoop.exec();
+
+			// throw an exception if there was a network error
+			if (reply->error()) {
+				throw ConnectionFailedException(imageUrl, reply->error());
+			}
+
+			// check if the request returned a 200 OK status code
+			if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+				throw BadStatusCodeException(reply);
+			}
+
+			// TODO: check content type and load the image accordingly, either through QImage or convert it from bil16
+			QString contentType = reply->header(QNetworkRequest::ContentTypeHeader).toString();
+			MetaImage metaImage;
+			if (QRegExp("^image\\/(png|tiff|jpeg|gif)$").exactMatch(contentType)) {
+				QByteArray rawData = reply->readAll();
+
+				QImage image = QImage::fromData(rawData);
+
+				// ensure that the image was read
+				if (image.isNull()) {
+					throw ImageDecodingFailedException(imageUrl);
+				}
+
+				metaImage = MetaImage(image);
+			} else if (QRegExp("^application\\/bil16$").exactMatch(contentType)) {
+				QByteArray rawData = reply->readAll();
+
+				metaImage = ImageDownloader::decodeBil16(rawData, width, height);
+			} else {
+				throw UnknownContentTypeException(contentType);
+			}
+
+			imageDownloadedPromise.set_value_at_thread_exit(metaImage);
+		} catch (...) {
+			imageDownloadedFuturePromise.set_exception(std::current_exception());
+		}
 	}).detach();
 
 	return imageDownloadedFuturePromise.get_future().get();
+}
+
+MetaImage ImageDownloader::decodeBil16(const QByteArray &rawData, int width, int height) {
+	if (!rawData.size() == width * height * 2) {
+		QString errorMessage("Expected raw data length of %1b, but %2b were given");
+		throw Bil16DecodingFailedException(errorMessage.arg(width * height * 2, rawData.size()));
+	}
+	short minHeight = SHRT_MAX;
+	short maxHeight = SHRT_MIN;
+
+	// find min and max values used to normalize the image in the second pass
+	int rawIndex = 0;
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			short heightValue = (rawData[rawIndex] << 8) | (unsigned char)rawData[rawIndex + 1];
+			if (heightValue < minHeight) {
+				minHeight = heightValue;
+			}
+			if (heightValue > maxHeight) {
+				maxHeight = heightValue;
+			}
+			rawIndex += 2;
+		}
+	}
+
+	// use min and max heights to normalize the data and save it in a QImage
+	// color values of 0xff correspond to maxHeight, 0x00 means minHeight
+	QImage image(width, height, QImage::Format_ARGB32);
+	rawIndex = 0;
+	float normalizationFactor = (maxHeight - minHeight) / 255.0;
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			short heightValue = (rawData[rawIndex] << 8) | (unsigned char)rawData[rawIndex + 1];
+			short normalizedHeight = (heightValue - minHeight) * normalizationFactor;
+
+			QRgb color = qRgba(normalizedHeight, normalizedHeight, normalizedHeight, normalizedHeight);
+			image.setPixel(x, y, color);
+
+			rawIndex += 2;
+		}
+	}
+
+	return MetaImage(image, minHeight, maxHeight);
 }
