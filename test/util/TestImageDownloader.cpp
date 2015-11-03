@@ -1,7 +1,5 @@
 #include "TestImageDownloader.hpp"
 
-#include "../../include/DebugLogger.hpp"
-
 #include <QApplication>
 #include <ImageTile.hpp>
 #include <future>
@@ -22,23 +20,19 @@ void TestImageDownloader::testGetTile() {
 	std::future<ImageTile> future = promise.get_future();
 
 	ImageDownloader downloader([&](ImageTile tile) {
-		DebugLogger::debug("dl callback");
-		promise.set_value(tile);
+		try {
+			promise.set_value(tile);
+		} catch (...) { }
 	});
 
-	const int zoomLevel = 10;
-	const int tileX = 3000;
-	const int tileY = 500;
-	const QString layerName = downloader.getAvailableLayers()[1];
-	DebugLogger::debug(layerName);
+	const int zoomLevel = 0;
+	const int tileX = 0;
+	const int tileY = 0;
+	const QString layerName = downloader.getAvailableLayers()[0];
 
 	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(layerName, zoomLevel, tileX, tileY));
 
-	DebugLogger::debug("waiting for future");
-
 	ImageTile tile = future.get();
-
-	DebugLogger::debug("future returned");
 
 	CPPUNIT_ASSERT_EQUAL(zoomLevel, tile.getZoomLevel());
 	CPPUNIT_ASSERT_EQUAL(tileX, tile.getTileX());
@@ -47,12 +41,18 @@ void TestImageDownloader::testGetTile() {
 	CPPUNIT_ASSERT_EQUAL(1, tile.getLayers().size());
 
 	MetaImage metaImage = tile.getLayers()[layerName];
-	CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMinimumHeight());
-	CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMaximumHeight());
+	// CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMinimumHeight());
+	// CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMaximumHeight());
 
 	QImage image = metaImage.getImage();
 	CPPUNIT_ASSERT_EQUAL(512, image.width());
 	CPPUNIT_ASSERT_EQUAL(512, image.height());
+
+	for (int x = 0; x < 8; x++) {
+		for (int y = 0; y < 4; y++) {
+			downloader.getTile(layerName, 0, x, y);
+		}
+	}
 
 	// CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, -1, 0, 0), InvalidTileZoomException);
 	// CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, 16, 0, 0), InvalidTileZoomException);
