@@ -111,6 +111,9 @@ private:
     int imageWidth;
     int imageHeight;
 
+	QNetworkRequest request;
+	QNetworkReply *reply;
+
     /**
      * Kicks off the image's download.
      */

@@ -6,12 +6,8 @@
 #include "../include/DebugLogger.hpp"
 
 ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageWidth,
-		int imageHeight) {
-	this->layerName = layerName;
-	this->url = url;
-	this->imageWidth = imageWidth;
-	this->imageHeight = imageHeight;
-
+		int imageHeight) : layerName(layerName), url(url), imageWidth(imageWidth),
+	imageHeight(imageHeight), request(QNetworkRequest(url)) {
 	this->startDownload();
 }
 
@@ -27,10 +23,11 @@ std::future<MetaImage> ImageDownloadWorker::getFuture() {
 
 void ImageDownloadWorker::startDownload() {
 	DebugLogger::debug(QString("creating request for ") + this->url.toString());
-	QNetworkRequest request(this->url);
-	QNetworkReply *reply = this->networkManager.get(request);
-	QObject::connect(reply, SIGNAL(finished()), this, SLOT(downloadCompleted()));
+	this->reply = this->networkManager.get(request);
+	QObject::connect(this->reply, SIGNAL(readyRead()), this, SLOT(downloadCompleted()));
 	DebugLogger::debug("download slot connected");
+	while (!this->reply->isFinished()) { }
+	DebugLogger::debug("reply->isFinished() == true");
 }
 
 MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width, int height) {
@@ -77,20 +74,19 @@ MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width,
 }
 
 void ImageDownloadWorker::downloadCompleted() {
-	DebugLogger::debug("download-completed-event fired");
-	QNetworkReply *reply = dynamic_cast<QNetworkReply *>(QObject::sender());
+	DebugLogger::debug("download completed");
 	try {
 		if (reply->error()) {
-			throw ConnectionFailedException(this->url, reply->error());
+			throw ConnectionFailedException(this->url, this->reply->error());
 		}
 		if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-			throw BadStatusCodeException(reply);
+			throw BadStatusCodeException(this->reply);
 		}
 
-		QString contentType = reply->header(QNetworkRequest::ContentTypeHeader).toString();
+		QString contentType = this->reply->header(QNetworkRequest::ContentTypeHeader).toString();
 		MetaImage metaImage;
 		if (QRegExp("^image\\/(png|tiff|jpeg|gif)$").exactMatch(contentType)) {
-			QByteArray rawData = reply->readAll();
+			QByteArray rawData = this->reply->readAll();
 
 			QImage image = QImage::fromData(rawData);
 
@@ -101,7 +97,7 @@ void ImageDownloadWorker::downloadCompleted() {
 
 			metaImage = MetaImage(image);
 		} else if (QRegExp("^application\\/bil16$").exactMatch(contentType)) {
-			QByteArray rawData = reply->readAll();
+			QByteArray rawData = this->reply->readAll();
 
 			metaImage = ImageDownloadWorker::decodeBil16(rawData, this->imageWidth, this->imageHeight);
 		} else {
