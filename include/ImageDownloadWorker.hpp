@@ -76,9 +76,7 @@ struct Bil16DecodingFailedException : public DownloadFailedException {
 };
 
 
-class ImageDownloadWorker : public QObject {
-    Q_OBJECT
-
+class ImageDownloadWorker {
 public:
     /**
      * Creates a new ImageDownloadWorker responsible for downloading the given image, using the
@@ -111,8 +109,8 @@ private:
     int imageWidth;
     int imageHeight;
 
-	QNetworkRequest request;
 	QNetworkReply *reply;
+	std::thread downloadThread;
 
     /**
      * Kicks off the image's download.
@@ -128,7 +126,6 @@ private:
      */
     static MetaImage decodeBil16(const QByteArray& rawData, int width, int height);
 
-private slots:
     /**
      * Method that gets called when the download completed or an error occurred.
      */

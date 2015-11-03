@@ -1,13 +1,14 @@
 #include "../include/ImageDownloadWorker.hpp"
 
 #include <climits>
+#include <QEventLoop>
 #include <QRegExp>
 
 #include "../include/DebugLogger.hpp"
 
 ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageWidth,
 		int imageHeight) : layerName(layerName), url(url), imageWidth(imageWidth),
-	imageHeight(imageHeight), request(QNetworkRequest(url)) {
+	imageHeight(imageHeight) {
 	this->startDownload();
 }
 
@@ -22,12 +23,24 @@ std::future<MetaImage> ImageDownloadWorker::getFuture() {
 }
 
 void ImageDownloadWorker::startDownload() {
-	DebugLogger::debug(QString("creating request for ") + this->url.toString());
-	this->reply = this->networkManager.get(request);
-	QObject::connect(this->reply, SIGNAL(readyRead()), this, SLOT(downloadCompleted()));
-	DebugLogger::debug("download slot connected");
-	while (!this->reply->isFinished()) { }
-	DebugLogger::debug("reply->isFinished() == true");
+	// create and detach a new thread that triggers the download of the image and waits until the
+	// download completed
+	std::thread([this]() {
+		// event loop needed for the network access manager and the synchronous request
+		QEventLoop replyLoop;
+
+		// trigger the request
+		QNetworkAccessManager networkManager;
+		QNetworkRequest request(this->url);
+		this->reply = networkManager.get(request);
+
+		// wait for the download to complete
+		QObject::connect(this->reply, SIGNAL(finished()), &replyLoop, SLOT(quit()));
+		replyLoop.exec();
+
+		// notify the ImageDownloadWorker of the completed download
+		this->downloadCompleted();
+	}).detach();
 }
 
 MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width, int height) {
