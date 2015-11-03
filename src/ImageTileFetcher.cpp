@@ -56,6 +56,7 @@ void ImageTileFetcher::run() {
 		MetaImage image = worker->getFuture().get();
 		DebugLogger::debug("worker returned");
 		images.insert(std::pair<QString, MetaImage>(worker->getLayerName(), image));
+		cache.cacheImage(image, worker->getLayerName(), this->zoomLevel, this->tileX, this->tileY);
 		delete worker;
 	}
 
