@@ -1,19 +1,25 @@
+#include "TestRunner.hpp"
+
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TextTestRunner.h>
 
-#include <iostream>
-#include <thread>
-#include <QApplication>
+#include <QCoreApplication>
+#include <QTimer>
 
 using namespace CppUnit;
 
-int main(int argc, char *argv[]) {
-	std::thread qtAppThread([ & ]() {
-		// initialize and run a QApplication which is needed for some QT functionality
-		QApplication app(argc, argv);
-		app.exec();
-	});
+KronosTestRunner::KronosTestRunner(int argc, char **argv) : argc(argc), argv(argv) { }
 
+void KronosTestRunner::run() {
+	// initialize and run a QApplication which is needed for some QT functionality
+	QCoreApplication app(argc, argv);
+
+	QTimer::singleShot(10, this, SLOT(runTests()));
+
+	app.exec();
+}
+
+void KronosTestRunner::runTests() {
 	TextTestRunner runner;
 	TestFactoryRegistry &registry = TestFactoryRegistry::getRegistry();
 
@@ -28,7 +34,10 @@ int main(int argc, char *argv[]) {
 	runner.addTest(testToRun);
 
 	bool failed = runner.run();
+	QCoreApplication::exit(failed);
+}
 
-	qtAppThread.join(); // may never complete since the app.exec() call never returns
-	return !failed;
+int main(int argc, char *argv[]) {
+	KronosTestRunner runner(argc, argv);
+	runner.run();
 }
