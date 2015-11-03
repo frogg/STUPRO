@@ -1,5 +1,7 @@
 # test runner class
-set(MAIN_CLASS ./TestRunner.cpp)
+set(MAIN_CLASS ./TestRunner.cpp ./TestRunner.hpp)
+
+set(CMAKE_AUTOMOC TRUE)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
