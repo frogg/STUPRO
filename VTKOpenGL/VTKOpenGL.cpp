@@ -164,7 +164,6 @@ void VTKOpenGL::initCallbacks()
      //   std::cout << "Bottom equation" << planes[8] << "*x   " << planes[9] << "*y   " << planes[10] << "*z + " << planes[11]<< std::endl;
 
         Coordinate coordinates[5];
-        VTKOpenGL::getCoordinates(coordinates, client.myTree, cameraPosition, planes);
         VTKOpenGL::getCoordinatesApproximated(coordinates, client.myTree, cameraPosition);
         
     };
@@ -265,15 +264,24 @@ void VTKOpenGL::initCallbacks()
             client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
             client.myFrustum.updatePlanes(planes);
             break;
+        case 54:
+            client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
+            Coordinate coordinates[5];
+            double cameraPosition[3];
+            client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
+            client.getCoordinates(coordinates, client.myTree, cameraPosition, planes);
+            for (int i = 0; i < 5; i++)
+                std::cout << coordinates[i].latitude << "," << coordinates[i].longitude << std::endl;
+            break;
         case 53:
 
             client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
 
 #define planeLeft    {planes[0],  planes[1], planes[2], planes[3]}
 #define planeRight   {planes[4],  planes[5], planes[6], planes[7]}
-#define  planeBottom {planes[8],  planes[9], planes[10], planes[11]}
-#define  planeTop    {planes[12],  planes[13], planes[14], planes[15]}
-#define  planeFar    {planes[16],  planes[17], planes[18], planes[19]}
+#define planeBottom  {planes[8],  planes[9], planes[10], planes[11]}
+#define planeTop     {planes[12],  planes[13], planes[14], planes[15]}
+#define planeFar     {planes[20],  planes[21], planes[22], planes[23]}
 
             double planeArrays[4][3][4] = {
                 {
@@ -299,12 +307,12 @@ void VTKOpenGL::initCallbacks()
             client.myFrustum.updatePlanes(planePoints);
 
             break;
-        }
 #undef planeLeft
 #undef planeRight
 #undef planeBottom
 #undef planeTop
 #undef planeFar
+        }
     };
 
     // Create and assign callback for mode switch function.
@@ -423,7 +431,7 @@ void VTKOpenGL::cutPlanes(double planes[3][4], double cut [3]) {
         cut[i] = cutPoint(i);
     }
 
-    /*std::cout << std::fixed;
+    std::cout << std::fixed;
     for (int i = 0; i < 3; i++) {
         std::cout << planes[i][0] << "x + " << planes[i][1] << "y + " << planes[i][2] << "z + " << planes[i][3] << std::endl;
     }
@@ -454,7 +462,7 @@ void VTKOpenGL::cutPlanes(double planes[3][4], double cut [3]) {
             case 2: std::cout << " /"  << std::endl; break;
         }
     }
-    std::cout << std::endl;*/
+    std::cout << std::endl;
 }
 
 void VTKOpenGL::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[3],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]){
@@ -503,8 +511,8 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     double planeRight[4]  = {planes[4],  planes[5], planes[6], planes[7]};
     double planeBottom[4]  = {planes[8],  planes[9], planes[10], planes[11]};
     double planeTop[4]  = {planes[12],  planes[13], planes[14], planes[15]};
-    double planeFar[4]  = {planes[16],  planes[17], planes[18], planes[19]};
-    double planeNear[4]  = {planes[20],  planes[21], planes[22], planes[23]};
+    double planeNear[4]  = {planes[16],  planes[17], planes[18], planes[19]};
+    double planeFar[4]  = {planes[20],  planes[21], planes[22], planes[23]};
 
    /* std::cout.precision(2);
     for (int i = 0; i < 24; i++) {
@@ -514,15 +522,15 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
         }
     }*/
 
-    double intersection[3];
-    VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection);
-    coordinate[0] = VTKOpenGL::getCoordinates(intersection);
-    VTKOpenGL::getIntersectionPoint(planeRight, planeBottom, planeFar, cameraPosition,tree, intersection);
-    coordinate[1] = VTKOpenGL::getCoordinates(intersection);
-    VTKOpenGL::getIntersectionPoint(planeLeft, planeTop, planeFar, cameraPosition,tree, intersection);
-    coordinate[2] = VTKOpenGL::getCoordinates(intersection);
-    VTKOpenGL::getIntersectionPoint(planeRight, planeTop, planeFar, cameraPosition,tree, intersection);
-    coordinate[3] = VTKOpenGL::getCoordinates(intersection);
+    double intersection[3][3];
+    VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
+    coordinate[0] = VTKOpenGL::getCoordinates(intersection[0]);
+    VTKOpenGL::getIntersectionPoint(planeRight, planeBottom, planeFar, cameraPosition,tree, intersection[1]);
+    coordinate[1] = VTKOpenGL::getCoordinates(intersection[1]);
+    VTKOpenGL::getIntersectionPoint(planeLeft, planeTop, planeFar, cameraPosition,tree, intersection[2]);
+    coordinate[2] = VTKOpenGL::getCoordinates(intersection[2]);
+    VTKOpenGL::getIntersectionPoint(planeRight, planeTop, planeFar, cameraPosition,tree, intersection[2]);
+    coordinate[3] = VTKOpenGL::getCoordinates(intersection[2]);
 
 
     double globeOrigin[3] = {0,0,0};

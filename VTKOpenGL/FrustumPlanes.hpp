@@ -49,6 +49,15 @@ public:
         }
     }
 
+    void updatePlane (double planePoints[3][3], int i) {
+        myPlanes[i]->SetOrigin(planePoints[0][0], planePoints[0][1], planePoints[0][2]);
+        myPlanes[i]->SetPoint1(planePoints[1][0], planePoints[1][1], planePoints[1][2]);
+        myPlanes[i]->SetPoint2(planePoints[2][0], planePoints[2][1], planePoints[2][2]);
+
+        // set actor
+        myActors[i]->SetMapper(myMapper[i]);
+    }
+
     vtkSmartPointer<vtkActor> *getActors() {
         return myActors;
     }
