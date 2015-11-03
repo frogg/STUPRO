@@ -54,7 +54,12 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/StuproView
   ${CMAKE_CURRENT_BINARY_DIR})
-							
+
+# Add required source-files for the StuproView-plugin
+FILE(GLOB StuproView_SOURCE_FILES
+  "src/StuproView/*.cpp"
+  "src/StuproView/*.hpp")
+
 #Required for the ParaView plugin
 add_paraview_plugin(
   StuproViewPlugin "1.0"
@@ -64,6 +69,8 @@ add_paraview_plugin(
     src/StuproView/vtkPVStuproView.cxx
   SERVER_MANAGER_XML
     src/StuproView/StuproView.xml
+  SOURCES
+	${StuproView_SOURCE_FILES}
 )
 
 #Copy the needed files to the output
