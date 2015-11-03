@@ -9,12 +9,7 @@ INCLUDE_DIRECTORIES(../Libraries)
 file(COPY  ${CMAKE_SOURCE_DIR}/Shader DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY  ${CMAKE_SOURCE_DIR}/Resources DESTINATION ${CMAKE_BINARY_DIR})
 file(GLOB SOURCES
-    Main.cpp
-    VTKOpenGL.cpp
-    StuproInteractor.cpp
-    Utils.cpp
-    GlobeTile.cpp
-    Globe.cpp
+    *.cpp *.hpp
 )
 add_executable(exe ${SOURCES})
 target_link_libraries(exe ${VTK_LIBRARIES})

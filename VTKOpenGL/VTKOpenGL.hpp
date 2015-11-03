@@ -16,6 +16,8 @@
 
 #include "StuproInteractor.hpp"
 
+#include "FrustumPlanes.hpp"
+
 struct Coordinate{
     double latitude;
     double longitude;
@@ -53,6 +55,8 @@ private:
     vtkSmartPointer<vtkOBBTree> myTree;
     
 	DisplayMode myDisplayMode;
+
+    FrustumPlanes myFrustum;
 
     static Coordinate getCoordinates(double point[]);
     static void getIntersectionLineFromPlane(double firstPlane[], double secondPlane[], double lineDirection[]);
