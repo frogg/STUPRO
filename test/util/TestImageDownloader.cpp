@@ -26,7 +26,13 @@ void TestImageDownloader::testGetTile() {
 		promise.set_value(tile);
 	});
 
-	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(downloader.getAvailableLayers()[0], 14, 0, 0));
+	const int zoomLevel = 10;
+	const int tileX = 3000;
+	const int tileY = 500;
+	const QString layerName = downloader.getAvailableLayers()[1];
+	DebugLogger::debug(layerName);
+
+	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(layerName, zoomLevel, tileX, tileY));
 
 	DebugLogger::debug("waiting for future");
 
@@ -34,24 +40,23 @@ void TestImageDownloader::testGetTile() {
 
 	DebugLogger::debug("future returned");
 
-	// CPPUNIT_ASSERT_EQUAL(0, tile.getZoomLevel());
-	// CPPUNIT_ASSERT_EQUAL(0, tile.getTileX());
-	// CPPUNIT_ASSERT_EQUAL(0, tile.getTileY());
-	//
-	// CPPUNIT_ASSERT_EQUAL(1, tile.getLayers().size());
-	//
-	// QString layerName = downloader.getAvailableLayers()[0];
-	// MetaImage metaImage = tile.getLayers()[layerName];
-	// CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMinimumHeight());
-	// CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMaximumHeight());
-	//
-	// QImage image = metaImage.getImage();
-	// CPPUNIT_ASSERT_EQUAL(512, image.width());
-	// CPPUNIT_ASSERT_EQUAL(512, image.height());
-	//
+	CPPUNIT_ASSERT_EQUAL(zoomLevel, tile.getZoomLevel());
+	CPPUNIT_ASSERT_EQUAL(tileX, tile.getTileX());
+	CPPUNIT_ASSERT_EQUAL(tileY, tile.getTileY());
+
+	CPPUNIT_ASSERT_EQUAL(1, tile.getLayers().size());
+
+	MetaImage metaImage = tile.getLayers()[layerName];
+	CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMinimumHeight());
+	CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMaximumHeight());
+
+	QImage image = metaImage.getImage();
+	CPPUNIT_ASSERT_EQUAL(512, image.width());
+	CPPUNIT_ASSERT_EQUAL(512, image.height());
+
 	// CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, -1, 0, 0), InvalidTileZoomException);
 	// CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, 16, 0, 0), InvalidTileZoomException);
-	//
+
 	// for (int zoom = 0; zoom < 16; zoom++) {
 	//  CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, -1, 0), InvalidTilePositionException);
 	//  CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, 8 << zoom, 0),
