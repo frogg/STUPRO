@@ -1,7 +1,5 @@
 #include "TestImageDownloadWorker.hpp"
 
-#include "../../include/DebugLogger.hpp"
-
 #include <MetaImage.hpp>
 
 #include <future>
