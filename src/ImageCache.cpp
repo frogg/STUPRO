@@ -31,7 +31,7 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 
 	/* Create a new writer putting together the file name of the image */
 	QImageWriter writer(QString("cache/%1/tile_%2_%3_%4.png")
-						.arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+						.arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
 
 	/*
 	 * Save the image size as meta data since Qt does not allow to easily read it
@@ -51,7 +51,7 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 
 const bool ImageCache::isImageCached(QString layer, int zoomLevel, int tileX, int tileY) {
 	QFileInfo imageFile(QString("cache/%1/tile_%2_%3_%4.png")
-						.arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+						.arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
 	return imageFile.exists() && imageFile.isFile();
 }
 
@@ -65,7 +65,7 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 
 	/* Create a new reader putting together the file name of the image */
 	QString filename = QString("cache/%1/tile_%2_%3_%4.png")
-					   .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY);
+					   .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX);
 	QImageReader reader(filename);
 	reader.setFormat("png");
 
