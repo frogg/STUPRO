@@ -60,7 +60,7 @@ void TestImageCache::testCacheImage() {
 	ImageCache::getInstance().cacheImage(MetaImage(image, 1, 42),
 										 QString("test-layer"), 2, 1, 3);
 
-	QImageReader reader("cache/test-layer/tile_2_1_3.png");
+	QImageReader reader("cache/test-layer/tile_2_3_1.png");
 	reader.setFormat("png");
 
 	CPPUNIT_ASSERT(reader.text("kronos-meta") == "1,42");
