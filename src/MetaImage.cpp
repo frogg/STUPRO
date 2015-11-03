@@ -3,11 +3,12 @@
 MetaImage::MetaImage(const QImage &image, short minimumHeight, short maximumHeight) {
 	this->setImage(image);
 	this->setMetaData(minimumHeight, maximumHeight);
-	this->metaDataAttached = true;
 }
 
 MetaImage::MetaImage(const QImage &image) {
 	this->setImage(image);
+	this->minimumHeight = 0;
+	this->maximumHeight = 0;
 }
 
 MetaImage::MetaImage() {
@@ -33,6 +34,7 @@ short MetaImage::getMaximumHeight() {
 }
 
 void MetaImage::setMetaData(short minimumHeight, short maximumHeight) {
+	this->metaDataAttached = true;
 	this->minimumHeight = minimumHeight;
 	this->maximumHeight = maximumHeight;
 }
