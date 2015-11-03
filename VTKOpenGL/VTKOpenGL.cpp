@@ -161,6 +161,8 @@ void VTKOpenGL::initCallbacks()
 
         Coordinate coordinates[5];
         VTKOpenGL::getCoordinates(coordinates, client.myTree, cameraPosition, planes);
+        VTKOpenGL::getCoordinatesApproximated(coordinates, client.myTree, cameraPosition);
+        
     };
 
 
@@ -487,5 +489,62 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     //  std::cout << "Left; " << intersection2[0] << "," << intersection2[1] << "," << intersection2[2] << std::endl;
 
 
+}
+
+void VTKOpenGL::getCoordinatesApproximated(Coordinate coordinate[5], vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[]){
+   
+    double globeOrigin[3] = {0,0,0};
+    
+    double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
+    std::cout << "Camera Position: " << cameraPosition[0] << ", " << cameraPosition[1] << ", " <<cameraPosition[2]<< "DistanceToCenter" << distanceCameraGlobe << std::endl;
+    
+    vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
+    tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
+    double centerPoint[3];
+    intersectPoints->GetPoint(0, centerPoint);
+    coordinate[4] = VTKOpenGL::getCoordinates(centerPoint);
+    
+    
+    coordinate[0].latitude = coordinate[4].latitude;
+    coordinate[1].latitude = coordinate[4].latitude;
+    coordinate[2].longitude = coordinate[4].longitude;
+    coordinate[3].longitude = coordinate[4].longitude;
+
+    //render everything
+    if(distanceCameraGlobe>1.84){
+        coordinate[0].longitude = coordinate[4].longitude-90;
+        coordinate[1].longitude = coordinate[4].longitude+90;
+        coordinate[2].latitude = coordinate[4].latitude + 90;
+        coordinate[3].latitude = coordinate[4].latitude - 90;
+
+    }else{
+        //beachten wenn man Bildschirm breiter zieht
+        double maximaldistance = distanceCameraGlobe-0.5/(1.84-0.5);
+        
+        coordinate[0].longitude = coordinate[4].longitude-90*maximaldistance;
+        coordinate[1].longitude = coordinate[4].longitude+90*maximaldistance;
+        coordinate[2].latitude = coordinate[4].latitude + 90*maximaldistance;
+        coordinate[3].latitude = coordinate[4].latitude - 90*maximaldistance;
+    }
+    if(coordinate[1].longitude>180){
+        coordinate[1].longitude = -180+(coordinate[1].longitude-180);
+    }
+    if(coordinate[0].longitude<-180){
+        coordinate[0].longitude = 180+(coordinate[0].longitude+180);
+    }
+    if (coordinate[2].latitude>90){
+        coordinate[2].latitude = 90-(coordinate[2].latitude-90);
+    }
+    if (coordinate[3].latitude<-90){
+        coordinate[3].latitude = -90-(coordinate[3].latitude+90);
+    }
+    //latitude -90 bis +90, Aquator ist 0
+    //longitude -180 bis 180, 0 Meridian Greenwich
+    std::cout << "Middlepoint " << coordinate[4].latitude << ", " << coordinate[4].longitude << std::endl;
+    std::cout << "Coordinate " << coordinate[0].latitude << ", " << coordinate[0].longitude << std::endl;
+    std::cout << "Coordinate " << coordinate[1].latitude << ", " << coordinate[1].longitude << std::endl;
+    std::cout << "Coordinate " << coordinate[2].latitude << ", " << coordinate[2].longitude << std::endl;
+    std::cout << "Coordinate " << coordinate[3].latitude << ", " << coordinate[3].longitude << std::endl;
+    
 }
 
