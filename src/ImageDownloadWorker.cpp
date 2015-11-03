@@ -1,10 +1,9 @@
 #include "../include/ImageDownloadWorker.hpp"
 
 #include <climits>
+#include <vector>
 #include <QEventLoop>
 #include <QRegExp>
-
-#include "../include/DebugLogger.hpp"
 
 ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageWidth,
 		int imageHeight) : layerName(layerName), url(url), imageWidth(imageWidth),
@@ -51,35 +50,35 @@ MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width,
 	short minHeight = SHRT_MAX;
 	short maxHeight = SHRT_MIN;
 
+	std::vector<short> heightValues(width * height);
+
 	// find min and max values used to normalize the image in the second pass
 	int rawIndex = 0;
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
-			short heightValue = (rawData[rawIndex] << 8) | (unsigned char)rawData[rawIndex + 1];
+			short heightValue = (rawData[rawIndex + 1] << 8) | (unsigned char)rawData[rawIndex];
 			if (heightValue < minHeight) {
 				minHeight = heightValue;
 			}
 			if (heightValue > maxHeight) {
 				maxHeight = heightValue;
 			}
+
+			heightValues[x + y * width] = heightValue;
 			rawIndex += 2;
 		}
 	}
 
 	// use min and max heights to normalize the data and save it in a QImage
 	// color values of 0xff correspond to maxHeight, 0x00 means minHeight
+	float normalizationFactor = 255.0 / (maxHeight - minHeight);
 	QImage image(width, height, QImage::Format_RGB32);
-	rawIndex = 0;
-	float normalizationFactor = (maxHeight - minHeight) / 255.0;
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
-			short heightValue = (rawData[rawIndex] << 8) | (unsigned char)rawData[rawIndex + 1];
+			short heightValue = heightValues[x + y * width];
 			short normalizedHeight = (heightValue - minHeight) * normalizationFactor;
-
-			QRgb color = qRgb(normalizedHeight, normalizedHeight, normalizedHeight);
-			image.setPixel(x, y, color);
-
-			rawIndex += 2;
+			QRgb pixelValue = qRgb(normalizedHeight, normalizedHeight, normalizedHeight);
+			image.setPixel(x, y, pixelValue);
 		}
 	}
 
@@ -87,7 +86,6 @@ MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width,
 }
 
 void ImageDownloadWorker::downloadCompleted() {
-	DebugLogger::debug("download completed");
 	try {
 		if (reply->error()) {
 			throw ConnectionFailedException(this->url, this->reply->error());
@@ -108,7 +106,6 @@ void ImageDownloadWorker::downloadCompleted() {
 			}
 
 			MetaImage metaImage(image);
-			DebugLogger::debug(QString("min height ") + QString::number(metaImage.getMinimumHeight()));
 			this->imageDownloadedPromise.set_value_at_thread_exit(metaImage);
 		} else if (QRegExp("^application\\/bil16$").exactMatch(contentType)) {
 			QByteArray rawData = this->reply->readAll();
