@@ -68,7 +68,7 @@ MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width,
 
 	// use min and max heights to normalize the data and save it in a QImage
 	// color values of 0xff correspond to maxHeight, 0x00 means minHeight
-	QImage image(width, height, QImage::Format_ARGB32);
+	QImage image(width, height, QImage::Format_RGB32);
 	rawIndex = 0;
 	float normalizationFactor = (maxHeight - minHeight) / 255.0;
 	for (int y = 0; y < height; y++) {
@@ -76,7 +76,7 @@ MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width,
 			short heightValue = (rawData[rawIndex] << 8) | (unsigned char)rawData[rawIndex + 1];
 			short normalizedHeight = (heightValue - minHeight) * normalizationFactor;
 
-			QRgb color = qRgba(normalizedHeight, normalizedHeight, normalizedHeight, normalizedHeight);
+			QRgb color = qRgb(normalizedHeight, normalizedHeight, normalizedHeight);
 			image.setPixel(x, y, color);
 
 			rawIndex += 2;
@@ -97,7 +97,6 @@ void ImageDownloadWorker::downloadCompleted() {
 		}
 
 		QString contentType = this->reply->header(QNetworkRequest::ContentTypeHeader).toString();
-		MetaImage metaImage;
 		if (QRegExp("^image\\/(png|tiff|jpeg|gif)$").exactMatch(contentType)) {
 			QByteArray rawData = this->reply->readAll();
 
@@ -108,15 +107,18 @@ void ImageDownloadWorker::downloadCompleted() {
 				throw ImageDecodingFailedException(this->url);
 			}
 
-			metaImage = MetaImage(image);
+			MetaImage metaImage(image);
+			DebugLogger::debug(QString("min height ") + QString::number(metaImage.getMinimumHeight()));
+			this->imageDownloadedPromise.set_value_at_thread_exit(metaImage);
 		} else if (QRegExp("^application\\/bil16$").exactMatch(contentType)) {
 			QByteArray rawData = this->reply->readAll();
 
-			metaImage = ImageDownloadWorker::decodeBil16(rawData, this->imageWidth, this->imageHeight);
+			MetaImage metaImage = ImageDownloadWorker::decodeBil16(rawData, this->imageWidth,
+								  this->imageHeight);
+			this->imageDownloadedPromise.set_value_at_thread_exit(metaImage);
 		} else {
 			throw UnknownContentTypeException(contentType, this->url);
 		}
-		this->imageDownloadedPromise.set_value_at_thread_exit(metaImage);
 	} catch (...) {
 		this->imageDownloadedPromise.set_exception_at_thread_exit(std::current_exception());
 	}
