@@ -545,6 +545,5 @@ void VTKOpenGL::getCoordinatesApproximated(Coordinate coordinate[5], vtkSmartPoi
     std::cout << "Coordinate " << coordinate[1].latitude << ", " << coordinate[1].longitude << std::endl;
     std::cout << "Coordinate " << coordinate[2].latitude << ", " << coordinate[2].longitude << std::endl;
     std::cout << "Coordinate " << coordinate[3].latitude << ", " << coordinate[3].longitude << std::endl;
-    
 }
 
