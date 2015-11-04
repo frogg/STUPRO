@@ -1,1 +1,0 @@
-/home/bbq/Projects/STUPRO_new/CMakeFiles/globe.dir
