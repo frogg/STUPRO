@@ -59,7 +59,7 @@ void vtkPVStuproView::initRenderer()
 	interactor->SetRenderWindow(GetRenderWindow());
 
 	// Create interactor style for render window.
-	vtkSmartPointer<StuproInteractor> interactorStyle = StuproInteractor::New();
+	vtkSmartPointer<StuproInteractor> interactorStyle = StuproInteractor::New(this);
 	interactorStyle->SetAutoAdjustCameraClippingRange(false);
 	interactor->SetInteractorStyle(interactorStyle);
 
@@ -118,10 +118,14 @@ void vtkPVStuproView::initCallbacks()
 
 		if(interactor->GetKeyCode() == 49)// 1 key
 		{
+			/*client.GetActiveCamera()->SetPosition(0, 0, 2.8);
+			client.GetActiveCamera()->SetFocalPoint(0, 0, 0);*/
 			client.myDisplayMode = DisplayGlobe;
 		}
 		else if(interactor->GetKeyCode() == 50) // 2 key
 		{
+			/*client.GetActiveCamera()->SetPosition(0, 0, 2.8);
+			client.GetActiveCamera()->SetFocalPoint(0, 0, 0);*/
 			client.myDisplayMode = DisplayMap;
 		}
 	};
@@ -143,6 +147,8 @@ void vtkPVStuproView::initGlobe()
 //----------------------------------------------------------------------------
 void vtkPVStuproView::switchCurrentDisplayMode()
 {
+	GetActiveCamera()->SetPosition(0, 0, 2.8);
+	GetActiveCamera()->SetFocalPoint(0, 0, 0);
 	myDisplayMode = myDisplayMode == DisplayGlobe ? DisplayMap : DisplayGlobe;
 	myGlobe->setDisplayModeInterpolation(myDisplayMode == DisplayGlobe ? 0.f : 1.f);
 
@@ -153,4 +159,14 @@ void vtkPVStuproView::switchCurrentDisplayMode()
 void vtkPVStuproView::PrintSelf(ostream& os, vtkIndent indent)
 {
 	this->Superclass::PrintSelf(os, indent);
+}
+
+//----------------------------------------------------------------------------
+float vtkPVStuproView::getGlobeRadius(){
+	return this->myGlobeRadius;
+}
+
+//----------------------------------------------------------------------------
+vtkPVStuproView::DisplayMode vtkPVStuproView::getDisplayMode(){
+	return this->myDisplayMode;
 }

@@ -11,13 +11,22 @@
 class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView
 {
 public:
+	enum DisplayMode
+	{
+		DisplayGlobe, DisplayMap
+	};
+	
 	static vtkPVStuproView* New();
 	vtkTypeMacro(vtkPVStuproView, vtkPVRenderView);
+	
 	void PrintSelf(ostream& os, vtkIndent indent);
 
 	virtual void Initialize(unsigned int id);
 
 	void switchCurrentDisplayMode();
+
+	float getGlobeRadius();
+	DisplayMode getDisplayMode();
 
 protected:
 	vtkPVStuproView();
@@ -26,11 +35,6 @@ protected:
 private:
 	vtkPVStuproView(const vtkPVStuproView&); // Not implemented
 	void operator=(const vtkPVStuproView&); // Not implemented
-
-	enum DisplayMode
-	{
-		DisplayGlobe, DisplayMap
-	};
 
 	void initParameters();
 	void initGlobe();
