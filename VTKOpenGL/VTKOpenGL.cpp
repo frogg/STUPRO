@@ -469,7 +469,6 @@ void VTKOpenGL::getIntersectionPoint(double plane1[4], double plane2[4], double 
 
     double planes[3][4];
     double intersectionOfPlanes[3];
-    double cut[3];
     for (int i = 0; i < 4; i++) {
         planes[0][i] = plane1[i];
         planes[1][i] = plane2[i];
@@ -479,7 +478,7 @@ void VTKOpenGL::getIntersectionPoint(double plane1[4], double plane2[4], double 
     cutPlanes(planes, intersectionOfPlanes);
 
     vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
-    tree->IntersectWithLine(cameraPosition, cut, intersectPoint, NULL);
+    tree->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
 
     if(intersectPoint->GetNumberOfPoints() > 0) {
         intersectPoint->GetPoint(0, intersection);
@@ -525,7 +524,7 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     double intersection[3][3];
     VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
     coordinate[0] = VTKOpenGL::getCoordinates(intersection[0]);
-        std::cout << "C0; " << "long: " << coordinate[0].longitude << "lat: " << coordinate[0].latitude << std::endl;
+        std::cout << "C0; " << "long: " << coordinate[0].longitude << "lat: " << coordinate[0].latitude << " intersection: "<< intersection[0][0] << intersection[0][1]  << intersection[0][2] << std::endl;
     VTKOpenGL::getIntersectionPoint(planeRight, planeBottom, planeFar, cameraPosition,tree, intersection[1]);
     coordinate[1] = VTKOpenGL::getCoordinates(intersection[1]);
         std::cout << "C1; " << "long: " << coordinate[1].longitude << "lat: " << coordinate[1].latitude << std::endl;
