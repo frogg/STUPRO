@@ -30,7 +30,7 @@ void TestImageDownloader::testGetTile() {
 	const int tileY = 0;
 	const QString layerName = downloader.getAvailableLayers()[0];
 
-	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(layerName, zoomLevel, tileX, tileY));
+	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(zoomLevel, tileX, tileY));
 
 	ImageTile tile = future.get();
 
@@ -38,7 +38,7 @@ void TestImageDownloader::testGetTile() {
 	CPPUNIT_ASSERT_EQUAL(tileX, tile.getTileX());
 	CPPUNIT_ASSERT_EQUAL(tileY, tile.getTileY());
 
-	CPPUNIT_ASSERT_EQUAL(1, tile.getLayers().size());
+	CPPUNIT_ASSERT_EQUAL(2, tile.getLayers().size());
 
 	MetaImage metaImage = tile.getLayers()[layerName];
 	// CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMinimumHeight());
@@ -48,11 +48,11 @@ void TestImageDownloader::testGetTile() {
 	CPPUNIT_ASSERT_EQUAL(512, image.width());
 	CPPUNIT_ASSERT_EQUAL(512, image.height());
 
-	for (int x = 0; x < 8; x++) {
-		for (int y = 0; y < 4; y++) {
-			downloader.getTile(layerName, 0, x, y);
-		}
-	}
+	// for (int x = 0; x < 8; x++) {
+	//  for (int y = 0; y < 4; y++) {
+	//      downloader.getTile(0, x, y);
+	//  }
+	// }
 
 	// CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, -1, 0, 0), InvalidTileZoomException);
 	// CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, 16, 0, 0), InvalidTileZoomException);
