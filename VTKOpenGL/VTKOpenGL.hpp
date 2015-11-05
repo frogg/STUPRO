@@ -17,11 +17,8 @@
 #include "StuproInteractor.hpp"
 
 #include "FrustumPlanes.hpp"
+#include "Coordinate.hpp"
 
-struct Coordinate{
-    double latitude;
-    double longitude;
-};
 
 class VTKOpenGL
 {
@@ -58,11 +55,10 @@ private:
 
     FrustumPlanes myFrustum;
 
-    static Coordinate getCoordinates(double point[]);
     static void cutPlanes(double planes[3][4], double cut [3]);
     static void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]);
-    static void logCoordinates(Coordinate coordinate[5]);
     void getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double planes[24]);
+    
 	float myGlobeRadius;
 	float myPlaneSize;
 	float myDisplayModeInterpolation;

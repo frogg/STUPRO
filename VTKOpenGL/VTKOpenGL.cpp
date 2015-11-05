@@ -376,18 +376,7 @@ vtkSmartPointer<vtkOpenGLTexture> VTKOpenGL::loadAlphaTexture(std::string rgbFil
     
 }
 
-Coordinate VTKOpenGL::getCoordinates(double point[]){
-    Coordinate coordinate;
-    float radius = 0.5f;
-    float PI = 3.14159268;
-    //coordinate system are not the same as in math formulas
-    float x = point[0];
-    float y = point[2];
-    float z = point[1];
-    coordinate.latitude = asin(z/radius) *180/PI;
-    coordinate.longitude =  atan2(x, y)  * 180/PI;
-    return coordinate;
-}
+
 
 void VTKOpenGL::cutPlanes(double planes[3][4], double cut [3]) {
     Eigen::Matrix3d planeMatrix;
@@ -439,15 +428,15 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     double planeTop[4]  = {planes[12],  planes[13], planes[14], planes[15]};
     double planeFar[4]  = {planes[20],  planes[21], planes[22], planes[23]};
 
-    double intersection[3][3];
+    double intersection[4][3];
     VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
-    coordinate[0] = VTKOpenGL::getCoordinates(intersection[0]);
+    coordinate[0] = Coordinate::getCoordinatesFromGlobePoint(intersection[0],myGlobeRadius);
     VTKOpenGL::getIntersectionPoint(planeRight, planeBottom, planeFar, cameraPosition,tree, intersection[1]);
-    coordinate[1] = VTKOpenGL::getCoordinates(intersection[1]);
+    coordinate[1] = Coordinate::getCoordinatesFromGlobePoint(intersection[1],myGlobeRadius);
     VTKOpenGL::getIntersectionPoint(planeLeft, planeTop, planeFar, cameraPosition,tree, intersection[2]);
-    coordinate[2] = VTKOpenGL::getCoordinates(intersection[2]);
+    coordinate[2] = Coordinate::getCoordinatesFromGlobePoint(intersection[2], myGlobeRadius);
     VTKOpenGL::getIntersectionPoint(planeRight, planeTop, planeFar, cameraPosition,tree, intersection[3]);
-    coordinate[3] = VTKOpenGL::getCoordinates(intersection[3]);
+    coordinate[3] = Coordinate::getCoordinatesFromGlobePoint(intersection[3], myGlobeRadius);
 
 
     double globeOrigin[3] = {0,0,0};
@@ -456,13 +445,9 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
     double centerPoint[3];
     intersectPoints->GetPoint(0, centerPoint);
-    coordinate[4] = VTKOpenGL::getCoordinates(centerPoint);
+    coordinate[4] = Coordinate::getCoordinatesFromGlobePoint(centerPoint, myGlobeRadius);
     logCoordinates(coordinate);
 }
-//log the 5 Coordinates ()
-void VTKOpenGL::logCoordinates(Coordinate coordinate[5]){
-    for(int i=0; i<5; i++){
-        std::cout << "Coordinates " << i << " long: " << coordinate[i].longitude << " lat: " << coordinate[i].latitude << std::endl;
-    }
-}
+
+
 
