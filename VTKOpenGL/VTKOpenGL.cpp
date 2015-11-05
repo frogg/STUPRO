@@ -149,18 +149,18 @@ void VTKOpenGL::initCallbacks()
     // Create callback function that corrects the camera clipping range to work around a VTK bug.
     auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
     {
-
+        
         VTKOpenGL & client = *((VTKOpenGL*)clientData);
+        //get current position of the camera
         double cameraPosition[3];
         client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
 
-
-        //Test View Frustum
-        //get aspect from sizes
-         double aspect = 1;
+        //get aspect, check this, if it also works on tiled displays
+         double aspect = client.myRenderer->GetTiledAspectRatio();
+        //get view frustum
          double planes[24];
          client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
-
+        
         Coordinate coordinates[5];
         client.getCoordinates(coordinates, client.myTree, cameraPosition, planes);
         
@@ -319,25 +319,6 @@ void VTKOpenGL::initCallbacks()
     myRenderWindow->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent, modeSwitchCallback);
 }
 
-//not completly correct
-//problem falls x2 = 0;
-void VTKOpenGL::getIntersectionLineFromPlane(double firstPlane[], double secondPlane[], double lineDirection[]){
-   
-    double factor =  secondPlane[0]/firstPlane[0];
-    secondPlane[0] = 0;
-    secondPlane[1] = secondPlane[1] - factor*firstPlane[1];
-    secondPlane[2] = secondPlane[2] - factor*firstPlane[2];
-    secondPlane[3] = secondPlane[3] - factor*firstPlane[3];
-
-    double x2    = 1;
-    double x3 = (- secondPlane[3]- secondPlane[1]*x2)/secondPlane[2];
-    double x1 = (- firstPlane[3]- firstPlane[1]*x2 - firstPlane[2]*x3)/firstPlane[0];
-
-    lineDirection[0] = x1;
-    lineDirection[1] = x2;
-    lineDirection[2] = x3;
-}
-
 
 
 vtkSmartPointer<vtkOpenGLTexture> VTKOpenGL::loadAlphaTexture(std::string rgbFile,
@@ -456,8 +437,6 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     double planeRight[4]  = {planes[4],  planes[5], planes[6], planes[7]};
     double planeBottom[4]  = {planes[8],  planes[9], planes[10], planes[11]};
     double planeTop[4]  = {planes[12],  planes[13], planes[14], planes[15]};
-    // not used:
-    // double planeNear[4]  = {planes[16],  planes[17], planes[18], planes[19]};
     double planeFar[4]  = {planes[20],  planes[21], planes[22], planes[23]};
 
     double intersection[3][3];
@@ -480,7 +459,7 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     coordinate[4] = VTKOpenGL::getCoordinates(centerPoint);
     logCoordinates(coordinate);
 }
-
+//log the 5 Coordinates ()
 void VTKOpenGL::logCoordinates(Coordinate coordinate[5]){
     for(int i=0; i<5; i++){
         std::cout << "Coordinates " << i << " long: " << coordinate[i].longitude << " lat: " << coordinate[i].latitude << std::endl;
