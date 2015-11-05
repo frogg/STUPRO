@@ -478,54 +478,12 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     double centerPoint[3];
     intersectPoints->GetPoint(0, centerPoint);
     coordinate[4] = VTKOpenGL::getCoordinates(centerPoint);
+    logCoordinates(coordinate);
 }
 
-void VTKOpenGL::getCoordinatesApproximated(Coordinate coordinate[5], vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[]){
-   
-    double globeOrigin[3] = {0,0,0};
-    
-    double distanceCameraGlobe = sqrt(pow(cameraPosition[0]-globeOrigin[0], 2)+pow(cameraPosition[1]-globeOrigin[1], 2)+pow(cameraPosition[2]-globeOrigin[2], 2));
-    
-    vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
-    tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
-    double centerPoint[3];
-    intersectPoints->GetPoint(0, centerPoint);
-    coordinate[4] = VTKOpenGL::getCoordinates(centerPoint);
-    
-    
-    coordinate[0].latitude = coordinate[4].latitude;
-    coordinate[1].latitude = coordinate[4].latitude;
-    coordinate[2].longitude = coordinate[4].longitude;
-    coordinate[3].longitude = coordinate[4].longitude;
-
-    //render everything
-    if(distanceCameraGlobe>1.84){
-        coordinate[0].longitude = coordinate[4].longitude-90;
-        coordinate[1].longitude = coordinate[4].longitude+90;
-        coordinate[2].latitude = coordinate[4].latitude + 90;
-        coordinate[3].latitude = coordinate[4].latitude - 90;
-
-    }else{
-        //beachten wenn man Bildschirm breiter zieht
-        double maximaldistance = distanceCameraGlobe-0.5/(1.84-0.5);
-        
-        coordinate[0].longitude = coordinate[4].longitude-90*maximaldistance;
-        coordinate[1].longitude = coordinate[4].longitude+90*maximaldistance;
-        coordinate[2].latitude = coordinate[4].latitude + 90*maximaldistance;
-        coordinate[3].latitude = coordinate[4].latitude - 90*maximaldistance;
+void VTKOpenGL::logCoordinates(Coordinate coordinate[5]){
+    for(int i=0; i<5; i++){
+        std::cout << "Coordinates " << i << " long: " << coordinate[i].longitude << " lat: " << coordinate[i].latitude << std::endl;
     }
-    if(coordinate[1].longitude>180){
-        coordinate[1].longitude = -180+(coordinate[1].longitude-180);
-    }
-    if(coordinate[0].longitude<-180){
-        coordinate[0].longitude = 180+(coordinate[0].longitude+180);
-    }
-    if (coordinate[2].latitude>90){
-        coordinate[2].latitude = 90-(coordinate[2].latitude-90);
-    }
-    if (coordinate[3].latitude<-90){
-        coordinate[3].latitude = -90-(coordinate[3].latitude+90);
-    }
-    
 }
 

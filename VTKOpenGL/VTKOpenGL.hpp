@@ -62,7 +62,7 @@ private:
     static void getIntersectionLineFromPlane(double firstPlane[], double secondPlane[], double lineDirection[]);
     static void cutPlanes(double planes[3][4], double cut [3]);
     static void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]);
-    static void getCoordinatesApproximated(Coordinate coordinate[5], vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[]);
+    static void logCoordinates(Coordinate coordinate[5]);
     void getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double planes[24]);
 	float myGlobeRadius;
 	float myPlaneSize;
