@@ -447,9 +447,10 @@ void VTKOpenGL::getCoordinates(std::vector<Coordinate> &coordinates, vtkSmartPoi
     double centerPoint[3];
     intersectPoints->GetPoint(0, centerPoint);
     coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(centerPoint,myGlobeRadius));
-    
     Coordinate::logCoordinates(coordinates);
 }
+
+
 
 
 
