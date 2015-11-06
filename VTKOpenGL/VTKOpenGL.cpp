@@ -190,6 +190,7 @@ void VTKOpenGL::initCallbacks()
             std::vector<double *> worldIntersectionPoints = VTKOpenGL::getIntersectionPoints(planes, cameraPosition, client.myPlaneTree);
             intersectionCoordinates = VTKOpenGL::getPlaneCoordinates (worldIntersectionPoints, 4, 2);
         }
+        Coordinate::logCoordinates(intersectionCoordinates);
     };
 
 
