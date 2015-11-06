@@ -161,8 +161,9 @@ void VTKOpenGL::initCallbacks()
          double planes[24];
          client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
         
-        Coordinate coordinates[5];
+        std::vector<Coordinate> coordinates;
         client.getCoordinates(coordinates, client.myTree, cameraPosition, planes);
+        
         
     };
 
@@ -263,12 +264,13 @@ void VTKOpenGL::initCallbacks()
             client.myFrustum.updatePlanes(planes);
             break;
         case 54:
-            client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
+     /*       client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
             Coordinate coordinates[5];
             double cameraPosition[3];
             client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
-            client.getCoordinates(coordinates, client.myTree, cameraPosition, planes);
+            client.getCoordinates(coordinates, client.myTree, cameraPosition, planes); */
             break;
+      
         case 53:
 
             client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
@@ -419,7 +421,7 @@ void VTKOpenGL::getIntersectionPoint(double plane1[4], double plane2[4], double 
         }
     }
 }
-void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double planes[24]){
+void VTKOpenGL::getCoordinates(std::vector<Coordinate> &coordinates, vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double planes[24]){
     
     //Get all planes of view frustum
     double planeLeft[4]  = {planes[0],  planes[1], planes[2], planes[3]};
@@ -430,14 +432,13 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
 
     double intersection[4][3];
     VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
-    coordinate[0] = Coordinate::getCoordinatesFromGlobePoint(intersection[0],myGlobeRadius);
+    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(intersection[0],myGlobeRadius));
     VTKOpenGL::getIntersectionPoint(planeRight, planeBottom, planeFar, cameraPosition,tree, intersection[1]);
-    coordinate[1] = Coordinate::getCoordinatesFromGlobePoint(intersection[1],myGlobeRadius);
+    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(intersection[1],myGlobeRadius));
     VTKOpenGL::getIntersectionPoint(planeLeft, planeTop, planeFar, cameraPosition,tree, intersection[2]);
-    coordinate[2] = Coordinate::getCoordinatesFromGlobePoint(intersection[2], myGlobeRadius);
+    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(intersection[2],myGlobeRadius));
     VTKOpenGL::getIntersectionPoint(planeRight, planeTop, planeFar, cameraPosition,tree, intersection[3]);
-    coordinate[3] = Coordinate::getCoordinatesFromGlobePoint(intersection[3], myGlobeRadius);
-
+    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(intersection[3],myGlobeRadius));
 
     double globeOrigin[3] = {0,0,0};
 
@@ -445,8 +446,9 @@ void VTKOpenGL::getCoordinates(Coordinate coordinate[5], vtkSmartPointer<vtkOBBT
     tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
     double centerPoint[3];
     intersectPoints->GetPoint(0, centerPoint);
-    coordinate[4] = Coordinate::getCoordinatesFromGlobePoint(centerPoint, myGlobeRadius);
-    logCoordinates(coordinate);
+    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(centerPoint,myGlobeRadius));
+    
+    Coordinate::logCoordinates(coordinates);
 }
 
 
