@@ -19,7 +19,6 @@ public:
     double getLatitude();
     double getLongitude();
     Coordinate(double latitude, double longitude);
-    ~Coordinate();
     
 private:
     double myLatitude;

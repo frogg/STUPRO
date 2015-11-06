@@ -45,5 +45,5 @@ Coordinate::Coordinate(double latitude, double longitude) : myLatitude(latitude)
 
 }
 
-Coordinate::~Coordinate(){
-}
+
+
