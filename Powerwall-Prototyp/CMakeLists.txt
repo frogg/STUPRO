@@ -6,7 +6,7 @@ message(STATUS ${CMAKE_MODULE_PATH})
 set (ParaView_DIR "/paraview-bin/"
       CACHE PATH
       "Path to ParaView build")
-
+      
 if(EXISTS "${ParaView_DIR}/ParaViewConfig.cmake" OR EXISTS "${ParaView_DIR}/paraview-config.cmake")
    find_package(ParaView REQUIRED)
 else()
@@ -14,7 +14,7 @@ else()
 	"ParaView not found, enter the path "
 	"to a ParaView build dir in ParaView_DIR")
 endif()
-
+   
 include(${PARAVIEW_USE_FILE})
 if (NOT PARAVIEW_BUILD_QT_GUI)
   message(FATAL_ERROR
@@ -32,11 +32,13 @@ IF (PARAVIEW_QT_VERSION VERSION_GREATER "4")
     src/myMainWindow.h)
   QT5_WRAP_UI(UI_BUILT_SOURCES
     src/myMainWindow.ui)
+  QT5_WRAP_CPP(MOC_SRCS src/StuproView/GlobeSwitcher.h)
 ELSE ()
   QT4_WRAP_CPP(MOC_BUILT_SOURCES
     src/myMainWindow.h)
   QT4_WRAP_UI(UI_BUILT_SOURCES
     src/myMainWindow.ui)
+  QT4_WRAP_CPP(MOC_SRCS src/StuproView/GlobeSwitcher.h)
 ENDIF ()
 
 SOURCE_GROUP("Generated" FILES
@@ -55,6 +57,10 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/StuproView
   ${CMAKE_CURRENT_BINARY_DIR})
 
+# Button to switch from 3D to 2,5D and vice versa
+  ADD_PARAVIEW_ACTION_GROUP(IFACES IFACE_SRCS CLASS_NAME GlobeSwitcher
+                            GROUP_NAME "ToolBar/GlobeSwitcher")
+							
 #Required for the ParaView plugin
 add_paraview_plugin(
   StuproViewPlugin "1.0"
@@ -64,7 +70,11 @@ add_paraview_plugin(
     src/StuproView/vtkPVStuproView.cxx
   SERVER_MANAGER_XML
     src/StuproView/StuproView.xml
+  GUI_INTERFACES ${IFACES}
+    SOURCES src/StuproView/GlobeSwitcher.cxx ${MOC_SRCS} ${IFACE_SRCS}
 )
+
+
 
 #Copy the needed files to the output
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/StuproView/Shader DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -73,7 +83,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/StuproView/Resources DESTINATION ${CMA
 build_paraview_client(paraview_revised
   TITLE "ParaView (ReVisEd)"
   ORGANIZATION  "Kitware Inc."
-  VERSION_MAJOR 1
+  VERSION_MAJOR 1 
   VERSION_MINOR 1
   VERSION_PATCH 1
   PVMAIN_WINDOW myMainWindow

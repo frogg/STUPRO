@@ -4,6 +4,11 @@
         label="STUPRO View"
         processes="client|renderserver|dataserver"
         base_proxygroup="views" base_proxyname="RenderView">
+        <Property
+            name="2d/3d Wechsel"
+            animateable="0"
+            command="switchRepresentation">
+        </Property>
     </RenderViewProxy>
   </ProxyGroup>
 </ServerManagerConfiguration>
