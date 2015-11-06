@@ -86,14 +86,14 @@ void VTKOpenGL::initGlobe()
     mySphereTree->BuildLocator();
 
     // an artificial Plane to calculate raycasting coordinates
-    /*vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
+    vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
     planeSource->SetOrigin(-2, -1, 0);
     planeSource->SetPoint1(2, -1, 0);
     planeSource->SetPoint2(-2, 1, 0);
-    planeSource->Update();*/
+    planeSource->Update();
 
     myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
-    myPlaneTree->SetDataSet(plane->GetOutput());
+    myPlaneTree->SetDataSet(planeSource->GetOutput());
     myPlaneTree->BuildLocator();
 }
 
