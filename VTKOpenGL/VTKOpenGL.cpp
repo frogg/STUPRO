@@ -184,10 +184,10 @@ void VTKOpenGL::initCallbacks()
 
         std::vector<Coordinate> intersectionCoordinates;
         if (client.myDisplayMode == DisplayGlobe) {
-            std::vector<double [3]> worldIntersectionPoints = VTKOpenGL::getIntersectionPoints (planes, cameraPosition, client.mySphereTree);
+            std::vector<double *> worldIntersectionPoints = VTKOpenGL::getIntersectionPoints (planes, cameraPosition, client.mySphereTree);
             intersectionCoordinates = VTKOpenGL::getGlobeCoordinates (worldIntersectionPoints, client.myGlobeRadius);
         } else {
-            std::vector<double [3]> worldIntersectionPoints = VTKOpenGL::getIntersectionPoints(planes, cameraPosition, client.myPlaneTree);
+            std::vector<double *> worldIntersectionPoints = VTKOpenGL::getIntersectionPoints(planes, cameraPosition, client.myPlaneTree);
             intersectionCoordinates = VTKOpenGL::getPlaneCoordinates (worldIntersectionPoints, 4, 2);
         }
     };
@@ -381,7 +381,7 @@ void VTKOpenGL::getIntersectionPoint(double plane1[4], double plane2[4], double 
     }
 }
 
-std::vector<double[3]> VTKOpenGL::getIntersectionPoints(double planes[], double cameraPosition[], vtkSmartPointer<vtkOBBTree> tree)
+std::vector<double *> VTKOpenGL::getIntersectionPoints(double planes[], double cameraPosition[], vtkSmartPointer<vtkOBBTree> tree)
 {
     // left, right, bottom, top, near, far
     double planeArray[6][4];
@@ -391,7 +391,7 @@ std::vector<double[3]> VTKOpenGL::getIntersectionPoints(double planes[], double 
         }
     }
 
-    std::vector<double [3]> worldIntersectionPoints;
+    std::vector<double *> worldIntersectionPoints;
     for (int j = 0; j < 4; j++) {
         double intersection[3];
 //        VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
@@ -403,7 +403,7 @@ std::vector<double[3]> VTKOpenGL::getIntersectionPoints(double planes[], double 
     return worldIntersectionPoints;
 }
 
-std::vector<Coordinate> VTKOpenGL::getGlobeCoordinates(std::vector<double[3]> worldPoints, double radius)
+std::vector<Coordinate> VTKOpenGL::getGlobeCoordinates(std::vector<double*> worldPoints, double radius)
 {
     std::vector<Coordinate> globeCoordinates;
     for (double *worldCoordinate : worldPoints) {
@@ -412,7 +412,7 @@ std::vector<Coordinate> VTKOpenGL::getGlobeCoordinates(std::vector<double[3]> wo
     return globeCoordinates;
 }
 
-std::vector<Coordinate> VTKOpenGL::getPlaneCoordinates(std::vector<double[3]> worldPoints, double planeWidth, double planeHeight)
+std::vector<Coordinate> VTKOpenGL::getPlaneCoordinates(std::vector<double*> worldPoints, double planeWidth, double planeHeight)
 {
     std::vector<Coordinate> globeCoordinates;
     for (double *worldCoordinate : worldPoints) {

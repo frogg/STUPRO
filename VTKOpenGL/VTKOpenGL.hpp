@@ -55,9 +55,9 @@ private:
 
     static void cutPlanes(double planes[3][4], double cut [3]);
     static void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]);
-    static std::vector<double[3]> getIntersectionPoints(double planes[24], double cameraPosition[3], vtkSmartPointer<vtkOBBTree> tree);
-    static std::vector<Coordinate> getGlobeCoordinates(std::vector<double[3]> worldPoints, double radius);
-    static std::vector<Coordinate> getPlaneCoordinates(std::vector<double[3]> worldPoints, double planeWidth, double planeHeight);
+    static std::vector<double *> getIntersectionPoints(double planes[24], double cameraPosition[3], vtkSmartPointer<vtkOBBTree> tree);
+    static std::vector<Coordinate> getGlobeCoordinates(std::vector<double*> worldPoints, double radius);
+    static std::vector<Coordinate> getPlaneCoordinates(std::vector<double*> worldPoints, double planeWidth, double planeHeight);
     
 	float myGlobeRadius;
 	float myPlaneSize;
