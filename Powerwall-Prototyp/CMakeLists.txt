@@ -23,7 +23,7 @@ if (NOT PARAVIEW_BUILD_QT_GUI)
     "with PARAVIEW_BUILD_QT_GUI set to TRUE")
 endif()
 
-include(ParaViewBranding)
+#include(ParaViewBranding)
 
 #------------------------------------------------------------------------------
 # Add extra library containing custom code for the client.
@@ -38,7 +38,7 @@ ELSE ()
     src/myMainWindow.h)
   QT4_WRAP_UI(UI_BUILT_SOURCES
     src/myMainWindow.ui)
-  QT4_WRAP_CPP(MOC_SRCS src/StuproView/GlobeSwitcher.h)
+ # QT4_WRAP_CPP(MOC_SRCS src/StuproView/GlobeSwitcher.h)
 ENDIF ()
 
 SOURCE_GROUP("Generated" FILES
@@ -58,9 +58,13 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR})
 
 # Button to switch from 3D to 2,5D and vice versa
-  ADD_PARAVIEW_ACTION_GROUP(IFACES IFACE_SRCS CLASS_NAME GlobeSwitcher
-                            GROUP_NAME "ToolBar/GlobeSwitcher")
-							
+  #ADD_PARAVIEW_ACTION_GROUP(IFACES IFACE_SRCS CLASS_NAME GlobeSwitcher
+    #                        GROUP_NAME "ToolBar/GlobeSwitcher")
+
+FILE(GLOB StuproView_SOURCE_FILES
+    "src/StuproView/*.cpp"
+    "src/StuproView/*.hpp")
+
 #Required for the ParaView plugin
 add_paraview_plugin(
   StuproViewPlugin "1.0"
@@ -68,10 +72,13 @@ add_paraview_plugin(
   REQUIRED_ON_CLIENT
   SERVER_MANAGER_SOURCES
     src/StuproView/vtkPVStuproView.cxx
+    src/StuproView/StuproInteractor.cpp
   SERVER_MANAGER_XML
     src/StuproView/StuproView.xml
   GUI_INTERFACES ${IFACES}
-    SOURCES src/StuproView/GlobeSwitcher.cxx ${MOC_SRCS} ${IFACE_SRCS}
+   # SOURCES src/StuproView/GlobeSwitcher.cxx ${MOC_SRCS} ${IFACE_SRCS}
+  SOURCES
+    ${StuproView_SOURCE_FILES}
 )
 
 

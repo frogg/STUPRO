@@ -20,9 +20,10 @@
 #include "vtkCallbackCommand.h"
 #include "vtkCamera.h"
 #include "vtkRenderWindow.h"
-#include "vtkRenderWindowInteractor.h"
+#include "vtkPVGenericRenderWindowInteractor.h"
 #include "vtkInteractorStyle.h"
 #include "StuproInteractor.hpp"
+#include "vtkInteractorStyleSwitch.h"
 #include <iostream>
 #include <fstream>
 #include <functional>
@@ -82,7 +83,7 @@ void vtkPVStuproView::Initialize(unsigned int id)
     float planeSize = 1.f;
     
 	float heightOffset = 0.05f;
-
+    
 	vshader->GetUniformVariables()->SetUniformf("interpolation", 1, &interpolationValue);
 	vshader->GetUniformVariables()->SetUniformf("heightOffset", 1, &heightOffset);
 	vshader->GetUniformVariables()->SetUniformf("globeRadius", 1, &globeRadius);
@@ -90,15 +91,16 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	vshader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
     GetRenderer()->ResetCameraClippingRange(r1, r2, r1, r2, r1, r2);
     // Create interactor for render window.
-    vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<
-    vtkRenderWindowInteractor>::New();
+    vtkSmartPointer<vtkPVGenericRenderWindowInteractor> interactor = vtkSmartPointer<
+    vtkPVGenericRenderWindowInteractor>::New();
 
     //vtkSmartPointer<StuproInteractor> test =  vtkInteractorStyle::SafeDownCast(GetRenderWindow()->GetInteractor()->GetInteractorStyle());
     
-    //test->SetAutoAdjustCameraClippingRange(false);s
+    // test->SetAutoAdjustCameraClippingRange(false);s
     // Create interactor style for render window.
-    vtkSmartPointer<StuproInteractor> interactorStyle = StuproInteractor::New();
+    vtkSmartPointer<vtkInteractorStyleSwitch> interactorStyle = vtkInteractorStyleSwitch::New();
     interactorStyle->SetAutoAdjustCameraClippingRange(false);
+    
     interactor->SetInteractorStyle(interactorStyle);
     interactor->SetRenderWindow(GetRenderWindow());
 	pgm->GetShaders()->AddItem(fshader);
@@ -106,10 +108,14 @@ void vtkPVStuproView::Initialize(unsigned int id)
 
 	vtkSmartPointer<vtkOpenGLProperty> openGLproperty =
 		static_cast<vtkOpenGLProperty*>(planeActor->GetProperty());
+    
 
 	openGLproperty->SetPropProgram(pgm);
 	openGLproperty->ShadingOn();
     GetRenderWindow()->Render();
+    GetRenderWindow()->Render();
+    //interactor->Initialize();
+    interactor->Start();
 }
 
 //----------------------------------------------------------------------------
