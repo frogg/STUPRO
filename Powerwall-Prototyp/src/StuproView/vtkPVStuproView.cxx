@@ -93,14 +93,14 @@ void vtkPVStuproView::Initialize(unsigned int id)
     vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<
     vtkRenderWindowInteractor>::New();
 
-    //vtkSmartPointer<vtkInteractorStyle> test =  vtkInteractorStyle::SafeDownCast(GetRenderWindow()->GetInteractor()->GetInteractorStyle());
+    //vtkSmartPointer<StuproInteractor> test =  vtkInteractorStyle::SafeDownCast(GetRenderWindow()->GetInteractor()->GetInteractorStyle());
     
     //test->SetAutoAdjustCameraClippingRange(false);s
     // Create interactor style for render window.
-    vtkSmartPointer<vtkInteractorStyleTrackballCamera> interactorStyle = vtkInteractorStyleTrackballCamera::New();
+    vtkSmartPointer<StuproInteractor> interactorStyle = StuproInteractor::New();
     interactorStyle->SetAutoAdjustCameraClippingRange(false);
     interactor->SetInteractorStyle(interactorStyle);
-    //interactor->SetRenderWindow(GetRenderWindow());
+    interactor->SetRenderWindow(GetRenderWindow());
 	pgm->GetShaders()->AddItem(fshader);
 	pgm->GetShaders()->AddItem(vshader);
 
@@ -130,10 +130,17 @@ std::string vtkPVStuproView::readFile(std::string filename)
 }
 
 void vtkPVStuproView::switchRepresentation(){
-    interpolationValue = interpolationValue == 1.f ? 0.f : 1.f;
+    if (interpolationValue == 1.0f){
+        interpolationValue = 0.0f;
+        this->SetInteractionMode(INTERACTION_MODE_3D);
+    }else{
+        interpolationValue = 1.0f;
+        this->SetInteractionMode(INTERACTION_MODE_2D);
+    }
 
     vshader->GetUniformVariables()->SetUniformf("interpolation", 1, &interpolationValue);
     GetRenderer()->GetActiveCamera()->SetPosition(0, 0, 2.8);
+
     GetRenderWindow()->Render();
     
 }
