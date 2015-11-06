@@ -106,36 +106,6 @@ void vtkPVStuproView::initCallbacks()
 	// Enable timer on the render window.
 	GetRenderWindow()->GetInteractor()->CreateRepeatingTimer(17);
 	GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::TimerEvent, timerCallback);
-
-	// TODO: Replace with GUI-button.
-	// Create callback function to switch display modes (using the '1' and '2' keys)
-	auto modeSwitchFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
-	{
-		vtkPVStuproView & client = *((vtkPVStuproView*) clientData);
-
-		// Get the interactor to determine the pressed key.
-		vtkRenderWindowInteractor * interactor = (vtkRenderWindowInteractor*) caller;
-
-		if(interactor->GetKeyCode() == 49)// 1 key
-		{
-			/*client.GetActiveCamera()->SetPosition(0, 0, 2.8);
-			client.GetActiveCamera()->SetFocalPoint(0, 0, 0);*/
-			client.myDisplayMode = DisplayGlobe;
-		}
-		else if(interactor->GetKeyCode() == 50) // 2 key
-		{
-			/*client.GetActiveCamera()->SetPosition(0, 0, 2.8);
-			client.GetActiveCamera()->SetFocalPoint(0, 0, 0);*/
-			client.myDisplayMode = DisplayMap;
-		}
-	};
-
-	// Create and assign callback for mode switch function.
-	vtkSmartPointer<vtkCallbackCommand> modeSwitchCallback =
-		vtkSmartPointer<vtkCallbackCommand>::New();
-	modeSwitchCallback->SetCallback(modeSwitchFunc);
-	modeSwitchCallback->SetClientData(this);
-	GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent, modeSwitchCallback);
 }
 
 //----------------------------------------------------------------------------
@@ -162,11 +132,13 @@ void vtkPVStuproView::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-float vtkPVStuproView::getGlobeRadius(){
+float vtkPVStuproView::getGlobeRadius()
+{
 	return this->myGlobeRadius;
 }
 
 //----------------------------------------------------------------------------
-vtkPVStuproView::DisplayMode vtkPVStuproView::getDisplayMode(){
+vtkPVStuproView::DisplayMode vtkPVStuproView::getDisplayMode()
+{
 	return this->myDisplayMode;
 }
