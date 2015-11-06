@@ -18,6 +18,8 @@
 #include "GlobeTile.hpp"
 #include "MakeUnique.hpp"
 
+#include "libs/Eigen-v3.2.6/Dense"
+
 Globe::Globe(vtkRenderer & renderer) :
 		myRenderer(renderer), myDownloader([=](ImageTile tile)
 		{	onTileLoad(tile);}), myZoomLevel(1), myDisplayModeInterpolation(0)
@@ -163,3 +165,98 @@ void Globe::onTileLoad(ImageTile tile)
 	
 	myIsClean.clear();
 }
+
+void Globe::cutPlanes(double planes[3][4], double cut [3]) {
+    Eigen::Matrix3d planeMatrix;
+    Eigen::Vector3d offset;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            planeMatrix(i, j) = planes[i][j];
+        }
+        offset(i) = -planes[i][3];
+    }
+    
+    Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset);//.lu().solve(offset);
+    
+    // copy return value to avoid memory issues
+    for (int i = 0; i < 3; i++) {
+        cut[i] = cutPoint(i);
+    }
+}
+
+void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[3],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]){
+    
+    double planes[3][4];
+    double intersectionOfPlanes[3];
+    for (int i = 0; i < 4; i++) {
+        planes[0][i] = plane1[i];
+        planes[1][i] = plane2[i];
+        planes[2][i] = plane3[i];
+    }
+    
+    cutPlanes(planes, intersectionOfPlanes);
+    
+    vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
+    tree->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
+    
+    if(intersectPoint->GetNumberOfPoints() > 0) {
+        intersectPoint->GetPoint(0, intersection);
+    } else {
+        for (int i = 0; i < 3; i++) {
+            intersection[i] = 0;
+        }
+    }
+}
+
+std::vector<double *> Globe::getIntersectionPoints(double planes[], double cameraPosition[], vtkSmartPointer<vtkOBBTree> tree)
+{
+    // left, right, bottom, top, near, far
+    double planeArray[6][4];
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 4; j++) {
+            planeArray[i][j] = planes[4 * i + j];
+        }
+    }
+    
+    std::vector<double *> worldIntersectionPoints;
+    for (int j = 0; j < 4; j++) {
+        double intersection[3];
+        //        VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
+        
+        Globe::getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition, tree, intersection);
+        worldIntersectionPoints.push_back(intersection);
+    }
+    
+    return worldIntersectionPoints;
+}
+
+std::vector<Coordinate> Globe::getGlobeCoordinates(std::vector<double*> worldPoints, double radius)
+{
+    std::vector<Coordinate> globeCoordinates;
+    for (double *worldCoordinate : worldPoints) {
+        globeCoordinates.push_back (Coordinate::getCoordinatesFromGlobePoint(worldCoordinate, radius));
+    }
+    return globeCoordinates;
+}
+
+std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<double*> worldPoints, double planeWidth, double planeHeight)
+{
+    std::vector<Coordinate> globeCoordinates;
+    for (double *worldCoordinate : worldPoints) {
+        globeCoordinates.push_back (Coordinate::getCoordinatesFromPlanePoint(worldCoordinate[0], worldCoordinate[1], planeWidth, planeHeight));
+    }
+    return globeCoordinates;
+}
+
+Coordinate Globe::getCenterGlobeCoordinate(vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double globeRadius){
+    
+    double globeOrigin[3] = {0,0,0};
+    
+    vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
+    tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
+    double centerPoint[3];
+    intersectPoints->GetPoint(0, centerPoint);
+    return Coordinate::getCoordinatesFromGlobePoint(centerPoint,globeRadius);
+}
+
+

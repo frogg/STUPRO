@@ -6,6 +6,7 @@
 #include <vtkSmartPointer.h>
 #include <memory>
 
+
 #include "Globe.hpp"
 
 class Globe;
@@ -31,6 +32,8 @@ private:
 
 	vtkSmartPointer<vtkRenderer> myRenderer;
 	vtkSmartPointer<vtkRenderWindow> myRenderWindow;
+    vtkSmartPointer<vtkOBBTree> mySphereTree;
+    vtkSmartPointer<vtkOBBTree> myPlaneTree;
 
 	DisplayMode myDisplayMode;
 	

@@ -8,6 +8,8 @@
 #include <memory>
 #include <atomic>
 #include <vector>
+#include "vtkOBBTree.h"
+#include "Coordinate.hpp"
 
 #include "Vector2.hpp"
 
@@ -38,6 +40,15 @@ public:
 	float getDisplayModeInterpolation() const;
 	
 	bool checkDirty();
+    
+    static void cutPlanes(double planes[3][4], double cut [3]);
+    static void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]);
+    
+    static Coordinate getCenterGlobeCoordinate(vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double globeRadius);
+    
+    static std::vector<double *> getIntersectionPoints(double planes[24], double cameraPosition[3], vtkSmartPointer<vtkOBBTree> tree);
+    static std::vector<Coordinate> getGlobeCoordinates(std::vector<double*> worldPoints, double radius);
+    static std::vector<Coordinate> getPlaneCoordinates(std::vector<double*> worldPoints, double planeWidth, double planeHeight);
 
 private:
 	
