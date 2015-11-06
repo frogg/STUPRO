@@ -15,11 +15,14 @@ class Coordinate
 {
 public:
     static void logCoordinates(std::vector<Coordinate> &coordinates);
+
     static Coordinate getCoordinatesFromGlobePoint(double point[], double radiusGlobe);
+    static Coordinate getCoordinatesFromPlanePoint(double x, double y, double worldWidth, double worldHeight);
+
+    Coordinate(double latitude, double longitude);
+
     double getLatitude();
     double getLongitude();
-    Coordinate(double latitude, double longitude);
-    ~Coordinate();
     
 private:
     double myLatitude;

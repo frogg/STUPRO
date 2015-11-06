@@ -70,6 +70,31 @@ void VTKOpenGL::initGlobe()
     myPlaneActor = vtkActor::New();
     myPlaneActor->SetMapper(planeMapper);
     myPlaneActor->SetTexture(texture);
+
+
+    // create an additional plane and sphere to evaluate the tiles that are visible
+
+    vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
+    sphereSource->SetRadius(myGlobeRadius);
+    sphereSource->SetThetaResolution(100);
+    sphereSource->SetPhiResolution(100);
+    sphereSource->Update();
+
+    // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
+    mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
+    mySphereTree->SetDataSet(sphereSource->GetOutput());
+    mySphereTree->BuildLocator();
+
+    // an artificial Plane to calculate raycasting coordinates
+    /*vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
+    planeSource->SetOrigin(-2, -1, 0);
+    planeSource->SetPoint1(2, -1, 0);
+    planeSource->SetPoint2(-2, 1, 0);
+    planeSource->Update();*/
+
+    myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
+    myPlaneTree->SetDataSet(plane->GetOutput());
+    myPlaneTree->BuildLocator();
 }
 
 void VTKOpenGL::initRenderer()
@@ -77,10 +102,6 @@ void VTKOpenGL::initRenderer()
     // Create renderer with actor for the globe.
     myRenderer = vtkRenderer::New();
     myRenderer->AddActor(myPlaneActor);
-
-    for (int i = 0; i != 4; i++) {
-        myRenderer->AddActor(myFrustum.getActors()[i]);
-    }
 
     // Set camera clipping range.
     float r = myGlobeRadius * 5.f;
@@ -156,29 +177,20 @@ void VTKOpenGL::initCallbacks()
         client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
 
         //get aspect, check this, if it also works on tiled displays
-         double aspect = client.myRenderer->GetTiledAspectRatio();
+        double aspect = client.myRenderer->GetTiledAspectRatio();
         //get view frustum
-         double planes[24];
-         client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
-        
-        std::vector<Coordinate> coordinates;
-        client.getCoordinates(coordinates, client.myTree, cameraPosition, planes);
-        
-        
+        double planes[24];
+        client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
+
+        std::vector<Coordinate> intersectionCoordinates;
+        if (client.myDisplayMode == DisplayGlobe) {
+            std::vector<double [3]> worldIntersectionPoints = VTKOpenGL::getIntersectionPoints (planes, cameraPosition, client.mySphereTree);
+            intersectionCoordinates = VTKOpenGL::getGlobeCoordinates (worldIntersectionPoints, client.myGlobeRadius);
+        } else {
+            std::vector<double [3]> worldIntersectionPoints = VTKOpenGL::getIntersectionPoints(planes, cameraPosition, client.myPlaneTree);
+            intersectionCoordinates = VTKOpenGL::getPlaneCoordinates (worldIntersectionPoints, 4, 2);
+        }
     };
-
-
-    // an artificial Sphere is created as a stand in for our globe in our raycasting Method.
-    vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
-    sphereSource->SetRadius(.5f);
-    sphereSource->SetThetaResolution(100);
-    sphereSource->SetPhiResolution(100);
-    sphereSource->Update();
-
-    // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
-    myTree = vtkSmartPointer<vtkOBBTree>::New();
-    myTree->SetDataSet(sphereSource->GetOutput());
-    myTree->BuildLocator();
 
 
 
@@ -249,8 +261,6 @@ void VTKOpenGL::initCallbacks()
         // Get the interactor to determine the pressed key.
         vtkRenderWindowInteractor * interactor = (vtkRenderWindowInteractor*)caller;
 
-        double planes[24];
-
         switch (interactor->GetKeyCode())// 1 key
         {
         case 49: // '1'-Key
@@ -259,57 +269,6 @@ void VTKOpenGL::initCallbacks()
         case 50: // '2'-Key
             client.myDisplayMode = DisplayMap;
             break;
-        case 52: // '4'-Key
-            client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
-            client.myFrustum.updatePlanes(planes);
-            break;
-        case 54:
-     /*       client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
-            Coordinate coordinates[5];
-            double cameraPosition[3];
-            client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
-            client.getCoordinates(coordinates, client.myTree, cameraPosition, planes); */
-            break;
-      
-        case 53:
-
-            client.myRenderer->GetActiveCamera()->GetFrustumPlanes(1, planes);
-
-#define planeLeft    {planes[0],  planes[1], planes[2], planes[3]}
-#define planeRight   {planes[4],  planes[5], planes[6], planes[7]}
-#define planeBottom  {planes[8],  planes[9], planes[10], planes[11]}
-#define planeTop     {planes[12],  planes[13], planes[14], planes[15]}
-#define planeFar     {planes[20],  planes[21], planes[22], planes[23]}
-
-            double planeArrays[4][3][4] = {
-                {
-                    planeLeft, planeBottom, planeFar
-                }, {
-                    planeLeft, planeTop, planeFar
-                }, {
-                    planeRight, planeTop, planeFar
-                }, {
-                    planeRight, planeBottom, planeFar
-                }
-            };
-
-            double planePoints[4][3][3];
-
-            for (int i = 0; i != 4; i++) {
-                client.cutPlanes (planeArrays[i], planePoints[i][0]);
-                client.cutPlanes (planeArrays[(i + 1) % 4], planePoints[i][1]);
-
-                client.myRenderer->GetActiveCamera()->GetPosition(planePoints[i][2]);
-            }
-
-            client.myFrustum.updatePlanes(planePoints);
-
-            break;
-#undef planeLeft
-#undef planeRight
-#undef planeBottom
-#undef planeTop
-#undef planeFar
         }
     };
 
@@ -421,14 +380,52 @@ void VTKOpenGL::getIntersectionPoint(double plane1[4], double plane2[4], double 
         }
     }
 }
-void VTKOpenGL::getCoordinates(std::vector<Coordinate> &coordinates, vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double planes[24]){
+
+std::vector<double[3]> VTKOpenGL::getIntersectionPoints(double planes[], double cameraPosition[], vtkSmartPointer<vtkOBBTree> tree)
+{
+    // left, right, bottom, top, near, far
+    double planeArray[6][4];
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 4; j++) {
+            planeArray[i][j] = planes[4 * i + j];
+        }
+    }
+
+    std::vector<double [3]> worldIntersectionPoints;
+    for (int j = 0; j < 4; j++) {
+        double intersection[3];
+//        VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
+
+        VTKOpenGL::getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition, tree, intersection);
+        worldIntersectionPoints.push_back(intersection);
+    }
+
+    return worldIntersectionPoints;
+}
+
+std::vector<Coordinate> VTKOpenGL::getGlobeCoordinates(std::vector<double[3]> worldPoints, double radius)
+{
+    std::vector<Coordinate> globeCoordinates;
+    for (double *worldCoordinate : worldPoints) {
+        globeCoordinates.push_back (Coordinate::getCoordinatesFromGlobePoint(worldCoordinate, radius));
+    }
+    return globeCoordinates;
+}
+
+std::vector<Coordinate> VTKOpenGL::getPlaneCoordinates(std::vector<double[3]> worldPoints, double planeWidth, double planeHeight)
+{
+    std::vector<Coordinate> globeCoordinates;
+    for (double *worldCoordinate : worldPoints) {
+        globeCoordinates.push_back (Coordinate::getCoordinatesFromPlanePoint(worldCoordinate[0], worldCoordinate[1], planeWidth, planeHeight));
+    }
+    return globeCoordinates;
+}
+
+
+/*void VTKOpenGL::getGlobeCoordinates(std::vector<Coordinate> &coordinates, vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double planes[24]){
     
     //Get all planes of view frustum
-    double planeLeft[4]  = {planes[0],  planes[1], planes[2], planes[3]};
-    double planeRight[4]  = {planes[4],  planes[5], planes[6], planes[7]};
-    double planeBottom[4]  = {planes[8],  planes[9], planes[10], planes[11]};
-    double planeTop[4]  = {planes[12],  planes[13], planes[14], planes[15]};
-    double planeFar[4]  = {planes[20],  planes[21], planes[22], planes[23]};
+
 
     double intersection[4][3];
     VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
@@ -449,7 +446,7 @@ void VTKOpenGL::getCoordinates(std::vector<Coordinate> &coordinates, vtkSmartPoi
     coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(centerPoint,myGlobeRadius));
     
     Coordinate::logCoordinates(coordinates);
-}
+}*/
 
 
 

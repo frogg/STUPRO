@@ -11,7 +11,6 @@
 #include <cmath>
 
 void Coordinate::logCoordinates(std::vector<Coordinate> &coordinates){
-
     for (unsigned i=0; i < coordinates.size(); i++) {
         std::cout << "Coordinates " << i << " long: " << coordinates[i].myLongitude << " lat: " << coordinates[i].myLatitude << std::endl;
     }
@@ -34,16 +33,20 @@ Coordinate Coordinate::getCoordinatesFromGlobePoint(double point[], double radiu
     return coordinate;
 }
 
+Coordinate Coordinate::getCoordinatesFromPlanePoint(double x, double y, double worldWidth, double worldHeight) {
+    double latitude = x / (worldWidth / 2) * 180;
+    double longitude = y / (worldHeight / 2) * 90;
+
+    return Coordinate(latitude, longitude);
+}
+
 double Coordinate::getLatitude(){
     return myLatitude;
 }
+
 double Coordinate::getLongitude(){
     return myLongitude;
 }
 
 Coordinate::Coordinate(double latitude, double longitude) : myLatitude(latitude), myLongitude(longitude){
-
-}
-
-Coordinate::~Coordinate(){
 }
