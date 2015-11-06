@@ -8,63 +8,54 @@
 #include "TextureLoad.hpp"
 
 #include <vtkAlgorithm.h>
-#include <vtkImageAppendComponents.h>
-#include <vtkImageExtractComponents.h>
-#include <vtkJPEGReader.h>
+#include <vtkImageData.h>
 #include <vtkOpenGLTexture.h>
 #include <vtkSmartPointer.h>
 #include <string>
+#include <cassert>
 
-vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(std::string rgbFile, std::string alphaFile)
+vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QImage& alpha)
 {
-	// Read RGB data from file.
-	vtkSmartPointer<vtkJPEGReader> rgbReader = vtkSmartPointer<vtkJPEGReader>::New();
-	rgbReader->SetFileName(rgbFile.c_str());
+	vtkSmartPointer<vtkImageData> vtkimage = vtkImageData::New();
 
-	// Read alpha data from file.
-	vtkSmartPointer<vtkJPEGReader> alphaReader = vtkSmartPointer<vtkJPEGReader>::New();
-	alphaReader->SetFileName(alphaFile.c_str());
+	int width = rgb.width();
+	int height = rgb.height();
 
-	// Get red channel from RGB data.
-	vtkSmartPointer<vtkImageExtractComponents> extractRedFilter = vtkSmartPointer<
-	        vtkImageExtractComponents>::New();
-	extractRedFilter->SetInputConnection(rgbReader->GetOutputPort());
-	extractRedFilter->SetComponents(0);
-	extractRedFilter->Update();
+	if (width != alpha.width() || height != alpha.height())
+	{
+		throw std::runtime_error((
+		        "RGB (" + std::to_string(width) + "x" + std::to_string(height) + ") and Alpha ("
+		                + std::to_string(alpha.width()) + "x" + std::to_string(alpha.height())
+		                + ") Texture sizes mismatch").c_str());
+	}
 
-	// Get green channel from RGB data.
-	vtkSmartPointer<vtkImageExtractComponents> extractGreenFilter = vtkSmartPointer<
-	        vtkImageExtractComponents>::New();
-	extractGreenFilter->SetInputConnection(rgbReader->GetOutputPort());
-	extractGreenFilter->SetComponents(1);
-	extractGreenFilter->Update();
+	vtkimage->SetExtent(0, width - 1, 0, height - 1, 0, 0);
+	vtkimage->SetSpacing(1.0, 1.0, 1.0);
+	vtkimage->SetOrigin(0.0, 0.0, 0.0);
+	vtkimage->AllocateScalars(VTK_UNSIGNED_CHAR, 4);
 
-	// Get blue channel from RGB data.
-	vtkSmartPointer<vtkImageExtractComponents> extractBlueFilter = vtkSmartPointer<
-	        vtkImageExtractComponents>::New();
-	extractBlueFilter->SetInputConnection(rgbReader->GetOutputPort());
-	extractBlueFilter->SetComponents(2);
-	extractBlueFilter->Update();
+	for (int i = 0; i < height; i++)
+	{
+		unsigned char* row;
+		row = static_cast<unsigned char*>(vtkimage->GetScalarPointer(0, height - i - 1, 0));
 
-	// Get any channel from alpha data.
-	vtkSmartPointer<vtkImageExtractComponents> extractHeightFilter = vtkSmartPointer<
-	        vtkImageExtractComponents>::New();
-	extractHeightFilter->SetInputConnection(alphaReader->GetOutputPort());
-	extractHeightFilter->SetComponents(0);
-	extractHeightFilter->Update();
+		const QRgb* linePixelsRgb = reinterpret_cast<const QRgb*>(rgb.scanLine(i));
+		const QRgb* linePixelsAlpha = reinterpret_cast<const QRgb*>(alpha.scanLine(i));
 
-	// Combine channels.
-	vtkSmartPointer<vtkImageAppendComponents> appendFilter = vtkSmartPointer<
-	        vtkImageAppendComponents>::New();
-	appendFilter->SetInputConnection(0, extractRedFilter->GetOutputPort());
-	appendFilter->AddInputConnection(0, extractGreenFilter->GetOutputPort());
-	appendFilter->AddInputConnection(0, extractBlueFilter->GetOutputPort());
-	appendFilter->AddInputConnection(0, extractHeightFilter->GetOutputPort());
-	appendFilter->Update();
+		for (int j = 0; j < width; j++)
+		{
+			const QRgb& colRgb = linePixelsRgb[j];
+			const QRgb& colAlpha = linePixelsAlpha[j];
+
+			row[j * 4] = qRed(colRgb);
+			row[j * 4 + 1] = qGreen(colRgb);
+			row[j * 4 + 2] = qBlue(colRgb);
+			row[j * 4 + 3] = qRed(colAlpha);
+		}
+	}
 
 	// Load texture from combined image data.
-	vtkSmartPointer<vtkOpenGLTexture> texture = vtkSmartPointer<vtkOpenGLTexture>::New();
-	texture->SetInputConnection(appendFilter->GetOutputPort());
+	vtkSmartPointer<vtkOpenGLTexture> texture = vtkOpenGLTexture::New();
+	texture->SetInputData(vtkimage);
 	return texture;
-
 }

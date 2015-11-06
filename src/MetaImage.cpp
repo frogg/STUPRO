@@ -1,4 +1,4 @@
-#include "../include/MetaImage.hpp"
+#include "MetaImage.hpp"
 
 MetaImage::MetaImage(const QImage &image, short minimumHeight, short maximumHeight) {
 	this->setImage(image);

@@ -14,12 +14,10 @@ uniform float latStart;
 uniform float latEnd;
 uniform float longStart;
 uniform float longEnd;
-/*
-float latStart = -90.0;
-float latEnd = 90.0;
-float longStart = -180.0;
-float longEnd = 180.0;
-*/
+
+// Upper and lower height limits (in meters)
+uniform float minHeight;
+uniform float maxHeight;
 
 // Interpolation value, determines whether globe or map is displayed (or something in between)
 uniform float displayMode;
@@ -33,19 +31,18 @@ const float twoPi = 2.0 * pi;
 const float halfPi = 0.5 * pi;
 
 // Converts a lat/long flat position into a x/y/z globe position.
-vec3 transformLatLong(float lon, float lat, float height)
+vec3 transformLatLong(float lon, float lat, float radius)
 {
 	lat = lat * halfPi / planeSize;
 	lon = lon * twoPi / planeSize;
 	
-	float rad = (height * heightFactor + globeRadius);
 	float cosLat = cos(lat);
 	float sinLat = sin(lat);
 	float cosLon = cos(lon);
 	float sinLon = sin(lon);
-	float x = -rad * cosLat * cosLon;
-	float y =  rad * sinLat;
-	float z =  rad * cosLat * sinLon;
+	float x = -radius * cosLat * cosLon;
+	float y =  radius * sinLat;
+	float z =  radius * cosLat * sinLon;
 	
 	return vec3(x, y, z);
 }
@@ -61,6 +58,7 @@ void propFuncVS()
 	
 	// Get height value from the alpha channel of the texture.
 	float heightSample = texture2D(heightTexture, gl_TexCoord[0].xy).a;
+	float radius = (heightSample * (maxHeight - minHeight) + minHeight) * heightFactor;
 	//float heightSample = 0.0;
 	
 	// Initialize input position
@@ -78,8 +76,8 @@ void propFuncVS()
 	//inPos.y = 1.0 - inPos.y;
 	
 	// Calculate position for single globe/map vertex.
-	vec3 transformedPos = transformLatLong(inPos.x + 0.25, inPos.y * 2.0, heightSample);
-	vec3 flatPos = vec3((inPos) * vec2(4.0 * globeRadius, 2.0 * globeRadius), heightSample * heightFactor);
+	vec3 transformedPos = transformLatLong(inPos.x + 0.25, inPos.y * 2.0, radius + globeRadius);
+	vec3 flatPos = vec3((inPos) * vec2(4.0 * globeRadius, 2.0 * globeRadius), radius);
 	//vec3 flatPos = vec3(inPos, 0.0);
 	
 	// Linear interpolation between map and globe positions.

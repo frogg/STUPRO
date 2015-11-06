@@ -1,10 +1,12 @@
 #ifndef STUPRO_GLOBE_HPP
 #define STUPRO_GLOBE_HPP
 
+#include "ImageDownloader.hpp"
 #include <vtkPlaneSource.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
 #include <memory>
+#include <atomic>
 #include <vector>
 
 #include "Vector2.hpp"
@@ -34,6 +36,8 @@ public:
 	
 	void setDisplayModeInterpolation(float displayMode);
 	float getDisplayModeInterpolation() const;
+	
+	bool checkDirty();
 
 private:
 	
@@ -41,16 +45,22 @@ private:
 	
 	void createTiles();
 	
+	void onTileLoad(ImageTile tile);
+	
 	vtkRenderer & myRenderer;
 	
 	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
 	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;
+	
+	ImageDownloader myDownloader;
 	
 	std::vector<std::unique_ptr<GlobeTile> > myTiles;
 		
 	unsigned int myZoomLevel;
 	
 	float myDisplayModeInterpolation;
+	
+	std::atomic_flag myIsClean;
 };
 
 #endif

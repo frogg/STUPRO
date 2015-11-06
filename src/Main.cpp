@@ -5,10 +5,14 @@
  *      Author: marukyu
  */
 
+#include <qcoreapplication.h>
 #include "StuproApplication.hpp"
 
-int main()
+int main(int argc, char ** argv)
 {
+	// initialize and run a QApplication which is needed for some QT functionality
+	QCoreApplication app(argc, argv);
+	
 	StuproApplication client;
 
 	client.run();

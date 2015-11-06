@@ -1,5 +1,5 @@
-#include "../include/ImageCache.hpp"
-#include "../include/ConfigUtil.hpp"
+#include "ImageCache.hpp"
+#include "ConfigUtil.hpp"
 
 #include <QImage>
 #include <QDir>

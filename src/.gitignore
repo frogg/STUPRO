@@ -1,2 +1,7 @@
 /build/
 *.user
+*_automoc*
+Makefile
+CMakeFiles
+kronos
+lib*.a

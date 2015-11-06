@@ -35,7 +35,7 @@ void StuproApplication::initParameters()
 {
 	// Initialize parameters.
 	myDisplayMode = DisplayGlobe;
-	myGlobeRadius = 0.5f;
+	myGlobeRadius = 1.f;
 	myPlaneSize = 1.f;
 	myHeightFactor = 0.05f;
 }
@@ -76,24 +76,30 @@ void StuproApplication::initCallbacks()
 	auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
 	{
 		StuproApplication & client = *((StuproApplication*)clientData);
+		
+		// Re-render globe if it's necessary (globe tile textures loaded).
+		if (client.myGlobe->checkDirty())
+		{
+			client.myRenderWindow->Render();
+		}
 
 		// Determine target interpolation based on display mode.
-		    float interpolationTarget = client.myDisplayMode == DisplayGlobe ? 0.f : 1.f;
+		float interpolationTarget = client.myDisplayMode == DisplayGlobe ? 0.f : 1.f;
 
-		    // Check if change is significant enough to be re-rendered.
-		    if (std::abs(interpolationTarget - client.myGlobe->getDisplayModeInterpolation()) > 0.000001f)
-		    {
-			    // Controls the speed of the globe-map transition.
-			    float effectSpeed = .2f;
+		// Check if change is significant enough to be re-rendered.
+		if (std::abs(interpolationTarget - client.myGlobe->getDisplayModeInterpolation()) > 0.000001f)
+		{
+			// Controls the speed of the globe-map transition.
+			float effectSpeed = .2f;
 
-			    // Smoothly transition interpolation value based on previous and target value.
-			    client.myGlobe->setDisplayModeInterpolation((interpolationTarget * effectSpeed +
-							    client.myGlobe->getDisplayModeInterpolation()) / (effectSpeed + 1.f));
+			// Smoothly transition interpolation value based on previous and target value.
+			client.myGlobe->setDisplayModeInterpolation((interpolationTarget * effectSpeed +
+							client.myGlobe->getDisplayModeInterpolation()) / (effectSpeed + 1.f));
 
-			    // Update renderer.
-			    client.myRenderWindow->Render();
-		    }
-	    };
+			// Update renderer.
+			client.myRenderWindow->Render();
+		}
+	};
 
 	// Create and assign callback for clipping function.
 	vtkSmartPointer<vtkCallbackCommand> timerCallback = vtkSmartPointer<vtkCallbackCommand>::New();

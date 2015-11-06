@@ -1,4 +1,4 @@
-#include "../include/ImageDownloadWorker.hpp"
+#include "ImageDownloadWorker.hpp"
 
 #include <climits>
 #include <vector>

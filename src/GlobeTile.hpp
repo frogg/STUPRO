@@ -5,6 +5,7 @@
 #include <vtkShader2.h>
 #include <vtkSmartPointer.h>
 #include <vtkTexture.h>
+#include <QImage>
 
 #include "Globe.hpp"
 #include "Rect.hpp"
@@ -90,7 +91,7 @@ public:
 	 * Loads the combined color/heightmap texture from the file corresponding to this tile's
 	 * location.
 	 */
-	void loadTexture();
+	void loadTexture(const QImage & rgb, const QImage & height);
 
 	/**
 	 * Assigns a combined color/heightmap texture to this tile.

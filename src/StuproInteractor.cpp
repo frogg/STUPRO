@@ -14,9 +14,9 @@ void StuproInteractor::OnMouseWheelForward() {
 		this->Interactor->GetEventPosition()[1]);
 	
 	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
-	if (camera->GetDistance() >= 0.8){
+	//if (camera->GetDistance() >= 0.8){
 		zoomWithFactor(120);
-	}
+	//}
 }
 
 void StuproInteractor::OnMouseWheelBackward() {
@@ -24,9 +24,9 @@ void StuproInteractor::OnMouseWheelBackward() {
 		this->Interactor->GetEventPosition()[1]);
 
 	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
-	if (camera->GetDistance() <= 5){
+	//if (camera->GetDistance() <= 5){
 		zoomWithFactor(-120);
-	}
+	//}
 }
 
 void StuproInteractor::zoomWithFactor(float factor)

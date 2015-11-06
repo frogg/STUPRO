@@ -1,4 +1,4 @@
-#include "../include/ConfigUtil.hpp"
+#include "ConfigUtil.hpp"
 
 #include <QFile>
 #include <QIODevice>

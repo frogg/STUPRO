@@ -22,7 +22,7 @@ GlobeTile::Location GlobeTile::Location::getNormalized() const
 RectF GlobeTile::Location::getBounds() const
 {
 	float size = 180.f / (1 << zoomLevel);
-	return RectF(longitude * size - 180.f, latitude * size - 90.f, size, size);
+	return RectF(longitude * size - 180.f, 90.f - latitude * size - size, size, size);
 }
 
 GlobeTile::GlobeTile(const Globe & globe, Location location) :
@@ -112,10 +112,10 @@ void GlobeTile::initShaders()
 
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
-	float globeRadius = 2.f / 3.f;
+	float globeRadius = 1.f;
 	float planeSize = myGlobe.getPlaneSize();
 	float displayModeInterpolation = 0.f;
-	float heightFactor = 0.05f;
+	float heightFactor = 100.f;
 
 	RectF bounds = myLocation.getBounds();
 	Vector2f startBounds = bounds.x1y1();
@@ -147,17 +147,18 @@ void GlobeTile::initShaders()
 	openGLproperty->ShadingOn();
 }
 
-void GlobeTile::loadTexture()
+void GlobeTile::loadTexture(const QImage & rgb, const QImage & height)
 {
-	std::string tileName = std::to_string(myLocation.zoomLevel) + "_"
-	        + std::to_string(myLocation.longitude) + "_" + std::to_string(myLocation.latitude);
-	setTexture(
-	        loadAlphaTexture("tiles/rgb_" + tileName + ".jpg",
-	                "tiles/height_" + tileName + ".jpg"));
+	setTexture(loadAlphaTexture(rgb, height));
 }
 
 void GlobeTile::updateUniforms()
 {
 	float displayModeInterpolation = myGlobe.getDisplayModeInterpolation();
+	float earthRadius = 6367444.7f;
+	float minHeight = myLowerHeight / earthRadius;
+	float maxHeight = myUpperHeight / earthRadius;
 	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1, &displayModeInterpolation);
+	myVertexShader->GetUniformVariables()->SetUniformf("minHeight", 1, &minHeight);
+	myVertexShader->GetUniformVariables()->SetUniformf("maxHeight", 1, &maxHeight);
 }

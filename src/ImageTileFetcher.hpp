@@ -72,8 +72,8 @@ class ImageTileFetcher : public QRunnable {
 public:
 	static const int MIN_ZOOM_LEVEL = 0;
 	static const int MAX_ZOOM_LEVEL = 15;
-	static const int WIDTH_AT_MIN_ZOOM = 8;
-	static const int HEIGHT_AT_MIN_ZOOM = 4;
+	static const int WIDTH_AT_MIN_ZOOM = 2;
+	static const int HEIGHT_AT_MIN_ZOOM = 1;
 
 	/**
 	 * Creates a new ImageFetcher that loads the tile with the given parameters.

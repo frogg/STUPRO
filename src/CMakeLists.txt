@@ -1,5 +1,5 @@
 # main entry point of the application
-set(MAIN_CLASS ./main.cpp)
+set(MAIN_CLASS ./Main.cpp)
 
 set(CMAKE_AUTOMOC TRUE)
 
@@ -16,9 +16,17 @@ endif()
 
 find_package(Threads)
 
+# find VTK
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+
+# copy resources
+file(COPY  ${CMAKE_SOURCE_DIR}/glsl DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY  ${CMAKE_SOURCE_DIR}/tiles DESTINATION ${CMAKE_BINARY_DIR})
+
 # sources
 file(GLOB Library_SOURCES ./*.cpp ./**/*.cpp)
-file(GLOB Library_HEADERS ./*.hpp ./**/*.hpp ../include/*.hpp ../include/**/*.hpp)
+file(GLOB Library_HEADERS ./*.hpp ./**/*.hpp ../src/*.hpp ../src/**/*.hpp)
 
 # exclude the main class from the library files
 list(REMOVE_ITEM Library_SOURCES MAIN_CLASS)
@@ -44,6 +52,9 @@ elseif(${KRONOS_QT_VERSION} EQUAL 5)
     target_link_libraries(libKronos Qt5::Core Qt5::Gui Qt5::Network)
     target_link_libraries(kronos Qt5::Widgets)
 endif()
+
+# link VTK
+target_link_libraries(libKronos ${VTK_LIBRARIES})
 
 # link the library to the main executable
 target_link_libraries(kronos libKronos)

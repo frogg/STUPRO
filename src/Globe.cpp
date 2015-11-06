@@ -7,6 +7,10 @@
 
 #include "Globe.hpp"
 
+#include "ImageTile.hpp"
+#include "MetaImage.hpp"
+#include <qimage.h>
+#include <qmap.h>
 #include <vtkAlgorithm.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
@@ -15,7 +19,8 @@
 #include "MakeUnique.hpp"
 
 Globe::Globe(vtkRenderer & renderer) :
-		myRenderer(renderer), myZoomLevel(0), myDisplayModeInterpolation(0)
+		myRenderer(renderer), myDownloader([=](ImageTile tile)
+		{	onTileLoad(tile);}), myZoomLevel(1), myDisplayModeInterpolation(0)
 {
 	myPlaneSource = vtkPlaneSource::New();
 	myPlaneSource->SetOrigin(getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
@@ -101,7 +106,8 @@ void Globe::createTiles()
 		{
 			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this,
 			        GlobeTile::Location(myZoomLevel, lon, lat));
-			myTiles[getTileIndex(lon, lat)]->loadTexture();
+			
+			myDownloader.getTile(myZoomLevel, lon, lat);
 		}
 	}
 }
@@ -122,4 +128,38 @@ void Globe::setDisplayModeInterpolation(float displayMode)
 float Globe::getDisplayModeInterpolation() const
 {
 	return myDisplayModeInterpolation;
+}
+
+bool Globe::checkDirty()
+{
+	return !myIsClean.test_and_set();
+}
+
+void Globe::onTileLoad(ImageTile tile)
+{
+	if (myZoomLevel != tile.getZoomLevel())
+	{
+		return;
+	}
+
+	GlobeTile & globeTile = *myTiles[getTileIndex(tile.getTileX(), tile.getTileY())];
+
+	auto rgbIterator = tile.getLayers().find("satellite-imagery");
+	auto heightmapIterator = tile.getLayers().find("heightmap");
+	
+	if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end())
+	{
+		return;
+	}
+	
+	const QImage & rgb = rgbIterator->getImage();
+	const QImage & heightmap = heightmapIterator->getImage();
+	
+	globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
+	globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
+	
+	globeTile.loadTexture(rgb, heightmap);
+	globeTile.updateUniforms();
+	
+	myIsClean.clear();
 }

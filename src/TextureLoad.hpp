@@ -11,7 +11,8 @@
 #include <vtkOpenGLTexture.h>
 #include <vtkSmartPointer.h>
 #include <string>
+#include <QImage>
 
-vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(std::string rgbFile, std::string alphaFile);
+vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QImage& alpha);
 
 #endif /* TEXTURELOAD_HPP_ */
