@@ -421,32 +421,15 @@ std::vector<Coordinate> VTKOpenGL::getPlaneCoordinates(std::vector<double*> worl
     return globeCoordinates;
 }
 
-
-/*void VTKOpenGL::getGlobeCoordinates(std::vector<Coordinate> &coordinates, vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double planes[24]){
+Coordinate VTKOpenGL::getCenterGlobeCoordinate(vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double globeRadius){
     
-    //Get all planes of view frustum
-
-
-    double intersection[4][3];
-    VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
-    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(intersection[0],myGlobeRadius));
-    VTKOpenGL::getIntersectionPoint(planeRight, planeBottom, planeFar, cameraPosition,tree, intersection[1]);
-    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(intersection[1],myGlobeRadius));
-    VTKOpenGL::getIntersectionPoint(planeLeft, planeTop, planeFar, cameraPosition,tree, intersection[2]);
-    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(intersection[2],myGlobeRadius));
-    VTKOpenGL::getIntersectionPoint(planeRight, planeTop, planeFar, cameraPosition,tree, intersection[3]);
-    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(intersection[3],myGlobeRadius));
-
     double globeOrigin[3] = {0,0,0};
-
+    
     vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
     tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
     double centerPoint[3];
     intersectPoints->GetPoint(0, centerPoint);
-    coordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(centerPoint,myGlobeRadius));
-    
-    Coordinate::logCoordinates(coordinates);
-}*/
-
+    return Coordinate::getCoordinatesFromGlobePoint(centerPoint,globeRadius);
+}
 
 
