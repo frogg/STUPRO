@@ -58,6 +58,8 @@ private:
     static std::vector<double[3]> getIntersectionPoints(double planes[24], double cameraPosition[3], vtkSmartPointer<vtkOBBTree> tree);
     static std::vector<Coordinate> getGlobeCoordinates(std::vector<double[3]> worldPoints, double radius);
     static std::vector<Coordinate> getPlaneCoordinates(std::vector<double[3]> worldPoints, double planeWidth, double planeHeight);
+    static Coordinate getCenterGlobeCoordinate(vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double globeRadius);
+
     
 	float myGlobeRadius;
 	float myPlaneSize;
