@@ -2,7 +2,7 @@
 #define STUPRO_STUPROINTERACTOR_HPP
 
 #include <vtkInteractorStyleTerrain.h>
-#include "vtkPVStuproView.h"
+#include "vtkPVStuproView.hpp"
 
 class StuproInteractor : public vtkInteractorStyleTerrain
 {
@@ -12,7 +12,7 @@ public:
 	static StuproInteractor *New(vtkPVStuproView *application);
 
 	vtkTypeMacro(StuproInteractor, vtkInteractorStyleTerrain);
-	
+
 	void OnTimer() override
 	{
 		// Empty on purpose.

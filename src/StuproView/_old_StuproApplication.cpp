@@ -1,4 +1,4 @@
-#include "StuproApplication.hpp"
+#include "_old_StuproApplication.hpp"
 
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
@@ -65,7 +65,7 @@ void StuproApplication::initRenderer()
 	vtkSmartPointer<StuproInteractor> interactorStyle = StuproInteractor::New();
 	interactorStyle->SetAutoAdjustCameraClippingRange(false);
 	interactor->SetInteractorStyle(interactorStyle);
-	
+
 	// Zoom out.
 	myRenderWindow->Render();
 	interactorStyle->zoomWithFactor(-1800.f);
@@ -76,18 +76,18 @@ void StuproApplication::initCallbacks()
 
      auto clipFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
      {
-     
+
      StuproApplication & client = *((StuproApplication*)clientData);
      //get current position of the camera
      double cameraPosition[3];
      client.myRenderer->GetActiveCamera()->GetPosition(cameraPosition);
-     
+
      //get aspect, check this, if it also works on tiled displays
      double aspect = client.myRenderer->GetTiledAspectRatio();
      //get view frustum
      double planes[24];
      client.myRenderer->GetActiveCamera()->GetFrustumPlanes(aspect, planes);
-     
+
      std::vector<Coordinate> intersectionCoordinates;
      if (client.myDisplayMode == DisplayGlobe) {
      std::vector<double *> worldIntersectionPoints = Globe::getIntersectionPoints (planes, cameraPosition, client.mySphereTree);
@@ -98,30 +98,30 @@ void StuproApplication::initCallbacks()
      }
      Coordinate::logCoordinates(intersectionCoordinates);
      };
-     
-     
-     
+
+
+
      // Create and assign callback for clipping function.
      vtkSmartPointer<vtkCallbackCommand> clipCallback = vtkSmartPointer<vtkCallbackCommand>::New();
      clipCallback->SetCallback(clipFunc);
      clipCallback->SetClientData(this);
      myRenderWindow->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, clipCallback);
-    
-    
-    
-    
-    
-    
-    
-    
 
-    
-    
+
+
+
+
+
+
+
+
+
+
     // Create a callback function that updates the display mode interpolation value.
 	auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
 	{
 		StuproApplication & client = *((StuproApplication*)clientData);
-		
+
 		// Re-render globe if it's necessary (globe tile textures loaded).
 		if (client.myGlobe->checkDirty())
 		{
@@ -194,19 +194,19 @@ void StuproApplication::initGlobe()
     sphereSource->SetThetaResolution(100);
     sphereSource->SetPhiResolution(100);
     sphereSource->Update();
-    
+
     // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
     mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
     mySphereTree->SetDataSet(sphereSource->GetOutput());
     mySphereTree->BuildLocator();
-    
+
     // an artificial Plane to calculate raycasting coordinates
     vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
     planeSource->SetOrigin(-2, -1, 0);
     planeSource->SetPoint1(2, -1, 0);
     planeSource->SetPoint2(-2, 1, 0);
     planeSource->Update();
-    
+
     myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
     myPlaneTree->SetDataSet(planeSource->GetOutput());
     myPlaneTree->BuildLocator();

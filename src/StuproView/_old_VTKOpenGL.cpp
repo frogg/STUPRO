@@ -1,4 +1,4 @@
-#include "VTKOpenGL.hpp"
+#include "_old_VTKOpenGL.hpp"
 #include "Utils.hpp"
 
 #include <vtkCommand.h>
@@ -25,10 +25,10 @@ void VTKOpenGL::run()
 {
     // Perform initialization.
     init();
-    
+
     // Update renderer.
     myRenderWindow->Render();
-    
+
     // Start displaying!
     myRenderWindow->GetInteractor()->Start();
 }
@@ -166,7 +166,7 @@ void VTKOpenGL::initShaders()
 
 void VTKOpenGL::initCallbacks()
 {
-    
+
     // Create callback function that corrects the camera clipping range to work around a VTK bug.
 
 
@@ -290,10 +290,5 @@ vtkSmartPointer<vtkOpenGLTexture> VTKOpenGL::loadAlphaTexture(std::string rgbFil
     vtkSmartPointer<vtkOpenGLTexture> texture = vtkSmartPointer<vtkOpenGLTexture>::New();
     texture->SetInputConnection(appendFilter->GetOutputPort());
     return texture;
-    
+
 }
-
-
-
-
-
