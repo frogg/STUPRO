@@ -101,13 +101,13 @@ void GlobeTile::initShaders()
 	// Create and load fragment shader.
 	myFragmentShader = vtkShader2::New();
 	myFragmentShader->SetType(VTK_SHADER_TYPE_FRAGMENT);
-	myFragmentShader->SetSourceCode(readFile("glsl/TestShader.fsh").c_str());
+	myFragmentShader->SetSourceCode(readFile("res/glsl/TestShader.fsh").c_str());
 	myFragmentShader->SetContext(shaderProgram->GetContext());
 
 	// Create and load vertex shader.
 	myVertexShader = vtkShader2::New();
 	myVertexShader->SetType(VTK_SHADER_TYPE_VERTEX);
-	myVertexShader->SetSourceCode(readFile("glsl/TestShader.vsh").c_str());
+	myVertexShader->SetSourceCode(readFile("res/glsl/TestShader.vsh").c_str());
 	myVertexShader->SetContext(shaderProgram->GetContext());
 
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).

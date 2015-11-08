@@ -5,7 +5,7 @@
 
 ImageDownloader::ImageDownloader(TileFetchedCb tileFetchedCb) {
 	this->tileFetchedCb = tileFetchedCb;
-	this->imageLayers = ConfigUtil::loadConfigFile("./src/res/layers.cfg");
+	this->imageLayers = ConfigUtil::loadConfigFile("./res/layers.cfg");
 }
 
 ImageDownloader::ImageDownloader(TileFetchedCb tileFetchedCb,
