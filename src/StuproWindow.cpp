@@ -1,9 +1,9 @@
-#include "StuproWindow.h"
+#include "StuproWindow.hpp"
 #include "ui_StuproWindow.h"
 
-#include "pqHelpReaction.h"
-#include "pqParaViewBehaviors.h"
-#include "pqParaViewMenuBuilders.h"
+#include <pqHelpReaction.h>
+#include <pqParaViewBehaviors.h>
+#include <pqParaViewMenuBuilders.h>
 
 class StuproWindow::pqInternals : public Ui::pqClientMainWindow
 {

@@ -1,4 +1,4 @@
-#include "vtkPVStuproView.h"
+#include "vtkPVStuproView.hpp"
 
 #include <vtkObjectFactory.h>
 #include <vtkCallbackCommand.h>
