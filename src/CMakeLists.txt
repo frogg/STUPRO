@@ -1,64 +1,68 @@
-# main entry point of the application
-set(MAIN_CLASS ./Main.cpp)
+cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
 
+# find pthread (C++11 threading) library and headers
+find_package(Threads REQUIRED)
+
+# find ParaView headers and libraries
+find_package(ParaView REQUIRED)
+include(${PARAVIEW_USE_FILE})
+include(ParaViewBranding)
+
+# automatically wrap *.ui files and classes inheriting from QObject
+set(CMAKE_AUTOUIC TRUE)
 set(CMAKE_AUTOMOC TRUE)
 
-# find Qt headers and libraries
-if(${KRONOS_QT_VERSION} EQUAL 4)
-    find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
-    include(${QT_USE_FILE})
-elseif(${KRONOS_QT_VERSION} EQUAL 5)
-    find_package(Qt5Core REQUIRED)
-    find_package(Qt5Gui REQUIRED)
-    find_package(Qt5Network REQUIRED)
-    find_package(Qt5Widgets REQUIRED)
-endif()
+# source files responsible for creating the ParaView window
+set(ParaView_SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp
+)
 
-find_package(Threads)
+# all other Kronos source files
+file(GLOB StuproView_SOURCE_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
+)
 
-# find VTK
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
+# directories to include (important for auto-generated code)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/StuproView/
+)
 
-# copy resources
-file(COPY  ${CMAKE_SOURCE_DIR}/glsl DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY  ${CMAKE_SOURCE_DIR}/tiles DESTINATION ${CMAKE_BINARY_DIR})
+# register a ParaView plugin
+add_paraview_plugin(
+    StuproViewPlugin
+    "1.0.0"
+    REQUIRED_ON_SERVER
+    REQUIRED_ON_CLIENT
+    SERVER_MANAGER_SOURCES
+        StuproView/vtkPVStuproView.cpp
+    SERVER_MANAGER_XML
+        StuproView/StuproView.xml
+    SOURCES
+        ${StuproView_SOURCE_FILES}
+)
 
-# sources
-file(GLOB Library_SOURCES ./*.cpp ./**/*.cpp)
-file(GLOB Library_HEADERS ./*.hpp ./**/*.hpp ../src/*.hpp ../src/**/*.hpp)
+# use C++11 to compile the plugin
+set_property(TARGET StuproViewPlugin PROPERTY CXX_STANDARD 11)
 
-# exclude the main class from the library files
-list(REMOVE_ITEM Library_SOURCES MAIN_CLASS)
-list(REMOVE_ITEM Library_HEADERS MAIN_CLASS)
+# register a ParaView client
+build_paraview_client(
+    paraview_stupro
+    TITLE "ParaView - Kronos-Edition"
+    ORGANIZATION "Kitware Inc."
+    VERSION_MAJOR 1
+    VERSION_MINOR 0
+    VERSION_PATCH 0
+    PVMAIN_WINDOW StuproWindow
+    PVMAIN_WINDOW_INCLUDE StuproWindow.hpp
+    REQUIRED_PLUGINS StuproViewPlugin
+    SOURCES ${ParaView_SOURCE_FILES}
+)
 
-# build a library from all sources
-add_library(libKronos ${Library_SOURCES} ${Library_HEADERS})
+# use C++11 to compile the client
+set_property(TARGET paraview_stupro PROPERTY CXX_STANDARD 11)
 
-# register the main executable
-add_executable(kronos ${MAIN_CLASS})
-
-# set C++ standard to C++11
-set_property(TARGET libKronos PROPERTY CXX_STANDARD 11)
-set_property(TARGET kronos PROPERTY CXX_STANDARD 11)
-
-target_link_libraries(libKronos ${CMAKE_THREAD_LIBS_INIT})
-
-# link against Qt libraries
-if(${KRONOS_QT_VERSION} EQUAL 4)
-    target_link_libraries(libKronos ${QT_LIBRARIES})
-    target_link_libraries(kronos ${QT_LIBRARIES})
-elseif(${KRONOS_QT_VERSION} EQUAL 5)
-    target_link_libraries(libKronos Qt5::Core Qt5::Gui Qt5::Network)
-    target_link_libraries(kronos Qt5::Widgets)
-endif()
-
-# link VTK
-target_link_libraries(libKronos ${VTK_LIBRARIES})
-
-# link the library to the main executable
-target_link_libraries(kronos libKronos)
-
-# copy resource directory to the build directory
-file(REMOVE_RECURSE ./res)
-file(COPY ../res DESTINATION ./)
+# copy over all required resources
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
