@@ -10,7 +10,7 @@ public:
 	KronosTestRunner(int argc, char **argv);
 	~KronosTestRunner() { };
 
-	void run();
+	int run();
 
 private:
 	int argc;

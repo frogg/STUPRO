@@ -11,13 +11,13 @@ using namespace CppUnit;
 
 KronosTestRunner::KronosTestRunner(int argc, char **argv) : argc(argc), argv(argv) { }
 
-void KronosTestRunner::run() {
+int KronosTestRunner::run() {
 	// initialize and run a QApplication which is needed for some QT functionality
 	QCoreApplication app(argc, argv);
 
 	QTimer::singleShot(0, this, SLOT(runTests()));
 
-	app.exec();
+	return app.exec();
 }
 
 void KronosTestRunner::runTests() {
@@ -42,5 +42,5 @@ void KronosTestRunner::runTests() {
 
 int main(int argc, char *argv[]) {
 	KronosTestRunner runner(argc, argv);
-	runner.run();
+	return runner.run();
 }
