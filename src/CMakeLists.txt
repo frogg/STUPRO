@@ -8,6 +8,10 @@ find_package(ParaView REQUIRED)
 include(${PARAVIEW_USE_FILE})
 include(ParaViewBranding)
 
+# to wrap the ui-files
+find_package(Qt4 REQUIRED)
+include(${QT_USE_FILE})
+
 # automatically wrap *.ui files and classes inheriting from QObject
 set(CMAKE_AUTOUIC TRUE)
 set(CMAKE_AUTOMOC TRUE)
@@ -23,6 +27,10 @@ file(GLOB StuproView_SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
 )
+
+# do the ui-file wrapping
+QT4_WRAP_UI(UISrcs StuproWindow.ui)
+#QT4_WRAP_CPP(MOCSrcs StuproWindow.hpp)
 
 # directories to include (important for auto-generated code)
 include_directories(
@@ -58,7 +66,7 @@ build_paraview_client(
     PVMAIN_WINDOW StuproWindow
     PVMAIN_WINDOW_INCLUDE StuproWindow.hpp
     REQUIRED_PLUGINS StuproViewPlugin
-    SOURCES ${ParaView_SOURCE_FILES}
+	SOURCES ${ParaView_SOURCE_FILES} ${MOCSrcs} ${UISrcs}
 )
 
 # use C++11 to compile the client
