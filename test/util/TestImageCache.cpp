@@ -63,14 +63,14 @@ void TestImageCache::testCacheImage() {
 	QImageReader reader("cache/test-layer/tile_2_3_1.png");
 	reader.setFormat("png");
 
-	CPPUNIT_ASSERT(reader.text("kronos-meta") == "1,42");
+	CPPUNIT_ASSERT_EQUAL(std::string("1,42"), reader.text("kronos-meta").toStdString());
 
 	QImage readImage(512, 512, QImage::Format_RGB32);
 	if (reader.read(&readImage)) {
-		CPPUNIT_ASSERT(image.pixel(128, 128) == qRgb(255, 0, 255));
-		CPPUNIT_ASSERT(image.pixel(128, 384) == qRgb(255, 255, 255));
-		CPPUNIT_ASSERT(image.pixel(384, 384) == qRgb(255, 0, 255));
-		CPPUNIT_ASSERT(image.pixel(384, 128) == qRgb(255, 255, 255));
+		CPPUNIT_ASSERT_EQUAL(qRgb(0xff, 0x00, 0xff), image.pixel(128, 128));
+		CPPUNIT_ASSERT_EQUAL(qRgb(0xff, 0xff, 0xff), image.pixel(128, 384));
+		CPPUNIT_ASSERT_EQUAL(qRgb(0xff, 0x00, 0xff), image.pixel(384, 384));
+		CPPUNIT_ASSERT_EQUAL(qRgb(0xff, 0xff, 0xff), image.pixel(384, 128));
 	} else {
 		CPPUNIT_FAIL("Could not read the cached image.");
 	}
@@ -78,9 +78,7 @@ void TestImageCache::testCacheImage() {
 
 void TestImageCache::testCacheRetrieval() {
 	/* Test the method that checks whether an image has been cached yet */
-	CPPUNIT_ASSERT(!ImageCache::getInstance().isImageCached(
-					   QString("test-layer"), 8, 3, 7
-				   ));
+	CPPUNIT_ASSERT(!ImageCache::getInstance().isImageCached(QString("test-layer"), 8, 3, 7));
 
 	QImage image(512, 512, QImage::Format_RGB32);
 	ImageCache::getInstance().cacheImage(MetaImage(image, 1, 42),
@@ -98,9 +96,9 @@ void TestImageCache::testCacheRetrieval() {
 	MetaImage retrievedImage = ImageCache::getInstance()
 							   .getCachedImage(QString("test-layer"), 8, 3, 7);
 	CPPUNIT_ASSERT(retrievedImage.hasMetaData());
-	CPPUNIT_ASSERT(retrievedImage.getMinimumHeight() == 1);
-	CPPUNIT_ASSERT(retrievedImage.getMaximumHeight() == 42);
-	CPPUNIT_ASSERT(retrievedImage.getImage().width() == 512);
-	CPPUNIT_ASSERT(retrievedImage.getImage().height() == 512);
-	CPPUNIT_ASSERT(retrievedImage.getImage().pixel(128, 128) == qRgb(0, 0, 0));
+	CPPUNIT_ASSERT_EQUAL((short) 1, retrievedImage.getMinimumHeight());
+	CPPUNIT_ASSERT_EQUAL((short) 42, retrievedImage.getMaximumHeight());
+	CPPUNIT_ASSERT_EQUAL(512, retrievedImage.getImage().width());
+	CPPUNIT_ASSERT_EQUAL(512, retrievedImage.getImage().height());
+	CPPUNIT_ASSERT_EQUAL(qRgb(0x00, 0x00, 0x00), retrievedImage.getImage().pixel(128, 128));
 }

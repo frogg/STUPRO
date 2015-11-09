@@ -5,14 +5,16 @@
 #include <future>
 
 void TestImageDownloader::testGetAvailableLayers() {
-	ImageDownloader downloader([](ImageTile tile) {
+	CPPUNIT_ASSERT_NO_THROW({
+		ImageDownloader downloader([](ImageTile tile) {
 
+		});
+
+		QList<QString> availableLayers = downloader.getAvailableLayers();
+
+		CPPUNIT_ASSERT(availableLayers.contains("satellite-imagery"));
+		CPPUNIT_ASSERT(availableLayers.contains("heightmap"));
 	});
-
-	QList<QString> availableLayers = downloader.getAvailableLayers();
-
-	CPPUNIT_ASSERT(availableLayers.contains("satellite-imagery"));
-	CPPUNIT_ASSERT(availableLayers.contains("heightmap"));
 }
 
 void TestImageDownloader::testGetTile() {
@@ -25,9 +27,9 @@ void TestImageDownloader::testGetTile() {
 		} catch (...) { }
 	});
 
-	const int zoomLevel = 0;
-	const int tileX = 0;
-	const int tileY = 0;
+	const int zoomLevel = 10;
+	const int tileX = 20;
+	const int tileY = 30;
 	const QString layerName = downloader.getAvailableLayers()[0];
 
 	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(zoomLevel, tileX, tileY));

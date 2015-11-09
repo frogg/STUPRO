@@ -13,5 +13,5 @@ void TestImageDownloadWorker::testDownload() {
 
 	MetaImage img = future.get();
 
-	CPPUNIT_ASSERT(img.getImage().width() == 512);
+	CPPUNIT_ASSERT_EQUAL(512, img.getImage().width());
 }
