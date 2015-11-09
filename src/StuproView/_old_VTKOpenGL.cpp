@@ -19,7 +19,7 @@
 #include <vtkCoordinate.h>
 #include <vtkRendererCollection.h>
 
-#include "libs/Eigen-v3.2.6/Dense"
+#include "Eigen-v3.2.6/Dense"
 
 void VTKOpenGL::run()
 {

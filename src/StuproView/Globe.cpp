@@ -18,7 +18,7 @@
 #include "GlobeTile.hpp"
 #include "MakeUnique.hpp"
 
-#include "libs/Eigen-v3.2.6/Dense"
+#include "Eigen-v3.2.6/Dense"
 
 Globe::Globe(vtkRenderer & renderer) :
 		myRenderer(renderer), myDownloader([=](ImageTile tile)
@@ -108,7 +108,7 @@ void Globe::createTiles()
 		{
 			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this,
 			        GlobeTile::Location(myZoomLevel, lon, lat));
-			
+
 			myDownloader.getTile(myZoomLevel, lon, lat);
 		}
 	}
@@ -148,21 +148,21 @@ void Globe::onTileLoad(ImageTile tile)
 
 	auto rgbIterator = tile.getLayers().find("satellite-imagery");
 	auto heightmapIterator = tile.getLayers().find("heightmap");
-	
+
 	if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end())
 	{
 		return;
 	}
-	
+
 	const QImage & rgb = rgbIterator->getImage();
 	const QImage & heightmap = heightmapIterator->getImage();
-	
+
 	globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
 	globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
-	
+
 	globeTile.loadTexture(rgb, heightmap);
 	globeTile.updateUniforms();
-	
+
 	myIsClean.clear();
 }
 
@@ -175,9 +175,9 @@ void Globe::cutPlanes(double planes[3][4], double cut [3]) {
         }
         offset(i) = -planes[i][3];
     }
-    
+
     Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset);//.lu().solve(offset);
-    
+
     // copy return value to avoid memory issues
     for (int i = 0; i < 3; i++) {
         cut[i] = cutPoint(i);
@@ -185,7 +185,7 @@ void Globe::cutPlanes(double planes[3][4], double cut [3]) {
 }
 
 void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[3],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]){
-    
+
     double planes[3][4];
     double intersectionOfPlanes[3];
     for (int i = 0; i < 4; i++) {
@@ -193,12 +193,12 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
         planes[1][i] = plane2[i];
         planes[2][i] = plane3[i];
     }
-    
+
     cutPlanes(planes, intersectionOfPlanes);
-    
+
     vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
     tree->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
-    
+
     if(intersectPoint->GetNumberOfPoints() > 0) {
         intersectPoint->GetPoint(0, intersection);
     } else {
@@ -217,16 +217,16 @@ std::vector<double *> Globe::getIntersectionPoints(double planes[], double camer
             planeArray[i][j] = planes[4 * i + j];
         }
     }
-    
+
     std::vector<double *> worldIntersectionPoints;
     for (int j = 0; j < 4; j++) {
         double intersection[3];
         //        VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
-        
+
         Globe::getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition, tree, intersection);
         worldIntersectionPoints.push_back(intersection);
     }
-    
+
     return worldIntersectionPoints;
 }
 
@@ -249,14 +249,12 @@ std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<double*> worldPoi
 }
 
 Coordinate Globe::getCenterGlobeCoordinate(vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double globeRadius){
-    
+
     double globeOrigin[3] = {0,0,0};
-    
+
     vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
     tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
     double centerPoint[3];
     intersectPoints->GetPoint(0, centerPoint);
     return Coordinate::getCoordinatesFromGlobePoint(centerPoint,globeRadius);
 }
-
-

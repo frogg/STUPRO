@@ -24,6 +24,8 @@ file(GLOB StuproView_SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
 )
 
+include_directories(${CMAKE_SOURCE_DIR}/libs)
+
 # directories to include (important for auto-generated code)
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
