@@ -37,7 +37,7 @@ add_paraview_plugin(
     REQUIRED_ON_SERVER
     REQUIRED_ON_CLIENT
     SERVER_MANAGER_SOURCES
-        StuproView/vtkPVStuproView.cpp
+        StuproView/vtkPVStuproView.cxx
     SERVER_MANAGER_XML
         StuproView/StuproView.xml
     SOURCES

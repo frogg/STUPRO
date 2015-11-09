@@ -12,7 +12,7 @@ MetaImage::MetaImage(const QImage &image) {
 }
 
 MetaImage::MetaImage() {
-	throw std::invalid_argument("Missing parameters");
+	//throw std::invalid_argument("Missing parameters");
 }
 
 MetaImage::~MetaImage() { }

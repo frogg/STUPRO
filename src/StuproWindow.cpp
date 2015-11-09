@@ -29,9 +29,9 @@ StuproWindow::StuproWindow()
 		this->Internals->statisticsDock);
 
 	// Enable help for from the object inspector.
-	QObject::connect(this->Internals->proxyTabWidget,
+	/*QObject::connect(this->Internals->proxyTabWidget,
 		SIGNAL(helpRequested(QString)),
-		this, SLOT(showHelpForProxy(const QString&)));
+		this, SLOT(showHelpForProxy(const QString&)));*/
 
 	// Populate application menus with actions.
 	pqParaViewMenuBuilders::buildFileMenu(*this->Internals->menu_File);

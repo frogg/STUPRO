@@ -2,7 +2,7 @@
 #define STUPRO_STUPROINTERACTOR_HPP
 
 #include <vtkInteractorStyleTerrain.h>
-#include "vtkPVStuproView.hpp"
+#include "vtkPVStuproView.h"
 
 class StuproInteractor : public vtkInteractorStyleTerrain
 {
