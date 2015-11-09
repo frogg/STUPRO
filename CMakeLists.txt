@@ -7,7 +7,7 @@ set(KRONOS_QT_VERSION 4)
 
 # register subprojects
 add_subdirectory(src)
-# add_subdirectory(test)
+add_subdirectory(test)
 
 # enable ctest capabilities
 enable_testing()
@@ -17,5 +17,9 @@ enable_testing()
 file(GLOB testClasses ./test/**/Test*.cpp)
 foreach(test ${testClasses})
   get_filename_component(testName ${test} NAME_WE)
-  add_test(NAME ${testName} COMMAND "test/UnitTester" ${testName})
+  add_test(
+    NAME ${testName}
+    COMMAND UnitTester ${testName}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
+  )
 endforeach(test ${testClasses})
