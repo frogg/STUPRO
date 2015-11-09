@@ -18,7 +18,7 @@ void TestConfigUtil::testLoadConfig() {
 
 	ImageLayerDescription satelliteImagery = layers.value("satellite-imagery");
 	CPPUNIT_ASSERT_EQUAL(
-		std::string("http://worldwind25.arc.nasa.gov/wms?service=WMS&request=GetMap&version=1.3.0&crs=CRS:84&layers=BlueMarble-200405&styles=&transparent=FALSE"),
+		std::string("http://worldwind25.arc.nasa.gov/wms?service=WMS&request=GetMap&version=1.3.0&crs=CRS:84&layers=BlueMarble-200405,esat&styles=&transparent=FALSE"),
 		satelliteImagery.baseUrl.toStdString()
 	);
 	CPPUNIT_ASSERT_EQUAL(std::string("image/jpeg"), satelliteImagery.format.toStdString());
