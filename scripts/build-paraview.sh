@@ -21,6 +21,7 @@ ABS_PV_BIN_DIR="$PWD/$PV_BIN_DIR"
 
 # create ParaView source code directory if it doesn't exist and checkout the correct tag
 echo "Cloning ParaView Git repository..."
+mkdir -p $ABS_PV_SRC_DIR
 cd $ABS_PV_SRC_DIR
 git clone $PV_GIT_URL . 2> /dev/null
 git checkout $PV_GIT_TAG
@@ -51,7 +52,7 @@ echo "Configuring ParaView..."
 cmake $PV_CMAKE_FLAGS $ABS_PV_SRC_DIR > /dev/null
 
 # make sure cmake didn't fail
-if [[ $? != 0 ]]; then
+if [ $? != 0 ]; then
   cd $ROOT_DIR
   echo "Aborting ParaView build due to cmake errors"
   exit 1
@@ -60,7 +61,7 @@ fi
 echo "Building ParaView..."
 make -j $NUM_WORKERS
 
-if [[ $? != 0 ]]; then
+if [ $? != 0 ]; then
   cd $ROOT_DIR
   echo "Error building ParaView, aborting"
   exit 1
