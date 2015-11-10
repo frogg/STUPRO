@@ -6,7 +6,7 @@ ABS_PV_DIR=$ROOT_DIR/bin/paraview/bin/
 
 mkdir -p $ABS_BUILD_DIR
 cd $ABS_BUILD_DIR
-cmake -D ParaView_DIR=$RABS_PV_DIR $ROOT_DIR
+cmake -D ParaView_DIR=$ABS_PV_DIR $ROOT_DIR
 
 if [ $? != 0 ]; then
   echo "Aborting due to errors executing cmake"
