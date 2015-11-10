@@ -4,7 +4,7 @@
 
 set(PARAVIEW_FOUND "NO")
 
-set(ParaView_DIR "${CMAKE_BINARY_DIR}/bin/paraview/bin/"
+set(ParaView_DIR "${CMAKE_SOURCE_DIR}/bin/paraview/bin/"
     CACHE PATH
     "Path to ParaView build")
 
