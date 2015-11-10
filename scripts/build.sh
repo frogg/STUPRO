@@ -2,9 +2,10 @@
 ROOT_DIR=$PWD
 BUILD_DIR=bin
 ABS_BUILD_DIR=$ROOT_DIR/$BUILD_DIR
-ABS_PV_DIR=$ROOT_DIR/bin/paraview/bin
+ABS_PV_DIR=$ROOT_DIR/bin/paraview/bin/
 
 echo $ABS_PV_DIR
+ls -la $ABS_PV_DIR
 
 mkdir -p $ABS_BUILD_DIR
 cd $ABS_BUILD_DIR
