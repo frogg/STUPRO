@@ -2,10 +2,13 @@
 ROOT_DIR=$PWD
 BUILD_DIR=bin
 ABS_BUILD_DIR=$ROOT_DIR/$BUILD_DIR
+ABS_PV_DIR=$ROOT_DIR/bin/paraview/bin
+
+echo $ABS_PV_DIR
 
 mkdir -p $ABS_BUILD_DIR
 cd $ABS_BUILD_DIR
-cmake -D ParaView_DIR=$ROOT_DIR/bin/paraview/bin $ROOT_DIR
+cmake -D ParaView_DIR=$RABS_PV_DIR $ROOT_DIR
 
 if [ $? != 0 ]; then
   echo "Aborting due to errors executing cmake"
