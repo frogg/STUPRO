@@ -6,9 +6,9 @@ before_install:
   - sudo apt-get -q -y install cmake
   # - sudo apt-get -qq install qtbase5-dev
 
-  - ./build-paraview.sh
+  - ./scripts/build-paraview.sh
   # build astyle because the astyle version in the official repos is outdated
-  - ./download-and-install-astyle.sh
+  - ./scripts/download-and-install-astyle.sh
 
 script:
   # disabled until the styling on the repository is OK
