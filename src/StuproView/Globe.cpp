@@ -208,7 +208,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
     }
 }
 
-std::vector<double *> Globe::getIntersectionPoints(double planes[], double cameraPosition[], vtkSmartPointer<vtkOBBTree> tree)
+std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double cameraPosition[], vtkSmartPointer<vtkOBBTree> tree)
 {
     // left, right, bottom, top, near, far
     double planeArray[6][4];
@@ -218,12 +218,12 @@ std::vector<double *> Globe::getIntersectionPoints(double planes[], double camer
         }
     }
 
-    std::vector<double *> worldIntersectionPoints;
+    std::vector<Vector3d> worldIntersectionPoints;
     for (int j = 0; j < 4; j++) {
-        double intersection[3];
+    	Vector3d intersection;
         //        VTKOpenGL::getIntersectionPoint(planeLeft, planeBottom, planeFar, cameraPosition,tree,intersection[0]);
 
-        Globe::getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition, tree, intersection);
+        getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition, tree, intersection.array());
         worldIntersectionPoints.push_back(intersection);
     }
 
