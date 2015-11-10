@@ -106,17 +106,17 @@ void ImageDownloadWorker::downloadCompleted() {
 			}
 
 			MetaImage metaImage(image);
-			this->imageDownloadedPromise.set_value_at_thread_exit(metaImage);
+			this->imageDownloadedPromise.set_value(metaImage);
 		} else if (QRegExp("^application\\/bil16$").exactMatch(contentType)) {
 			QByteArray rawData = this->reply->readAll();
 
 			MetaImage metaImage = ImageDownloadWorker::decodeBil16(rawData, this->imageWidth,
 								  this->imageHeight);
-			this->imageDownloadedPromise.set_value_at_thread_exit(metaImage);
+			this->imageDownloadedPromise.set_value(metaImage);
 		} else {
 			throw UnknownContentTypeException(contentType, this->url);
 		}
 	} catch (...) {
-		this->imageDownloadedPromise.set_exception_at_thread_exit(std::current_exception());
+		this->imageDownloadedPromise.set_exception(std::current_exception());
 	}
 }
