@@ -8,6 +8,10 @@ find_package(ParaView REQUIRED)
 include(${PARAVIEW_USE_FILE})
 include(ParaViewBranding)
 
+# find Qt headers and libraries
+find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
+include(${QT_USE_FILE})
+
 # automatically wrap *.ui files and classes inheriting from QObject
 set(CMAKE_AUTOUIC TRUE)
 set(CMAKE_AUTOMOC TRUE)
@@ -45,6 +49,9 @@ add_paraview_plugin(
     SOURCES
         ${StuproView_SOURCE_FILES}
 )
+
+# link against Qt libraries
+target_link_libraries(StuproViewPlugin PRIVATE ${QT_LIBRARIES})
 
 # use C++11 to compile the plugin
 set_property(TARGET StuproViewPlugin PROPERTY CXX_STANDARD 11)
