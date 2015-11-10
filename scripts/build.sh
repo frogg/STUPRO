@@ -5,10 +5,12 @@ ABS_BUILD_DIR=$ROOT_DIR/$BUILD_DIR
 ABS_PV_DIR=$ROOT_DIR/bin/paraview/bin/
 
 echo $ROOT_DIR
+ls -la $ROOT_DIR
+ls -la $ROOT_DIR/bin
+ls -la $ROOT_DIR/bin/paraview
+ls -la $ROOT_DIR/bin/paraview/bin
 echo $ABS_PV_DIR
-ls $ABS_PV_DIR
-
-exit 0
+ls -la $ABS_PV_DIR
 
 mkdir -p $ABS_BUILD_DIR
 cd $ABS_BUILD_DIR
