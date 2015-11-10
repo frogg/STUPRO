@@ -12,6 +12,10 @@ ls -la $ROOT_DIR/bin/paraview/bin
 echo $ABS_PV_DIR
 ls -la $ABS_PV_DIR
 
+find / -iname ParaViewConfig.cmake
+
+exit 1
+
 mkdir -p $ABS_BUILD_DIR
 cd $ABS_BUILD_DIR
 cmake -D ParaView_DIR=$RABS_PV_DIR $ROOT_DIR
