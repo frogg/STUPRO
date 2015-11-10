@@ -63,7 +63,7 @@ if [ $? != 0 ]; then
   exit 1
 fi
 
-echo "Building ParaView..."
+echo "Building ParaView in $PWD..."
 make -j $NUM_WORKERS
 
 if [ $? != 0 ]; then
