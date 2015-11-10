@@ -42,7 +42,7 @@ else
   else
     if [ -d $ABS_PV_BIN_DIR ]; then
       cd $ROOT_DIR
-      echo "$ABS_PV_BIN_DIR already exists, assuming ParaView binaries are already build"
+      echo "$ABS_PV_BIN_DIR already exists, assuming ParaView binaries are already built"
       exit 0
     fi
   fi
