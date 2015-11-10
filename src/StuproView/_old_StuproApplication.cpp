@@ -90,10 +90,10 @@ void StuproApplication::initCallbacks()
 
      std::vector<Coordinate> intersectionCoordinates;
      if (client.myDisplayMode == DisplayGlobe) {
-     std::vector<double *> worldIntersectionPoints = Globe::getIntersectionPoints (planes, cameraPosition, client.mySphereTree);
+     std::vector<Vector3d> worldIntersectionPoints = Globe::getIntersectionPoints (planes, cameraPosition, client.mySphereTree);
      intersectionCoordinates = Globe::getGlobeCoordinates (worldIntersectionPoints, client.myGlobeRadius);
      } else {
-     std::vector<double *> worldIntersectionPoints = Globe::getIntersectionPoints(planes, cameraPosition, client.myPlaneTree);
+     std::vector<Vector3d> worldIntersectionPoints = Globe::getIntersectionPoints(planes, cameraPosition, client.myPlaneTree);
      intersectionCoordinates = Globe::getPlaneCoordinates (worldIntersectionPoints, 4, 2);
      }
      Coordinate::logCoordinates(intersectionCoordinates);

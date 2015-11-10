@@ -12,6 +12,7 @@
 #include "Coordinate.hpp"
 
 #include "Vector2.hpp"
+#include "Vector3.hpp"
 
 class GlobeTile;
 
@@ -46,9 +47,9 @@ public:
     
     static Coordinate getCenterGlobeCoordinate(vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double globeRadius);
     
-    static std::vector<double *> getIntersectionPoints(double planes[24], double cameraPosition[3], vtkSmartPointer<vtkOBBTree> tree);
-    static std::vector<Coordinate> getGlobeCoordinates(std::vector<double*> worldPoints, double radius);
-    static std::vector<Coordinate> getPlaneCoordinates(std::vector<double*> worldPoints, double planeWidth, double planeHeight);
+    static std::vector<Vector3d> getIntersectionPoints(double planes[24], double cameraPosition[3], vtkSmartPointer<vtkOBBTree> tree);
+    static std::vector<Coordinate> getGlobeCoordinates(std::vector<Vector3d> worldPoints, double radius);
+    static std::vector<Coordinate> getPlaneCoordinates(std::vector<Vector3d> worldPoints, double planeWidth, double planeHeight);
 
 private:
 	
