@@ -4,6 +4,7 @@ PV_BIN_DIR="./bin/paraview/bin"
 PV_CMAKE_FLAGS="\
  -D CMAKE_BUILD_TYPE=Release\
  -D BUILD_TESTING=OFF\
+ -D BUILD_DOCUMENTATION=OFF\
  -D Module_vtkGeovisCore=ON\
  -D Module_vtkIOGeoJSON=ON\
  -D Module_vtkViewsGeovis=ON\
@@ -36,10 +37,14 @@ if [ $PV_CLEAN_BUILD ]; then
   rm -rf $ABS_PV_BIN_DIR
 else
   # check if the ParaView build directory already exists
-  if [ -d $ABS_PV_BIN_DIR ]; then
-    cd $ROOT_DIR
-    echo "$ABS_PV_BIN_DIR already exists, assuming ParaView binaries are already build"
-    exit 0
+  if [ $PV_REBUILD ]; then
+    echo "PV_REBUILD is set"
+  else
+    if [ -d $ABS_PV_BIN_DIR ]; then
+      cd $ROOT_DIR
+      echo "$ABS_PV_BIN_DIR already exists, assuming ParaView binaries are already build"
+      exit 0
+    fi
   fi
 fi
 
