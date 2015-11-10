@@ -4,7 +4,8 @@ before_install:
   - sudo apt-get update > /dev/null
   - sudo apt-get -q -y install libcppunit-dev
   - sudo apt-get -q -y install cmake
-  - sudo apt-get -q -y install openmpi-common openmpi-bin libopenmpi-dev 
+  - sudo apt-get -q -y install openmpi-common openmpi-bin libopenmpi-dev
+  - sudo apt-get -q -y install libqt4-dev
   # - sudo apt-get -qq install qtbase5-dev
 
   - ./scripts/build-paraview.sh
