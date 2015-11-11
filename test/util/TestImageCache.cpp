@@ -102,3 +102,14 @@ void TestImageCache::testCacheRetrieval() {
 	CPPUNIT_ASSERT_EQUAL(512, retrievedImage.getImage().height());
 	CPPUNIT_ASSERT_EQUAL(qRgb(0x00, 0x00, 0x00), retrievedImage.getImage().pixel(128, 128));
 }
+
+void TestImageCache::testClearCache() {
+	QImage image(512, 512, QImage::Format_RGB32);
+	ImageCache::getInstance().cacheImage(MetaImage(image, 1, 42),
+										 QString("layer-to-clear"), 2, 1, 3);
+	CPPUNIT_ASSERT(QDir("cache/layer-to-clear").exists());
+
+	ImageCache::getInstance().clearCache("layer-to-clear");
+	CPPUNIT_ASSERT(QDir("cache").exists());
+	CPPUNIT_ASSERT(!QDir("cache/layer-to-clear").exists());
+}

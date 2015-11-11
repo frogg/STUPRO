@@ -49,6 +49,13 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 	writer.write(image.getImage());
 }
 
+const void ImageCache::clearCache(QString layer) {
+	QDir layerDirectory(QString("cache/%1").arg(layer));
+	if (layerDirectory.exists()) {
+		ImageCache::removeDirectory(layerDirectory.absolutePath());
+	}
+}
+
 const bool ImageCache::isImageCached(QString layer, int zoomLevel, int tileX, int tileY) {
 	QFileInfo imageFile(QString("cache/%1/tile_%2_%3_%4.png")
 						.arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
@@ -87,4 +94,27 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 											  " zoom level %2 and position %3/%4 could not be read.")
 									  .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
 	}
+}
+
+bool ImageCache::removeDirectory(const QString &path) {
+	bool result = true;
+	QDir dir(path);
+
+	if (dir.exists(path)) {
+		Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot
+				   | QDir::System | QDir::Hidden  | QDir::AllDirs
+				   | QDir::Files, QDir::DirsFirst)) {
+			if (info.isDir()) {
+				result = removeDirectory(info.absoluteFilePath());
+			} else {
+				result = QFile::remove(info.absoluteFilePath());
+			}
+
+			if (!result) {
+				return result;
+			}
+		}
+		result = dir.rmdir(path);
+	}
+	return result;
 }

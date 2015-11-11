@@ -11,12 +11,14 @@ class TestImageCache : public CppUnit::TestFixture {
 	CPPUNIT_TEST(testDirectorySetup);
 	CPPUNIT_TEST(testCacheImage);
 	CPPUNIT_TEST(testCacheRetrieval);
+	CPPUNIT_TEST(testClearCache);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	void testDirectorySetup();
 	void testCacheImage();
 	void testCacheRetrieval();
+	void testClearCache();
 
 	/**
 	 * Recursively remove a directory since this functionality is not available
