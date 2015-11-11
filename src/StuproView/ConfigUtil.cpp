@@ -1,6 +1,7 @@
 #include "ConfigUtil.hpp"
 
 #include <QFile>
+#include <QFileInfo>
 #include <QIODevice>
 #include <QStringList>
 #include <QRegExp>
@@ -12,8 +13,16 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 	QMap<QString, ImageLayerDescription> layers;
 
 	QFile configFile(file);
+	QFileInfo configFileInfo(file);
+
+	if (!configFile.exists()) {
+		throw FileOpenException("The specified config file at '" + configFileInfo.absoluteFilePath() + "'"
+														" could not be opened since it does not seem to exist.");
+	}
+
 	if (!configFile.open(QIODevice::ReadOnly)) {
-		throw FileOpenException(configFile.errorString());
+		throw FileOpenException("The specified config file at '" + configFileInfo.absoluteFilePath() + "'"
+														" could not be opened: " + configFile.errorString());
 	}
 
 	QTextStream in(&configFile);
