@@ -20,37 +20,37 @@ QT4_WRAP_UI(UISrcs StuproWindow.ui)
 
 # source files responsible for creating the ParaView window
 set(ParaView_SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp
 	${UISrcs}
 )
 
 # all other Kronos source files
 file(GLOB StuproView_SOURCE_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/libs)
 
 # directories to include (important for auto-generated code)
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/StuproView/
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/StuproView/
 )
 
 # register a ParaView plugin
 add_paraview_plugin(
-    StuproViewPlugin
-    "1.0.0"
-    REQUIRED_ON_SERVER
-    REQUIRED_ON_CLIENT
-    SERVER_MANAGER_SOURCES
-        StuproView/vtkPVStuproView.cxx
-    SERVER_MANAGER_XML
-        StuproView/StuproView.xml
-    SOURCES
-        ${StuproView_SOURCE_FILES}
+	StuproViewPlugin
+	"1.0.0"
+	REQUIRED_ON_SERVER
+	REQUIRED_ON_CLIENT
+	SERVER_MANAGER_SOURCES
+		StuproView/vtkPVStuproView.cxx
+	SERVER_MANAGER_XML
+		StuproView/StuproView.xml
+	SOURCES
+		${StuproView_SOURCE_FILES}
 )
 
 # link against Qt libraries
@@ -61,16 +61,16 @@ set_property(TARGET StuproViewPlugin PROPERTY CXX_STANDARD 11)
 
 # register a ParaView client
 build_paraview_client(
-    paraview_stupro
-    TITLE "ParaView - Kronos-Edition"
-    ORGANIZATION "Kitware Inc."
-    VERSION_MAJOR 1
-    VERSION_MINOR 0
-    VERSION_PATCH 0
-    PVMAIN_WINDOW StuproWindow
-    PVMAIN_WINDOW_INCLUDE StuproWindow.hpp
-    REQUIRED_PLUGINS StuproViewPlugin
-    SOURCES ${ParaView_SOURCE_FILES}
+	paraview_stupro
+	TITLE "ParaView - Kronos-Edition"
+	ORGANIZATION "Kitware Inc."
+	VERSION_MAJOR 1
+	VERSION_MINOR 0
+	VERSION_PATCH 0
+	PVMAIN_WINDOW StuproWindow
+	PVMAIN_WINDOW_INCLUDE StuproWindow.hpp
+	REQUIRED_PLUGINS StuproViewPlugin
+	SOURCES ${ParaView_SOURCE_FILES}
 )
 
 # use C++11 to compile the client
