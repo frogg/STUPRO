@@ -13,13 +13,16 @@ find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
 include(${QT_USE_FILE})
 
 # automatically wrap *.ui files and classes inheriting from QObject
-set(CMAKE_AUTOUIC TRUE)
 set(CMAKE_AUTOMOC TRUE)
+QT4_WRAP_UI(UISrcs StuproWindow.ui)
+# fallback (works only for CMake 3.0 and above)
+# set(CMAKE_AUTOUIC TRUE)
 
 # source files responsible for creating the ParaView window
 set(ParaView_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp
+	${UISrcs}
 )
 
 # all other Kronos source files
