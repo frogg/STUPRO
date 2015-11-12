@@ -36,16 +36,16 @@ BUILD_DOCUMENTATION=OFF
 ```
 ParaView MPI functionality requires the openMPI library, run `apt-get install openmpi-common openmpi-bin libopenmpi-dev` on Debian to install the required dependencies.
 
-Alternatively, if you don't want to go through the trouble of building ParaView completely on your own, consider using the `build-paraview.sh` script located in the `scripts` folder of the repository to automatically build ParaView inside the binary directory.
+Alternatively, if you don't want to go through the trouble of building ParaView completely on your own, consider running the `build-paraview.sh` script located in the `scripts` folder from inside the project's root directory to automatically build ParaView inside the binary directory.
 
 #### CppUnit
 In order to run unit tests, the [CppUnit](http://sourceforge.net/projects/cppunit/) library is required.
 To install it on Debian-based systems (including Ubuntu), run `apt-get install libcppunit-dev`.
 
 ### Building Kronos
-If all dependencies are installed, building Kronos is as easy as configuring it using `cmake`. Switch into a directory of your choice (we recommend not using the project's root directory, so `cmake` doesn't put auto-generated source files and other Cmake-related files into the source folders). To generate the Makefiles for building Kronos, execute `cmake` in one of the following ways:
+If all dependencies are installed, building Kronos is as easy as configuring it using `cmake`. Switch into a directory of your choice (we recommend not using the project's root directory, so `cmake` doesn't put auto-generated source files and other CMake-related files into the source folders). To generate the Makefiles for building Kronos, execute `cmake` in one of the following ways:
 * Use `cmake [path to kronos]` directly for the non-interactive mode.
-* Run `ccmake [path to kronos]` to get a console-based user interface where you can change the build options without the use of command line parameters. When done configuring, press `c` to configure Cmake and when finished without errors, press `g` to generate the Makefiles.
+* Run `ccmake [path to kronos]` to get a console-based user interface where you can change the build options without the use of command line parameters. When done configuring, press `c` to configure CMake and when finished without errors, press `g` to generate the Makefiles.
 * Run `cmake-gui [path to kronos]` to get a nice window-based user interface, similar to the `ccmake` one. Change the flags to your likings, then configure and generate the Makefiles.
 
 When the Makefiles are done, simply run `make` to build Kronos.
@@ -65,4 +65,4 @@ Dependency | License
 Qt4        | [Lesser General Public License Version 2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
 CppUnit    | [Lesser General Public License Version 3](http://www.gnu.org/copyleft/lesser.html)
 ParaView   | [ParaView License Version 1.2](https://github.com/Kitware/ParaView/blob/master/License_v1.2.txt)
-Eigen      | [Mozilla Plublic License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/)
+Eigen      | [Mozilla Public License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/)
