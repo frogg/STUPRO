@@ -1,5 +1,8 @@
 # test runner class
-set(MAIN_CLASS ./TestRunner.cpp ./TestRunner.hpp)
+set(MAIN_CLASS
+    ${CMAKE_CURRENT_SOURCE_DIR}/TestRunner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TestRunner.hpp
+)
 
 set(CMAKE_AUTOMOC TRUE)
 set(KRONOS_QT_VERSION 4)
@@ -21,12 +24,11 @@ endif()
 find_package(CppUnit REQUIRED)
 
 # test sources
-file(GLOB Test_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.cpp)
-file(GLOB Test_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.hpp)
+file(GLOB_RECURSE Test_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.cpp)
+file(GLOB_RECURSE Test_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.hpp)
 
 # include main library headers
-include_directories(${CMAKE_SOURCE_DIR}/src/)
-include_directories(${CMAKE_SOURCE_DIR}/src/StuproView/)
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
 # include external library headers
 include_directories(${CMAKE_SOURCE_DIR}/libs)
