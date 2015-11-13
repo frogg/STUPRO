@@ -25,8 +25,11 @@ file(GLOB Test_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.cpp)
 file(GLOB Test_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.hpp)
 
 # include main library headers
-include_directories(../src/)
-include_directories(../src/StuproView/)
+include_directories(${CMAKE_SOURCE_DIR}/src/)
+include_directories(${CMAKE_SOURCE_DIR}/src/StuproView/)
+
+# include external library headers
+include_directories(${CMAKE_SOURCE_DIR}/libs)
 
 # include CppUnit headers
 include_directories(${CPPUNIT_INCLUDE_DIR})
