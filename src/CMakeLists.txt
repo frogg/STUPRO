@@ -26,9 +26,11 @@ set(ParaView_SOURCE_FILES
 )
 
 # all other Kronos source files
-file(GLOB StuproView_SOURCE_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/*/*.hpp"
+file(GLOB_RECURSE StuproView_SOURCE_FILES
+	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.cxx"
+	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.h"
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/libs)
