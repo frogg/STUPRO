@@ -20,4 +20,5 @@ notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
 cache:
   directories:
-    - bin
+    - bin/astyle
+    - bin/paraview
