@@ -41,7 +41,6 @@ private:
 	void initGlobe();
 	void initRenderer();
 	void initCallbacks();
-
 	DisplayMode myDisplayMode;
 
 	std::unique_ptr<Globe> myGlobe;

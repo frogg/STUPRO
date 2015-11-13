@@ -41,17 +41,21 @@ public:
 	
 	bool checkDirty();
     
-    static void cutPlanes(double planes[3][4], double cut [3]);
-    static void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[],vtkSmartPointer<vtkOBBTree> tree, double intersection[3]);
+
+    std::vector<Coordinate> getGlobeCoordinates(std::vector<Vector3d> worldPoints, double radius);
+    std::vector<Coordinate> getPlaneCoordinates(std::vector<Vector3d> worldPoints, double planeWidth, double planeHeight);
+    Coordinate getCenterGlobeCoordinate(double cameraPosition[], double globeRadius);
+    std::vector<Vector3d> getIntersectionPoints(double planes[24], double cameraPosition[3]);
     
-    static Coordinate getCenterGlobeCoordinate(vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[], double globeRadius);
     
-    static std::vector<Vector3d> getIntersectionPoints(double planes[24], double cameraPosition[3], vtkSmartPointer<vtkOBBTree> tree);
-    static std::vector<Coordinate> getGlobeCoordinates(std::vector<Vector3d> worldPoints, double radius);
-    static std::vector<Coordinate> getPlaneCoordinates(std::vector<Vector3d> worldPoints, double planeWidth, double planeHeight);
 
 private:
-	
+    vtkSmartPointer<vtkOBBTree> mySphereTree;
+    vtkSmartPointer<vtkOBBTree> myPlaneTree;
+    void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[], double intersection[3]);
+    void cutPlanes(double planes[3][4], double cut [3]);
+    vtkSmartPointer<vtkOBBTree> getOOBTree();
+    
 	unsigned int getTileIndex(int lon, int lat) const;
 	
 	void createTiles();
