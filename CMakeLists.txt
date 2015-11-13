@@ -7,14 +7,14 @@ set(KRONOS_QT_VERSION 4)
 
 # register subprojects
 add_subdirectory(src)
-#add_subdirectory(test)
+add_subdirectory(test)
 
 # enable ctest capabilities
 enable_testing()
 
 # tests are added here and not in the ./test folder to make it possible to
 # simply run `make test` in the root directory to run the tests
-file(GLOB testClasses ./test/**/Test*.cpp)
+file(GLOB_RECURSE testClasses ./test/**/Test*.cpp)
 foreach(test ${testClasses})
   get_filename_component(testName ${test} NAME_WE)
   add_test(
@@ -22,4 +22,4 @@ foreach(test ${testClasses})
     COMMAND UnitTester ${testName}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src
   )
-endforeach(test ${testClasses})
+endforeach()
