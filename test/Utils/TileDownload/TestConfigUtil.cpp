@@ -11,7 +11,7 @@ void TestConfigUtil::testLoadConfig() {
 	QMap<QString, ImageLayerDescription> layers;
 
 	try {
-		layers = ConfigUtil::loadConfigFile("./res/layers.json");
+		ConfigUtil::loadConfigFile("./res/layers.json");
 	} catch (FileOpenException e) {
 		CPPUNIT_FAIL(e.what());
 	}

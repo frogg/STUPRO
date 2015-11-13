@@ -32,7 +32,7 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 
 	for (Value::ConstMemberIterator layerIterator = configDocument.MemberBegin();
 	    layerIterator != configDocument.MemberEnd(); ++layerIterator) {
-	    printf("Found member %s with mime type %s\n", layerIterator->name.GetString(), layerIterator->value["baseUrl"].GetString());
+	    printf("Found member %s with zoom levels %s\n", layerIterator->name.GetString(), layerIterator->value["zoomLevels"].MemberBegin()->name.GetString());
 	}
 
 	/*while (!in.atEnd()) {
