@@ -1,0 +1,21 @@
+{
+  "satelliteImagery": {
+    "baseUrl": "http://worldwind25.arc.nasa.gov/wms?service=WMS&request=GetMap&version=1.3.0&crs=CRS:84&styles=&transparent=FALSE",
+    "mimeType": "image/jpeg",
+    "tileSize": 512,
+    "zoomLevels": {
+      "0": "BlueMarble-200405",
+      "8": "BlueMarble-200405,esat"
+    }
+  },
+  "heightmap": {
+    "baseUrl": "http://worldwind26.arc.nasa.gov/wms?service=WMS&request=GetMap&version=1.3.0&crs=CRS:84&styles=&transparent=FALSE",
+    "mimeType": "application/bil16",
+    "tileSize": 512,
+    "zoomLevels": {
+      "0": "NASA_SRTM30_900m_Tiled",
+      "4": "NASA_SRTM30_900m_Tiled,aster_v2",
+      "8": "NASA_SRTM30_900m_Tiled,aster_v2,USGS-NED"
+    }
+  }
+}
