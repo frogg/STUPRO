@@ -47,7 +47,6 @@ public:
     Coordinate getCenterGlobeCoordinate(double cameraPosition[], double globeRadius);
     std::vector<Vector3d> getIntersectionPoints(double planes[24], double cameraPosition[3]);
     
-    
 
 private:
     vtkSmartPointer<vtkOBBTree> mySphereTree;
