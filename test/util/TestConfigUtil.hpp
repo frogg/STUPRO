@@ -1,9 +1,10 @@
 #ifndef KRONOS_TEST_TESTCONFIGUTIL_HPP
 #define KRONOS_TEST_TESTCONFIGUTIL_HPP
 
+#include <cppunit/extensions/AutoRegisterSuite.h>
 #include <cppunit/extensions/HelperMacros.h>
-
-#include <ConfigUtil.hpp>
+#include <cppunit/extensions/TestNamer.h>
+#include <cppunit/TestCaller.h>
 
 class TestConfigUtil : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(TestConfigUtil);

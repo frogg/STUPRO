@@ -1,10 +1,12 @@
 #ifndef KRONOS_TEST_TESTIMAGECACHE_HPP
 #define KRONOS_TEST_TESTIMAGECACHE_HPP
 
+#include <cppunit/extensions/AutoRegisterSuite.h>
 #include <cppunit/extensions/HelperMacros.h>
-
-#include <ImageCache.hpp>
-#include <QDir>
+#include <cppunit/extensions/TestNamer.h>
+#include <cppunit/TestCaller.h>
+#include <qdir.h>
+#include <qstring.h>
 
 class TestImageCache : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(TestImageCache);

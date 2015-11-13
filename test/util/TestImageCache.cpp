@@ -1,12 +1,15 @@
 #include "TestImageCache.hpp"
 
-#include "MetaImage.hpp"
-
-#include <QString>
-#include <QDebug>
-#include <QDir>
-#include <QFileInfo>
-#include <QImageReader>
+#include <cppunit/TestAssert.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qglobal.h>
+#include <qimage.h>
+#include <qimagereader.h>
+#include <qrgb.h>
+#include <Utils/TileDownload/ImageCache.hpp>
+#include <Utils/TileDownload/MetaImage.hpp>
+#include <string>
 
 bool TestImageCache::removeDir(const QString &dirName) {
 	bool result = true;
