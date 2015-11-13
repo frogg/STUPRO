@@ -1,6 +1,11 @@
 #include "TestImageTile.hpp"
 
-#include <QDebug>
+#include <cppunit/TestAssert.h>
+#include <qimage.h>
+#include <qmap.h>
+#include <qstring.h>
+#include <Utils/TileDownload/ImageTile.hpp>
+#include <Utils/TileDownload/MetaImage.hpp>
 
 void TestImageTile::testMetaData() {
 	QMap<QString, MetaImage> layers;

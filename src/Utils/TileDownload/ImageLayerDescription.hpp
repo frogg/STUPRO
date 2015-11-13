@@ -1,7 +1,7 @@
 #ifndef KRONOS_IMAGELAYERDESCRIPTION_HPP
 #define KRONOS_IMAGELAYERDESCRIPTION_HPP
 
-#include <QString>
+#include <qstring.h>
 
 struct ImageLayerDescription {
     QString baseUrl;

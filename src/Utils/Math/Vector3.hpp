@@ -1,9 +1,9 @@
 #ifndef STUPRO_VECTOR3_HPP
 #define STUPRO_VECTOR3_HPP
 
+#include <Utils/Math/ArithmeticFunctors.hpp>
+#include <limits>
 #include <cmath>
-
-#include "ArithmeticFunctors.hpp"
 
 template<typename T>
 class Vector3

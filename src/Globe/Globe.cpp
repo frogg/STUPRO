@@ -5,20 +5,17 @@
  *      Author: bbq
  */
 
-#include "Globe.hpp"
-
-#include "ImageTile.hpp"
-#include "MetaImage.hpp"
+#include <Globe/Globe.hpp>
+#include <Utils/TileDownload/ImageTile.hpp>
+#include <Utils/TileDownload/MetaImage.hpp>
 #include <qimage.h>
 #include <qmap.h>
 #include <vtkAlgorithm.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-
-#include "GlobeTile.hpp"
-#include "MakeUnique.hpp"
-
-#include "Eigen-v3.2.6/Dense"
+#include <Globe/GlobeTile.hpp>
+#include <Utils/Misc/MakeUnique.hpp>
+#include <Eigen-v3.2.6/Dense>
 
 Globe::Globe(vtkRenderer & renderer) :
 		myRenderer(renderer),

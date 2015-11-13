@@ -1,7 +1,14 @@
 #include "TestImageDownloader.hpp"
 
-#include <QApplication>
-#include <ImageTile.hpp>
+#include <cppunit/TestAssert.h>
+#include <qglobal.h>
+#include <qimage.h>
+#include <qlist.h>
+#include <qmap.h>
+#include <qstring.h>
+#include <Utils/TileDownload/ImageDownloader.hpp>
+#include <Utils/TileDownload/ImageTile.hpp>
+#include <Utils/TileDownload/MetaImage.hpp>
 #include <future>
 
 void TestImageDownloader::testGetAvailableLayers() {

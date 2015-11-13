@@ -1,10 +1,9 @@
 #ifndef KRONOS_IMAGETILE_HPP
 #define KRONOS_IMAGETILE_HPP
 
-#include "MetaImage.hpp"
-
-#include <QString>
-#include <QMap>
+#include <qmap.h>
+#include <qstring.h>
+#include <Utils/TileDownload/MetaImage.hpp>
 
 class ImageTile {
 public:

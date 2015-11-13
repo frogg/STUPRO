@@ -1,18 +1,17 @@
 #ifndef STUPRO_GLOBE_HPP
 #define STUPRO_GLOBE_HPP
 
-#include "ImageDownloader.hpp"
+#include <Utils/Math/Coordinate.hpp>
+#include <Utils/Math/Vector2.hpp>
+#include <Utils/Math/Vector3.hpp>
+#include <Utils/TileDownload/ImageDownloader.hpp>
+#include <vtkOBBTree.h>
 #include <vtkPlaneSource.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
-#include <memory>
 #include <atomic>
+#include <memory>
 #include <vector>
-#include "vtkOBBTree.h"
-#include "Coordinate.hpp"
-
-#include "Vector2.hpp"
-#include "Vector3.hpp"
 
 class GlobeTile;
 

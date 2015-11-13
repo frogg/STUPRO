@@ -1,6 +1,8 @@
 #include "TestMetaImage.hpp"
 
-#include <QDebug>
+#include <cppunit/TestAssert.h>
+#include <qimage.h>
+#include <Utils/TileDownload/MetaImage.hpp>
 
 void TestMetaImage::testMetaData() {
 	QImage image(512, 512, QImage::Format_RGB32);

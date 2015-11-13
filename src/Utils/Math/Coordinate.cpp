@@ -6,9 +6,9 @@
 //
 //
 
-#include "Coordinate.hpp"
-#include <iostream>
+#include <Utils/Math/Coordinate.hpp>
 #include <cmath>
+#include <iostream>
 
 void Coordinate::logCoordinates(std::vector<Coordinate> &coordinates){
     for (unsigned i=0; i < coordinates.size(); i++) {

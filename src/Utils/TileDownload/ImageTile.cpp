@@ -1,4 +1,4 @@
-#include "ImageTile.hpp"
+#include <Utils/TileDownload/ImageTile.hpp>
 
 ImageTile::ImageTile(const QMap<QString, MetaImage> layers, int zoomLevel, int tileX,
 					 int tileY) {

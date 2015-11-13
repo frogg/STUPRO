@@ -1,12 +1,13 @@
 #ifndef __vtkPVStuproView_h
 #define __vtkPVStuproView_h
 
-#include "vtkPVRenderView.h"
-#include "vtkSmartPointer.h"
-
-#include "Globe.hpp"
-
+#include <vtkPVRenderView.h>
+#include <vtkSetGet.h>
+#include <vtkWin32Header.h>
+#include <iostream>
 #include <memory>
+
+class Globe;
 
 class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView
 {

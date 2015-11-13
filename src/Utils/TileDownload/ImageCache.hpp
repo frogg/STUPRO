@@ -1,9 +1,10 @@
 #ifndef KRONOS_IMAGECACHE_HPP
 #define KRONOS_IMAGECACHE_HPP
 
-#include "MetaImage.hpp"
-
-#include <QString>
+#include <qstring.h>
+#include <Utils/TileDownload/MetaImage.hpp>
+#include <exception>
+#include <string>
 
 struct ImageNotCachedException : public std::exception
 {

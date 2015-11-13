@@ -1,9 +1,10 @@
 #ifndef KRONOS_TEST_TESTIMAGEDOWNLOADWORKER_HPP
 #define KRONOS_TEST_TESTIMAGEDOWNLOADWORKER_HPP
 
+#include <cppunit/extensions/AutoRegisterSuite.h>
 #include <cppunit/extensions/HelperMacros.h>
-
-#include <ImageDownloadWorker.hpp>
+#include <cppunit/extensions/TestNamer.h>
+#include <cppunit/TestCaller.h>
 
 class TestImageDownloadWorker : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(TestImageDownloadWorker);

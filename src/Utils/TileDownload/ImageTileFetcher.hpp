@@ -1,13 +1,16 @@
 #ifndef KRONOS_IMAGETILEFETCHER_HPP
 #define KRONOS_IMAGETILEFETCHER_HPP
 
-#include "ImageDownloader.hpp"
-
+#include <qlist.h>
+#include <qmap.h>
+#include <qrunnable.h>
+#include <qstring.h>
+#include <Utils/TileDownload/ImageDownloader.hpp>
+#include <Utils/TileDownload/ImageLayerDescription.hpp>
 #include <exception>
-#include <QList>
-#include <QNetworkAccessManager>
-#include <QRunnable>
-#include <QString>
+#include <string>
+
+class QUrl;
 
 
 struct InvalidTileLocationException : public std::exception { };

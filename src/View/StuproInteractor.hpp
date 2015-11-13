@@ -1,8 +1,11 @@
 #ifndef STUPRO_STUPROINTERACTOR_HPP
 #define STUPRO_STUPROINTERACTOR_HPP
 
+#include <stddef.h>
 #include <vtkInteractorStyleTerrain.h>
-#include "vtkPVStuproView.h"
+#include <vtkSetGet.h>
+
+class vtkPVStuproView;
 
 class StuproInteractor : public vtkInteractorStyleTerrain
 {

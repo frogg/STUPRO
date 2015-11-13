@@ -1,15 +1,18 @@
 #ifndef KRONOS_IMAGEDOWNLOADWORKER_HPP
 #define KRONOS_IMAGEDOWNLOADWORKER_HPP
 
-#include "MetaImage.hpp"
-
+#include <qbytearray.h>
+#include <qnetworkaccessmanager.h>
+#include <qnetworkreply.h>
+#include <qnetworkrequest.h>
+#include <qstring.h>
+#include <qurl.h>
+#include <qvariant.h>
+#include <Utils/TileDownload/MetaImage.hpp>
 #include <exception>
 #include <future>
-#include <QByteArray>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QObject>
-#include <QUrl>
+#include <string>
+#include <thread>
 
 
 struct DownloadFailedException : public std::exception { };

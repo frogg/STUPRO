@@ -1,17 +1,13 @@
 #ifndef KRONOS_IMAGEDOWNLOADER_HPP
 #define KRONOS_IMAGEDOWNLOADER_HPP
 
-#include "ImageTile.hpp"
-#include "ImageLayerDescription.hpp"
-#include "MetaImage.hpp"
-
+#include <qlist.h>
+#include <qmap.h>
+#include <qstring.h>
+#include <qthreadpool.h>
+#include <Utils/TileDownload/ImageLayerDescription.hpp>
+#include <Utils/TileDownload/ImageTile.hpp>
 #include <functional>
-#include <QByteArray>
-#include <QList>
-#include <QMap>
-#include <QString>
-#include <QThreadPool>
-#include <QUrl>
 
 
 class ImageDownloader {

@@ -1,6 +1,6 @@
 #include "FileFunctions.hpp"
-
 #include <fstream>
+#include <string>
 
 std::string readFile(std::string filename)
 {

@@ -1,9 +1,11 @@
 #include "TestConfigUtil.hpp"
 
-#include <ImageLayerDescription.hpp>
-#include <QDebug>
-#include <QString>
-#include <QMap>
+#include <cppunit/TestAssert.h>
+#include <qmap.h>
+#include <qstring.h>
+#include <Utils/TileDownload/ConfigUtil.hpp>
+#include <Utils/TileDownload/ImageLayerDescription.hpp>
+#include <string>
 
 void TestConfigUtil::testLoadConfig() {
 	QMap<QString, ImageLayerDescription> layers;

@@ -1,7 +1,8 @@
 #ifndef STUPRO_RECT_HPP
 #define STUPRO_RECT_HPP
 
-#include "Vector2.hpp"
+#include <Utils/Math/Vector2.hpp>
+#include <limits>
 
 template<typename T>
 class Rect

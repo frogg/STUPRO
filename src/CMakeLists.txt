@@ -27,8 +27,8 @@ set(ParaView_SOURCE_FILES
 
 # all other Kronos source files
 file(GLOB StuproView_SOURCE_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/*/*.hpp"
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/libs)
@@ -36,7 +36,7 @@ include_directories(${CMAKE_SOURCE_DIR}/libs)
 # directories to include (important for auto-generated code)
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/StuproView/
+	${CMAKE_CURRENT_SOURCE_DIR}/View/
 )
 
 # register a ParaView plugin
@@ -46,9 +46,9 @@ add_paraview_plugin(
 	REQUIRED_ON_SERVER
 	REQUIRED_ON_CLIENT
 	SERVER_MANAGER_SOURCES
-		StuproView/vtkPVStuproView.cxx
+		View/vtkPVStuproView.cxx
 	SERVER_MANAGER_XML
-		StuproView/StuproView.xml
+		View/StuproView.xml
 	SOURCES
 		${StuproView_SOURCE_FILES}
 )

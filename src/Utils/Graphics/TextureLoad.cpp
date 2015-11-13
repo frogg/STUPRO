@@ -5,14 +5,15 @@
  *      Author: bbq
  */
 
-#include "TextureLoad.hpp"
-
-#include <vtkAlgorithm.h>
+#include <qimage.h>
+#include <qrgb.h>
 #include <vtkImageData.h>
 #include <vtkOpenGLTexture.h>
 #include <vtkSmartPointer.h>
+#include <vtkType.h>
+#include "TextureLoad.hpp"
+#include <stdexcept>
 #include <string>
-#include <cassert>
 
 vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QImage& alpha)
 {

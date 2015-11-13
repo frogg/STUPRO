@@ -1,15 +1,15 @@
-#include "StuproInteractor.hpp"
-#include "vtkRenderWindowInteractor.h"
-#include "vtkCallbackCommand.h"
+#include <StuproInteractor.hpp>
+#include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
+#include <vtkInteractorStyle.h>
+#include <vtkMath.h>
+#include <vtkObjectFactory.h>
+#include <vtkPVStuproView.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <vtkSphereSource.h>
-#include <vtkSmartPointer.h>
-#include <string.h>
-#include <vtkMath.h>
-
-#include <vtkObjectFactory.h>
+#include <vtkRenderWindowInteractor.h>
+#include <cmath>
+#include <cstdlib>
 
 vtkStandardNewMacro(StuproInteractor);
 

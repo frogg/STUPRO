@@ -1,7 +1,7 @@
 #ifndef KRONOS_METAIMAGE_HPP
 #define KRONOS_METAIMAGE_HPP
 
-#include <QImage>
+#include <qimage.h>
 
 class MetaImage {
 public:

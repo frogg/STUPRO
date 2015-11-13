@@ -1,5 +1,8 @@
-#include "GlobeTile.hpp"
-
+#include <Globe/GlobeTile.hpp>
+#include <Utils/Graphics/TextureLoad.hpp>
+#include <Utils/Math/Functions.hpp>
+#include <Utils/Math/Vector2.hpp>
+#include <Utils/Misc/FileFunctions.hpp>
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
 #include <vtkProperty.h>
@@ -8,10 +11,6 @@
 #include <vtkShaderProgram2.h>
 #include <vtkUniformVariables.h>
 #include <string>
-
-#include "TextureLoad.hpp"
-#include "Utils.hpp"
-#include "Vector2.hpp"
 
 GlobeTile::Location GlobeTile::Location::getNormalized() const
 {

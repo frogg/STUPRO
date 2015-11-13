@@ -1,18 +1,18 @@
-#include "vtkPVStuproView.h"
-
-#include <vtkObjectFactory.h>
+#include <Globe/Globe.hpp>
+#include <StuproInteractor.hpp>
+#include <Utils/Misc/MakeUnique.hpp>
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
+#include <vtkIndent.h>
 #include <vtkInteractorStyle.h>
+#include <vtkObjectFactory.h>
+#include <vtkPVStuproView.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkWindow.h>
+#include <vtkSmartPointer.h>
 #include <cmath>
-
-#include "MakeUnique.hpp"
-#include "StuproInteractor.hpp"
 
 vtkStandardNewMacro(vtkPVStuproView);
 //----------------------------------------------------------------------------

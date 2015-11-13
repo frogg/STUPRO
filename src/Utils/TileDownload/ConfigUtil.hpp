@@ -1,12 +1,11 @@
 #ifndef KRONOS_CONFIGUTIL_HPP
 #define KRONOS_CONFIGUTIL_HPP
 
-#include <QString>
-#include <QMap>
-
+#include <qmap.h>
+#include <qstring.h>
+#include <Utils/TileDownload/ImageLayerDescription.hpp>
 #include <exception>
-
-#include "ImageLayerDescription.hpp"
+#include <string>
 
 struct FileOpenException : public std::exception
 {

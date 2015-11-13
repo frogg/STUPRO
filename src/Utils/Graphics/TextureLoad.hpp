@@ -10,8 +10,8 @@
 
 #include <vtkOpenGLTexture.h>
 #include <vtkSmartPointer.h>
-#include <string>
-#include <QImage>
+
+class QImage;
 
 vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QImage& alpha);
 

@@ -1,7 +1,9 @@
 #ifndef __StuproWindow_h 
 #define __StuproWindow_h
 
-#include <QMainWindow>
+#include <qmainwindow.h>
+#include <qobjectdefs.h>
+#include <qstring.h>
 
 /// MainWindow for the default ParaView application.
 class StuproWindow : public QMainWindow

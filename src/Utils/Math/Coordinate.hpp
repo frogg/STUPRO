@@ -8,7 +8,7 @@
 
 #ifndef Coordinate_hpp
 #define Coordinate_hpp
-#include <string>
+
 #include <vector>
 
 class Coordinate

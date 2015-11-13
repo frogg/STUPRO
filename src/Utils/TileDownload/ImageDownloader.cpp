@@ -1,7 +1,6 @@
-#include "ImageDownloader.hpp"
-
-#include "ConfigUtil.hpp"
-#include "ImageTileFetcher.hpp"
+#include <Utils/TileDownload/ConfigUtil.hpp>
+#include <Utils/TileDownload/ImageDownloader.hpp>
+#include <Utils/TileDownload/ImageTileFetcher.hpp>
 
 ImageDownloader::ImageDownloader(TileFetchedCb tileFetchedCb) {
 	this->tileFetchedCb = tileFetchedCb;

@@ -1,7 +1,9 @@
-#include "ImageTileFetcher.hpp"
+#include <Utils/TileDownload/ImageTileFetcher.hpp>
 
-#include "ImageCache.hpp"
-#include "ImageDownloadWorker.hpp"
+#include <Utils/TileDownload/ImageCache.hpp>
+#include <Utils/TileDownload/ImageDownloadWorker.hpp>
+
+#include <qurl.h>
 
 ImageTileFetcher::ImageTileFetcher(QMap<QString, ImageLayerDescription> availableLayers,
 								   QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY,

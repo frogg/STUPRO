@@ -1,13 +1,10 @@
-#include "ConfigUtil.hpp"
-
-#include <QFile>
-#include <QFileInfo>
-#include <QIODevice>
-#include <QStringList>
-#include <QRegExp>
-#include <QTextStream>
-
-#include <iostream>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qiodevice.h>
+#include <qlist.h>
+#include <qstringlist.h>
+#include <qtextstream.h>
+#include <Utils/TileDownload/ConfigUtil.hpp>
 
 const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QString &file) {
 	QMap<QString, ImageLayerDescription> layers;

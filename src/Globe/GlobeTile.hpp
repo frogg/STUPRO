@@ -1,14 +1,12 @@
 #ifndef STUPRO_GLOBETILE_HPP
 #define STUPRO_GLOBETILE_HPP
 
+#include <Globe/Globe.hpp>
+#include <Utils/Math/Rect.hpp>
 #include <vtkActor.h>
 #include <vtkShader2.h>
 #include <vtkSmartPointer.h>
 #include <vtkTexture.h>
-#include <QImage>
-
-#include "Globe.hpp"
-#include "Rect.hpp"
 
 class Globe;
 
