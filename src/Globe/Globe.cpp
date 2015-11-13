@@ -28,6 +28,31 @@ Globe::Globe(vtkRenderer & renderer) :
 	myPlaneSource->SetOrigin(getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
 	myPlaneSource->SetPoint1(-getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
 	myPlaneSource->SetPoint2(getPlaneSize() / 2.f, getPlaneSize() / 2.f, 0.f);
+    
+    // create an additional plane and sphere to evaluate the tiles that are visible
+    
+    vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
+    sphereSource->SetRadius(myGlobeRadius);
+    sphereSource->SetThetaResolution(100);
+    sphereSource->SetPhiResolution(100);
+    sphereSource->Update();
+    
+    // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
+    mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
+    mySphereTree->SetDataSet(sphereSource->GetOutput());
+    mySphereTree->BuildLocator();
+    
+    // an artificial Plane to calculate raycasting coordinates
+    vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
+    planeSource->SetOrigin(-2, -1, 0);
+    planeSource->SetPoint1(2, -1, 0);
+    planeSource->SetPoint2(-2, 1, 0);
+    planeSource->Update();
+    
+    myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
+    myPlaneTree->SetDataSet(planeSource->GetOutput());
+    myPlaneTree->BuildLocator();
+    
 
 	setResolution(Vector2u(128, 128));
 
@@ -187,8 +212,7 @@ void Globe::cutPlanes(double planes[3][4], double cut[3])
 	}
 }
 
-void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[3],
-		vtkSmartPointer<vtkOBBTree> tree, double intersection[3])
+void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[3], double intersection[3])
 {
 
 	double planes[3][4];
@@ -203,7 +227,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 	cutPlanes(planes, intersectionOfPlanes);
 
 	vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
-	tree->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
+	this->getOOBTree()->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
 
 	if (intersectPoint->GetNumberOfPoints() > 0)
 	{
@@ -218,8 +242,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 	}
 }
 
-std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double cameraPosition[],
-		vtkSmartPointer<vtkOBBTree> tree)
+std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double cameraPosition[])
 {
 	// left, right, bottom, top, near, far
 	double planeArray[6][4];
@@ -230,13 +253,14 @@ std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double camer
 			planeArray[i][j] = planes[4 * i + j];
 		}
 	}
+    
 
 	std::vector<Vector3d> worldIntersectionPoints;
 	for (int j = 0; j < 4; j++)
 	{
 		Vector3d intersection;
 
-		getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition, tree,
+		getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition,
 			intersection.array());
 		worldIntersectionPoints.push_back(intersection);
 	}
@@ -266,15 +290,26 @@ std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<Vector3d> worldPo
 	return globeCoordinates;
 }
 
-Coordinate Globe::getCenterGlobeCoordinate(vtkSmartPointer<vtkOBBTree> tree, double cameraPosition[],
+Coordinate Globe::getCenterGlobeCoordinate(double cameraPosition[],
 		double globeRadius)
 {
 	double globeOrigin[3] =
 	{ 0, 0, 0 };
 
 	vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
-	tree->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
+	this->getOOBTree() ->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
 	Vector3d centerPoint;
 	intersectPoints->GetPoint(0, centerPoint.array());
 	return Coordinate::getCoordinatesFromGlobePoint(centerPoint.array(), globeRadius);
 }
+
+vtkSmartPointer<vtkOBBTree> Globe::getOOBTree(){
+    //Karte
+    if(this->getDisplayModeInterpolation() > 0.9){
+        return myPlaneTree;
+    }else{
+    //Globe
+        return mySphereTree;
+    }
+}
+
