@@ -1,10 +1,11 @@
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qiodevice.h>
-#include <qlist.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
 #include <Utils/TileDownload/ConfigUtil.hpp>
+
+#include <rapidjson/document.h>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
+
+using namespace rapidjson;
 
 const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QString &file) {
 	QMap<QString, ImageLayerDescription> layers;
@@ -23,8 +24,18 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 	}
 
 	QTextStream in(&configFile);
+	QString configText = in.readAll();
+	configFile.close();
 
-	while (!in.atEnd()) {
+	Document configDocument;
+	configDocument.Parse(configText.toStdString().c_str());
+
+	for (Value::ConstMemberIterator layerIterator = configDocument.MemberBegin();
+	    layerIterator != configDocument.MemberEnd(); ++layerIterator) {
+	    printf("Found member %s with mime type %s\n", layerIterator->name.GetString(), layerIterator->value["baseUrl"].GetString());
+	}
+
+	/*while (!in.atEnd()) {
 		QString line = in.readLine();
 		QStringList fields = line.split(' ');
 
@@ -42,5 +53,5 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 
 	configFile.close();
 
-	return layers;
+	return layers;*/
 }

@@ -11,12 +11,14 @@ void TestConfigUtil::testLoadConfig() {
 	QMap<QString, ImageLayerDescription> layers;
 
 	try {
-		layers = ConfigUtil::loadConfigFile("./res/layers.cfg");
+		layers = ConfigUtil::loadConfigFile("./res/layers.json");
 	} catch (FileOpenException e) {
 		CPPUNIT_FAIL(e.what());
 	}
 
-	CPPUNIT_ASSERT_EQUAL(2, layers.size());
+	CPPUNIT_ASSERT_EQUAL(1, 2);
+
+	/*CPPUNIT_ASSERT_EQUAL(2, layers.size());
 
 	ImageLayerDescription satelliteImagery = layers.value("satellite-imagery");
 	CPPUNIT_ASSERT_EQUAL(
@@ -32,5 +34,5 @@ ImageLayerDescription heightmap = layers.value("heightmap");
 		heightmap.baseUrl.toStdString()
 	);
 	CPPUNIT_ASSERT_EQUAL(std::string("application/bil16"), heightmap.format.toStdString());
-	CPPUNIT_ASSERT_EQUAL(512, heightmap.tileSize);
+	CPPUNIT_ASSERT_EQUAL(512, heightmap.tileSize);*/
 }
