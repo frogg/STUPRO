@@ -66,3 +66,4 @@ Qt4        | [Lesser General Public License Version 2.1](http://www.gnu.org/lice
 CppUnit    | [Lesser General Public License Version 3](http://www.gnu.org/copyleft/lesser.html)
 ParaView   | [ParaView License Version 1.2](https://github.com/Kitware/ParaView/blob/master/License_v1.2.txt)
 Eigen      | [Mozilla Public License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/)
+rapidjson  | [MIT License](https://github.com/miloyip/rapidjson/blob/v1.0.2/license.txt)
