@@ -1,9 +1,13 @@
 #include <Utils/TileDownload/ConfigUtil.hpp>
 
 #include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
 #include <QFile>
+#include <QList>
 #include <QFileInfo>
 #include <QTextStream>
+
+#include <iostream>
 
 using namespace rapidjson;
 
@@ -30,28 +34,33 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 	Document configDocument;
 	configDocument.Parse(configText.toStdString().c_str());
 
+	if (configDocument.HasParseError()) {
+		throw FileOpenException("The specified config file at '" + configFileInfo.absoluteFilePath() + "'"
+														" could not be parsed: " + GetParseError_En(configDocument.GetParseError()));
+	}
+
 	for (Value::ConstMemberIterator layerIterator = configDocument.MemberBegin();
 	    layerIterator != configDocument.MemberEnd(); ++layerIterator) {
-	    printf("Found member %s with zoom levels %s\n", layerIterator->name.GetString(), layerIterator->value["zoomLevels"].MemberBegin()->name.GetString());
-	}
+		QList<LayerStep> layerSteps;
 
-	/*while (!in.atEnd()) {
-		QString line = in.readLine();
-		QStringList fields = line.split(' ');
-
-		if (fields.size() > 0) {
-			if (fields.size() < 4 || fields.at(0).startsWith('#')) {
-				continue;
-			}
-		} else {
-			continue;
+		const Value &zoomLevels = layerIterator->value["zoomLevels"];
+		for (SizeType i = 0; i < zoomLevels.Size(); i++) {
+			LayerStep layerStep = {
+				zoomLevels[i]["minimalZoomLevel"].GetInt(),
+				zoomLevels[i]["layers"].GetString()
+			};
+			layerSteps.append(layerStep);
 		}
 
-		ImageLayerDescription description = {fields.at(1), fields.at(2), fields.at(3).toInt()};
-		layers.insert(fields.at(0), description);
+		ImageLayerDescription layerDescription(
+			layerIterator->value["baseUrl"].GetString(),
+			layerIterator->value["mimeType"].GetString(),
+			layerIterator->value["tileSize"].GetInt(),
+			layerSteps
+		);
+
+		layers.insert(layerIterator->name.GetString(), layerDescription);
 	}
 
-	configFile.close();
-
-	return layers;*/
+	return layers;
 }

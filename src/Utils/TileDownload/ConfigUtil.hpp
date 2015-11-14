@@ -7,14 +7,22 @@
 #include <exception>
 #include <string>
 
-struct FileOpenException : public std::exception
-{
+struct FileOpenException : public std::exception {
 	QString message;
 
 	FileOpenException(QString message) : message(message) { }
 
-  const char * what () const throw ()
-  {
+  const char * what () const throw () {
+    return message.toStdString().c_str();
+  }
+};
+
+struct JsonParseException : public std::exception {
+	QString message;
+
+	JsonParseException(QString message) : message(message) { }
+
+  const char * what () const throw () {
     return message.toStdString().c_str();
   }
 };
