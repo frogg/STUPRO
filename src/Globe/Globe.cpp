@@ -13,6 +13,8 @@
 #include <vtkAlgorithm.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
+#include <vtkSphereSource.h>
+#include <View/vtkPVStuproView.h>
 #include <Globe/GlobeTile.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Eigen-v3.2.6/Dense>
@@ -28,31 +30,33 @@ Globe::Globe(vtkRenderer & renderer) :
 	myPlaneSource->SetOrigin(getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
 	myPlaneSource->SetPoint1(-getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
 	myPlaneSource->SetPoint2(getPlaneSize() / 2.f, getPlaneSize() / 2.f, 0.f);
-    
+
     // create an additional plane and sphere to evaluate the tiles that are visible
-    
+
     vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
-    sphereSource->SetRadius(myGlobeRadius);
+		// TODO: Fix scope!
+    // sphereSource->SetRadius(myGlobeRadius);
+		sphereSource->SetRadius(0.5f);
     sphereSource->SetThetaResolution(100);
     sphereSource->SetPhiResolution(100);
     sphereSource->Update();
-    
+
     // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
     mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
     mySphereTree->SetDataSet(sphereSource->GetOutput());
     mySphereTree->BuildLocator();
-    
+
     // an artificial Plane to calculate raycasting coordinates
     vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
     planeSource->SetOrigin(-2, -1, 0);
     planeSource->SetPoint1(2, -1, 0);
     planeSource->SetPoint2(-2, 1, 0);
     planeSource->Update();
-    
+
     myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
     myPlaneTree->SetDataSet(planeSource->GetOutput());
     myPlaneTree->BuildLocator();
-    
+
 
 	setResolution(Vector2u(128, 128));
 
@@ -253,7 +257,7 @@ std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double camer
 			planeArray[i][j] = planes[4 * i + j];
 		}
 	}
-    
+
 
 	std::vector<Vector3d> worldIntersectionPoints;
 	for (int j = 0; j < 4; j++)
@@ -312,4 +316,3 @@ vtkSmartPointer<vtkOBBTree> Globe::getOOBTree(){
         return mySphereTree;
     }
 }
-
