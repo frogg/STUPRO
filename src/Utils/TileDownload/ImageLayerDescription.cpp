@@ -21,6 +21,8 @@ QString ImageLayerDescription::buildTileUrl(int zoomLevel, int tileX, int tileY)
     return this->getBaseUrl()
         + "&layers=" + step.layers
         + "&format=" + this->getMimeType()
+        + "&width=" + QString::number(this->getTileSize())
+        + "&height=" + QString::number(this->getTileSize())
         + "&bbox=" + this->calculateBoundingBox(zoomLevel, tileX, tileY);
 }
 
