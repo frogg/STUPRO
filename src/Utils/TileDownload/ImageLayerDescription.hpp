@@ -88,6 +88,18 @@ public:
     static QString calculateBoundingBox(int zoomLevel, int tileX, int tileY);
 
     /**
+     * Calculates the x and y position of the tile at the given coordinates with the given zoom
+     * level.
+     *
+     * @param latitude  the latitude part of the coordinate
+     * @param longitude the longitude part of the coordinate
+     * @param zoomLevel the desired zoomLevel
+     * @param tileX     will contain the x position of the tile
+     * @param tileY     will contain the y position of the tile
+     */
+    static void getTilePositionFromCoordinates(double latitude, double longitude, int zoomLevel, int &tileX, int &tileY);
+
+    /**
      * Checks if the given tile location is valid for the underlying quad-tree.
      *
      * @param zoomLevel how deep to dive into the quad-tree
@@ -125,6 +137,26 @@ private:
     QString mimeType;
     int tileSize;
     QList<LayerStep> layerSteps;
+
+    /**
+     * Calculates the number of tiles on the horizontal axis at the given zoomLevel.
+     */
+    static int getHorizontalTilesAtZoomLevel(int zoomLevel);
+
+    /**
+     * Calculates the number of tiles on the vertical axis at the given zoomLevel.
+     */
+    static int getVerticalTilesAtZoomLevel(int zoomLevel);
+
+    /**
+     * Calculates the width of tiles at the given zoomLevel.
+     */
+    static double getTileWidthAtZoomLevel(int zoomLevel);
+
+    /**
+     * Calculates the height of tiles at the given zoomLevel.
+     */
+    static double getTileHeightAtZoomLevel(int zoomLevel);
 };
 
 #endif

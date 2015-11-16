@@ -27,16 +27,13 @@ QString ImageLayerDescription::buildTileUrl(int zoomLevel, int tileX, int tileY)
 }
 
 QString ImageLayerDescription::calculateBoundingBox(int zoomLevel, int tileX, int tileY) {
-	int horizontalTilesAtZoomLevel = WIDTH_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL);
-	int verticalTilesAtZoomLevel = HEIGHT_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL);
+	double tileWidth = getTileWidthAtZoomLevel(zoomLevel);
+	double tileHeight = getTileHeightAtZoomLevel(zoomLevel);
 
-	float tileWidthAtZoomLevel = 360.0 / (float)horizontalTilesAtZoomLevel;
-	float tileHeightAtZoomLevel = 180.0 / (float)verticalTilesAtZoomLevel;
-
-	float latMin = 90.0 - (tileHeightAtZoomLevel * (tileY + 1));
-	float latMax = 90.0 - (tileHeightAtZoomLevel * tileY);
-	float longMin = (tileWidthAtZoomLevel * tileX) - 180.0;
-	float longMax = (tileWidthAtZoomLevel * (tileX + 1)) - 180.0;
+	double latMin = 90.0 - (tileHeight * (tileY + 1));
+	double latMax = 90.0 - (tileHeight * tileY);
+	double longMin = (tileWidth * tileX) - 180.0;
+	double longMax = (tileWidth * (tileX + 1)) - 180.0;
 
 	QString ret("%1,%3,%2,%4");
 	ret = ret.arg(QString::number(longMin), QString::number(longMax));
@@ -44,6 +41,16 @@ QString ImageLayerDescription::calculateBoundingBox(int zoomLevel, int tileX, in
 
 	return ret;
 }
+
+void ImageLayerDescription::getTilePositionFromCoordinates(double latitude, double longitude, int zoomLevel,
+        int &tileX, int &tileY) {
+    double tileWidth = getTileWidthAtZoomLevel(zoomLevel);
+    double tileHeight = getTileHeightAtZoomLevel(zoomLevel);
+
+    tileX = (int)((180.0 + longitude) / tileWidth);
+    tileY = (int)((90.0 - latitude) / tileHeight);
+}
+
 
 void ImageLayerDescription::validateTileLocation(int zoomLevel, int tileX, int tileY) {
 	// check zoom level range
@@ -73,4 +80,20 @@ int ImageLayerDescription::getTileSize() const {
 
 QList<LayerStep> ImageLayerDescription::getLayerSteps() const {
     return this->layerSteps;
+}
+
+int ImageLayerDescription::getHorizontalTilesAtZoomLevel(int zoomLevel) {
+    return WIDTH_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL);
+}
+
+int ImageLayerDescription::getVerticalTilesAtZoomLevel(int zoomLevel) {
+    return HEIGHT_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL);
+}
+
+double ImageLayerDescription::getTileWidthAtZoomLevel(int zoomLevel) {
+    return 360.0 / (double)getHorizontalTilesAtZoomLevel(zoomLevel);
+}
+
+double ImageLayerDescription::getTileHeightAtZoomLevel(int zoomLevel) {
+    return 180.0 / (double)getVerticalTilesAtZoomLevel(zoomLevel);
 }
