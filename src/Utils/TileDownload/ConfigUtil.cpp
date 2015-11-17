@@ -1,10 +1,15 @@
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qiodevice.h>
-#include <qlist.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
 #include <Utils/TileDownload/ConfigUtil.hpp>
+
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
+#include <QFile>
+#include <QList>
+#include <QFileInfo>
+#include <QTextStream>
+
+#include <iostream>
+
+using namespace rapidjson;
 
 const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QString &file) {
 	QMap<QString, ImageLayerDescription> layers;
@@ -23,24 +28,39 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 	}
 
 	QTextStream in(&configFile);
+	QString configText = in.readAll();
+	configFile.close();
 
-	while (!in.atEnd()) {
-		QString line = in.readLine();
-		QStringList fields = line.split(' ');
+	Document configDocument;
+	configDocument.Parse(configText.toStdString().c_str());
 
-		if (fields.size() > 0) {
-			if (fields.size() < 4 || fields.at(0).startsWith('#')) {
-				continue;
-			}
-		} else {
-			continue;
-		}
-
-		ImageLayerDescription description = {fields.at(1), fields.at(2), fields.at(3).toInt()};
-		layers.insert(fields.at(0), description);
+	if (configDocument.HasParseError()) {
+		throw FileOpenException("The specified config file at '" + configFileInfo.absoluteFilePath() + "'"
+														" could not be parsed: " + GetParseError_En(configDocument.GetParseError()));
 	}
 
-	configFile.close();
+	for (Value::ConstMemberIterator layerIterator = configDocument.MemberBegin();
+	    layerIterator != configDocument.MemberEnd(); ++layerIterator) {
+		QList<LayerStep> layerSteps;
+
+		const Value &zoomLevels = layerIterator->value["zoomLevels"];
+		for (SizeType i = 0; i < zoomLevels.Size(); i++) {
+			LayerStep layerStep = {
+				zoomLevels[i]["minimalZoomLevel"].GetInt(),
+				zoomLevels[i]["layers"].GetString()
+			};
+			layerSteps.append(layerStep);
+		}
+
+		ImageLayerDescription layerDescription(
+			layerIterator->value["baseUrl"].GetString(),
+			layerIterator->value["mimeType"].GetString(),
+			layerIterator->value["tileSize"].GetInt(),
+			layerSteps
+		);
+
+		layers.insert(layerIterator->name.GetString(), layerDescription);
+	}
 
 	return layers;
 }

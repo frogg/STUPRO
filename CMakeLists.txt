@@ -20,6 +20,6 @@ foreach(test ${testClasses})
   add_test(
     NAME ${testName}
     COMMAND UnitTester ${testName}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test
   )
 endforeach()

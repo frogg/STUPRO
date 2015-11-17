@@ -58,3 +58,6 @@ elseif(${KRONOS_QT_VERSION} EQUAL 5)
         Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets
     )
 endif()
+
+# copy over test resource folder
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

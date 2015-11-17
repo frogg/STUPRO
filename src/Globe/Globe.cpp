@@ -174,7 +174,7 @@ void Globe::onTileLoad(ImageTile tile)
 
 	GlobeTile & globeTile = *myTiles[getTileIndex(tile.getTileX(), tile.getTileY())];
 
-	auto rgbIterator = tile.getLayers().find("satellite-imagery");
+	auto rgbIterator = tile.getLayers().find("satelliteImagery");
 	auto heightmapIterator = tile.getLayers().find("heightmap");
 
 	if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end())

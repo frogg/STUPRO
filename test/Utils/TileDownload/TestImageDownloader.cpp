@@ -19,7 +19,7 @@ void TestImageDownloader::testGetAvailableLayers() {
 
 		QList<QString> availableLayers = downloader.getAvailableLayers();
 
-		CPPUNIT_ASSERT(availableLayers.contains("satellite-imagery"));
+		CPPUNIT_ASSERT(availableLayers.contains("satelliteImagery"));
 		CPPUNIT_ASSERT(availableLayers.contains("heightmap"));
 	});
 }
