@@ -3,6 +3,12 @@
 
 #include <qimage.h>
 
+/**
+ * An object of the type MetaImage wraps the actual image data a layer in
+ * a specific tile offers as a QImage with potential meta data describing
+ * that image, such as for example the minimum and maximum height of a
+ * heightmap.
+ */
 class MetaImage {
 public:
   /**
