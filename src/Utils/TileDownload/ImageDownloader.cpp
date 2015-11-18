@@ -11,18 +11,17 @@ ImageDownloader::ImageDownloader(OnTileFetched onTileFetched,
 
 ImageDownloader::~ImageDownloader() { }
 
-void ImageDownloader::getTile(int zoomLevel, int tileX, int tileY) {
-	this->getTile(this->getAvailableLayers(), zoomLevel, tileX, tileY);
+void ImageDownloader::fetchTile(int zoomLevel, int tileX, int tileY) {
+	this->fetchTile(this->getAvailableLayers(), zoomLevel, tileX, tileY);
 }
 
-void ImageDownloader::getTile(const QString layer, int zoomLevel, int tileX, int tileY) {
+void ImageDownloader::fetchTile(const QString layer, int zoomLevel, int tileX, int tileY) {
 	QList<QString> layers;
 	layers.append(layer);
-	this->getTile(layers, zoomLevel, tileX, tileY);
+	this->fetchTile(layers, zoomLevel, tileX, tileY);
 }
 
-void ImageDownloader::getTile(const QList<QString> layers, int zoomLevel,
-							  int tileX, int tileY) {
+void ImageDownloader::fetchTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY) {
 	ImageTileFetcher *fetcher = new ImageTileFetcher(this->getAvailableLayerDescriptions(), layers,
 			zoomLevel, tileX, tileY, this->onTileFetched);
 	this->fetchThreadPool.start(fetcher);

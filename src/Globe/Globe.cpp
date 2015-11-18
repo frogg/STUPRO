@@ -137,7 +137,7 @@ void Globe::createTiles()
 		{
 			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this, GlobeTile::Location(myZoomLevel, lon, lat));
 
-			myDownloader.getTile(myZoomLevel, lon, lat);
+			myDownloader.fetchTile(myZoomLevel, lon, lat);
 		}
 	}
 }

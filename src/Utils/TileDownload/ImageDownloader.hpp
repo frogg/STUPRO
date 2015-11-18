@@ -43,7 +43,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(int zoomLevel, int tileX, int tileY);
+	void fetchTile(int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Fetches the image of the given layer at the given location.
@@ -55,7 +55,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(const QString layer, int zoomLevel, int tileX, const int tileY);
+	void fetchTile(const QString layer, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Fetches the images of the given layers at the given location.
@@ -67,7 +67,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY);
+	void fetchTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Returns a list of available image layers.
