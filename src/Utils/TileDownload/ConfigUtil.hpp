@@ -8,23 +8,23 @@
 #include <string>
 
 struct FileOpenException : public std::exception {
-	QString message;
+	std::string reason;
 
-	FileOpenException(QString message) : message(message) { }
+	FileOpenException(QString message) : reason(message.toStdString()) { }
 
-  const char * what () const throw () {
-    return message.toStdString().c_str();
-  }
+	const char *what() const noexcept override {
+		return reason.c_str();
+	}
 };
 
 struct JsonParseException : public std::exception {
-	QString message;
+	std::string reason;
 
-	JsonParseException(QString message) : message(message) { }
+	JsonParseException(QString message) : reason(message.toStdString()) { }
 
-  const char * what () const throw () {
-    return message.toStdString().c_str();
-  }
+	const char *what() const noexcept override {
+		return reason.c_str();
+	}
 };
 
 class ConfigUtil {
