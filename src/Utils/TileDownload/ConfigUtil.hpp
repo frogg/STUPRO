@@ -42,6 +42,15 @@ public:
   static const QMap<QString, ImageLayerDescription> loadConfigFile(const QString &file);
 
 private:
+	/*
+	 * Hide some things that should not be accessed because this class only offers
+	 * functionality using static methods. Therefore actions treating this class
+	 * as initializable to objects should be prevented.
+	 */
+	ConfigUtil();
+	ConfigUtil(ConfigUtil const&) = delete;
+	void operator=(ConfigUtil const&) = delete;
+
 	/**
 	 * Error message used if the requested configuration file does not exist.
 	 */
