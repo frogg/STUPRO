@@ -11,6 +11,7 @@
 
 using namespace rapidjson;
 
+/* Initialize constant strings that contain potential exception messages */
 const QString ConfigUtil::FILE_DOES_NOT_EXIST_MESSAGE = QString("The specified config file"
 							" at '%1' could not be opened since it does not seem to exist.");
 const QString ConfigUtil::FILE_COULD_NOT_BE_OPENED_MESSAGE = QString("The specified config file"
