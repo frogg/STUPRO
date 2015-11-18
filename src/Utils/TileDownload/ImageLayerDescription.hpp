@@ -85,7 +85,7 @@ public:
      *
      * @returns a string representation of the lat-long bounding box
      */
-    static QString calculateBoundingBox(int zoomLevel, int tileX, int tileY);
+    static QString getBoundingBoxString(int zoomLevel, int tileX, int tileY);
 
     /**
      * Calculates the x and y position of the tile at the given coordinates with the given zoom

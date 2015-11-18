@@ -23,10 +23,10 @@ QString ImageLayerDescription::buildTileUrl(int zoomLevel, int tileX, int tileY)
         + "&format=" + this->getMimeType()
         + "&width=" + QString::number(this->getTileSize())
         + "&height=" + QString::number(this->getTileSize())
-        + "&bbox=" + this->calculateBoundingBox(zoomLevel, tileX, tileY);
+        + "&bbox=" + this->getBoundingBoxString(zoomLevel, tileX, tileY);
 }
 
-QString ImageLayerDescription::calculateBoundingBox(int zoomLevel, int tileX, int tileY) {
+QString ImageLayerDescription::getBoundingBoxString(int zoomLevel, int tileX, int tileY) {
 	double tileWidth = getTileWidthAtZoomLevel(zoomLevel);
 	double tileHeight = getTileHeightAtZoomLevel(zoomLevel);
 
