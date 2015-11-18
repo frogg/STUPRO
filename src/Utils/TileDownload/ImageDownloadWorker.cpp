@@ -6,8 +6,9 @@
 #include <QRegExp>
 
 ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageWidth,
-		int imageHeight) : layerName(layerName), url(url), imageWidth(imageWidth),
-	imageHeight(imageHeight) {
+		int imageHeight)
+		: layerName(layerName), url(url), imageWidth(imageWidth), imageHeight(imageHeight),
+		reply(NULL) {
 	this->startDownload();
 }
 
