@@ -30,7 +30,7 @@ void ImageTileFetcher::run() {
 	ImageCache &cache = ImageCache::getInstance();
 	QMap<QString, MetaImage> images2;
 	std::map<QString, MetaImage> images;
-	std::vector<ImageDownloadWorker *> workers;
+	std::vector<std::unique_ptr<ImageDownloadWorker>> workers;
 
 	for (auto const &layer : this->requestedLayers) {
 		if (cache.isImageCached(layer, this->zoomLevel, this->tileX, this->tileY)) {
@@ -43,16 +43,18 @@ void ImageTileFetcher::run() {
 			QUrl imageUrl = this->buildTileDownloadUrl(layer);
 			int tileSize = this->availableLayers[layer].getTileSize();
 			// not-so-nice pointers, but didn't get it to work otherwise :/
-			ImageDownloadWorker *worker = new ImageDownloadWorker(layer, imageUrl, tileSize, tileSize);
-			workers.push_back(worker);
+			workers.push_back(
+				std::unique_ptr<ImageDownloadWorker>(
+					new ImageDownloadWorker(layer, imageUrl, tileSize, tileSize)
+				)
+			);
 		}
 	}
 
-	for (auto *worker : workers) {
+	for (auto &worker : workers) {
 		MetaImage image = worker->getFuture().get();
 		images.insert(std::pair<QString, MetaImage>(worker->getLayerName(), image));
 		cache.cacheImage(image, worker->getLayerName(), this->zoomLevel, this->tileX, this->tileY);
-		delete worker;
 	}
 
 	ImageTile tile(QMap<QString, MetaImage>(images), this->zoomLevel, this->tileX, this->tileY);
