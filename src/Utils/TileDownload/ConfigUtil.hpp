@@ -7,6 +7,10 @@
 #include <exception>
 #include <string>
 
+/**
+ * Exception that will be thrown whenever a configuration file could not be
+ * opened.
+ */
 struct FileOpenException : public std::exception {
 	std::string reason;
 
