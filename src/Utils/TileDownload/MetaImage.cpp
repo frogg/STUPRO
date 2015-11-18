@@ -11,9 +11,7 @@ MetaImage::MetaImage(const QImage &image) {
 	this->maximumHeight = 0;
 }
 
-MetaImage::MetaImage() {
-	//throw std::invalid_argument("Missing parameters");
-}
+MetaImage::MetaImage() { }
 
 MetaImage::~MetaImage() { }
 
