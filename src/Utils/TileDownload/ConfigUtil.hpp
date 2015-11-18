@@ -40,6 +40,23 @@ public:
 	 * @throws FileOpenException If the config could not be opened
    */
   static const QMap<QString, ImageLayerDescription> loadConfigFile(const QString &file);
+
+private:
+	/**
+	 * Error message used if the requested configuration file does not exist.
+	 */
+	static const QString FILE_DOES_NOT_EXIST_MESSAGE;
+
+	/**
+	 * Error message used if the requested configuration file could not be opened.
+	 */
+	static const QString FILE_COULD_NOT_BE_OPENED_MESSAGE;
+
+	/**
+	 * Error message used if the JSON data the requested configuration file contains
+	 * could not be parsed.
+	 */
+	static const QString FILE_COULD_NOT_BE_PARSED_MESSAGE;
 };
 
 #endif
