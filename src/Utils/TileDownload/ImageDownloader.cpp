@@ -2,16 +2,12 @@
 #include <Utils/TileDownload/ImageDownloader.hpp>
 #include <Utils/TileDownload/ImageTileFetcher.hpp>
 
-ImageDownloader::ImageDownloader(TileFetchedCb tileFetchedCb) {
-	this->tileFetchedCb = tileFetchedCb;
-	this->imageLayers = ConfigUtil::loadConfigFile("./res/layers.json");
-}
+ImageDownloader::ImageDownloader(OnTileFetched onTileFetched)
+	: ImageDownloader(onTileFetched, ConfigUtil::loadConfigFile("./res/layers.json")) { }
 
-ImageDownloader::ImageDownloader(TileFetchedCb tileFetchedCb,
-								 QMap<QString, ImageLayerDescription> imageLayers) {
-	this->tileFetchedCb = tileFetchedCb;
-	this->imageLayers = imageLayers;
-}
+ImageDownloader::ImageDownloader(OnTileFetched onTileFetched,
+	QMap<QString, ImageLayerDescription> imageLayers)
+	: onTileFetched(onTileFetched), imageLayers(imageLayers) { }
 
 ImageDownloader::~ImageDownloader() { }
 
@@ -28,7 +24,7 @@ void ImageDownloader::getTile(const QString layer, int zoomLevel, int tileX, int
 void ImageDownloader::getTile(const QList<QString> layers, int zoomLevel,
 							  int tileX, int tileY) {
 	ImageTileFetcher *fetcher = new ImageTileFetcher(this->getAvailableLayerDescriptions(), layers,
-			zoomLevel, tileX, tileY, this->tileFetchedCb);
+			zoomLevel, tileX, tileY, this->onTileFetched);
 	this->fetchThreadPool.start(fetcher);
 }
 

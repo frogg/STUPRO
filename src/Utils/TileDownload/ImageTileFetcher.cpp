@@ -7,7 +7,7 @@
 
 ImageTileFetcher::ImageTileFetcher(QMap<QString, ImageLayerDescription> availableLayers,
 								   QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY,
-								   ImageDownloader::TileFetchedCb tileFetchedCb) {
+								   ImageDownloader::OnTileFetched onTileFetched) {
 	validateLayersAvailable(availableLayers.keys(), requestedLayers);
 
 	for (auto &layerDescription : availableLayers.values()) {
@@ -19,7 +19,7 @@ ImageTileFetcher::ImageTileFetcher(QMap<QString, ImageLayerDescription> availabl
 	this->zoomLevel = zoomLevel;
 	this->tileX = tileX;
 	this->tileY = tileY;
-	this->tileFetchedCb = tileFetchedCb;
+	this->onTileFetched = onTileFetched;
 }
 
 ImageTileFetcher::~ImageTileFetcher() { }
@@ -56,7 +56,7 @@ void ImageTileFetcher::run() {
 	}
 
 	ImageTile tile(QMap<QString, MetaImage>(images), this->zoomLevel, this->tileX, this->tileY);
-	this->tileFetchedCb(tile);
+	this->onTileFetched(tile);
 }
 
 QUrl ImageTileFetcher::buildTileDownloadUrl(const QString layer) const {

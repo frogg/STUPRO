@@ -44,11 +44,11 @@ public:
 	 * @param zoomLevel     how deep to dive into the quad-tree
 	 * @param tileX         horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY         vertical position of the requested tile (northernmost tile = 0)
-	 * @param tileFetchedCb function to call when the tile is loaded
+	 * @param onTileFetched function to call when the tile is loaded
 	 */
 	ImageTileFetcher(QMap<QString, ImageLayerDescription> availableLayers,
 			QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY,
-			ImageDownloader::TileFetchedCb tileFetchedCb);
+			ImageDownloader::OnTileFetched onTileFetched);
 	~ImageTileFetcher();
 
 	/**
@@ -62,7 +62,7 @@ private:
 	int zoomLevel;
 	int tileX;
 	int tileY;
-	ImageDownloader::TileFetchedCb tileFetchedCb;
+	ImageDownloader::OnTileFetched onTileFetched;
 
 	/**
 	 * Returns the URL at which the image with of the given layer can be found.
