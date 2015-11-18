@@ -79,6 +79,23 @@ private:
 	 * @param path Path of the directory to be deleted
 	 */
 	static bool removeDirectory(const QString &path);
+
+	/**
+	 * The image file extension that will be used to cache images.
+	 */
+	static const QString IMAGE_FILE_EXTENSION;
+	/**
+	 * The directory where the cache's root is located.
+	 */
+	static const QString CACHE_DIRECTORY_PATH;
+	/**
+	 * The directory where a specific layer in the cache is located.
+	 */
+	static const QString LAYER_DIRECTORY_PATH;
+	/**
+	 * The full path of a specific image tile.
+	 */
+	static const QString IMAGE_TILE_PATH;
 };
 
 #endif

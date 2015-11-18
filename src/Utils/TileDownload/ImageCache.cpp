@@ -7,6 +7,15 @@
 #include <QImageWriter>
 #include <QImageReader>
 
+const QString ImageCache::IMAGE_FILE_EXTENSION = QString("png");
+const QString ImageCache::CACHE_DIRECTORY_PATH = QString("cache");
+const QString ImageCache::LAYER_DIRECTORY_PATH = QString(
+	ImageCache::CACHE_DIRECTORY_PATH + "/%1"
+);
+const QString ImageCache::IMAGE_TILE_PATH = QString(
+	ImageCache::LAYER_DIRECTORY_PATH + "/tile_%2_%3_%4." + ImageCache::IMAGE_FILE_EXTENSION
+);
+
 ImageCache &ImageCache::getInstance() {
 	static ImageCache instance;
 	return instance;
@@ -14,7 +23,7 @@ ImageCache &ImageCache::getInstance() {
 
 ImageCache::ImageCache() {
 	/* Test whether a cache directory structure is already present */
-	QDir cacheDirectory("cache");
+	QDir cacheDirectory(ImageCache::CACHE_DIRECTORY_PATH);
 	if (!cacheDirectory.exists()) {
 		/* Create a new cache directory */
 		cacheDirectory.mkpath(".");
@@ -24,13 +33,13 @@ ImageCache::ImageCache() {
 const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX,
 								  int tileY) {
 	/* If necessary, create the cache directory of the specified layer */
-	QDir layerDirectory(QString("cache/%1").arg(layer));
+	QDir layerDirectory(ImageCache::LAYER_DIRECTORY_PATH.arg(layer));
 	if (!layerDirectory.exists()) {
 		layerDirectory.mkpath(".");
 	}
 
 	/* Create a new writer putting together the file name of the image */
-	QImageWriter writer(QString("cache/%1/tile_%2_%3_%4.png")
+	QImageWriter writer(ImageCache::IMAGE_TILE_PATH
 						.arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
 
 	/*
@@ -50,14 +59,14 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 }
 
 const void ImageCache::clearCache(QString layer) {
-	QDir layerDirectory(QString("cache/%1").arg(layer));
+	QDir layerDirectory(ImageCache::LAYER_DIRECTORY_PATH.arg(layer));
 	if (layerDirectory.exists()) {
 		ImageCache::removeDirectory(layerDirectory.absolutePath());
 	}
 }
 
 const bool ImageCache::isImageCached(QString layer, int zoomLevel, int tileX, int tileY) {
-	QFileInfo imageFile(QString("cache/%1/tile_%2_%3_%4.png")
+	QFileInfo imageFile(ImageCache::IMAGE_TILE_PATH
 						.arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
 	return imageFile.exists() && imageFile.isFile();
 }
@@ -71,10 +80,10 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 	}
 
 	/* Create a new reader putting together the file name of the image */
-	QString filename = QString("cache/%1/tile_%2_%3_%4.png")
+	QString filename = ImageCache::IMAGE_TILE_PATH
 					   .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX);
 	QImageReader reader(filename);
-	reader.setFormat("png");
+	reader.setFormat(ImageCache::IMAGE_FILE_EXTENSION.toStdString().c_str());
 
 	/* Create a new image with the image dimensions as read from the file meta data */
 	QStringList imageSize = reader.text("image-size").split(",");
