@@ -44,7 +44,13 @@ struct InvalidTilePositionException : public InvalidTileLocationException {
     }
 };
 
-
+/**
+ * This class holds information containing a whole image layer and how it
+ * should be accessed using the API, all specified in the configuration JSON
+ * file.
+ * On top of that this class includes some static helper methods for API
+ * access.
+ */
 class ImageLayerDescription {
 public:
     static const int MIN_ZOOM_LEVEL = 0;
