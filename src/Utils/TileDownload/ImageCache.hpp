@@ -109,6 +109,15 @@ private:
 	 * This is only relevant for images containing heightmaps.
 	 */
 	static const QString META_TAG_HEIGHT_DATA;
+
+	/**
+	 * Error message used if the requested image file has not been cached yet.
+	 */
+	static const QString IMAGE_NOT_CACHED_MESSAGE;
+	/**
+	 * Error message used if the requested image file could not be read.
+	 */
+	static const QString IMAGE_COULD_NOT_BE_READ_MESSAGE;
 };
 
 #endif

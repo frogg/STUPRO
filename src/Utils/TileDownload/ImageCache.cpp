@@ -21,6 +21,12 @@ const QString ImageCache::IMAGE_TILE_PATH = QString(
 const QString ImageCache::META_TAG_IMAGE_SIZE = QString("image-size");
 const QString ImageCache::META_TAG_HEIGHT_DATA = QString("kronos-meta");
 
+/* Initialize constant strings that contain potential exception messages */
+const QString ImageCache::IMAGE_NOT_CACHED_MESSAGE = QString("The requested image"
+		" from layer %1 with zoom level %2 and position %3/%4 has not been cached yet.");
+const QString ImageCache::IMAGE_COULD_NOT_BE_READ_MESSAGE = QString("The requested"
+		" image from layer %1 with zoom level %2 and position %3/%4 could not be read.");
+
 ImageCache &ImageCache::getInstance() {
 	static ImageCache instance;
 	return instance;
@@ -79,8 +85,7 @@ const bool ImageCache::isImageCached(QString layer, int zoomLevel, int tileX, in
 const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int tileX,
 		int tileY) {
 	if (!ImageCache::getInstance().isImageCached(layer, zoomLevel, tileX, tileY)) {
-		throw ImageNotCachedException(QString("The requested image from layer %1 with"
-											  " zoom level %2 and position %3/%4 has not been cached yet.")
+		throw ImageNotCachedException(ImageCache::IMAGE_NOT_CACHED_MESSAGE
 									  .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
 	}
 
@@ -104,8 +109,7 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 			return MetaImage(readImage);
 		}
 	} else {
-		throw ImageNotCachedException(QString("The requested image from layer %1 with"
-											  " zoom level %2 and position %3/%4 could not be read.")
+		throw ImageNotCachedException(ImageCache::IMAGE_COULD_NOT_BE_READ_MESSAGE
 									  .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
 	}
 }
