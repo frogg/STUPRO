@@ -96,6 +96,19 @@ private:
 	 * The full path of a specific image tile.
 	 */
 	static const QString IMAGE_TILE_PATH;
+
+	/**
+	 * Tag of the meta data specifying the image's resolution that will be written
+	 * to the image header.
+	 */
+	static const QString META_TAG_IMAGE_SIZE;
+	/**
+	 * Tag of the meta data specifying the image's minimum and maximum height
+	 * value as represented respectively by the darkest and the brightest
+	 * pixel.
+	 * This is only relevant for images containing heightmaps.
+	 */
+	static const QString META_TAG_HEIGHT_DATA;
 };
 
 #endif

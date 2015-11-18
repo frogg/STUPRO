@@ -7,6 +7,7 @@
 #include <QImageWriter>
 #include <QImageReader>
 
+/* Initialize constant strings concerning the cache's structure */
 const QString ImageCache::IMAGE_FILE_EXTENSION = QString("png");
 const QString ImageCache::CACHE_DIRECTORY_PATH = QString("cache");
 const QString ImageCache::LAYER_DIRECTORY_PATH = QString(
@@ -15,6 +16,10 @@ const QString ImageCache::LAYER_DIRECTORY_PATH = QString(
 const QString ImageCache::IMAGE_TILE_PATH = QString(
 	ImageCache::LAYER_DIRECTORY_PATH + "/tile_%2_%3_%4." + ImageCache::IMAGE_FILE_EXTENSION
 );
+
+/* Initialize constant strings concerning meta data in the image headers */
+const QString ImageCache::META_TAG_IMAGE_SIZE = QString("image-size");
+const QString ImageCache::META_TAG_HEIGHT_DATA = QString("kronos-meta");
 
 ImageCache &ImageCache::getInstance() {
 	static ImageCache instance;
@@ -46,12 +51,12 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 	 * Save the image size as meta data since Qt does not allow to easily read it
 	 * later from the image file.
 	 */
-	writer.setText("image-size", QString("%1,%2")
+	writer.setText(ImageCache::META_TAG_IMAGE_SIZE, QString("%1,%2")
 				   .arg(image.getImage().width()).arg(image.getImage().height()));
 
 	/* Write potential additional meta data */
 	if (image.hasMetaData()) {
-		writer.setText("kronos-meta", QString("%1,%2")
+		writer.setText(ImageCache::META_TAG_HEIGHT_DATA, QString("%1,%2")
 					   .arg(image.getMinimumHeight()).arg(image.getMaximumHeight()));
 	}
 
@@ -86,13 +91,13 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 	reader.setFormat(ImageCache::IMAGE_FILE_EXTENSION.toStdString().c_str());
 
 	/* Create a new image with the image dimensions as read from the file meta data */
-	QStringList imageSize = reader.text("image-size").split(",");
+	QStringList imageSize = reader.text(ImageCache::META_TAG_IMAGE_SIZE).split(",");
 	QImage readImage(imageSize.at(0).toInt(), imageSize.at(1).toInt(), QImage::Format_RGB32);
 
 	/* Read the image and possible meta data and return everything */
 	if (reader.read(&readImage)) {
-		if (reader.textKeys().contains("kronos-meta")) {
-			QStringList metaData = reader.text("kronos-meta").split(",");
+		if (reader.textKeys().contains(ImageCache::META_TAG_HEIGHT_DATA)) {
+			QStringList metaData = reader.text(ImageCache::META_TAG_HEIGHT_DATA).split(",");
 			return MetaImage(readImage,
 							 metaData.at(0).toInt(), metaData.at(1).toInt());
 		} else {
