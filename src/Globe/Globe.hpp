@@ -1,7 +1,6 @@
 #ifndef STUPRO_GLOBE_HPP
 #define STUPRO_GLOBE_HPP
 
-#include <Utils/Math/Coordinate.hpp>
 #include <Utils/Math/Vector2.hpp>
 #include <Utils/Math/Vector3.hpp>
 #include <Utils/TileDownload/ImageDownloader.hpp>
@@ -14,7 +13,15 @@
 #include <memory>
 #include <vector>
 
+//TODO Configuration file
+#define GLOBE_RADIUS 0.5
+#define PLANE_WIDTH 4
+#define PLANE_HEIGHT 2
+#define PLANE_SIZE 1
+
+
 class GlobeTile;
+typedef Vector2d Coordinate;
 
 class Globe
 {
@@ -34,18 +41,19 @@ public:
 	unsigned int getZoomLevel() const;
 	
 	GlobeTile & getTileAt(int lon, int lat) const;
-	
-	float getPlaneSize() const;
-	
+		
 	void setDisplayModeInterpolation(float displayMode);
 	float getDisplayModeInterpolation() const;
 	
 	bool checkDirty();
     
+    
+    Coordinate getCoordinatesFromGlobePoint(double point[]);
+    Coordinate getCoordinatesFromPlanePoint(double x, double y);
 
-    std::vector<Coordinate> getGlobeCoordinates(std::vector<Vector3d> worldPoints, double radius);
-    std::vector<Coordinate> getPlaneCoordinates(std::vector<Vector3d> worldPoints, double planeWidth, double planeHeight);
-    Coordinate getCenterGlobeCoordinate(double cameraPosition[], double globeRadius);
+    std::vector<Coordinate> getGlobeCoordinates(std::vector<Vector3d> worldPoints);
+    std::vector<Coordinate> getPlaneCoordinates(std::vector<Vector3d> worldPoints);
+    Coordinate getCenterGlobeCoordinate(double cameraPosition[]);
     std::vector<Vector3d> getIntersectionPoints(double planes[24], double cameraPosition[3]);
     
 
@@ -54,11 +62,12 @@ private:
     vtkSmartPointer<vtkOBBTree> myPlaneTree;
     void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[], double intersection[3]);
     void cutPlanes(double planes[3][4], double cut [3]);
-    vtkSmartPointer<vtkOBBTree> getOOBTree();
+    vtkSmartPointer<vtkOBBTree> getOBBTree();
     
 	unsigned int getTileIndex(int lon, int lat) const;
 	
 	void createTiles();
+    void createOBBTrees();
 	
 	void onTileLoad(ImageTile tile);
 	

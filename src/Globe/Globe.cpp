@@ -18,6 +18,7 @@
 #include <Globe/GlobeTile.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Eigen-v3.2.6/Dense>
+#include <cmath>
 
 Globe::Globe(vtkRenderer & renderer) :
 		myRenderer(renderer),
@@ -26,38 +27,9 @@ Globe::Globe(vtkRenderer & renderer) :
 		myZoomLevel(1),
 		myDisplayModeInterpolation(0)
 {
-	myPlaneSource = vtkPlaneSource::New();
-	myPlaneSource->SetOrigin(getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
-	myPlaneSource->SetPoint1(-getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
-	myPlaneSource->SetPoint2(getPlaneSize() / 2.f, getPlaneSize() / 2.f, 0.f);
+	
 
-    // create an additional plane and sphere to evaluate the tiles that are visible
-
-    vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
-		// TODO: Fix scope!
-    // sphereSource->SetRadius(myGlobeRadius);
-		sphereSource->SetRadius(0.5f);
-    sphereSource->SetThetaResolution(100);
-    sphereSource->SetPhiResolution(100);
-    sphereSource->Update();
-
-    // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
-    mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
-    mySphereTree->SetDataSet(sphereSource->GetOutput());
-    mySphereTree->BuildLocator();
-
-    // an artificial Plane to calculate raycasting coordinates
-    vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
-    planeSource->SetOrigin(-2, -1, 0);
-    planeSource->SetPoint1(2, -1, 0);
-    planeSource->SetPoint2(-2, 1, 0);
-    planeSource->Update();
-
-    myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
-    myPlaneTree->SetDataSet(planeSource->GetOutput());
-    myPlaneTree->BuildLocator();
-
-
+    createOBBTrees();
 	setResolution(Vector2u(128, 128));
 
 	myPlaneMapper = vtkPolyDataMapper::New();
@@ -119,9 +91,37 @@ unsigned int Globe::getTileIndex(int lon, int lat) const
 	return (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
 }
 
-float Globe::getPlaneSize() const
-{
-	return 1.f;
+
+void Globe::createOBBTrees(){
+    myPlaneSource = vtkPlaneSource::New();
+    
+    //Vertices of the map
+    myPlaneSource->SetOrigin(PLANE_SIZE / 2.f, -PLANE_SIZE / 2.f, 0.f);
+    myPlaneSource->SetPoint1(-PLANE_SIZE / 2.f, -PLANE_SIZE / 2.f, 0.f);
+    myPlaneSource->SetPoint2(PLANE_SIZE / 2.f, PLANE_SIZE / 2.f, 0.f);
+    
+    // create an additional plane and sphere to evaluate the tiles that are visible
+    vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
+    sphereSource->SetRadius(GLOBE_RADIUS);
+    sphereSource->SetThetaResolution(100);
+    sphereSource->SetPhiResolution(100);
+    sphereSource->Update();
+    
+    // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
+    mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
+    mySphereTree->SetDataSet(sphereSource->GetOutput());
+    mySphereTree->BuildLocator();
+    
+    // an artificial Plane to calculate raycasting coordinates
+    vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
+    planeSource->SetOrigin(-PLANE_WIDTH/2, -PLANE_HEIGHT/2, 0);
+    planeSource->SetPoint1(PLANE_WIDTH/2, -PLANE_HEIGHT/2, 0);
+    planeSource->SetPoint2(-PLANE_WIDTH/2, PLANE_HEIGHT/2, 0);
+    planeSource->Update();
+    
+    myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
+    myPlaneTree->SetDataSet(planeSource->GetOutput());
+    myPlaneTree->BuildLocator();
 }
 
 void Globe::createTiles()
@@ -237,7 +237,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 
     // get intersection with world
 	vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
-	this->getOOBTree()->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
+	this->getOBBTree()->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
 
 	if (intersectPoint->GetNumberOfPoints() > 0)
 	{
@@ -281,47 +281,64 @@ std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double camer
 	return worldIntersectionPoints;
 }
 
-std::vector<Coordinate> Globe::getGlobeCoordinates(std::vector<Vector3d> worldPoints, double radius)
+std::vector<Coordinate> Globe::getGlobeCoordinates(std::vector<Vector3d> worldPoints)
 {
 	std::vector<Coordinate> globeCoordinates;
 	for (Vector3d worldCoordinate : worldPoints)
 	{
-		globeCoordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(worldCoordinate.array(), radius));
+		globeCoordinates.push_back(Globe::getCoordinatesFromGlobePoint(worldCoordinate.array()));
 	}
 	return globeCoordinates;
 }
 
-std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<Vector3d> worldPoints, double planeWidth,
-		double planeHeight)
+std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<Vector3d> worldPoints)
 {
 	std::vector<Coordinate> globeCoordinates;
 	for (Vector3d worldCoordinate : worldPoints)
 	{
 		globeCoordinates.push_back(
-			Coordinate::getCoordinatesFromPlanePoint(worldCoordinate.x, worldCoordinate.y, planeWidth, planeHeight));
+			Globe::getCoordinatesFromPlanePoint(worldCoordinate.x, worldCoordinate.y));
 	}
 	return globeCoordinates;
 }
 
-Coordinate Globe::getCenterGlobeCoordinate(double cameraPosition[],
-		double globeRadius)
+Coordinate Globe::getCenterGlobeCoordinate(double cameraPosition[])
 {
 	double globeOrigin[3] =
 	{ 0, 0, 0 };
 
 	vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
-	this->getOOBTree() ->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
+	this->getOBBTree() ->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
 	Vector3d centerPoint;
 	intersectPoints->GetPoint(0, centerPoint.array());
-	return Coordinate::getCoordinatesFromGlobePoint(centerPoint.array(), globeRadius);
+	return Globe::getCoordinatesFromGlobePoint(centerPoint.array());
 }
 
-vtkSmartPointer<vtkOBBTree> Globe::getOOBTree(){
-    //Karte
+vtkSmartPointer<vtkOBBTree> Globe::getOBBTree(){
+    //Map
     if(this->getDisplayModeInterpolation() > 0.9){
         return myPlaneTree;
     }else{
     //Globe
         return mySphereTree;
     }
+}
+
+
+Coordinate Globe::getCoordinatesFromGlobePoint(double point[]){
+    
+    //coordinate system are not the same as in math formulas
+    float x = point[0];
+    float y = point[2];
+    float z = point[1];
+    
+    Coordinate coordinate (asin(z/GLOBE_RADIUS) *180/M_PI, atan2(x, y)  * 180/M_PI);
+    return coordinate;
+}
+
+Coordinate Globe::getCoordinatesFromPlanePoint(double x, double y) {
+    double latitude = x / (PLANE_WIDTH / 2) * 180;
+    double longitude = y / (PLANE_HEIGHT / 2) * 90;
+    
+    return Coordinate(latitude, longitude);
 }
