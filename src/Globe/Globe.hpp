@@ -47,22 +47,69 @@ public:
 	
 	bool checkDirty();
     
-    
-    Coordinate getCoordinatesFromGlobePoint(double point[]);
-    Coordinate getCoordinatesFromPlanePoint(double x, double y);
 
+    /**
+     * get Coordinates (lat, long) from multipe worldPoints of the Globe
+     * @param world points are the points in world coordinates that should be converted to Coordinates
+     * @return Coordinates (lat, long)
+     */
     std::vector<Coordinate> getGlobeCoordinates(std::vector<Vector3d> worldPoints);
+    /**
+     * get Coordinates (lat, long) from multipe worldPoints of the Map
+     * @param world points are the points in world coordinates that should be converted to Coordinates
+     * @return Coordinates (lat, long)
+     */
     std::vector<Coordinate> getPlaneCoordinates(std::vector<Vector3d> worldPoints);
+    
+    /**
+     * get the visible center of the globe/map
+     * @param carmeraPosition actual position of the camera
+     * @return Coordinate (lat, long) at the centre of the view
+     */
     Coordinate getCenterGlobeCoordinate(double cameraPosition[]);
+    /**
+     * get intersection points of the view frustum with the visible globe/map
+     * @param planes of the view frustum
+     * @param carmeraPosition actual position of the camera
+     * @return 4 edge points in world coodinates
+     */
     std::vector<Vector3d> getIntersectionPoints(double planes[24], double cameraPosition[3]);
     
 
 private:
+    ///SphereTree to caluclate Intersection points with map
     vtkSmartPointer<vtkOBBTree> mySphereTree;
+    ///PlaneTree to caluclate Intersection points with globe
     vtkSmartPointer<vtkOBBTree> myPlaneTree;
+    
+    /**
+     * get intersection point of the view frustum with the visible globe/map
+     * @param 3 planes of the view frustum that should be cut (intersection point)
+     * @param carmeraPosition actual position of the camera
+     * @param intersection[3], returns 1 edge points in world coodinates
+     */
     void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[], double intersection[3]);
+    /**
+     * calculate intersection point of three planes
+     * @param 3 planes of the view frustum that should be cut (intersection point)
+     * @param cut, return the intersection point
+     */
     void cutPlanes(double planes[3][4], double cut [3]);
     vtkSmartPointer<vtkOBBTree> getOBBTree();
+    
+    /**
+     * Get the Coordinate(lat, long) from a point at the globe (in world coordinates)
+     * @param point globe point in world coordinates
+     * @return Coordinate (lat, long)
+     */
+    Coordinate getCoordinatesFromGlobePoint(double point[]);
+    /**
+     * Get the Coordinate(lat, long) from a point at the map (in world coordinates)
+     * @param point map point in world coordinates
+     * @return Coordinate (lat, long)
+     */
+    Coordinate getCoordinatesFromPlanePoint(double x, double y);
+
     
 	unsigned int getTileIndex(int lon, int lat) const;
 	
