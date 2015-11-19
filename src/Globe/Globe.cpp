@@ -210,6 +210,7 @@ void Globe::cutPlanes(double planes[3][4], double cut[3])
 
     // solve LGS. colPivHouseholderQr is an algorithm by Eigen (very fast, see doc:
     // http://eigen.tuxfamily.org/dox/group__TopicLinearAlgebraDecompositions.html)
+    // if there are still performance problems, call this method not so often
     Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset);
 
 	// copy return value to avoid memory issues
@@ -224,6 +225,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 
 	double planes[3][4];
 	double intersectionOfPlanes[3];
+    // store them into one array for easier access
 	for (int i = 0; i < 4; i++)
 	{
 		planes[0][i] = plane1[i];
@@ -233,6 +235,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 
 	cutPlanes(planes, intersectionOfPlanes);
 
+    // get intersection with world
 	vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
 	this->getOOBTree()->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
 
@@ -242,6 +245,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 	}
 	else
 	{
+        // no intersection
 		for (int i = 0; i < 3; i++)
 		{
 			intersection[i] = 0;
@@ -262,11 +266,13 @@ std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double camer
 	}
 
 
+    // calculate intersection points for each edge of the viewing frustum
 	std::vector<Vector3d> worldIntersectionPoints;
 	for (int j = 0; j < 4; j++)
 	{
 		Vector3d intersection;
 
+        // some math to get the right planes (0/1/0/1 and 2/2/3/3)
 		getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition,
 			intersection.array());
 		worldIntersectionPoints.push_back(intersection);
