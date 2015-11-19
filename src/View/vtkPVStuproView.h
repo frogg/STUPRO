@@ -1,54 +1,124 @@
-#ifndef __vtkPVStuproView_h
-#define __vtkPVStuproView_h
+#ifndef KRONOS_PVVIEW_H
+#define KRONOS_PVVIEW_H
 
 #include <vtkPVRenderView.h>
 #include <vtkSetGet.h>
 #include <vtkWin32Header.h>
 #include <iostream>
 #include <memory>
+#include <Globe\Globe.hpp>
+//class Globe;
 
-class Globe;
-
+/**
+ * This class represents our own, custom vtkPVRenderView. It is responsible
+ * for initializing all the relevant variables and objects used later on.
+ */
 class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView
 {
 public:
+	/**
+	 * Enum giving us all available, different display modes for the
+	 * globe.
+	 */
 	enum DisplayMode
 	{
 		DisplayGlobe, DisplayMap
 	};
 	
+	/**
+	 * A static new-method needed for any vtk-related initialization
+	 * used by vtkSmartPointers. Gonna be implemented in the .cxx
+	 * using the vtkStandardNewMacro.
+	 *
+	 * @return a new instance of this view via a pointer
+	 */
 	static vtkPVStuproView* New();
-	vtkTypeMacro(vtkPVStuproView, vtkPVRenderView);
-	
-	void PrintSelf(ostream& os, vtkIndent indent);
 
+	/**
+	 * Needed for some vtk-inheritance-stuff.
+	 */
+	vtkTypeMacro(vtkPVStuproView, vtkPVRenderView)
+	
+	/**
+	 * This method gets called any time the view is going
+	 * to be initialized. Basically, this is the constructor of
+	 * the view.
+	 *
+	 * @param id the id of the view, gets set by the calling instance, used for Superclass::Initialize(id)
+	 */
 	virtual void Initialize(unsigned int id);
 
+	/**
+	 * Upon call, switches the currently used display mode to the opposite,
+	 * basically by inverting this->displayMode.
+	 */
 	void switchCurrentDisplayMode();
 
+	// TODO: Make a global config file.
 	float getGlobeRadius();
+	
+	/**
+	 * Returns the current display mode.
+	 *
+	 * @return the current display mode
+	 */
 	DisplayMode getDisplayMode();
 
 protected:
-	vtkPVStuproView();
-	~vtkPVStuproView();
+	/**
+	 * Constructor and destructor are protected, so these never get
+	 * called outside of this class. Therefore it can only be
+	 * instantiated by a vtkSmartPointer.
+	 */
+	vtkPVStuproView()
+	{
+	};
+	~vtkPVStuproView()
+	{
+	};
 
 private:
-	vtkPVStuproView(const vtkPVStuproView&); // Not implemented
-	void operator=(const vtkPVStuproView&); // Not implemented
+	/**
+	 * This method is not implemented due to vtks architecture.
+	 * This will remove the copy-constructor.
+	 */
+	vtkPVStuproView(const vtkPVStuproView&);
+	
+	/**
+	* This method is not implemented due to vtks architecture.
+	* This will remove the =-assignment (and copying).
+	*/
+	void operator=(const vtkPVStuproView&);
 
+	/**
+	 * TODO: Maybe remove this method using the global config?
+	 */
 	void initParameters();
-	void initGlobe();
+	
+	/**
+	 * Initializes all render-relevant objects, i.e. the interactor
+	 * and its style.
+	 */
 	void initRenderer();
+	
+	/**
+	 * Registers all callback functions used later during runtime.
+	 * FIXME: Doesn't work in PV as of 18-11-2015.
+	 */
 	void initCallbacks();
-	DisplayMode myDisplayMode;
 
-	std::unique_ptr<Globe> myGlobe;
+	/**
+	 * Initializes an instance of the this->globe as a unique pointer.
+	 */
+	void initGlobe();
 
-	float myGlobeRadius;
-	float myPlaneSize;
-	float myDisplayModeInterpolation;
-	float myHeightFactor;
+
+	DisplayMode displayMode;
+	std::unique_ptr<Globe> globe;
+	float globeRadius;
+	float planeSize;
+	float displayModeInterpolation;
+	float heightFactor;
 };
 
 #endif
