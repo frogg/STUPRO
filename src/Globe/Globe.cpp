@@ -198,6 +198,7 @@ void Globe::cutPlanes(double planes[3][4], double cut[3])
 {
 	Eigen::Matrix3d planeMatrix;
 	Eigen::Vector3d offset;
+    // fill planeMatrix and offset with content
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -207,7 +208,9 @@ void Globe::cutPlanes(double planes[3][4], double cut[3])
 		offset(i) = -planes[i][3];
 	}
 
-	Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset); //.lu().solve(offset);
+    // solve LGS. colPivHouseholderQr is an algorithm by Eigen (very fast, see doc:
+    // http://eigen.tuxfamily.org/dox/group__TopicLinearAlgebraDecompositions.html)
+    Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset);
 
 	// copy return value to avoid memory issues
 	for (int i = 0; i < 3; i++)

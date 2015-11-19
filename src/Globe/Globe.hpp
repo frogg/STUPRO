@@ -5,6 +5,7 @@
 #include <Utils/Math/Vector2.hpp>
 #include <Utils/Math/Vector3.hpp>
 #include <Utils/TileDownload/ImageDownloader.hpp>
+#include <Utils/Math/IncludeEigen.hpp>
 #include <vtkOBBTree.h>
 #include <vtkPlaneSource.h>
 #include <vtkPolyDataMapper.h>
