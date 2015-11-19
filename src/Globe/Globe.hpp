@@ -50,30 +50,30 @@ public:
 
     /**
      * get Coordinates (lat, long) from multipe worldPoints of the Globe
-     * @param world points are the points in world coordinates that should be converted to Coordinates
+     * @param world points are the points in world coordinates (that is: 3D-Space) that should be converted to Coordinates
      * @return Coordinates (lat, long)
      */
     std::vector<Coordinate> getGlobeCoordinates(std::vector<Vector3d> worldPoints);
     /**
-     * get Coordinates (lat, long) from multipe worldPoints of the Map
-     * @param world points are the points in world coordinates that should be converted to Coordinates
-     * @return Coordinates (lat, long)
+     * get Coordinates from multipe worldPoints of the Map
+     * @param world points (that is: 3D-Space) are the points in world coordinates that should be converted to Coordinates
+     * @return Coordinates in latitude and longitude
      */
     std::vector<Coordinate> getPlaneCoordinates(std::vector<Vector3d> worldPoints);
     
     /**
      * get the visible center of the globe/map
      * @param carmeraPosition actual position of the camera
-     * @return Coordinate (lat, long) at the centre of the view
+     * @return Coordinate in latitude and longitude at the centre of the view
      */
-    Coordinate getCenterGlobeCoordinate(double cameraPosition[]);
+    Coordinate getCenterGlobeCoordinate(Vector3d cameraPosition);
     /**
      * get intersection points of the view frustum with the visible globe/map
-     * @param planes of the view frustum
+     * @param planes of the view frustum as you can get them from VTK
      * @param carmeraPosition actual position of the camera
-     * @return 4 edge points in world coodinates
+     * @return the four intersection points with the far plane in world coodinates
      */
-    std::vector<Vector3d> getIntersectionPoints(double planes[24], double cameraPosition[3]);
+    std::vector<Vector3d> getIntersectionPoints(double planes[24], Vector3d cameraPosition);
     
 
 private:
@@ -86,29 +86,30 @@ private:
      * get intersection point of the view frustum with the visible globe/map
      * @param 3 planes of the view frustum that should be cut (intersection point)
      * @param carmeraPosition actual position of the camera
-     * @param intersection[3], returns 1 edge points in world coodinates
+     * @return returns the cut point in world coodinates
      */
-    void getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[], double intersection[3]);
+    Vector3d getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], Vector3d cameraPosition);
     /**
      * calculate intersection point of three planes
      * @param 3 planes of the view frustum that should be cut (intersection point)
-     * @param cut, return the intersection point
+     *          planes must be given as ax + by + cz + d = 0
+     * @return return the intersection point
      */
-    void cutPlanes(double planes[3][4], double cut [3]);
+    Vector3d cutPlanes(double planes[3][4]);
     vtkSmartPointer<vtkOBBTree> getOBBTree();
     
     /**
-     * Get the Coordinate(lat, long) from a point at the globe (in world coordinates)
+     * Get the Coordinate from a point at the globe (in world coordinates)
      * @param point globe point in world coordinates
-     * @return Coordinate (lat, long)
+     * @return Coordinate in latitude and longitude
      */
-    Coordinate getCoordinatesFromGlobePoint(double point[]);
+    Coordinate getCoordinatesFromGlobePoint(Vector3d point);
     /**
-     * Get the Coordinate(lat, long) from a point at the map (in world coordinates)
+     * Get the Coordinate from a point at the map (in world coordinates)
      * @param point map point in world coordinates
-     * @return Coordinate (lat, long)
+     * @return Coordinate in latitude and longitude
      */
-    Coordinate getCoordinatesFromPlanePoint(double x, double y);
+    Coordinate getCoordinatesFromPlanePoint(Vector2d point);
 
     
 	unsigned int getTileIndex(int lon, int lat) const;

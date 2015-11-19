@@ -194,7 +194,7 @@ void Globe::onTileLoad(ImageTile tile)
 	myIsClean.clear();
 }
 
-void Globe::cutPlanes(double planes[3][4], double cut[3])
+Vector3d Globe::cutPlanes(double planes[3][4])
 {
 	Eigen::Matrix3d planeMatrix;
 	Eigen::Vector3d offset;
@@ -213,18 +213,14 @@ void Globe::cutPlanes(double planes[3][4], double cut[3])
     // if there are still performance problems, call this method not so often
     Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset);
 
-	// copy return value to avoid memory issues
-	for (int i = 0; i < 3; i++)
-	{
-		cut[i] = cutPoint(i);
-	}
+    return Vector3d(cutPoint(0), cutPoint(1), cutPoint(2));
 }
 
-void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[3], double intersection[3])
+Vector3d Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], Vector3d cameraPosition)
 {
+    Vector3d intersection;
 
 	double planes[3][4];
-	double intersectionOfPlanes[3];
     // store them into one array for easier access
 	for (int i = 0; i < 4; i++)
 	{
@@ -233,27 +229,25 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 		planes[2][i] = plane3[i];
 	}
 
-	cutPlanes(planes, intersectionOfPlanes);
+    Vector3d intersectionOfPlanes = cutPlanes(planes);
 
     // get intersection with world
 	vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
-	this->getOBBTree()->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
+    this->getOBBTree()->IntersectWithLine(cameraPosition.array(), intersectionOfPlanes.array(), intersectPoint, NULL);
 
 	if (intersectPoint->GetNumberOfPoints() > 0)
 	{
-		intersectPoint->GetPoint(0, intersection);
+        intersectPoint->GetPoint(0, intersection.array());
 	}
 	else
 	{
         // no intersection
-		for (int i = 0; i < 3; i++)
-		{
-			intersection[i] = 0;
-		}
+        intersection = Vector3d (0, 0, 0);
 	}
+    return intersection;
 }
 
-std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double cameraPosition[])
+std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], Vector3d cameraPosition)
 {
 	// left, right, bottom, top, near, far
 	double planeArray[6][4];
@@ -269,12 +263,9 @@ std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double camer
     // calculate intersection points for each edge of the viewing frustum
 	std::vector<Vector3d> worldIntersectionPoints;
 	for (int j = 0; j < 4; j++)
-	{
-		Vector3d intersection;
-
-        // some math to get the right planes (0/1/0/1 and 2/2/3/3)
-		getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition,
-			intersection.array());
+    {
+        // some math to get the right planes (l/r/l/r and b/b/t/t, the last plane is the far clipping)
+        Vector3d intersection = getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition);
 		worldIntersectionPoints.push_back(intersection);
 	}
 
@@ -296,19 +287,18 @@ std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<Vector3d> worldPo
 	std::vector<Coordinate> globeCoordinates;
 	for (Vector3d worldCoordinate : worldPoints)
 	{
-		globeCoordinates.push_back(
-			Globe::getCoordinatesFromPlanePoint(worldCoordinate.x, worldCoordinate.y));
+        Vector2d point (worldCoordinate.x, worldCoordinate.y);
+        globeCoordinates.push_back(Globe::getCoordinatesFromPlanePoint(point));
 	}
 	return globeCoordinates;
 }
 
-Coordinate Globe::getCenterGlobeCoordinate(double cameraPosition[])
+Coordinate Globe::getCenterGlobeCoordinate(Vector3d cameraPosition)
 {
-	double globeOrigin[3] =
-	{ 0, 0, 0 };
+    Vector3d globeOrigin(0, 0, 0);
 
 	vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
-	this->getOBBTree() ->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
+    this->getOBBTree() ->IntersectWithLine(cameraPosition.array(), globeOrigin.array(), intersectPoints, NULL);
 	Vector3d centerPoint;
 	intersectPoints->GetPoint(0, centerPoint.array());
 	return Globe::getCoordinatesFromGlobePoint(centerPoint.array());
@@ -325,20 +315,14 @@ vtkSmartPointer<vtkOBBTree> Globe::getOBBTree(){
 }
 
 
-Coordinate Globe::getCoordinatesFromGlobePoint(double point[]){
-    
-    //coordinate system are not the same as in math formulas
-    float x = point[0];
-    float y = point[2];
-    float z = point[1];
-    
-    Coordinate coordinate (asin(z/GLOBE_RADIUS) *180/M_PI, atan2(x, y)  * 180/M_PI);
-    return coordinate;
+Coordinate Globe::getCoordinatesFromGlobePoint(Vector3d point){
+    return Coordinate (asin(point.z / GLOBE_RADIUS) * 180 / M_PI,
+                       atan2(point.x, point.y)      * 180 / M_PI);
 }
 
-Coordinate Globe::getCoordinatesFromPlanePoint(double x, double y) {
-    double latitude = x / (PLANE_WIDTH / 2) * 180;
-    double longitude = y / (PLANE_HEIGHT / 2) * 90;
+Coordinate Globe::getCoordinatesFromPlanePoint(Vector2d point) {
+    double latitude = point.x / (PLANE_WIDTH / 2) * 180;
+    double longitude = point.y / (PLANE_HEIGHT / 2) * 90;
     
     return Coordinate(latitude, longitude);
 }
