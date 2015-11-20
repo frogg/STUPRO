@@ -74,10 +74,16 @@ private:
 	static const double distanceOptimization;
 	/**
 	* sets the Rotationspeed, depending on Camera-Distance
+	*
+	* @return a vector with the horizontal and vertical deltas 
 	*/
 	Vector2d calculateRotationParameters();
+	
 	/**
 	* sets the ViewingAngle
+	*
+	* @param the horizontal and vertical deltas
+	* @return a Vector with the azimuth and elevation
 	*/
 	Vector2d calculateCameraRotators(Vector2d rotationParameters);
 	
