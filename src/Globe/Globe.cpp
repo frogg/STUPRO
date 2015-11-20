@@ -160,7 +160,7 @@ float Globe::getDisplayModeInterpolation() const
 	return myDisplayModeInterpolation;
 }
 
-bool Globe::checkDirty()
+bool Globe::checkIfRepaintIsNeeded()
 {
 	return !myIsClean.test_and_set();
 }
