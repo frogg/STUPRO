@@ -1,11 +1,8 @@
 #ifndef KRONOS_CONFIGURATION_HPP
 #define KRONOS_CONFIGURATION_HPP
 
-#include <qmap.h>
-#include <qstring.h>
-#include <Utils/TileDownload/ImageLayerDescription.hpp>
+#include <QString>
 #include <exception>
-#include <string>
 
 /**
  * Super class for all exceptions thrown while a requested configuration value
