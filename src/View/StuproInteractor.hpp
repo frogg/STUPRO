@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <vtkInteractorStyleTerrain.h>
 #include <vtkSetGet.h>
+#include <utils\Math\Vector2.hpp>
+#include <vtkCamera.h>
 
 class vtkPVStuproView;
 
@@ -69,6 +71,12 @@ private:
 	*/
 	void zoomWithFactor(float factor);
 
+	Vector2<double> rotationParameters;
+	
+	/**
+	* sets the Rotationspeed, depending on Camera-Distance
+	*/
+	void setRotationParameters(vtkCamera *camera, vtkRenderWindowInteractor *renderWindowInteractor);
 	float zoomFactor;
 };
 
