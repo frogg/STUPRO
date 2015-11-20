@@ -6,8 +6,8 @@
 #include <vtkWin32Header.h>
 #include <iostream>
 #include <memory>
-#include <Globe\Globe.hpp>
-//class Globe;
+
+class Globe;
 
 /**
  * This class represents our own, custom vtkPVRenderView. It is responsible
@@ -73,6 +73,7 @@ protected:
 	vtkPVStuproView()
 	{
 	};
+
 	~vtkPVStuproView()
 	{
 	};
