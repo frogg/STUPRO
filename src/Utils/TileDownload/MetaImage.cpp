@@ -9,8 +9,6 @@ MetaImage::MetaImage(const QImage &image)
 
 MetaImage::MetaImage() { }
 
-MetaImage::~MetaImage() { }
-
 const QImage &MetaImage::getImage() {
 	return this->image;
 }

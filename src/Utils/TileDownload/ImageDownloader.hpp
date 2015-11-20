@@ -32,7 +32,6 @@ public:
 	 *                      loading the tiles.
 	 */
 	ImageDownloader(OnTileFetched onTileFetched, QMap<QString, ImageLayerDescription> imageLayers);
-	~ImageDownloader();
 
 	/**
 	 * Fetches images of all layers at the given location.

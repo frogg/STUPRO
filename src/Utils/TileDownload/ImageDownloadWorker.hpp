@@ -79,7 +79,6 @@ public:
      * @param networkManager the network access manager to use for the actual download
      */
     ImageDownloadWorker(QString layerName, QUrl url, int imageWidth, int imageHeight);
-    ~ImageDownloadWorker();
 
 	ImageDownloadWorker(const ImageDownloadWorker&) = delete;
 

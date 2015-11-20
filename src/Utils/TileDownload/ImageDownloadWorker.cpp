@@ -12,8 +12,6 @@ ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageW
 	this->startDownload();
 }
 
-ImageDownloadWorker::~ImageDownloadWorker() { }
-
 QString ImageDownloadWorker::getLayerName() const {
 	return this->layerName;
 }

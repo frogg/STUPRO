@@ -9,8 +9,6 @@ ImageDownloader::ImageDownloader(OnTileFetched onTileFetched,
 	QMap<QString, ImageLayerDescription> imageLayers)
 	: onTileFetched(onTileFetched), imageLayers(imageLayers) { }
 
-ImageDownloader::~ImageDownloader() { }
-
 void ImageDownloader::fetchTile(int zoomLevel, int tileX, int tileY) {
 	this->fetchTile(this->getAvailableLayers(), zoomLevel, tileX, tileY);
 }

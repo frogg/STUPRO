@@ -49,7 +49,6 @@ public:
 	ImageTileFetcher(QMap<QString, ImageLayerDescription> availableLayers,
 			QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY,
 			ImageDownloader::OnTileFetched onTileFetched);
-	~ImageTileFetcher();
 
 	/**
 	 * Function executed by the thread pool when ready.

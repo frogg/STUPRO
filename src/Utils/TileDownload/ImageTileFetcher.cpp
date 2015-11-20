@@ -22,8 +22,6 @@ ImageTileFetcher::ImageTileFetcher(QMap<QString, ImageLayerDescription> availabl
 	this->onTileFetched = onTileFetched;
 }
 
-ImageTileFetcher::~ImageTileFetcher() { }
-
 void ImageTileFetcher::run() {
 	// check every image on the requested tile for a cache hit, load it from the cache if possible,
 	// otherwise kick of an ImageDownloadWorker

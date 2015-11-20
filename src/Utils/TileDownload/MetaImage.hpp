@@ -26,7 +26,6 @@ public:
   MetaImage(const QImage &image);
 
   MetaImage();
-	~MetaImage();
 
   /**
    * Get the actual image stored in this MetaImage.
