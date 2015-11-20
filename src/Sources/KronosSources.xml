@@ -1,0 +1,18 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="sources">
+      <SourceProxy name="Quelle" class="vtkGlobeSource" label="Custom Sphere Source">
+          <Documentation
+              long_help="Create point attribute array by projecting points onto an elevation vector."
+              short_help="Create a point array representing elevation.">
+          </Documentation>
+      </SourceProxy>
+  </ProxyGroup>
+  <ProxyGroup name="sources">
+      <SourceProxy name="SphereSource" class="vtkSphereSource" label="Sphere Source">
+          <Documentation
+              long_help="Create point attribute array by projecting points onto an elevation vector."
+              short_help="Create a point array representing elevation.">
+          </Documentation>
+      </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>

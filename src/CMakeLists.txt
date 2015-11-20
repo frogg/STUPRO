@@ -39,27 +39,33 @@ include_directories(${CMAKE_SOURCE_DIR}/libs)
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/View/
+	${CMAKE_CURRENT_SOURCE_DIR}/Filter/
+	${CMAKE_CURRENT_SOURCE_DIR}/Sources/
 )
 
 # register a ParaView plugin
 add_paraview_plugin(
-	StuproViewPlugin
+	KronosPlugin
 	"1.0.0"
 	REQUIRED_ON_SERVER
 	REQUIRED_ON_CLIENT
 	SERVER_MANAGER_SOURCES
 		View/vtkPVStuproView.cxx
+		Filter/vtkGlobeFilter.cxx
+		Sources/vtkGlobeSource.cxx
 	SERVER_MANAGER_XML
-		View/StuproView.xml
+		View/KronosView.xml
+		Filter/KronosFilter.xml
+		Sources/KronosSources.xml
 	SOURCES
 		${StuproView_SOURCE_FILES}
 )
 
 # link against Qt libraries
-target_link_libraries(StuproViewPlugin PRIVATE ${QT_LIBRARIES})
+target_link_libraries(KronosPlugin PRIVATE ${QT_LIBRARIES})
 
 # use C++11 to compile the plugin
-set_property(TARGET StuproViewPlugin PROPERTY CXX_STANDARD 11)
+set_property(TARGET KronosPlugin PROPERTY CXX_STANDARD 11)
 
 # register a ParaView client
 build_paraview_client(
@@ -71,7 +77,7 @@ build_paraview_client(
 	VERSION_PATCH 0
 	PVMAIN_WINDOW StuproWindow
 	PVMAIN_WINDOW_INCLUDE StuproWindow.hpp
-	REQUIRED_PLUGINS StuproViewPlugin
+	REQUIRED_PLUGINS KronosPlugin
 	SOURCES ${ParaView_SOURCE_FILES}
 )
 
