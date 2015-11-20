@@ -10,16 +10,22 @@ class vtkPVStuproView;
 class StuproInteractor : public vtkInteractorStyleTerrain
 {
 public:
+	StuproInteractor();
+
 	static StuproInteractor *New();
 	// Constructor needed for keeping track of the globe-radius.
 	static StuproInteractor *New(vtkPVStuproView *application);
 
-	vtkTypeMacro(StuproInteractor, vtkInteractorStyleTerrain);
+	vtkTypeMacro(StuproInteractor, vtkInteractorStyleTerrain)
 
+	// Overrides the inner unnecessary OnTimer Event
+	// needed for our vtkCommand::TimerEvent in vtkPVStuproView.cxx
 	void OnTimer() override
 	{
 		// Empty on purpose.
 	}
+
+	void setCurrentRendererViaPosition();
 
 	// Moving the globe/map around.
 	void OnMiddleButtonDown() override;
@@ -34,16 +40,19 @@ public:
 	void OnMouseWheelBackward() override;
 
 	/**
-	 * Zooms in or out with regards to the current camera centerposition.
-	 * factor > 0: Zoom in, factor < 0: Zoom out
-	 */
-	void zoomWithFactor(float factor);
+	* Zooms in or out with regards to the current camera centerposition.
+	* factor > 0: Zoom in, factor < 0: Zoom out
+	*/
+	
 
 	// Rotates the globe, locking the y-axis, if DisplayMode=DisplayMap
 	void Rotate() override;
 
 private:
 	vtkPVStuproView* myVtkPVStuproView = NULL;
+	void zoomWithFactor(float factor);
+
+	float zoomFactor;
 };
 
 #endif
