@@ -74,6 +74,13 @@ public:
   static Configuration& getInstance();
 
   /**
+   * Check whether the loaded configuration file contains a given key.
+   * @param key Key to be tested for
+   * @return True if the key is present in the configuration file, false otherwise
+   */
+  const bool hasKey(QString key);
+
+  /**
    * Get a string value from the configuration file.
    * @param key The key of the value to get, which is a path through the data
    * tree of the JSON file, separated by dots.
