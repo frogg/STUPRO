@@ -41,6 +41,14 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/View/
 )
 
+# load the glsl-shaders to use in code:
+# these can be used using the filename (without extension) as
+# const char* variables
+encode_files_as_strings(StuproView_ENCODED_SHADERS
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/glsl/GlobeShader_fsh.glsl
+	${CMAKE_CURRENT_SOURCE_DIR}/../res/glsl/GlobeShader_vsh.glsl
+)
+
 # register a ParaView plugin
 add_paraview_plugin(
 	StuproViewPlugin
@@ -53,6 +61,7 @@ add_paraview_plugin(
 		View/StuproView.xml
 	SOURCES
 		${StuproView_SOURCE_FILES}
+		${StuproView_ENCODED_SHADERS}
 )
 
 # link against Qt libraries
