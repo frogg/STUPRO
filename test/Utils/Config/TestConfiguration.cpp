@@ -21,12 +21,12 @@ void TestConfiguration::testValidCalls() {
 
 	CPPUNIT_ASSERT_EQUAL(
 		Configuration::getInstance().getFloat("latitude"),
-		12.2345
+		12.2345f
 	);
 
 	CPPUNIT_ASSERT_EQUAL(
 		Configuration::getInstance().getDouble("deeply.nested.configuration.group.longitude"),
-		5.234f
+		5.234
 	);
 }
 
