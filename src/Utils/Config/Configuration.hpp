@@ -117,7 +117,7 @@ private:
   /**
    * The path where the configuration file resides.
    */
-  static const QString CONFIGURATION_FILE_PATH;
+  const QString CONFIGURATION_FILE_PATH;
 };
 
 #endif
