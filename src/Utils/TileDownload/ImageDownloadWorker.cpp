@@ -42,6 +42,7 @@ void ImageDownloadWorker::startDownload() {
 }
 
 MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width, int height) {
+	// ensure the raw data contains two bytes of data for every pixel of the image
 	if (rawData.size() != width * height * 2) {
 		QString errorMessage("Expected raw data length of %1b, but %2b were given");
 		throw Bil16DecodingFailedException(errorMessage.arg(width * height * 2, rawData.size()));
