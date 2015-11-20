@@ -61,7 +61,7 @@ struct InvalidValueException : public ConfigurationException {
 			: ConfigurationException(
 				QString("A value of type %1 was requested, but the value of the "
                 "requested key '%2' was of type %3.")
-				.arg(expectedValue).arg(key).args(actualValue)
+				.arg(expectedValue).arg(key).arg(actualValue)
 			) { }
 };
 
