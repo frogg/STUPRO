@@ -154,6 +154,33 @@ void StuproInteractor::setRotationParameters(vtkCamera *camera, vtkRenderWindowI
 	}
 }
 
+
+void StuproInteractor::setCameraRotators(vtkCamera *camera, int *size){
+	double degrees = 180.0;
+	// azimuth
+	cameraRotators.x = rotationParameters.x / static_cast<double>(size[0]) * degrees;
+	// elevation
+	cameraRotators.y = rotationParameters.y / static_cast<double>(size[1]) * degrees;
+
+	double directionOfProjection[3], viewUp[3];
+
+	camera->GetDirectionOfProjection(directionOfProjection);
+	vtkMath::Normalize(directionOfProjection);
+	camera->GetViewUp(viewUp);
+	vtkMath::Normalize(viewUp);
+
+	// If we are exactly over the north / southpole we need to disable further elevation
+	// otherwise the interactor starts jumping around
+	double angle = vtkMath::DegreesFromRadians(acos(vtkMath::Dot(directionOfProjection, viewUp)));
+	if ((angle + cameraRotators.y) > 179.0 ||
+		(angle + cameraRotators.y) < 1.0)
+	{
+		cameraRotators.y = 0.0;
+	}
+}
+
+
+
 void StuproInteractor::Rotate()
 {
 	// if there is no Renderer found, break
@@ -167,30 +194,10 @@ void StuproInteractor::Rotate()
 	int *size = this->CurrentRenderer->GetRenderWindow()->GetSize();
 
 	setRotationParameters(camera, renderWindowInteractor);
-	
-	double degrees = 180.0;
-	double azimuth = rotationParameters.x / static_cast<double>(size[0]) * degrees;
-	double elevation = rotationParameters.y / static_cast<double>(size[1]) * degrees;
+	setCameraRotators(camera, size);
 
-	camera->Azimuth(azimuth);
-
-	double directionOfProjection[3], viewUp[3];
-
-	camera->GetDirectionOfProjection(directionOfProjection);
-	vtkMath::Normalize(directionOfProjection);
-	camera->GetViewUp(viewUp);
-	vtkMath::Normalize(viewUp);
-
-	// If we are exactly over the north / southpole we need to disable further elevation
-	// otherwise the interactor starts jumping around
-	double angle = vtkMath::DegreesFromRadians(acos(vtkMath::Dot(directionOfProjection, viewUp)));
-	if ((angle + elevation) > 179.0 ||
-		(angle + elevation) < 1.0)
-	{
-		elevation = 0.0;
-	}
-
-	camera->Elevation(elevation);
+	camera->Azimuth(cameraRotators.x);
+	camera->Elevation(cameraRotators.y);
 
 	if (this->AutoAdjustCameraClippingRange)
 	{
