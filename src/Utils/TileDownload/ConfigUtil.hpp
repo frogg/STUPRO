@@ -21,6 +21,9 @@ struct FileOpenException : public std::exception {
 	}
 };
 
+/**
+ * Exception thrown when an error occurred trying to parse JSON data.
+ */
 struct JsonParseException : public std::exception {
 	std::string reason;
 
