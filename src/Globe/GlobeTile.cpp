@@ -111,7 +111,7 @@ void GlobeTile::initShaders()
 
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
-	float globeRadius = 1.f;
+	float globeRadius = GLOBE_RADIUS;
     float planeSize = PLANE_SIZE;
 	float displayModeInterpolation = 0.f;
 	float heightFactor = 100.f;

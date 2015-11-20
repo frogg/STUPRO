@@ -6,6 +6,14 @@ class Coordinate: public Vector2d
 public:
 	
 	typedef Vector2d VectorType;
+	
+	/**
+	 * Constructs a zero coordinate.
+	 */
+	Coordinate() :
+		x(0), y(0)
+	{
+	}
 
 	/**
 	 * Constructs a coordinate from lat/lon values.
