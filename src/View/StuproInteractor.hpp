@@ -13,43 +13,60 @@ public:
 	StuproInteractor();
 
 	static StuproInteractor *New();
-	// Constructor needed for keeping track of the globe-radius.
+	/**
+	* Constructor needed for keeping track of the globe-radius.
+	*
+	* @param vtkPVStuproView
+	*/
 	static StuproInteractor *New(vtkPVStuproView *application);
 
 	vtkTypeMacro(StuproInteractor, vtkInteractorStyleTerrain)
 
-	// Overrides the inner unnecessary OnTimer Event
-	// needed for our vtkCommand::TimerEvent in vtkPVStuproView.cxx
+	/**
+	* Overrides the inner unnecessary OnTimer Event
+	* needed for our vtkCommand::TimerEvent in vtkPVStuproView.cxx
+	*/
 	void OnTimer() override
 	{
 		// Empty on purpose.
 	}
 
+	/**
+	* One RenderWindow can have multiple renderers, we need to determine
+	* the one we clicked via our mouse position.
+	*/
 	void setCurrentRendererViaPosition();
 
-	// Moving the globe/map around.
+	/**
+	* Moving the map around.
+	*/
 	void OnMiddleButtonDown() override;
 	void OnMiddleButtonUp() override;
 
-	// Rotates the globe/map for now.
+	/**
+	* TODO camera-tilt
+	*/
 	void OnRightButtonDown() override;
 	void OnRightButtonUp() override;
 
-	// Zooms in/out of the globe.
+	/**
+	* Zooms in/out of the globe.
+	*/
 	void OnMouseWheelForward() override;
 	void OnMouseWheelBackward() override;
 
 	/**
-	* Zooms in or out with regards to the current camera centerposition.
-	* factor > 0: Zoom in, factor < 0: Zoom out
+	* Rotates the globe, locking the y-axis, if DisplayMode=DisplayMap.
+	* Rotationspeed is depending on distance to globe
 	*/
-	
-
-	// Rotates the globe, locking the y-axis, if DisplayMode=DisplayMap
 	void Rotate() override;
 
 private:
 	vtkPVStuproView* myVtkPVStuproView = NULL;
+	/**
+	* Zooms in or out with regards to the current camera centerposition.
+	* factor > 0: Zoom in, factor < 0: Zoom out
+	*/
 	void zoomWithFactor(float factor);
 
 	float zoomFactor;

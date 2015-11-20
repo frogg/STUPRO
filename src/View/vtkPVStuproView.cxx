@@ -65,7 +65,7 @@ void vtkPVStuproView::initRenderer()
 
 	// Zoom out.
 	GetRenderWindow()->Render();
-	interactorStyle->zoomWithFactor(-1800.f);
+	//interactorStyle->zoomWithFactor(-1800.f);
 }
 
 //----------------------------------------------------------------------------
