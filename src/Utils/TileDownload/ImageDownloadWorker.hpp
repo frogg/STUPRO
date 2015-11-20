@@ -15,6 +15,9 @@
 #include <thread>
 
 
+/**
+ * Base struct for all exceptions thrown whenever a download failed.
+ */
 struct DownloadFailedException : public std::exception {
 	std::string reason;
 
@@ -25,6 +28,9 @@ struct DownloadFailedException : public std::exception {
 	}
 };
 
+/**
+ * Exception thrown when there was a connection error while attempting a download.
+ */
 struct ConnectionFailedException : public DownloadFailedException {
 	ConnectionFailedException(QUrl url, QNetworkReply::NetworkError error)
 			: DownloadFailedException(
@@ -33,6 +39,9 @@ struct ConnectionFailedException : public DownloadFailedException {
 			) { }
 };
 
+/**
+ * Exception thrown when a network request returned a status code other than 200 OK.
+ */
 struct BadStatusCodeException : public DownloadFailedException {
 	BadStatusCodeException(QNetworkReply *reply)
 			: DownloadFailedException(
@@ -45,6 +54,10 @@ struct BadStatusCodeException : public DownloadFailedException {
 			) { }
 };
 
+/**
+ * Exception thrown when a network request returned a content type that the ImageDownloadWorker
+ * doesn't recognize.
+ */
 struct UnknownContentTypeException : public DownloadFailedException {
 	UnknownContentTypeException(QString dataFormat, QUrl url)
 			: DownloadFailedException(
@@ -53,6 +66,9 @@ struct UnknownContentTypeException : public DownloadFailedException {
 			) { }
 };
 
+/**
+ * Exception thrown when a request returned invalid image data.
+ */
 struct ImageDecodingFailedException : public DownloadFailedException {
 	ImageDecodingFailedException(QUrl url)
 			: DownloadFailedException(
@@ -60,6 +76,9 @@ struct ImageDecodingFailedException : public DownloadFailedException {
 			) { }
 };
 
+/**
+ * Exception thrown when a request returned malformed bil16 data.
+ */
 struct Bil16DecodingFailedException : public DownloadFailedException {
 	Bil16DecodingFailedException(QString reason)
 			: DownloadFailedException(
