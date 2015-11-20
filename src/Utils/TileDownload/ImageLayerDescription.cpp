@@ -35,11 +35,11 @@ QString ImageLayerDescription::getBoundingBoxString(int zoomLevel, int tileX, in
 	double longMin = (tileWidth * tileX) - 180.0;
 	double longMax = (tileWidth * (tileX + 1)) - 180.0;
 
-	QString boundingBox("%1,%3,%2,%4");
-	boundingBox = boundingBox.arg(QString::number(longMin), QString::number(longMax));
-	boundingBox = boundingBox.arg(QString::number(latMin), QString::number(latMax));
+	QString boundingBoxString("%1,%3,%2,%4");
+	boundingBoxString = boundingBoxString.arg(QString::number(longMin), QString::number(longMax));
+	boundingBoxString = boundingBoxString.arg(QString::number(latMin), QString::number(latMax));
 
-	return boundingBox;
+	return boundingBoxString;
 }
 
 void ImageLayerDescription::getTilePositionFromCoordinates(double latitude, double longitude, int zoomLevel,
