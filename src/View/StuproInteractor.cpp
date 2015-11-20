@@ -138,35 +138,36 @@ void StuproInteractor::OnRightButtonUp()
 }
 
 
-void StuproInteractor::setRotationParameters(vtkCamera *camera, vtkRenderWindowInteractor *renderWindowInteractor){
+Vector2d StuproInteractor::calculateRotationParameters(){
 	// Slows the rotation down when closer to the globe/map
 	double distanceOptimization = 2.5;
-	double distanceFactor = pow(1 - (1 / sqrt(camera->GetDistance() * distanceOptimization)), 2);
-
+	// TODO find a better solution
+	double distanceFactor = pow(1 - (1 / sqrt(this->CurrentRenderer->GetActiveCamera()->GetDistance() * distanceOptimization)), 2);
 	//the horizontal and vertical rotation
-	rotationParameters.x = 0;
-	rotationParameters.y = -(renderWindowInteractor->GetEventPosition()[1] - renderWindowInteractor->GetLastEventPosition()[1])*distanceFactor;
+	Vector2d rotationParameters(0,
+		-(this->Interactor->GetEventPosition()[1] - this->Interactor->GetLastEventPosition()[1])*distanceFactor);
 
 	//Set the horizontal rotation only if in DisplayGlobe.
 	if (myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayGlobe)
 	{
-		rotationParameters.x = -(renderWindowInteractor->GetEventPosition()[0] - renderWindowInteractor->GetLastEventPosition()[0])*distanceFactor;
+		rotationParameters.x = -(this->Interactor->GetEventPosition()[0] - this->Interactor->GetLastEventPosition()[0])*distanceFactor;
 	}
+	return rotationParameters;
 }
 
 
-void StuproInteractor::setCameraRotators(vtkCamera *camera, int *size){
+Vector2d StuproInteractor::calculateCameraRotators(Vector2d rotationParameters){
+	int *windowSize = this->CurrentRenderer->GetRenderWindow()->GetSize();
 	double degrees = 180.0;
-	// azimuth
-	cameraRotators.x = rotationParameters.x / static_cast<double>(size[0]) * degrees;
-	// elevation
-	cameraRotators.y = rotationParameters.y / static_cast<double>(size[1]) * degrees;
+	// azimuth and elevation for the camera
+	Vector2d cameraRotators(rotationParameters.x / static_cast<double>(windowSize[0]) * degrees,
+		rotationParameters.y / static_cast<double>(windowSize[1]) * degrees);
 
 	double directionOfProjection[3], viewUp[3];
 
-	camera->GetDirectionOfProjection(directionOfProjection);
+	this->CurrentRenderer->GetActiveCamera()->GetDirectionOfProjection(directionOfProjection);
 	vtkMath::Normalize(directionOfProjection);
-	camera->GetViewUp(viewUp);
+	this->CurrentRenderer->GetActiveCamera()->GetViewUp(viewUp);
 	vtkMath::Normalize(viewUp);
 
 	// If we are exactly over the north / southpole we need to disable further elevation
@@ -177,6 +178,7 @@ void StuproInteractor::setCameraRotators(vtkCamera *camera, int *size){
 	{
 		cameraRotators.y = 0.0;
 	}
+	return cameraRotators;
 }
 
 
@@ -189,13 +191,10 @@ void StuproInteractor::Rotate()
 		return;
 	}
 
+	Vector2d rotationParameters = calculateRotationParameters();
+	Vector2d cameraRotators = calculateCameraRotators(rotationParameters);
+
 	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
-	vtkRenderWindowInteractor *renderWindowInteractor = this->Interactor;
-	int *size = this->CurrentRenderer->GetRenderWindow()->GetSize();
-
-	setRotationParameters(camera, renderWindowInteractor);
-	setCameraRotators(camera, size);
-
 	camera->Azimuth(cameraRotators.x);
 	camera->Elevation(cameraRotators.y);
 
@@ -204,5 +203,5 @@ void StuproInteractor::Rotate()
 		this->CurrentRenderer->ResetCameraClippingRange();
 	}
 
-	renderWindowInteractor->Render();
+	this->Interactor->Render();
 }

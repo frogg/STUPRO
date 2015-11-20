@@ -71,16 +71,15 @@ private:
 	*/
 	void zoomWithFactor(float factor);
 
-	Vector2<double> rotationParameters;
-	Vector2<double> cameraRotators;
+	static const double distanceOptimization;
 	/**
 	* sets the Rotationspeed, depending on Camera-Distance
 	*/
-	void setRotationParameters(vtkCamera *camera, vtkRenderWindowInteractor *renderWindowInteractor);
+	Vector2d calculateRotationParameters();
 	/**
 	* sets the ViewingAngle
 	*/
-	void setCameraRotators(vtkCamera *camera, int *size);
+	Vector2d calculateCameraRotators(Vector2d rotationParameters);
 	
 	float zoomFactor;
 };
