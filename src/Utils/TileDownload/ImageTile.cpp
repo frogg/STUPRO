@@ -8,6 +8,8 @@ ImageTile::ImageTile(const QMap<QString, MetaImage> layers, int zoomLevel, int t
 	this->setTileY(tileY);
 }
 
+ImageTile::ImageTile() : ImageTile(QMap<QString, MetaImage>(), -1, -1, -1) { }
+
 ImageTile::~ImageTile() {
 	this->layers.clear();
 }

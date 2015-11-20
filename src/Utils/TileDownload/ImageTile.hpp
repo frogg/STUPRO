@@ -17,7 +17,10 @@ public:
    * @param tileY The vertical position of this tile
    */
   ImageTile(const QMap<QString, MetaImage> layers, int zoomLevel, int tileX, int tileY);
-	~ImageTile();
+
+  ImageTile();
+
+  ~ImageTile();
 
   /**
    * Get the map of layers saved in this image tile.
