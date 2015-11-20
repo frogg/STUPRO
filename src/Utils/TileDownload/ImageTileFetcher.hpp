@@ -13,14 +13,13 @@
 class QUrl;
 
 
+/**
+ * Exception thrown when a non-existing layer is requested.
+ */
 struct InvalidLayerException : public std::exception {
-	QString givenLayer;
-	QList<QString> availableLayers;
+	std::string reason;
 
-	InvalidLayerException(QString givenLayer, QList<QString> availableLayers)
-		: givenLayer(givenLayer), availableLayers(availableLayers) { }
-
-	const char * what() const throw() {
+	InvalidLayerException(QString givenLayer, QList<QString> availableLayers) {
 		QString message("The given layer wasn't recognized. Expected one of { ");
 		for (int i = 0; i < availableLayers.size(); i++) {
 			message += "'" + availableLayers[i] + "'";
@@ -29,7 +28,11 @@ struct InvalidLayerException : public std::exception {
 			}
 		}
 		message += " }. Was given '" + givenLayer + "'.";
-		return message.toStdString().c_str();
+		this->reason = message.toStdString();
+	}
+
+	const char * what() const noexcept override {
+		return reason.c_str();
 	}
 };
 
