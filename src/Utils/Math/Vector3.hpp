@@ -13,6 +13,8 @@ class Vector3
 {
 public:
 
+	typedef T ValueType;
+	
 	/**
 	 * Constructs a zero vector.
 	 */

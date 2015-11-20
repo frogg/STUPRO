@@ -12,6 +12,8 @@ class Rect
 {
 public:
 
+	typedef T ValueType;
+	
 	/**
 	 * Creates a zero-size zero-position rectangle.
 	 */

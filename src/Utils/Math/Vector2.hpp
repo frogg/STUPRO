@@ -12,6 +12,8 @@ template<typename T>
 class Vector2
 {
 public:
+	
+	typedef T ValueType;
 
 	/**
 	 * Constructs a zero vector.
