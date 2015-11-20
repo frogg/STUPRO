@@ -143,68 +143,60 @@ void StuproInteractor::OnRightButtonUp()
 */
 void StuproInteractor::Rotate()
 {
-	
+	// if there is no Renderer found, break
 	if (this->CurrentRenderer == NULL)
 	{
 		return;
 	}
 
 	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
-	vtkRenderWindowInteractor *rwi = this->Interactor;
+	vtkRenderWindowInteractor *renderWindowInteractor = this->Interactor;
 
 	// Slows the rotation down when closer to the globe/map
-	double distanceFactor = pow(1 - (1 / sqrt(camera->GetDistance() * 5 / 2)), 2);
+	double distanceFactor = 1/(camera->GetDistance());
 
-	int dx = 0;
+	//the horizontal rotation
+	int horizontalRotation = 0;
 
 	//Set the horizontal rotation only if in DisplayGlobe.
 	if (myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayGlobe)
 	{
-		dx = -(rwi->GetEventPosition()[0] - rwi->GetLastEventPosition()[0])*distanceFactor;
+		horizontalRotation = -(renderWindowInteractor->GetEventPosition()[0] - renderWindowInteractor->GetLastEventPosition()[0]) / distanceFactor;
 	}
 
-	int dy = -(rwi->GetEventPosition()[1] - rwi->GetLastEventPosition()[1])*distanceFactor;
+	int verticalRotation = -(renderWindowInteractor->GetEventPosition()[1] - renderWindowInteractor->GetLastEventPosition()[1]) / distanceFactor;
 
 	int *size = this->CurrentRenderer->GetRenderWindow()->GetSize();
+	
+	double azimuth = horizontalRotation / static_cast<double>(size[0]) * 180.0;
+	double elevation = verticalRotation / static_cast<double>(size[1]) * 180.0;
+	
+	camera->Azimuth(azimuth);
 
-	double a = dx / static_cast<double>(size[0]) * 180.0;
-	double e = dy / static_cast<double>(size[1]) * 180.0;
+	double directionOfProjection[3], viewUp[3];
 
-	if (rwi->GetShiftKey())
+	camera->GetDirectionOfProjection(directionOfProjection);
+	vtkMath::Normalize(directionOfProjection);
+	camera->GetViewUp(viewUp);
+	vtkMath::Normalize(viewUp);
+
+
+	// If we are exactly over the north / southpole we need to disable further elevation
+	// otherwise the interactor starts jumping around
+	double angle = vtkMath::DegreesFromRadians(acos(vtkMath::Dot(directionOfProjection, viewUp)));
+	if ((angle + elevation) > 179.0 ||
+		(angle + elevation) < 1.0)
 	{
-		if (abs(dx) >= abs(dy))
-		{
-			e = 0.0;
-		}
-		else
-		{
-			a = 0.0;
-		}
+		elevation = 0.0;
 	}
 
-	camera->Azimuth(a);
-
-	double dop[3], vup[3];
-
-	camera->GetDirectionOfProjection(dop);
-	vtkMath::Normalize(dop);
-	camera->GetViewUp(vup);
-	vtkMath::Normalize(vup);
-
-	double angle = vtkMath::DegreesFromRadians(acos(vtkMath::Dot(dop, vup)));
-	if ((angle + e) > 179.0 ||
-		(angle + e) < 1.0)
-	{
-		e = 0.0;
-	}
-
-	camera->Elevation(e);
+	camera->Elevation(elevation);
 
 	if (this->AutoAdjustCameraClippingRange)
 	{
 		this->CurrentRenderer->ResetCameraClippingRange();
 	}
 
-	rwi->Render();
+	renderWindowInteractor->Render();
 	
 }
