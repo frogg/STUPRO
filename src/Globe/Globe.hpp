@@ -113,6 +113,11 @@ public:
 	 * Returns true if a texture was loaded and a renderer re-paint is needed and resets the flag.
 	 */
 	bool checkIfRepaintIsNeeded();
+	
+	/**
+	 * Checks which globe tiles are invisible and need to be culled.
+	 */
+	void updateGlobeTileVisibility();
 
 	/**
 	 * Returns the Coordinates (lat, long) from multipe worldPoints of the Globe.

@@ -13,7 +13,7 @@ class Rect
 public:
 
 	typedef T ValueType;
-	
+
 	/**
 	 * Creates a zero-size zero-position rectangle.
 	 */
@@ -53,6 +53,27 @@ public:
 	 */
 	Rect(const T a[]) :
 			x(a[0]), y(a[1]), w(a[2]), h(a[3])
+	{
+	}
+
+	/**
+	 * Constructs a rectangle from another rectangle of the same component type.
+	 * 
+	 * @param r The rectangle to copy the coordinates from.
+	 */
+	Rect(const Rect<T> & r) :
+			x(r.x), y(r.y), w(r.w), h(r.h)
+	{
+	}
+
+	/**
+	 * Constructs a rectangle from another rectangle of a different component type.
+	 * 
+	 * @param r The rectangle to copy the coordinates from, converting them.
+	 */
+	template<typename T2>
+	explicit Rect(const Rect<T2> & r) :
+			x(r.x), y(r.y), w(r.w), h(r.h)
 	{
 	}
 

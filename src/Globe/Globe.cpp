@@ -162,6 +162,27 @@ bool Globe::checkIfRepaintIsNeeded()
 	return !myIsClean.test_and_set();
 }
 
+void Globe::updateGlobeTileVisibility()
+{
+	unsigned int height = 1 << myZoomLevel;
+	unsigned int width = height * 2;
+
+	for (unsigned int lat = 0; lat < height; ++lat)
+	{
+		for (unsigned int lon = 0; lon < width; ++lon)
+		{
+			std::size_t index = getTileIndex(lon, lat);
+			
+			if (index >= myTiles.size())
+			{
+				continue;
+			}
+			
+			myTiles[index]->setVisibility(false);
+		}
+	}
+}
+
 void Globe::onTileLoad(ImageTile tile)
 {
 	if (myZoomLevel != tile.getZoomLevel())

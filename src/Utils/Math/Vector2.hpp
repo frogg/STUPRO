@@ -49,7 +49,7 @@ public:
 	 * 
 	 * @param v The vector to copy the coordinates from.
 	 */
-	Vector2(Vector2<T> v) :
+	Vector2(const Vector2<T> & v) :
 			x(v.x), y(v.y)
 	{
 	}

@@ -1,6 +1,9 @@
 #ifndef STUPRO_GLOBE_COORDINATE_HPP
 #define STUPRO_GLOBE_COORDINATE_HPP
 
+/**
+ * Holds a lat/long coordinate.
+ */
 class Coordinate: public Vector2d
 {	
 public:
@@ -11,7 +14,7 @@ public:
 	 * Constructs a zero coordinate.
 	 */
 	Coordinate() :
-		x(0), y(0)
+		Vector2d()
 	{
 	}
 
@@ -19,7 +22,7 @@ public:
 	 * Constructs a coordinate from lat/lon values.
 	 */
 	Coordinate(VectorType::ValueType lat, VectorType::ValueType lon) :
-		y(lat), x(lon)
+		Vector2d(lon, lat)
 	{
 	}
 	
