@@ -22,7 +22,7 @@ void vtkPVStuproView::Initialize(unsigned int id)
 
 	initParameters();
 	initRenderer();
-	initCallbacks();
+	registerTimerCallback();
 	initGlobe();
 }
 
@@ -56,13 +56,13 @@ void vtkPVStuproView::initRenderer()
 	interactorStyle->zoomWithFactor(-1800.f);
 }
 
-void vtkPVStuproView::initCallbacks()
+void vtkPVStuproView::registerTimerCallback()
 {
 	// Create callback function that updates the display mode interpolation value.
 	auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
 	{
 		// Capture the client using the void* of the arguments-list.
-		vtkPVStuproView& client = *((vtkPVStuproView*) clientData);
+		vtkPVStuproView& client = *static_cast<vtkPVStuproView*>(clientData);
 
 		// Determine target interpolation based on display mode.
 		// If the current mode is the globe, try and switch to the map and vice versa.
@@ -118,12 +118,12 @@ void vtkPVStuproView::switchCurrentDisplayMode()
 	GetRenderWindow()->Render();
 }
 
-float vtkPVStuproView::getGlobeRadius()
+float vtkPVStuproView::getGlobeRadius() const
 {
 	return this->globeRadius;
 }
 
-vtkPVStuproView::DisplayMode vtkPVStuproView::getDisplayMode()
+vtkPVStuproView::DisplayMode vtkPVStuproView::getDisplayMode() const
 {
 	return this->displayMode;
 }

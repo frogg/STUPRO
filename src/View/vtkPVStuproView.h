@@ -7,7 +7,10 @@
 #include <iostream>
 #include <memory>
 
-class Globe;
+// TODO/FIXME: Somehow, VS13 needs an include for std::memory here instead of
+// a normal forward-declarion.
+#include <Globe/Globe.hpp>
+//class Globe;
 
 /**
  * This class represents our own, custom vtkPVRenderView. It is responsible
@@ -46,7 +49,7 @@ public:
 	 *
 	 * @param id the id of the view, gets set by the calling instance, used for Superclass::Initialize(id)
 	 */
-	virtual void Initialize(unsigned int id);
+	virtual void Initialize(unsigned int id) override;
 
 	/**
 	 * Upon call, switches the currently used display mode to the opposite,
@@ -55,14 +58,14 @@ public:
 	void switchCurrentDisplayMode();
 
 	// TODO: Make a global config file.
-	float getGlobeRadius();
+	float getGlobeRadius() const;
 	
 	/**
 	 * Returns the current display mode.
 	 *
 	 * @return the current display mode
 	 */
-	DisplayMode getDisplayMode();
+	DisplayMode getDisplayMode() const;
 
 protected:
 	/**
@@ -106,7 +109,7 @@ private:
 	 * Registers all callback functions used later during runtime.
 	 * FIXME: Doesn't work in PV as of 18-11-2015.
 	 */
-	void initCallbacks();
+	void registerTimerCallback();
 
 	/**
 	 * Initializes an instance of the this->globe as a unique pointer.
