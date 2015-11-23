@@ -20,8 +20,8 @@ void TestConfiguration::testValidCalls() {
 	);
 
 	CPPUNIT_ASSERT_EQUAL(
-		12.2345f,
-		Configuration::getInstance().getFloat("latitude")
+		12.2345,
+		Configuration::getInstance().getDouble("latitude")
 	);
 
 	CPPUNIT_ASSERT_EQUAL(
@@ -37,7 +37,7 @@ void TestConfiguration::testInvalidCalls() {
 	);
 
 	CPPUNIT_ASSERT_THROW(
-		Configuration::getInstance().getFloat("globe.name"),
+		Configuration::getInstance().getDouble("globe.name"),
 		InvalidValueException
 	);
 }
