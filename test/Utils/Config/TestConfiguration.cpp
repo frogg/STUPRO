@@ -10,23 +10,23 @@ void TestConfiguration::testValidCalls() {
 	CPPUNIT_ASSERT(!Configuration::getInstance().hasKey("globe.invalid"));
 
 	CPPUNIT_ASSERT_EQUAL(
-		Configuration::getInstance().getInteger("globe.radius"),
-		42
+		42,
+		Configuration::getInstance().getInteger("globe.radius")
 	);
 
 	CPPUNIT_ASSERT_EQUAL(
-		Configuration::getInstance().getString("globe.name").toStdString(),
-		std::string("Foo")
+		std::string("Foo"),
+		Configuration::getInstance().getString("globe.name").toStdString()
 	);
 
 	CPPUNIT_ASSERT_EQUAL(
-		Configuration::getInstance().getFloat("latitude"),
-		12.2345f
+		12.2345f,
+		Configuration::getInstance().getFloat("latitude")
 	);
 
 	CPPUNIT_ASSERT_EQUAL(
-		Configuration::getInstance().getDouble("deeply.nested.configuration.group.longitude"),
-		5.234
+		5.234,
+		Configuration::getInstance().getDouble("deeply.nested.configuration.group.longitude")
 	);
 }
 
