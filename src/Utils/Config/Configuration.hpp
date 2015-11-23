@@ -95,12 +95,6 @@ public:
 	const int getInteger(QString key);
 
   /**
-   * Get a float value from the configuration file.
-   * @param key The key of the value to get
-   */
-  const float getFloat(QString key);
-
-  /**
    * Get a double value from the configuration file.
    * @param key The key of the value to get
    */
@@ -128,6 +122,12 @@ private:
    * The path where the configuration file resides.
    */
   const QString CONFIGURATION_FILE_PATH;
+
+	/**
+	 * A list of names for all value types that may be present in the JSON file.
+	 * This will be used later on for creating human-readable exceptions.
+	 */
+	static const QString TYPE_NAMES[];
 
 	/**
 	 * The JSON document the configuration is stored in.
