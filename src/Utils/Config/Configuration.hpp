@@ -2,6 +2,7 @@
 #define KRONOS_CONFIGURATION_HPP
 
 #include <QString>
+#include <rapidjson/document.h>
 #include <exception>
 
 /**
@@ -21,8 +22,8 @@ struct ConfigurationException : public std::exception {
 /**
  * Exception thrown if the configuration file could not be opened.
  */
-struct FileOpenException : public ConfigurationException {
-	FileOpenException(QString path, QString errorDescription)
+struct ConfigFileOpenException : public ConfigurationException {
+	ConfigFileOpenException(QString path, QString errorDescription)
 			: ConfigurationException(
 				QString("The configuration file at '%1' could not be opened: %2")
 				.arg(path).arg(errorDescription)
@@ -118,6 +119,11 @@ private:
    * The path where the configuration file resides.
    */
   const QString CONFIGURATION_FILE_PATH;
+
+	/**
+	 * The JSON document the configuration is stored in.
+	 */
+	rapidjson::Document configurationDocument;
 };
 
 #endif
