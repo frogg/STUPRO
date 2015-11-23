@@ -8,8 +8,11 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QStringList>
+#include <QList>
 
 #include <iostream>
+
+const QString Configuration::TYPE_NAMES[] = {"Null", "Bool (False)", "Bool (True)", "Object", "Array", "String", "Number"};
 
 Configuration &Configuration::getInstance() {
 	static Configuration instance;
@@ -39,45 +42,76 @@ Configuration::Configuration() : CONFIGURATION_FILE_PATH(QString("./res/configur
 }
 
 const rapidjson::Value& Configuration::getValueFromPath(QString key) {
-  // Perform a deep copy of the configuration document so that the search
-  // operation does not accidentally prune the document tree.
-  rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-  this->configurationDocument.Accept(writer);
-  rapidjson::Document deepCopy;
-  deepCopy.Parse(buffer.GetString());
-  rapidjson::Value &currentValue = deepCopy;
-
+  // The nodes of type Value along the path have to be stored in a list as to
+  // not accidentally prune the tree of the JSON document.
+  // The elements have to be pointers because rapidjson::Value cannot be passed
+  // by copy and QLists do not work with references.
   QStringList path = key.split(".");
+  QList<rapidjson::Value*> values;
+  values.append(&this->configurationDocument);
 
   // Step through the data tree using the path as given by the key parameter
   for (QString step : path) {
-    if (currentValue.HasMember(step.toStdString().c_str())) {
-      currentValue = currentValue[step.toStdString().c_str()];
+    if (values.at(values.size() - 1)->HasMember(step.toStdString().c_str())) {
+      values.append(&(*values.at(values.size() - 1))[step.toStdString().c_str()]);
     } else {
       throw InvalidKeyException(key);
     }
   }
 
-  return currentValue;
+  // Save the final node and clear the list
+  rapidjson::Value &returnValue = *values.at(values.size() - 1);
+  values.clear();
+
+  return returnValue;
 }
 
 const bool Configuration::hasKey(QString key) {
+  try {
+    this->getValueFromPath(key);
+  } catch (InvalidKeyException e) {
+    return false;
+  }
 
+  return true;
 }
 
 const QString Configuration::getString(QString key) {
-  // TODO
+  const rapidjson::Value &value = this->getValueFromPath(key);
+
+  if(!value.IsString()) {
+    throw InvalidValueException(key, QString("String"), Configuration::TYPE_NAMES[value.GetType()]);
+  }
+
+  return value.GetString();
 }
 
 const int Configuration::getInteger(QString key) {
-  // TODO
-}
+  const rapidjson::Value &value = this->getValueFromPath(key);
 
-const float Configuration::getFloat(QString key) {
-  // TODO
+  if(!value.IsInt()) {
+    // The value is of some kind of number that is not an integer
+    if(value.GetType() == 6) {
+      throw InvalidValueException(key, QString("Integer"), QString("Number but not an Integer"));
+    } else {
+      throw InvalidValueException(key, QString("Integer"), Configuration::TYPE_NAMES[value.GetType()]);
+    }
+  }
+
+  return value.GetInt();
 }
 
 const double Configuration::getDouble(QString key) {
-  // TODO
+  const rapidjson::Value &value = this->getValueFromPath(key);
+
+  if(!value.IsDouble()) {
+    // The value is of some kind of number that is not a double
+    if(value.GetType() == 6) {
+      throw InvalidValueException(key, QString("Double"), QString("Number but not a Double"));
+    } else {
+      throw InvalidValueException(key, QString("Double"), Configuration::TYPE_NAMES[value.GetType()]);
+    }
+  }
+
+  return value.GetDouble();
 }
