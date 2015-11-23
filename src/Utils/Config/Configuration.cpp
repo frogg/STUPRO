@@ -1,10 +1,15 @@
 #include <Utils/Config/Configuration.hpp>
 
 #include <rapidjson/error/en.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
+#include <QStringList>
+
+#include <iostream>
 
 Configuration &Configuration::getInstance() {
 	static Configuration instance;
@@ -33,8 +38,32 @@ Configuration::Configuration() : CONFIGURATION_FILE_PATH(QString("./res/configur
   }
 }
 
+const rapidjson::Value& Configuration::getValueFromPath(QString key) {
+  // Perform a deep copy of the configuration document so that the search
+  // operation does not accidentally prune the document tree.
+  rapidjson::StringBuffer buffer;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+  this->configurationDocument.Accept(writer);
+  rapidjson::Document deepCopy;
+  deepCopy.Parse(buffer.GetString());
+  rapidjson::Value &currentValue = deepCopy;
+
+  QStringList path = key.split(".");
+
+  // Step through the data tree using the path as given by the key parameter
+  for (QString step : path) {
+    if (currentValue.HasMember(step.toStdString().c_str())) {
+      currentValue = currentValue[step.toStdString().c_str()];
+    } else {
+      throw InvalidKeyException(key);
+    }
+  }
+
+  return currentValue;
+}
+
 const bool Configuration::hasKey(QString key) {
-  // TODO
+
 }
 
 const QString Configuration::getString(QString key) {

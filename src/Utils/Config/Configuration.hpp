@@ -107,6 +107,15 @@ public:
   const double getDouble(QString key);
 
 private:
+	/**
+	 * Get a JSON value from a dot-separated path through the object tree in the
+	 * JSON file.
+	 * @param key Dot-separated path through the object tree
+	 * @return The JSON value located at the end of the specified path
+	 * @throws InvalidKeyException if the specified path does not exist
+	 */
+	const rapidjson::Value& getValueFromPath(QString key);
+
   /*
    * Hide some things that should not be accessed given this class uses
    * the singleton pattern.
