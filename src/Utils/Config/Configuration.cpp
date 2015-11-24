@@ -52,18 +52,14 @@ const rapidjson::Value& Configuration::getValueFromPath(QString key) {
 
   // Step through the data tree using the path as given by the key parameter
   for (QString step : path) {
-    if (values.at(values.size() - 1)->HasMember(step.toStdString().c_str())) {
-      values.append(&(*values.at(values.size() - 1))[step.toStdString().c_str()]);
+    if (values.last()->HasMember(step.toStdString().c_str())) {
+      values.append(&(*values.last())[step.toStdString().c_str()]);
     } else {
       throw InvalidKeyException(key);
     }
   }
 
-  // Save the final node and clear the list
-  rapidjson::Value &returnValue = *values.at(values.size() - 1);
-  values.clear();
-
-  return returnValue;
+  return *values.last();
 }
 
 const bool Configuration::hasKey(QString key) {
