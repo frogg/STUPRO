@@ -21,8 +21,7 @@ void TestGlobe::testResolution() {
 
 
 void TestGlobe::testZoomLevel() {
-    
-    
+
     Globe globe = *new Globe();
     
     globe.setZoomLevel(42);
