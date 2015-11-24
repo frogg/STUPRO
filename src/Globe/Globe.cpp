@@ -240,9 +240,7 @@ Vector3d Globe::getIntersectionPoint(double plane1[4], double plane2[4], double 
 	Vector3d intersection;
 
 	double planes[3][4];
-	double intersectionOfPlanes[3];
-    
-    // store them into one array for easier access
+	// store them into one array for easier access
 	for (int i = 0; i < 4; i++)
 	{
 		planes[0][i] = plane1[i];
@@ -251,7 +249,7 @@ Vector3d Globe::getIntersectionPoint(double plane1[4], double plane2[4], double 
 	}
 
     //calculate intersection of planes and store result in intersectionOfPlanes
-	cutPlanes(planes, intersectionOfPlanes);
+	Vector3d intersectionOfPlanes = cutPlanes(planes);
 
 	// get intersection with world
 	vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
