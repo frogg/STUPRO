@@ -164,6 +164,7 @@ bool Globe::checkIfRepaintIsNeeded()
 
 void Globe::updateGlobeTileVisibility()
 {
+	// TODO: Update globe tile visibility based on camera position!
 	unsigned int height = 1 << myZoomLevel;
 	unsigned int width = height * 2;
 
@@ -178,7 +179,7 @@ void Globe::updateGlobeTileVisibility()
 				continue;
 			}
 			
-			myTiles[index]->setVisibility(false);
+			//myTiles[index]->setVisibility(false);
 		}
 	}
 }
