@@ -1,5 +1,9 @@
 # binary files
 bin
+build
+
+# QtCreator files
+*.user
 
 # mac madness
 *.DS_Store
