@@ -7,9 +7,7 @@ set(KRONOS_QT_VERSION 4)
 
 # register subprojects
 add_subdirectory(src)
-IF(NOT WIN32)
-	add_subdirectory(test)
-ENDIF()
+add_subdirectory(test)
 
 # enable ctest capabilities
 enable_testing()
