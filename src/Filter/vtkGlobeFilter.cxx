@@ -36,6 +36,7 @@ vtkStandardNewMacro(vtkGlobeFilter);
 
 vtkGlobeFilter::vtkGlobeFilter()
 {
+  
   std::cout << "Hello" << endl;
 
 }
@@ -56,35 +57,53 @@ vtkPolyData *input = vtkPolyData::SafeDownCast(
 vtkPolyData *output = vtkPolyData::SafeDownCast(
   outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-    int nmbPoints=100;
+    int numberOfQuadsRight=20;
+    int numberOfQuadsUp=20;
+    
+    int nmbPoints=5*numberOfQuadsRight*numberOfQuadsUp;
 
     vtkCellArray *newPolys;
     newPolys = vtkCellArray::New();
-    newPolys->Allocate(newPolys->EstimateSize(nmbPoints*nmbPoints, 3));
+    newPolys->Allocate(newPolys->EstimateSize(nmbPoints, 3));
     
     vtkPoints *newPoints;
     newPoints = vtkPoints::New();
     vtkFloatArray *newNormals;
-    newPoints->Allocate(nmbPoints*nmbPoints);
+    newPoints->Allocate(nmbPoints);
     newNormals = vtkFloatArray::New();
     newNormals->SetNumberOfComponents(3);
-    newNormals->Allocate(3*nmbPoints*nmbPoints);
+    newNormals->Allocate(3*nmbPoints);
     newNormals->SetName("Normals");
-    newPoints->InsertNextPoint(1, 0.0, 0.0);
-    newNormals->InsertTuple3(1, 0.0, 0.0, 0.0);
+
     vtkIdType pts[4];
-    for (int i=0; i<nmbPoints; i++) {
-        for (int j=0 ; j<nmbPoints; j++) {
-            pts[0]=j;
-            pts[1]=i;
-            pts[2]=0.0;
-            newPolys->InsertNextCell(3, pts);
+    for (int i=0; i<numberOfQuadsRight; i++) {
+        for (int j=0; j<numberOfQuadsUp; j++) {
+        cout << 5.0*i << endl;
+            
+    pts[0]  = newPoints->InsertNextPoint(-1.0+2.0*i, 0.0+2.0*j, sin(-1.0+2.0*i)*2);
+    pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2);
+    pts[2]  = newPoints->InsertNextPoint(0.0+2.0*i, 1.0+2.0*j, sin(0.0+2.0*i)*2);
+    newPolys->InsertNextCell(3, pts);
+    newNormals->InsertTuple3(pts[0], 1.0, 0.0, 0.0);
+    newNormals->InsertTuple3(pts[1], 1.0, 0.0, 0.0);
+    newNormals->InsertTuple3(pts[2], 1.0, 0.0, 0.0);
+            
+    pts[1]  = newPoints->InsertNextPoint(-1.0+2.0*i, 2.0+2.0*j, sin(-1.0+2.0*i)*2);
+    newPolys->InsertNextCell(3, pts);
+    newNormals->InsertTuple3(pts[1], 1.0, 0.0, 0.0);
+            
+    pts[0]  = newPoints->InsertNextPoint(1.0+2.0*i, 2.0+2.0*j, sin(1.0+2.0*i)*2);
+    newPolys->InsertNextCell(3, pts);
+    newNormals->InsertTuple3(pts[0], 1.0, 0.0, 0.0);
+            
+    pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2);
+    newNormals->InsertTuple3(pts[0], 1.0, 0.0, 0.0);
+    newPolys->InsertNextCell(3, pts);
         }
+    
     }
-
-
   
-  //output->CopyStructure( input );
+    output->CopyStructure( input );
     newPoints->Squeeze();
     output->SetPoints(newPoints);
     newPoints->Delete();
@@ -99,7 +118,10 @@ vtkPolyData *output = vtkPolyData::SafeDownCast(
 
     return 1;
 }
-
+void vtkGlobeFilter::reloadStuff(void){
+    this->UpdateDataObject();
+    
+}
 const char *vtkGlobeFilter::GetVectorModeAsString(void)
 {
   if ( this->VectorMode == VTK_VECTOR_MODE_PASS_VECTORS )

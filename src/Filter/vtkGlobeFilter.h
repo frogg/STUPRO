@@ -58,7 +58,7 @@ class VTKFILTERSGENERAL_EXPORT vtkGlobeFilter : public vtkPolyDataAlgorithm
 public:
   vtkTypeMacro(vtkGlobeFilter,vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
-
+  void reloadStuff(void);
   // Description:
   // Construct to compute the gradient of the scalars and vectors.
   static vtkGlobeFilter *New();
