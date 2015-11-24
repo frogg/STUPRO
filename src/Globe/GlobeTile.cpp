@@ -2,7 +2,6 @@
 #include <Utils/Graphics/TextureLoad.hpp>
 #include <Utils/Math/Functions.hpp>
 #include <Utils/Math/Vector2.hpp>
-#include <Utils/Misc/FileFunctions.hpp>
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
 #include <vtkProperty.h>
@@ -11,6 +10,9 @@
 #include <vtkShaderProgram2.h>
 #include <vtkUniformVariables.h>
 #include <string>
+
+extern const char* GlobeShader_fsh;
+extern const char* GlobeShader_vsh;
 
 GlobeTile::Location GlobeTile::Location::getNormalized() const
 {
@@ -100,13 +102,13 @@ void GlobeTile::initShaders()
 	// Create and load fragment shader.
 	myFragmentShader = vtkShader2::New();
 	myFragmentShader->SetType(VTK_SHADER_TYPE_FRAGMENT);
-	myFragmentShader->SetSourceCode(readFile("res/glsl/TestShader.fsh").c_str());
+	myFragmentShader->SetSourceCode(GlobeShader_fsh);
 	myFragmentShader->SetContext(shaderProgram->GetContext());
 
 	// Create and load vertex shader.
 	myVertexShader = vtkShader2::New();
 	myVertexShader->SetType(VTK_SHADER_TYPE_VERTEX);
-	myVertexShader->SetSourceCode(readFile("res/glsl/TestShader.vsh").c_str());
+	myVertexShader->SetSourceCode(GlobeShader_vsh);
 	myVertexShader->SetContext(shaderProgram->GetContext());
 
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
