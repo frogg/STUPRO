@@ -2,7 +2,7 @@
 #define KRONOS_MACROS_HPP
 
 /**
- * Operation system macros.
+ * Operating system macros.
  * 
  * Can be used to conditionally compile platform-specific code.
  */
