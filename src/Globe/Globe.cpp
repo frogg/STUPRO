@@ -249,6 +249,7 @@ Vector3d Globe::getIntersectionPoint(double plane1[4], double plane2[4], double 
 		planes[2][i] = plane3[i];
 	}
 
+    //calculate intersection of planes and store result in intersectionOfPlanes
 	Vector3d intersectionOfPlanes = cutPlanes(planes);
 
 	// get intersection with world
