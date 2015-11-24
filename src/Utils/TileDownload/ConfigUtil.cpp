@@ -11,6 +11,14 @@
 
 using namespace rapidjson;
 
+/* Initialize constant strings that contain potential exception messages */
+const QString ConfigUtil::FILE_DOES_NOT_EXIST_MESSAGE = QString("The specified config file"
+							" at '%1' could not be opened since it does not seem to exist.");
+const QString ConfigUtil::FILE_COULD_NOT_BE_OPENED_MESSAGE = QString("The specified config file"
+							" at '%1' could not be opened: %2");
+const QString ConfigUtil::FILE_COULD_NOT_BE_PARSED_MESSAGE = QString("The specified config file"
+							" at '%1' could not be parsed: %2");
+
 const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QString &file) {
 	QMap<QString, ImageLayerDescription> layers;
 
@@ -18,13 +26,14 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 	QFileInfo configFileInfo(file);
 
 	if (!configFile.exists()) {
-		throw FileOpenException("The specified config file at '" + configFileInfo.absoluteFilePath() + "'"
-														" could not be opened since it does not seem to exist.");
+		throw FileOpenException(ConfigUtil::FILE_DOES_NOT_EXIST_MESSAGE
+															.arg(configFileInfo.absoluteFilePath()));
 	}
 
 	if (!configFile.open(QIODevice::ReadOnly)) {
-		throw FileOpenException("The specified config file at '" + configFileInfo.absoluteFilePath() + "'"
-														" could not be opened: " + configFile.errorString());
+		throw FileOpenException(ConfigUtil::FILE_COULD_NOT_BE_OPENED_MESSAGE
+															.arg(configFileInfo.absoluteFilePath())
+															.arg(configFile.errorString()));
 	}
 
 	QTextStream in(&configFile);
@@ -35,8 +44,9 @@ const QMap<QString, ImageLayerDescription> ConfigUtil::loadConfigFile(const QStr
 	configDocument.Parse(configText.toStdString().c_str());
 
 	if (configDocument.HasParseError()) {
-		throw FileOpenException("The specified config file at '" + configFileInfo.absoluteFilePath() + "'"
-														" could not be parsed: " + GetParseError_En(configDocument.GetParseError()));
+		throw FileOpenException(ConfigUtil::FILE_COULD_NOT_BE_PARSED_MESSAGE
+															.arg(configFileInfo.absoluteFilePath())
+															.arg(GetParseError_En(configDocument.GetParseError())));
 	}
 
 	for (Value::ConstMemberIterator layerIterator = configDocument.MemberBegin();

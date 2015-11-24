@@ -15,67 +15,75 @@
 #include <thread>
 
 
-struct DownloadFailedException : public std::exception { };
+/**
+ * Base struct for all exceptions thrown whenever a download failed.
+ */
+struct DownloadFailedException : public std::exception {
+	std::string reason;
 
+	DownloadFailedException(QString reason) : reason(reason.toStdString()) { }
+
+	const char *what() const noexcept override {
+		return reason.c_str();
+	}
+};
+
+/**
+ * Exception thrown when there was a connection error while attempting a download.
+ */
 struct ConnectionFailedException : public DownloadFailedException {
-	QUrl url;
-	QNetworkReply::NetworkError error;
-
-	ConnectionFailedException(QUrl url, QNetworkReply::NetworkError error) : url(url), error(error) { }
-
-	const char * what() const throw() {
-		QString message("An error occurred during the network request. Url: '%1', Error code: %2.");
-		message += " (See http://doc.qt.io/qt-4.8/qnetworkreply.html#NetworkError-enum)";
-		return message.arg(url.toString(), error).toStdString().c_str();
-	}
+	ConnectionFailedException(QUrl url, QNetworkReply::NetworkError error)
+			: DownloadFailedException(
+				QString("An error occurred during the network request. Url: '%1', Error code: %2. (See http://doc.qt.io/qt-4.8/qnetworkreply.html#NetworkError-enum)")
+				.arg(url.toString(), error)
+			) { }
 };
 
+/**
+ * Exception thrown when a network request returned a status code other than 200 OK.
+ */
 struct BadStatusCodeException : public DownloadFailedException {
-	QNetworkReply *reply;
-
-	BadStatusCodeException(QNetworkReply *reply) : reply(reply) { }
-
-	const char * what() const throw() {
-		QString message("The network request returned with an unexpected status code. Url: '%1'");
-		message += ", Status code: %2 %3.";
-		int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-		QString statusMessage = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-		message = message.arg(reply->url().toString(), QString::number(statusCode), statusMessage);
-		return message.toStdString().c_str();
-	}
+	BadStatusCodeException(QNetworkReply *reply)
+			: DownloadFailedException(
+				QString("The network request returned with an unexpected status code. Url: '%1', Status code: %2 %3.")
+				.arg(
+					reply->url().toString(),
+					QString::number(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()),
+					reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString()
+				)
+			) { }
 };
 
+/**
+ * Exception thrown when a network request returned a content type that the ImageDownloadWorker
+ * doesn't recognize.
+ */
 struct UnknownContentTypeException : public DownloadFailedException {
-	QString dataFormat;
-    QUrl url;
-
-	UnknownContentTypeException(QString dataFormat, QUrl url) : dataFormat(dataFormat), url(url) { }
-
-	const char * what() const throw() {
-		QString message("The returned content type '%1' of '%2' cannot be processed.");
-		return message.arg(dataFormat, url.toString()).toStdString().c_str();
-	}
+	UnknownContentTypeException(QString dataFormat, QUrl url)
+			: DownloadFailedException(
+				QString("The returned content type '%1' of '%2' cannot be processed.")
+				.arg(dataFormat, url.toString())
+			) { }
 };
 
+/**
+ * Exception thrown when a request returned invalid image data.
+ */
 struct ImageDecodingFailedException : public DownloadFailedException {
-	QUrl url;
-
-	ImageDecodingFailedException(QUrl url) : url(url) { }
-
-	const char * what() const throw() {
-		QString message("Failed decoding the image returned from '%1'");
-		return message.arg(url.toString()).toStdString().c_str();
-	}
+	ImageDecodingFailedException(QUrl url)
+			: DownloadFailedException(
+				QString("Failed decoding the image returned from '%1'").arg(url.toString())
+			) { }
 };
 
+/**
+ * Exception thrown when a request returned malformed bil16 data.
+ */
 struct Bil16DecodingFailedException : public DownloadFailedException {
-	QString reason;
-
-	Bil16DecodingFailedException(QString reason) : reason(reason) { }
-
-	const char * what() const throw() {
-		return ("Error decoding bil16: " + reason).toStdString().c_str();
-	}
+	Bil16DecodingFailedException(QString reason)
+			: DownloadFailedException(
+				QString("Error decoding bil16: %1").arg(reason)
+			) { }
 };
 
 
@@ -90,7 +98,6 @@ public:
      * @param networkManager the network access manager to use for the actual download
      */
     ImageDownloadWorker(QString layerName, QUrl url, int imageWidth, int imageHeight);
-    ~ImageDownloadWorker();
 
 	ImageDownloadWorker(const ImageDownloadWorker&) = delete;
 

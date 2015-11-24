@@ -15,24 +15,23 @@ public:
 	/**
 	 * Type used for the tile fetched callback.
 	 */
-	typedef std::function<void(ImageTile tile)> TileFetchedCb;
+	typedef std::function<void(ImageTile tile)> OnTileFetched;
 
 	/**
 	 * Creates a new ImageDownloader using the default configuration.
 	 *
-	 * @param tileFetchedCb the callback to call whenever a tile has finished loading.
+	 * @param onTileFetched the callback to call whenever a tile has finished loading.
 	 */
-	ImageDownloader(TileFetchedCb tileFetchedCb);
+	ImageDownloader(OnTileFetched onTileFetched);
 
 	/**
 	 * Creates a new ImageDownloader using the given configuration.
 	 *
-	 * @param tileFetchedCb the callback to call whenever a tile has finished loading.
+	 * @param onTileFetched the callback to call whenever a tile has finished loading.
 	 * @param imageLayers   a map containing layername - layerdescription objects to be used for
 	 *                      loading the tiles.
 	 */
-	ImageDownloader(TileFetchedCb tileFetchedCb, QMap<QString, ImageLayerDescription> imageLayers);
-	~ImageDownloader();
+	ImageDownloader(OnTileFetched onTileFetched, QMap<QString, ImageLayerDescription> imageLayers);
 
 	/**
 	 * Fetches images of all layers at the given location.
@@ -43,7 +42,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(int zoomLevel, int tileX, int tileY);
+	void fetchTile(int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Fetches the image of the given layer at the given location.
@@ -55,7 +54,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(const QString layer, int zoomLevel, int tileX, const int tileY);
+	void fetchTile(const QString layer, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Fetches the images of the given layers at the given location.
@@ -67,7 +66,7 @@ public:
 	 * @param tileX     horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY     vertical position of the requested tile (northernmost tile = 0)
 	 */
-	void getTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY);
+	void fetchTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Returns a list of available image layers.
@@ -91,15 +90,15 @@ private:
     QThreadPool fetchThreadPool;
 
 	/**
-	 * An object holding all configuration information.
-	 */
-	QMap<QString, ImageLayerDescription> imageLayers;
-
-	/**
 	 * Callback function to be called when a requested tile was downloaded or fetched from the file
 	 * system.
 	 */
-	TileFetchedCb tileFetchedCb;
+	OnTileFetched onTileFetched;
+
+	/**
+	 * An object holding all configuration information.
+	 */
+	QMap<QString, ImageLayerDescription> imageLayers;
 };
 
 #endif

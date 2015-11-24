@@ -8,14 +8,19 @@
 class ImageTile {
 public:
   /**
-   * Create a new ImageTile.
-   * @param layers A map of layer identifiers and the corresponding image
+   * Create a new ImageTile which contains images for each layer that my be
+   * present at this zoom and tile position.
+   * @param layers A QMap mapping the unique identifier string of a layer to
+   * the corresponding image in the referenced layer this tile contains.
    * @param zoomLevel The zoom level of this image tile
    * @param tileX The horizontal position of this tile
    * @param tileY The vertical position of this tile
    */
   ImageTile(const QMap<QString, MetaImage> layers, int zoomLevel, int tileX, int tileY);
-	~ImageTile();
+
+  ImageTile();
+
+  ~ImageTile();
 
   /**
    * Get the map of layers saved in this image tile.

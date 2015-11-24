@@ -23,10 +23,10 @@ QString ImageLayerDescription::buildTileUrl(int zoomLevel, int tileX, int tileY)
         + "&format=" + this->getMimeType()
         + "&width=" + QString::number(this->getTileSize())
         + "&height=" + QString::number(this->getTileSize())
-        + "&bbox=" + this->calculateBoundingBox(zoomLevel, tileX, tileY);
+        + "&bbox=" + this->getBoundingBoxString(zoomLevel, tileX, tileY);
 }
 
-QString ImageLayerDescription::calculateBoundingBox(int zoomLevel, int tileX, int tileY) {
+QString ImageLayerDescription::getBoundingBoxString(int zoomLevel, int tileX, int tileY) {
 	double tileWidth = getTileWidthAtZoomLevel(zoomLevel);
 	double tileHeight = getTileHeightAtZoomLevel(zoomLevel);
 
@@ -35,11 +35,11 @@ QString ImageLayerDescription::calculateBoundingBox(int zoomLevel, int tileX, in
 	double longMin = (tileWidth * tileX) - 180.0;
 	double longMax = (tileWidth * (tileX + 1)) - 180.0;
 
-	QString ret("%1,%3,%2,%4");
-	ret = ret.arg(QString::number(longMin), QString::number(longMax));
-	ret = ret.arg(QString::number(latMin), QString::number(latMax));
+	QString boundingBoxString("%1,%3,%2,%4");
+	boundingBoxString = boundingBoxString.arg(QString::number(longMin), QString::number(longMax));
+	boundingBoxString = boundingBoxString.arg(QString::number(latMin), QString::number(latMax));
 
-	return ret;
+	return boundingBoxString;
 }
 
 void ImageLayerDescription::getTilePositionFromCoordinates(double latitude, double longitude, int zoomLevel,

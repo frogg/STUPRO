@@ -13,14 +13,13 @@
 class QUrl;
 
 
+/**
+ * Exception thrown when a non-existing layer is requested.
+ */
 struct InvalidLayerException : public std::exception {
-	QString givenLayer;
-	QList<QString> availableLayers;
+	std::string reason;
 
-	InvalidLayerException(QString givenLayer, QList<QString> availableLayers)
-		: givenLayer(givenLayer), availableLayers(availableLayers) { }
-
-	const char * what() const throw() {
+	InvalidLayerException(QString givenLayer, QList<QString> availableLayers) {
 		QString message("The given layer wasn't recognized. Expected one of { ");
 		for (int i = 0; i < availableLayers.size(); i++) {
 			message += "'" + availableLayers[i] + "'";
@@ -29,7 +28,11 @@ struct InvalidLayerException : public std::exception {
 			}
 		}
 		message += " }. Was given '" + givenLayer + "'.";
-		return message.toStdString().c_str();
+		this->reason = message.toStdString();
+	}
+
+	const char * what() const noexcept override {
+		return reason.c_str();
 	}
 };
 
@@ -44,12 +47,11 @@ public:
 	 * @param zoomLevel     how deep to dive into the quad-tree
 	 * @param tileX         horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY         vertical position of the requested tile (northernmost tile = 0)
-	 * @param tileFetchedCb function to call when the tile is loaded
+	 * @param onTileFetched function to call when the tile is loaded
 	 */
 	ImageTileFetcher(QMap<QString, ImageLayerDescription> availableLayers,
 			QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY,
-			ImageDownloader::TileFetchedCb tileFetchedCb);
-	~ImageTileFetcher();
+			ImageDownloader::OnTileFetched onTileFetched);
 
 	/**
 	 * Function executed by the thread pool when ready.
@@ -62,7 +64,7 @@ private:
 	int zoomLevel;
 	int tileX;
 	int tileY;
-	ImageDownloader::TileFetchedCb tileFetchedCb;
+	ImageDownloader::OnTileFetched onTileFetched;
 
 	/**
 	 * Returns the URL at which the image with of the given layer can be found.
