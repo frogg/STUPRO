@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <vtkInteractorStyleTerrain.h>
 #include <vtkSetGet.h>
-#include <utils\Math\Vector2.hpp>
+#include <utils/Math/Vector2.hpp>
 #include <vtkCamera.h>
 
 class vtkPVStuproView;
