@@ -72,6 +72,7 @@ build_paraview_client(
 	paraview_stupro
 	TITLE "ParaView - Kronos-Edition"
 	ORGANIZATION "Kitware Inc."
+	SPLASH_IMAGE "Splash.png"
 	VERSION_MAJOR 1
 	VERSION_MINOR 0
 	VERSION_PATCH 0
