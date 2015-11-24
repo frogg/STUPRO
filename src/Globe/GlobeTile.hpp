@@ -137,6 +137,16 @@ public:
 	 * Updates the uniform variables of this globe tile's shader.
 	 */
 	void updateUniforms();
+	
+	/**
+	 * Sets the visibility of the globe tile.
+	 */
+	void setVisibility(bool visible);
+	
+	/**
+	 * Returns the visibility of the globe tile.
+	 */
+	bool isVisible() const;
 
 private:
 	
@@ -155,6 +165,8 @@ private:
 	vtkSmartPointer<vtkActor> myActor;
 	vtkSmartPointer<vtkShader2> myVertexShader;
 	vtkSmartPointer<vtkShader2> myFragmentShader;
+	
+	bool myIsVisible;
 	
 };
 

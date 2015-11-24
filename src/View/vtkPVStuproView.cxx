@@ -142,3 +142,8 @@ vtkPVStuproView::DisplayMode vtkPVStuproView::getDisplayMode()
 {
 	return this->myDisplayMode;
 }
+
+Globe * vtkPVStuproView::getGlobe() const
+{
+	return myGlobe.get();
+}

@@ -28,6 +28,8 @@ public:
 
 	float getGlobeRadius();
 	DisplayMode getDisplayMode();
+	
+	Globe * getGlobe() const;
 
 protected:
 	vtkPVStuproView();
