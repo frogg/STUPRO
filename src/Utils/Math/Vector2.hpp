@@ -297,7 +297,7 @@ Vector2<T> & operator+=(Vector2<T> & v, Vector2<T2> v2)
 template<typename T, typename T2>
 Vector2<T> operator-(Vector2<T> v, Vector2<T2> v2)
 {
-	return v.genericOperator(v2, Sub<T, T2>());
+	return v.genericOperator(v2, Subtract<T, T2>());
 }
 
 /**
@@ -311,7 +311,7 @@ Vector2<T> operator-(Vector2<T> v, Vector2<T2> v2)
 template<typename T, typename T2>
 Vector2<T> & operator-=(Vector2<T> & v, Vector2<T2> v2)
 {
-	return v.genericOperatorAssign(v2, Sub<T, T2>());
+	return v.genericOperatorAssign(v2, Subtract<T, T2>());
 }
 
 /**
@@ -325,7 +325,7 @@ Vector2<T> & operator-=(Vector2<T> & v, Vector2<T2> v2)
 template<typename T, typename T2>
 Vector2<T> operator*(Vector2<T> v, Vector2<T2> v2)
 {
-	return v.genericOperator(v2, Mul<T, T2>());
+	return v.genericOperator(v2, Multiply<T, T2>());
 }
 
 /**
@@ -339,7 +339,7 @@ Vector2<T> operator*(Vector2<T> v, Vector2<T2> v2)
 template<typename T, typename T2>
 Vector2<T> & operator*=(Vector2<T> & v, Vector2<T2> v2)
 {
-	return v.genericOperatorAssign(v2, Mul<T, T2>());
+	return v.genericOperatorAssign(v2, Multiply<T, T2>());
 }
 
 /**
@@ -358,7 +358,7 @@ Vector2<T> operator/(Vector2<T> v, Vector2<T2> v2)
 	{
 		return Vector2<T>::Invalid;
 	}
-	return v.genericOperator(v2, Div<T, T2>());
+	return v.genericOperator(v2, Divide<T, T2>());
 }
 
 /**
@@ -377,7 +377,7 @@ Vector2<T> & operator/=(Vector2<T> & v, Vector2<T2> v2)
 	{
 		return v = Vector2<T>::Invalid;
 	}
-	return v.genericOperatorAssign(v2, Div<T, T2>());
+	return v.genericOperatorAssign(v2, Divide<T, T2>());
 }
 
 /**

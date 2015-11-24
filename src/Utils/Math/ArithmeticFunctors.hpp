@@ -21,7 +21,7 @@ struct Add
  * This functor subtracts two numbers of any type and returns the result.
  */
 template <typename T, typename T2>
-struct Sub
+struct Subtract
 {
 	T operator()(T a, T2 b) const
 	{
@@ -33,7 +33,7 @@ struct Sub
  * This functor multiplies two numbers of any type and returns the result.
  */
 template <typename T, typename T2>
-struct Mul
+struct Multiply
 {
 	T operator()(T a, T2 b) const
 	{
@@ -45,7 +45,7 @@ struct Mul
  * This functor divides two numbers of any type and returns the result.
  */
 template <typename T, typename T2>
-struct Div
+struct Divide
 {
 	T operator()(T a, T2 b) const
 	{
