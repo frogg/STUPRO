@@ -225,6 +225,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 
 	double planes[3][4];
 	double intersectionOfPlanes[3];
+    
     // store them into one array for easier access
 	for (int i = 0; i < 4; i++)
 	{
@@ -233,6 +234,7 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 		planes[2][i] = plane3[i];
 	}
 
+    //calculate intersection of planes and store result in intersectionOfPlanes
 	cutPlanes(planes, intersectionOfPlanes);
 
     // get intersection with world
