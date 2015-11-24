@@ -42,7 +42,7 @@
 #define vtkGlobeFilter_h
 
 #include "vtkFiltersGeneralModule.h" // For export macro
-#include "vtkDataSetAlgorithm.h"
+#include "vtkPolyDataAlgorithm.h"
 
 #define VTK_VECTOR_MODE_PASS_VECTORS      0
 #define VTK_VECTOR_MODE_COMPUTE_GRADIENT  1
@@ -53,10 +53,10 @@
 #define VTK_TENSOR_MODE_COMPUTE_STRAIN   2
 
 
-class VTKFILTERSGENERAL_EXPORT vtkGlobeFilter : public vtkDataSetAlgorithm
+class VTKFILTERSGENERAL_EXPORT vtkGlobeFilter : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkGlobeFilter,vtkDataSetAlgorithm);
+  vtkTypeMacro(vtkGlobeFilter,vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
