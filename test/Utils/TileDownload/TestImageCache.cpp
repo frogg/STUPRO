@@ -113,7 +113,6 @@ TEST_F(TestImageCache, cacheRetrieval) {
 	EXPECT_EQ((short) 42, retrievedImage.getMaximumHeight());
 	EXPECT_EQ(512, retrievedImage.getImage().width());
 	EXPECT_EQ(512, retrievedImage.getImage().height());
-	EXPECT_EQ(qRgb(0x00, 0x00, 0x00), retrievedImage.getImage().pixel(128, 128));
 }
 
 TEST_F(TestImageCache, clearCache) {
