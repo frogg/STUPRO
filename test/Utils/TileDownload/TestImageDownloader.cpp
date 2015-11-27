@@ -1,6 +1,4 @@
-#include "TestImageDownloader.hpp"
-
-#include <cppunit/TestAssert.h>
+#include <gtest/gtest.h>
 #include <qglobal.h>
 #include <qimage.h>
 #include <qlist.h>
@@ -11,20 +9,20 @@
 #include <Utils/TileDownload/MetaImage.hpp>
 #include <future>
 
-void TestImageDownloader::testGetAvailableLayers() {
-	CPPUNIT_ASSERT_NO_THROW({
+TEST(TestImageDownloader, getAvailableLayers) {
+	ASSERT_NO_THROW({
 		ImageDownloader downloader([](ImageTile tile) {
 
 		});
 
 		QList<QString> availableLayers = downloader.getAvailableLayers();
 
-		CPPUNIT_ASSERT(availableLayers.contains("satelliteImagery"));
-		CPPUNIT_ASSERT(availableLayers.contains("heightmap"));
+		EXPECT_TRUE(availableLayers.contains("satelliteImagery"));
+		EXPECT_TRUE(availableLayers.contains("heightmap"));
 	});
 }
 
-void TestImageDownloader::testGetTile() {
+TEST(TestImageDownloader, getTile) {
 	std::promise<ImageTile> promise;
 	std::future<ImageTile> future = promise.get_future();
 
@@ -39,23 +37,23 @@ void TestImageDownloader::testGetTile() {
 	const int tileY = 30;
 	const QString layerName = downloader.getAvailableLayers()[0];
 
-	CPPUNIT_ASSERT_NO_THROW(downloader.fetchTile(zoomLevel, tileX, tileY));
+	ASSERT_NO_THROW(downloader.fetchTile(zoomLevel, tileX, tileY));
 
 	ImageTile tile = future.get();
 
-	CPPUNIT_ASSERT_EQUAL(zoomLevel, tile.getZoomLevel());
-	CPPUNIT_ASSERT_EQUAL(tileX, tile.getTileX());
-	CPPUNIT_ASSERT_EQUAL(tileY, tile.getTileY());
+	EXPECT_EQ(zoomLevel, tile.getZoomLevel());
+	EXPECT_EQ(tileX, tile.getTileX());
+	EXPECT_EQ(tileY, tile.getTileY());
 
-	CPPUNIT_ASSERT_EQUAL(2, tile.getLayers().size());
+	EXPECT_EQ(2, tile.getLayers().size());
 
 	MetaImage metaImage = tile.getLayers()[layerName];
-	// CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMinimumHeight());
-	// CPPUNIT_ASSERT_EQUAL((short)0, metaImage.getMaximumHeight());
+	// EXPECT_EQ((short)0, metaImage.getMinimumHeight());
+	// EXPECT_EQ((short)0, metaImage.getMaximumHeight());
 
 	QImage image = metaImage.getImage();
-	CPPUNIT_ASSERT_EQUAL(512, image.width());
-	CPPUNIT_ASSERT_EQUAL(512, image.height());
+	EXPECT_EQ(512, image.width());
+	EXPECT_EQ(512, image.height());
 
 	// for (int x = 0; x < 8; x++) {
 	//  for (int y = 0; y < 4; y++) {
