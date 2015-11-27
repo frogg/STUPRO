@@ -1,9 +1,7 @@
-#include "TestImageLayerDescription.hpp"
-
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
-#include <cppunit/TestAssert.h>
+#include <gtest/gtest.h>
 
-void TestImageLayerDescription::testGetTilePositionFromCoordinates() {
+TEST(TestImageLayerDescription, getTilePorisionFromCoordinates) {
     double latitude = 51.501414;
     double longitude = -0.141554;
 
@@ -12,66 +10,66 @@ void TestImageLayerDescription::testGetTilePositionFromCoordinates() {
     int tileY;
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(0, tileX);
-    CPPUNIT_ASSERT_EQUAL(0, tileY);
+    EXPECT_EQ(0, tileX);
+    EXPECT_EQ(0, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(1, tileX);
-    CPPUNIT_ASSERT_EQUAL(0, tileY);
+    EXPECT_EQ(1, tileX);
+    EXPECT_EQ(0, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(3, tileX);
-    CPPUNIT_ASSERT_EQUAL(0, tileY);
+    EXPECT_EQ(3, tileX);
+    EXPECT_EQ(0, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(7, tileX);
-    CPPUNIT_ASSERT_EQUAL(1, tileY);
+    EXPECT_EQ(7, tileX);
+    EXPECT_EQ(1, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(15, tileX);
-    CPPUNIT_ASSERT_EQUAL(3, tileY);
+    EXPECT_EQ(15, tileX);
+    EXPECT_EQ(3, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(31, tileX);
-    CPPUNIT_ASSERT_EQUAL(6, tileY);
+    EXPECT_EQ(31, tileX);
+    EXPECT_EQ(6, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(63, tileX);
-    CPPUNIT_ASSERT_EQUAL(13, tileY);
+    EXPECT_EQ(63, tileX);
+    EXPECT_EQ(13, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(127, tileX);
-    CPPUNIT_ASSERT_EQUAL(27, tileY);
+    EXPECT_EQ(127, tileX);
+    EXPECT_EQ(27, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(255, tileX);
-    CPPUNIT_ASSERT_EQUAL(54, tileY);
+    EXPECT_EQ(255, tileX);
+    EXPECT_EQ(54, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(511, tileX);
-    CPPUNIT_ASSERT_EQUAL(109, tileY);
+    EXPECT_EQ(511, tileX);
+    EXPECT_EQ(109, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(1023, tileX);
-    CPPUNIT_ASSERT_EQUAL(219, tileY);
+    EXPECT_EQ(1023, tileX);
+    EXPECT_EQ(219, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(2046, tileX);
-    CPPUNIT_ASSERT_EQUAL(438, tileY);
+    EXPECT_EQ(2046, tileX);
+    EXPECT_EQ(438, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(4092, tileX);
-    CPPUNIT_ASSERT_EQUAL(876, tileY);
+    EXPECT_EQ(4092, tileX);
+    EXPECT_EQ(876, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(8185, tileX);
-    CPPUNIT_ASSERT_EQUAL(1752, tileY);
+    EXPECT_EQ(8185, tileX);
+    EXPECT_EQ(1752, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(16371, tileX);
-    CPPUNIT_ASSERT_EQUAL(3504, tileY);
+    EXPECT_EQ(16371, tileX);
+    EXPECT_EQ(3504, tileY);
 
     ImageLayerDescription::getTilePositionFromCoordinates(latitude, longitude, zoomLevel++, tileX, tileY);
-    CPPUNIT_ASSERT_EQUAL(32742, tileX);
-    CPPUNIT_ASSERT_EQUAL(7008, tileY);
+    EXPECT_EQ(32742, tileX);
+    EXPECT_EQ(7008, tileY);
 }
