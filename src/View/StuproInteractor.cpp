@@ -9,6 +9,8 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <cmath>
+#include <cstdlib>
+#include <Globe/Globe.hpp>
 
 
 // Needs to be created for vtk to register this Class.
@@ -88,8 +90,14 @@ void StuproInteractor::zoomWithFactor(float factor)
 		this->CurrentRenderer->UpdateLightsGeometryToFollowCamera();
 	}
 
+	
+	if (this->myVtkPVStuproView->getGlobe())
+	{
+		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
+	}
 	renderWindowInteractor->Render();
-}
+
+	}
 
 void StuproInteractor::OnMiddleButtonDown()
 {
@@ -203,5 +211,11 @@ void StuproInteractor::Rotate()
 		this->CurrentRenderer->ResetCameraClippingRange();
 	}
 
+	if (this->myVtkPVStuproView->getGlobe())
+	{
+		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
+	}
+	
 	this->Interactor->Render();
 }
+

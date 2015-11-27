@@ -2,7 +2,6 @@
 #include <Utils/Graphics/TextureLoad.hpp>
 #include <Utils/Math/Functions.hpp>
 #include <Utils/Math/Vector2.hpp>
-#include <Utils/Misc/FileFunctions.hpp>
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
 #include <vtkProperty.h>
@@ -12,10 +11,13 @@
 #include <vtkUniformVariables.h>
 #include <string>
 
+extern const char* GlobeShader_fsh;
+extern const char* GlobeShader_vsh;
+
 GlobeTile::Location GlobeTile::Location::getNormalized() const
 {
-	return Location(zoomLevel, absMod<int>(longitude, (1 << zoomLevel) * 2),
-	        absMod<int>(latitude, (1 << zoomLevel)));
+	return Location(zoomLevel, absoluteModulo<int>(longitude, (1 << zoomLevel) * 2),
+			absoluteModulo<int>(latitude, (1 << zoomLevel)));
 }
 
 RectF GlobeTile::Location::getBounds() const
@@ -25,7 +27,7 @@ RectF GlobeTile::Location::getBounds() const
 }
 
 GlobeTile::GlobeTile(const Globe & globe, Location location) :
-		myGlobe(globe), myLocation(location)
+		myGlobe(globe), myLocation(location), myIsVisible(false)
 {
 	// Initialize members.
 	myLowerHeight = 0.f;
@@ -100,19 +102,19 @@ void GlobeTile::initShaders()
 	// Create and load fragment shader.
 	myFragmentShader = vtkShader2::New();
 	myFragmentShader->SetType(VTK_SHADER_TYPE_FRAGMENT);
-	myFragmentShader->SetSourceCode(readFile("res/glsl/TestShader.fsh").c_str());
+	myFragmentShader->SetSourceCode(GlobeShader_fsh);
 	myFragmentShader->SetContext(shaderProgram->GetContext());
 
 	// Create and load vertex shader.
 	myVertexShader = vtkShader2::New();
 	myVertexShader->SetType(VTK_SHADER_TYPE_VERTEX);
-	myVertexShader->SetSourceCode(readFile("res/glsl/TestShader.vsh").c_str());
+	myVertexShader->SetSourceCode(GlobeShader_vsh);
 	myVertexShader->SetContext(shaderProgram->GetContext());
 
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
-	float globeRadius = 1.f;
-	float planeSize = myGlobe.getPlaneSize();
+	float globeRadius = GLOBE_RADIUS;
+    float planeSize = PLANE_SIZE;
 	float displayModeInterpolation = 0.f;
 	float heightFactor = 100.f;
 
@@ -160,4 +162,16 @@ void GlobeTile::updateUniforms()
 	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1, &displayModeInterpolation);
 	myVertexShader->GetUniformVariables()->SetUniformf("minHeight", 1, &minHeight);
 	myVertexShader->GetUniformVariables()->SetUniformf("maxHeight", 1, &maxHeight);
+}
+
+void GlobeTile::setVisibility(bool visible)
+{
+	myIsVisible = visible;
+	
+	myActor->SetVisibility(visible);
+}
+
+bool GlobeTile::isVisible() const
+{
+	return myIsVisible;
 }

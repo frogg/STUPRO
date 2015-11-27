@@ -25,7 +25,7 @@ mkdir -p $ABS_PV_SRC_DIR
 cd $ABS_PV_SRC_DIR
 
 CURRENT_PV_GIT_TAG=$(git describe --tag)
-if [ $CURRENT_PV_GIT_TAG == $PV_GIT_TAG ]; then
+if [ $CURRENT_PV_GIT_TAG = $PV_GIT_TAG ]; then
   echo "Paraview already seems to be on the correct tag, skipping clone"
 else
   echo "Cloning ParaView Git repository..."

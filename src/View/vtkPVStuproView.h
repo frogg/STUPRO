@@ -56,7 +56,7 @@ public:
 	 * basically by inverting this->displayMode.
 	 */
 	void switchCurrentDisplayMode();
-
+	
 	// TODO: Make a global config file.
 	float getGlobeRadius() const;
 	
@@ -66,6 +66,8 @@ public:
 	 * @return the current display mode
 	 */
 	DisplayMode getDisplayMode() const;
+	
+	Globe * getGlobe() const;
 
 protected:
 	/**
