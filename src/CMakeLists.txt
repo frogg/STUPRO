@@ -88,4 +88,8 @@ build_paraview_client(
 set_property(TARGET paraview_stupro PROPERTY CXX_STANDARD 11)
 
 # copy over all required resources
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(
+	COPY ${CMAKE_CURRENT_SOURCE_DIR}/../res
+	DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+	PATTERN glsl EXCLUDE
+)
