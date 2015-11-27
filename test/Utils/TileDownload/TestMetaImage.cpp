@@ -1,31 +1,29 @@
-#include "TestMetaImage.hpp"
-
-#include <cppunit/TestAssert.h>
+#include <gtest/gtest.h>
 #include <qimage.h>
 #include <Utils/TileDownload/MetaImage.hpp>
 
-void TestMetaImage::testMetaData() {
+TEST(TestMetaData, metaData) {
 	QImage image(512, 512, QImage::Format_RGB32);
 	MetaImage metaImageOne(image, 10, 42);
 
-	CPPUNIT_ASSERT(metaImageOne.hasMetaData());
-	CPPUNIT_ASSERT_EQUAL((short) 10, metaImageOne.getMinimumHeight());
-	CPPUNIT_ASSERT_EQUAL((short) 42, metaImageOne.getMaximumHeight());
+	EXPECT_TRUE(metaImageOne.hasMetaData());
+	EXPECT_EQ((short) 10, metaImageOne.getMinimumHeight());
+	EXPECT_EQ((short) 42, metaImageOne.getMaximumHeight());
 
 	MetaImage metaImageTwo(image);
-	CPPUNIT_ASSERT(!metaImageTwo.hasMetaData());
+	EXPECT_FALSE(metaImageTwo.hasMetaData());
 
 	metaImageTwo.setMetaData(11, 43);
-	CPPUNIT_ASSERT(metaImageTwo.hasMetaData());
+	EXPECT_TRUE(metaImageTwo.hasMetaData());
 
-	CPPUNIT_ASSERT_EQUAL((short) 11, metaImageTwo.getMinimumHeight());
-	CPPUNIT_ASSERT_EQUAL((short) 43, metaImageTwo.getMaximumHeight());
+	EXPECT_EQ((short) 11, metaImageTwo.getMinimumHeight());
+	EXPECT_EQ((short) 43, metaImageTwo.getMaximumHeight());
 }
 
-void TestMetaImage::testImage() {
+TEST(TestMetaImage, image) {
 	QImage image(512, 512, QImage::Format_RGB32);
 	MetaImage metaImage(image, 1, 2);
 
-	CPPUNIT_ASSERT_EQUAL(512, metaImage.getImage().width());
-	CPPUNIT_ASSERT_EQUAL(512, metaImage.getImage().height());
+	EXPECT_EQ(512, metaImage.getImage().width());
+	EXPECT_EQ(512, metaImage.getImage().height());
 }
