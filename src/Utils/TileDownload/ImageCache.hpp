@@ -79,6 +79,45 @@ private:
 	 * @param path Path of the directory to be deleted
 	 */
 	static bool removeDirectory(const QString &path);
+
+	/**
+	 * The image file extension that will be used to cache images.
+	 */
+	static const QString IMAGE_FILE_EXTENSION;
+	/**
+	 * The directory where the cache's root is located.
+	 */
+	static const QString CACHE_DIRECTORY_PATH;
+	/**
+	 * The directory where a specific layer in the cache is located.
+	 */
+	static const QString LAYER_DIRECTORY_PATH;
+	/**
+	 * The full path of a specific image tile.
+	 */
+	static const QString IMAGE_TILE_PATH;
+
+	/**
+	 * Tag of the meta data specifying the image's resolution that will be written
+	 * to the image header.
+	 */
+	static const QString META_TAG_IMAGE_SIZE;
+	/**
+	 * Tag of the meta data specifying the image's minimum and maximum height
+	 * value as represented respectively by the darkest and the brightest
+	 * pixel.
+	 * This is only relevant for images containing heightmaps.
+	 */
+	static const QString META_TAG_HEIGHT_DATA;
+
+	/**
+	 * Error message used if the requested image file has not been cached yet.
+	 */
+	static const QString IMAGE_NOT_CACHED_MESSAGE;
+	/**
+	 * Error message used if the requested image file could not be read.
+	 */
+	static const QString IMAGE_COULD_NOT_BE_READ_MESSAGE;
 };
 
 #endif

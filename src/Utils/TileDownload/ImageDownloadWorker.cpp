@@ -6,12 +6,11 @@
 #include <QRegExp>
 
 ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageWidth,
-		int imageHeight) : layerName(layerName), url(url), imageWidth(imageWidth),
-	imageHeight(imageHeight) {
+		int imageHeight)
+		: layerName(layerName), url(url), imageWidth(imageWidth), imageHeight(imageHeight),
+		reply(NULL) {
 	this->startDownload();
 }
-
-ImageDownloadWorker::~ImageDownloadWorker() { }
 
 QString ImageDownloadWorker::getLayerName() const {
 	return this->layerName;
@@ -43,7 +42,8 @@ void ImageDownloadWorker::startDownload() {
 }
 
 MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width, int height) {
-	if (!rawData.size() == width * height * 2) {
+	// ensure the raw data contains two bytes of data for every pixel of the image
+	if (rawData.size() != width * height * 2) {
 		QString errorMessage("Expected raw data length of %1b, but %2b were given");
 		throw Bil16DecodingFailedException(errorMessage.arg(width * height * 2, rawData.size()));
 	}

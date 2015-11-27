@@ -7,44 +7,52 @@
 #include <QList>
 
 
-struct InvalidTileLocationException : public std::exception { };
+/**
+ * Exception thrown when a tile location parameter is out of range.
+ */
+struct InvalidTileLocationException : public std::exception {
+    std::string reason;
 
+    InvalidTileLocationException(QString message) : reason(message.toStdString()) { }
+
+    const char * what() const noexcept override {
+        return reason.c_str();
+    }
+};
+
+/**
+ * Exception thrown when a tile's zoom level is out of range.
+ */
 struct InvalidTileZoomException : public InvalidTileLocationException {
-    int givenZoomLevel;
-    int minZoomLevel;
-    int maxZoomLevel;
-
     InvalidTileZoomException(int given, int min, int max)
-        : givenZoomLevel(given), minZoomLevel(min), maxZoomLevel(max) { }
-
-    const char * what() const throw() {
-        QString message("The given zoomLevel is invalid. Expected value between (including) %1 and %2. Was given %3.");
-        message = message.arg(minZoomLevel, maxZoomLevel, givenZoomLevel);
-
-        return message.toStdString().c_str();
-    }
+        : InvalidTileLocationException(
+            QString("The given zoomLevel is invalid. Expected value between (including) %2 and %3. Was given %1.")
+            .arg(given, min, max)
+        ) { }
 };
 
+/**
+ * Exception thrown when a tile's x or y position is out of range.
+ */
 struct InvalidTilePositionException : public InvalidTileLocationException {
-    int zoomLevel;
-    int xMin, xMax, xActual;
-    int yMin, yMax, yActual;
-
     InvalidTilePositionException(int zoomLevel, int xMin, int xMax, int xActual, int yMin, int yMax, int yActual)
-        : zoomLevel(zoomLevel), xMin(xMin), xMax(xMax), xActual(xActual),
-          yMin(yMin), yMax(yMax), yActual(yActual) { }
-
-    const char * what() const throw() {
-        QString message("The given tile position is invalid. Valid tile positions for zoom level %1 must be within x%2 to x%3 and y%5 to y%6. Was given x%4 y%7.");
-        message = message.arg(zoomLevel);
-        message = message.arg(xMin, xMax, xActual);
-        message = message.arg(yMin, yMax, yActual);
-
-        return message.toStdString().c_str();
-    }
+        : InvalidTileLocationException(
+            QString("The given tile position is invalid. Valid tile positions for zoom level %1 must be within x%2 to x%3 and y%5 to y%6. Was given x%4 y%7.")
+            .arg(
+                QString::number(zoomLevel),
+                QString::number(xMin), QString::number(xMax), QString::number(xActual),
+                QString::number(yMin), QString::number(yMax), QString::number(yActual)
+            )
+        ) { }
 };
 
-
+/**
+ * This class holds information containing a whole image layer and how it
+ * should be accessed using the API, all specified in the configuration JSON
+ * file.
+ * On top of that this class includes some static helper methods for API
+ * access.
+ */
 class ImageLayerDescription {
 public:
     static const int MIN_ZOOM_LEVEL = 0;
@@ -85,7 +93,7 @@ public:
      *
      * @returns a string representation of the lat-long bounding box
      */
-    static QString calculateBoundingBox(int zoomLevel, int tileX, int tileY);
+    static QString getBoundingBoxString(int zoomLevel, int tileX, int tileY);
 
     /**
      * Calculates the x and y position of the tile at the given coordinates with the given zoom

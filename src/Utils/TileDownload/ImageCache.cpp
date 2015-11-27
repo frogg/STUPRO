@@ -7,6 +7,26 @@
 #include <QImageWriter>
 #include <QImageReader>
 
+/* Initialize constant strings concerning the cache's structure */
+const QString ImageCache::IMAGE_FILE_EXTENSION = QString("png");
+const QString ImageCache::CACHE_DIRECTORY_PATH = QString("cache");
+const QString ImageCache::LAYER_DIRECTORY_PATH = QString(
+	ImageCache::CACHE_DIRECTORY_PATH + "/%1"
+);
+const QString ImageCache::IMAGE_TILE_PATH = QString(
+	ImageCache::LAYER_DIRECTORY_PATH + "/tile_%2_%3_%4." + ImageCache::IMAGE_FILE_EXTENSION
+);
+
+/* Initialize constant strings concerning meta data in the image headers */
+const QString ImageCache::META_TAG_IMAGE_SIZE = QString("image-size");
+const QString ImageCache::META_TAG_HEIGHT_DATA = QString("kronos-meta");
+
+/* Initialize constant strings that contain potential exception messages */
+const QString ImageCache::IMAGE_NOT_CACHED_MESSAGE = QString("The requested image"
+		" from layer %1 with zoom level %2 and position %3/%4 has not been cached yet.");
+const QString ImageCache::IMAGE_COULD_NOT_BE_READ_MESSAGE = QString("The requested"
+		" image from layer %1 with zoom level %2 and position %3/%4 could not be read.");
+
 ImageCache &ImageCache::getInstance() {
 	static ImageCache instance;
 	return instance;
@@ -14,7 +34,7 @@ ImageCache &ImageCache::getInstance() {
 
 ImageCache::ImageCache() {
 	/* Test whether a cache directory structure is already present */
-	QDir cacheDirectory("cache");
+	QDir cacheDirectory(ImageCache::CACHE_DIRECTORY_PATH);
 	if (!cacheDirectory.exists()) {
 		/* Create a new cache directory */
 		cacheDirectory.mkpath(".");
@@ -24,25 +44,25 @@ ImageCache::ImageCache() {
 const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX,
 								  int tileY) {
 	/* If necessary, create the cache directory of the specified layer */
-	QDir layerDirectory(QString("cache/%1").arg(layer));
+	QDir layerDirectory(ImageCache::LAYER_DIRECTORY_PATH.arg(layer));
 	if (!layerDirectory.exists()) {
 		layerDirectory.mkpath(".");
 	}
 
 	/* Create a new writer putting together the file name of the image */
-	QImageWriter writer(QString("cache/%1/tile_%2_%3_%4.png")
+	QImageWriter writer(ImageCache::IMAGE_TILE_PATH
 						.arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
 
 	/*
 	 * Save the image size as meta data since Qt does not allow to easily read it
 	 * later from the image file.
 	 */
-	writer.setText("image-size", QString("%1,%2")
+	writer.setText(ImageCache::META_TAG_IMAGE_SIZE, QString("%1,%2")
 				   .arg(image.getImage().width()).arg(image.getImage().height()));
 
 	/* Write potential additional meta data */
 	if (image.hasMetaData()) {
-		writer.setText("kronos-meta", QString("%1,%2")
+		writer.setText(ImageCache::META_TAG_HEIGHT_DATA, QString("%1,%2")
 					   .arg(image.getMinimumHeight()).arg(image.getMaximumHeight()));
 	}
 
@@ -50,14 +70,14 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 }
 
 const void ImageCache::clearCache(QString layer) {
-	QDir layerDirectory(QString("cache/%1").arg(layer));
+	QDir layerDirectory(ImageCache::LAYER_DIRECTORY_PATH.arg(layer));
 	if (layerDirectory.exists()) {
 		ImageCache::removeDirectory(layerDirectory.absolutePath());
 	}
 }
 
 const bool ImageCache::isImageCached(QString layer, int zoomLevel, int tileX, int tileY) {
-	QFileInfo imageFile(QString("cache/%1/tile_%2_%3_%4.png")
+	QFileInfo imageFile(ImageCache::IMAGE_TILE_PATH
 						.arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
 	return imageFile.exists() && imageFile.isFile();
 }
@@ -65,33 +85,31 @@ const bool ImageCache::isImageCached(QString layer, int zoomLevel, int tileX, in
 const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int tileX,
 		int tileY) {
 	if (!ImageCache::getInstance().isImageCached(layer, zoomLevel, tileX, tileY)) {
-		throw ImageNotCachedException(QString("The requested image from layer %1 with"
-											  " zoom level %2 and position %3/%4 has not been cached yet.")
+		throw ImageNotCachedException(ImageCache::IMAGE_NOT_CACHED_MESSAGE
 									  .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
 	}
 
 	/* Create a new reader putting together the file name of the image */
-	QString filename = QString("cache/%1/tile_%2_%3_%4.png")
+	QString filename = ImageCache::IMAGE_TILE_PATH
 					   .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX);
 	QImageReader reader(filename);
-	reader.setFormat("png");
+	reader.setFormat(ImageCache::IMAGE_FILE_EXTENSION.toStdString().c_str());
 
 	/* Create a new image with the image dimensions as read from the file meta data */
-	QStringList imageSize = reader.text("image-size").split(",");
+	QStringList imageSize = reader.text(ImageCache::META_TAG_IMAGE_SIZE).split(",");
 	QImage readImage(imageSize.at(0).toInt(), imageSize.at(1).toInt(), QImage::Format_RGB32);
 
 	/* Read the image and possible meta data and return everything */
 	if (reader.read(&readImage)) {
-		if (reader.textKeys().contains("kronos-meta")) {
-			QStringList metaData = reader.text("kronos-meta").split(",");
+		if (reader.textKeys().contains(ImageCache::META_TAG_HEIGHT_DATA)) {
+			QStringList metaData = reader.text(ImageCache::META_TAG_HEIGHT_DATA).split(",");
 			return MetaImage(readImage,
 							 metaData.at(0).toInt(), metaData.at(1).toInt());
 		} else {
 			return MetaImage(readImage);
 		}
 	} else {
-		throw ImageNotCachedException(QString("The requested image from layer %1 with"
-											  " zoom level %2 and position %3/%4 could not be read.")
+		throw ImageNotCachedException(ImageCache::IMAGE_COULD_NOT_BE_READ_MESSAGE
 									  .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
 	}
 }

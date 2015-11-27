@@ -20,16 +20,22 @@ ROOT_DIR=$PWD
 ABS_PV_SRC_DIR="$PWD/$PV_SRC_DIR"
 ABS_PV_BIN_DIR="$PWD/$PV_BIN_DIR"
 
-# create ParaView source code directory if it doesn't exist and checkout the correct tag
-echo "Cloning ParaView Git repository..."
+# create ParaView source code directory if it doesn't exist and check if it already is on the correct tag
 mkdir -p $ABS_PV_SRC_DIR
 cd $ABS_PV_SRC_DIR
-git clone $PV_GIT_URL . 2> /dev/null
-git checkout $PV_GIT_TAG
 
-# initialize and update submodules required by ParaView
-git submodule init
-git submodule update
+CURRENT_PV_GIT_TAG=$(git describe --tag)
+if [ $CURRENT_PV_GIT_TAG == $PV_GIT_TAG ]; then
+  echo "Paraview already seems to be on the correct tag, skipping clone"
+else
+  echo "Cloning ParaView Git repository..."
+  git clone $PV_GIT_URL . 2> /dev/null
+  git checkout $PV_GIT_TAG
+
+  # initialize and update submodules required by ParaView
+  git submodule init
+  git submodule update
+fi
 
 # if the PV_CLEAN_BUILD environment variable is set, clear the build directory first
 if [ $PV_CLEAN_BUILD ]; then

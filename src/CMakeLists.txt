@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
 find_package(Threads REQUIRED)
 
 # find ParaView headers and libraries
-find_package(ParaView REQUIRED)
+find_package(ParaView 4.3.1 REQUIRED)
 include(${PARAVIEW_USE_FILE})
 include(ParaViewBranding)
 

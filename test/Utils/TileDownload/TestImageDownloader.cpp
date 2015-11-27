@@ -39,7 +39,7 @@ void TestImageDownloader::testGetTile() {
 	const int tileY = 30;
 	const QString layerName = downloader.getAvailableLayers()[0];
 
-	CPPUNIT_ASSERT_NO_THROW(downloader.getTile(zoomLevel, tileX, tileY));
+	CPPUNIT_ASSERT_NO_THROW(downloader.fetchTile(zoomLevel, tileX, tileY));
 
 	ImageTile tile = future.get();
 
