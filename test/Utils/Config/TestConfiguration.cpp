@@ -20,6 +20,11 @@ void TestConfiguration::testValidCalls() {
 	);
 
 	CPPUNIT_ASSERT_EQUAL(
+		true,
+		Configuration::getInstance().getBoolean("globe.spheric")
+	);
+
+	CPPUNIT_ASSERT_EQUAL(
 		12.2345,
 		Configuration::getInstance().getDouble("latitude")
 	);

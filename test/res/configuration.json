@@ -1,7 +1,8 @@
 {
   "globe": {
     "radius": 42,
-    "name": "Foo"
+    "name": "Foo",
+    "spheric": true
   },
   "latitude": 12.2345,
   "deeply": {
