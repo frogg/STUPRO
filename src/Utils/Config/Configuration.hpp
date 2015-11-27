@@ -119,6 +119,13 @@ public:
 	*/
 	double getDouble(QString key) const;
 
+	/**
+	* Get a float value from the configuration file. This can result in a potential precision or
+	* range loss compared to the value in the JSON file.
+	* @param key The key of the value to get
+	*/
+	float getFloat(QString key) const;
+
 private:
 	/*
 	* Hide some things that should not be accessed given this class uses

@@ -132,3 +132,8 @@ int Configuration::getInteger(QString key) const {
 double Configuration::getDouble(QString key) const {
 	return this->getConfigurationValue(key, ConfigurationValue::TYPE_DOUBLE).getDoubleValue();
 }
+
+float Configuration::getFloat(QString key) const {
+	return (float) this->getConfigurationValue(key, ConfigurationValue::TYPE_DOUBLE)
+			.getDoubleValue();
+}
