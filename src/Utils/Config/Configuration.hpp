@@ -1,7 +1,10 @@
 #ifndef KRONOS_CONFIGURATION_HPP
 #define KRONOS_CONFIGURATION_HPP
 
+#include <Utils/Config/ConfigurationValue.hpp>
+
 #include <QString>
+#include <QMap>
 #include <rapidjson/document.h>
 #include <exception>
 
@@ -66,73 +69,93 @@ struct InvalidValueException : public ConfigurationException {
 			) { }
 };
 
+/**
+ * Exception thrown if a value in the JSON file is not supported.
+ */
+struct UnsupportedValueException : public ConfigurationException {
+	UnsupportedValueException(QString key) : ConfigurationException(
+				QString("A value with key %1 in the configuration file is not supported.")
+				.arg(key)
+			) { }
+};
+
 class Configuration {
 public:
-  /**
-   * Get the singleton instance of this class.
-   * @return The singleton instance of this class
-   */
-  static Configuration& getInstance();
+	/**
+	* Get the singleton instance of this class.
+	* @return The singleton instance of this class
+	*/
+	static Configuration& getInstance();
 
-  /**
-   * Check whether the loaded configuration file contains a given key.
-   * @param key Key to be tested for
-   * @return True if the key is present in the configuration file, false otherwise
-   */
-  const bool hasKey(QString key);
+	/**
+	* Check whether the loaded configuration file contains a given key.
+	* @param key Key to be tested for
+	* @return True if the key is present in the configuration file, false otherwise
+	*/
+	bool hasKey(QString key) const;
 
-  /**
-   * Get a string value from the configuration file.
-   * @param key The key of the value to get, which is a path through the data
-   * tree of the JSON file, separated by dots.
-   */
-  const QString getString(QString key);
+	/**
+	* Get a string value from the configuration file.
+	* @param key The key of the value to get, which is a path through the data
+	* tree of the JSON file, separated by dots.
+	*/
+	QString getString(QString key) const;
 
 	/**
 	 * Get an integer value from the configuration file.
 	 * @param key The key of the value to get
 	 */
-	const int getInteger(QString key);
+	int getInteger(QString key) const;
 
-  /**
-   * Get a double value from the configuration file.
-   * @param key The key of the value to get
-   */
-  const double getDouble(QString key);
+	/**
+	* Get a double value from the configuration file.
+	* @param key The key of the value to get
+	*/
+	double getDouble(QString key) const;
 
 private:
-	/**
-	 * Get a JSON value from a dot-separated path through the object tree in the
-	 * JSON file.
-	 * @param key Dot-separated path through the object tree
-	 * @return The JSON value located at the end of the specified path
-	 * @throws InvalidKeyException if the specified path does not exist
-	 */
-	const rapidjson::Value& getValueFromPath(QString key);
-
-  /*
-   * Hide some things that should not be accessed given this class uses
-   * the singleton pattern.
-   */
-  Configuration();
-  Configuration(Configuration const&) = delete;
-  void operator=(Configuration const&) = delete;
-
-  /**
-   * The path where the configuration file resides.
-   */
-  const QString CONFIGURATION_FILE_PATH;
+	/*
+	* Hide some things that should not be accessed given this class uses
+	* the singleton pattern.
+	*/
+	Configuration();
+	Configuration(Configuration const&) = delete;
+	void operator=(Configuration const&) = delete;
 
 	/**
-	 * A list of names for all value types that may be present in the JSON file.
-	 * This will be used later on for creating human-readable exceptions.
+	 * Get a ConfigurationValue out of the map using the key while checking for
+	 * its existence.
+	 * @param key The key to be searched for
+	 * @param type Type of the configuration value that will be used to check
+	 * whether the returned value is of the right type
+	 * @return The ConfigurationValue stored with the specified key
 	 */
-	static const QString TYPE_NAMES[];
+	ConfigurationValue getConfigurationValue(QString key, int type) const;
 
 	/**
-	 * The JSON document the configuration is stored in.
+	* The path where the configuration file resides.
+	*/
+	const QString CONFIGURATION_FILE_PATH;
+
+	/**
+	 * A QMap that will store all configuration values by mapping them to their key
 	 */
-	rapidjson::Document configurationDocument;
+	QMap<QString, ConfigurationValue> values;
+
+	/**
+	 * Load the configuration file and remember all values for later use.
+	 */
+	void loadConfigurationFile();
+
+	/**
+	 * Recursively iterate through a JSON object tree saving all its leaves
+	 * which are primitive data entries such as strings or numbers in the `values`
+	 * map along with dot-separated paths to each of them.
+	 * @param jsonValue A reference to a rapidjson::Value that will be used as
+	 * a starting point for the depth-first search through the tree
+	 * @param path The dot-separated path of the current recursive call
+	 */
+	void indexValues(rapidjson::Value& jsonValue, QString path);
 };
 
 #endif

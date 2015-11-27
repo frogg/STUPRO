@@ -12,102 +12,119 @@
 
 #include <iostream>
 
-const QString Configuration::TYPE_NAMES[] = {"Null", "Bool (False)", "Bool (True)", "Object", "Array", "String", "Number"};
-
 Configuration &Configuration::getInstance() {
 	static Configuration instance;
+	instance.loadConfigurationFile();
 	return instance;
 }
 
-Configuration::Configuration() : CONFIGURATION_FILE_PATH(QString("./res/configuration.json")) {
-  QFile configFile(this->CONFIGURATION_FILE_PATH);
+Configuration::Configuration() : CONFIGURATION_FILE_PATH(QString("./res/configuration.json")) { }
+
+void Configuration::loadConfigurationFile() {
+	// Open the configuration file while checking for potential errors
+	QFile configFile(this->CONFIGURATION_FILE_PATH);
   QFileInfo configFileInfo(this->CONFIGURATION_FILE_PATH);
 
   if (!configFile.open(QIODevice::ReadOnly)) {
     throw ConfigFileOpenException(configFileInfo.absoluteFilePath(), configFile.errorString());
   }
 
+	// Read from the opened stream and save the file's contents in a string
   QTextStream in(&configFile);
   QString configText = in.readAll();
   configFile.close();
 
-  this->configurationDocument.Parse(configText.toStdString().c_str());
+	// Parse the file's content and construct a representation inside the memory
+	// using a `rapidjson::Document`
+	rapidjson::Document configurationDocument;
+  configurationDocument.Parse(configText.toStdString().c_str());
 
-  if (this->configurationDocument.HasParseError()) {
+  if (configurationDocument.HasParseError()) {
     throw JsonParseException(
       configFileInfo.absoluteFilePath(),
-      rapidjson::GetParseError_En(this->configurationDocument.GetParseError())
+      rapidjson::GetParseError_En(configurationDocument.GetParseError())
     );
   }
+
+	// Start recursively iterating the JSON tree and save all primitive values to the map.
+	// The actual JSON document can go out of scope afterwards.
+	this->indexValues(configurationDocument, QString(""));
 }
 
-const rapidjson::Value& Configuration::getValueFromPath(QString key) {
-  // The nodes of type Value along the path have to be stored in a list as to
-  // not accidentally prune the tree of the JSON document.
-  // The elements have to be pointers because rapidjson::Value cannot be passed
-  // by copy and QLists do not work with references.
-  QStringList path = key.split(".");
-  QList<rapidjson::Value*> values;
-  values.append(&this->configurationDocument);
+void Configuration::indexValues(rapidjson::Value& jsonValue, QString path) {
+	// Iterate through each direct descendant of the JSON object `jsonValue`
+	for (rapidjson::Value::ConstMemberIterator iterator = jsonValue.MemberBegin();
+				iterator != jsonValue.MemberEnd(); ++iterator) {
+		if (iterator->value.GetType() == 3) {
+			// The descendant is of type 3 which is RapidJSON's way of marking it as
+			// a complex nested object
+			QString newPath;
+			if (path.length() == 0) {
+				newPath = QString(iterator->name.GetString());
+			} else {
+				newPath = path + "." + QString(iterator->name.GetString());
+			}
 
-  // Step through the data tree using the path as given by the key parameter
-  for (QString step : path) {
-    if (values.last()->HasMember(step.toStdString().c_str())) {
-      values.append(&(*values.last())[step.toStdString().c_str()]);
-    } else {
-      throw InvalidKeyException(key);
-    }
-  }
+			// Recursively iterate through the nested object using the previously
+			// constructed path
+			this->indexValues(jsonValue[iterator->name.GetString()], newPath);
+		} else {
+			// The descendant is not of type 3 and therefore some kind of primitive
+			// that can be directly written to the map
+			QString valuePath = path;
+			if (valuePath.length() == 0) {
+				valuePath = QString(iterator->name.GetString());
+			} else {
+				valuePath += "." + QString(iterator->name.GetString());
+			}
 
-  return *values.last();
+			// Recognize the type of the primitive value and wrap it in a `ConfigurationValue`
+			ConfigurationValue primitiveValue;
+			if (iterator->value.IsString()) {
+				primitiveValue = ConfigurationValue(QString(iterator->value.GetString()));
+			} else if (iterator->value.IsBool()) {
+				primitiveValue = ConfigurationValue(iterator->value.GetBool());
+			} else if (iterator->value.IsInt()) {
+				primitiveValue = ConfigurationValue(iterator->value.GetInt());
+			} else if (iterator->value.IsDouble()) {
+				primitiveValue = ConfigurationValue(iterator->value.GetDouble());
+			} else {
+				throw UnsupportedValueException(valuePath);
+			}
+
+			// Finally insert the primitive value into the map
+			this->values.insert(valuePath, primitiveValue);
+		}
+	}
 }
 
-const bool Configuration::hasKey(QString key) {
-  try {
-    this->getValueFromPath(key);
-  } catch (InvalidKeyException e) {
-    return false;
-  }
-
-  return true;
+bool Configuration::hasKey(QString key) const {
+  return this->values.contains(key);
 }
 
-const QString Configuration::getString(QString key) {
-  const rapidjson::Value &value = this->getValueFromPath(key);
-
-  if(!value.IsString()) {
-    throw InvalidValueException(key, QString("String"), Configuration::TYPE_NAMES[value.GetType()]);
-  }
-
-  return value.GetString();
+ConfigurationValue Configuration::getConfigurationValue(QString key, int type) const {
+	if (!this->hasKey(key)) {
+		throw InvalidKeyException(key);
+	} else {
+		ConfigurationValue foundValue = this->values.value(key);
+		if (foundValue.getType() == type) {
+			return foundValue;
+		} else {
+			throw InvalidValueException(
+				key, ConfigurationValue::getTypeNameFromInteger(type), foundValue.getTypeName()
+			);
+		}
+	}
 }
 
-const int Configuration::getInteger(QString key) {
-  const rapidjson::Value &value = this->getValueFromPath(key);
-
-  if(!value.IsInt()) {
-    // The value is of some kind of number that is not an integer
-    if(value.GetType() == 6) {
-      throw InvalidValueException(key, QString("Integer"), QString("Number but not an Integer"));
-    } else {
-      throw InvalidValueException(key, QString("Integer"), Configuration::TYPE_NAMES[value.GetType()]);
-    }
-  }
-
-  return value.GetInt();
+QString Configuration::getString(QString key) const {
+	return this->getConfigurationValue(key, ConfigurationValue::TYPE_STRING).getStringValue();
 }
 
-const double Configuration::getDouble(QString key) {
-  const rapidjson::Value &value = this->getValueFromPath(key);
+int Configuration::getInteger(QString key) const {
+	return this->getConfigurationValue(key, ConfigurationValue::TYPE_INTEGER).getIntegerValue();
+}
 
-  if(!value.IsDouble()) {
-    // The value is of some kind of number that is not a double
-    if(value.GetType() == 6) {
-      throw InvalidValueException(key, QString("Double"), QString("Number but not a Double"));
-    } else {
-      throw InvalidValueException(key, QString("Double"), Configuration::TYPE_NAMES[value.GetType()]);
-    }
-  }
-
-  return value.GetDouble();
+double Configuration::getDouble(QString key) const {
+	return this->getConfigurationValue(key, ConfigurationValue::TYPE_DOUBLE).getDoubleValue();
 }
