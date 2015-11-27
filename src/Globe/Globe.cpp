@@ -18,46 +18,14 @@
 #include <Globe/GlobeTile.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Eigen-v3.2.6/Dense>
+#include <cmath>
 
 Globe::Globe(vtkRenderer & renderer) :
-		myRenderer(renderer),
-		myDownloader([=](ImageTile tile)
-		{	onTileLoad(tile);}),
-		myZoomLevel(1),
-		myDisplayModeInterpolation(0)
+		myRenderer(renderer), myDownloader([=](ImageTile tile)
+		{	onTileLoad(tile);}), myZoomLevel(1), myDisplayModeInterpolation(0)
 {
-	myPlaneSource = vtkPlaneSource::New();
-	myPlaneSource->SetOrigin(getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
-	myPlaneSource->SetPoint1(-getPlaneSize() / 2.f, -getPlaneSize() / 2.f, 0.f);
-	myPlaneSource->SetPoint2(getPlaneSize() / 2.f, getPlaneSize() / 2.f, 0.f);
 
-    // create an additional plane and sphere to evaluate the tiles that are visible
-
-    vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
-		// TODO: Fix scope!
-    // sphereSource->SetRadius(myGlobeRadius);
-		sphereSource->SetRadius(0.5f);
-    sphereSource->SetThetaResolution(100);
-    sphereSource->SetPhiResolution(100);
-    sphereSource->Update();
-
-    // the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
-    mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
-    mySphereTree->SetDataSet(sphereSource->GetOutput());
-    mySphereTree->BuildLocator();
-
-    // an artificial Plane to calculate raycasting coordinates
-    vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
-    planeSource->SetOrigin(-2, -1, 0);
-    planeSource->SetPoint1(2, -1, 0);
-    planeSource->SetPoint2(-2, 1, 0);
-    planeSource->Update();
-
-    myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
-    myPlaneTree->SetDataSet(planeSource->GetOutput());
-    myPlaneTree->BuildLocator();
-
-
+	createOBBTrees();
 	setResolution(Vector2u(128, 128));
 
 	myPlaneMapper = vtkPolyDataMapper::New();
@@ -119,9 +87,37 @@ unsigned int Globe::getTileIndex(int lon, int lat) const
 	return (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
 }
 
-float Globe::getPlaneSize() const
+void Globe::createOBBTrees()
 {
-	return 1.f;
+	myPlaneSource = vtkPlaneSource::New();
+
+	//Vertices of the map
+	myPlaneSource->SetOrigin(PLANE_SIZE / 2.f, -PLANE_SIZE / 2.f, 0.f);
+	myPlaneSource->SetPoint1(-PLANE_SIZE / 2.f, -PLANE_SIZE / 2.f, 0.f);
+	myPlaneSource->SetPoint2(PLANE_SIZE / 2.f, PLANE_SIZE / 2.f, 0.f);
+
+	// create an additional plane and sphere to evaluate the tiles that are visible
+	vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
+	sphereSource->SetRadius(GLOBE_RADIUS);
+	sphereSource->SetThetaResolution(100);
+	sphereSource->SetPhiResolution(100);
+	sphereSource->Update();
+
+	// the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
+	mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
+	mySphereTree->SetDataSet(sphereSource->GetOutput());
+	mySphereTree->BuildLocator();
+
+	// an artificial Plane to calculate raycasting coordinates
+	vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
+	planeSource->SetOrigin(-PLANE_WIDTH / 2, -PLANE_HEIGHT / 2, 0);
+	planeSource->SetPoint1(PLANE_WIDTH / 2, -PLANE_HEIGHT / 2, 0);
+	planeSource->SetPoint2(-PLANE_WIDTH / 2, PLANE_HEIGHT / 2, 0);
+	planeSource->Update();
+
+	myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
+	myPlaneTree->SetDataSet(planeSource->GetOutput());
+	myPlaneTree->BuildLocator();
 }
 
 void Globe::createTiles()
@@ -135,7 +131,8 @@ void Globe::createTiles()
 	{
 		for (unsigned int lon = 0; lon < width; ++lon)
 		{
-			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this, GlobeTile::Location(myZoomLevel, lon, lat));
+			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this,
+			        GlobeTile::Location(myZoomLevel, lon, lat));
 
 			myDownloader.fetchTile(myZoomLevel, lon, lat);
 		}
@@ -160,9 +157,31 @@ float Globe::getDisplayModeInterpolation() const
 	return myDisplayModeInterpolation;
 }
 
-bool Globe::checkDirty()
+bool Globe::checkIfRepaintIsNeeded()
 {
 	return !myIsClean.test_and_set();
+}
+
+void Globe::updateGlobeTileVisibility()
+{
+	// TODO: Update globe tile visibility based on camera position!
+	unsigned int height = 1 << myZoomLevel;
+	unsigned int width = height * 2;
+
+	for (unsigned int lat = 0; lat < height; ++lat)
+	{
+		for (unsigned int lon = 0; lon < width; ++lon)
+		{
+			std::size_t index = getTileIndex(lon, lat);
+			
+			if (index >= myTiles.size())
+			{
+				continue;
+			}
+			
+			//myTiles[index]->setVisibility(false);
+		}
+	}
 }
 
 void Globe::onTileLoad(ImageTile tile)
@@ -194,10 +213,11 @@ void Globe::onTileLoad(ImageTile tile)
 	myIsClean.clear();
 }
 
-void Globe::cutPlanes(double planes[3][4], double cut[3])
+Vector3d Globe::cutPlanes(double planes[3][4])
 {
 	Eigen::Matrix3d planeMatrix;
 	Eigen::Vector3d offset;
+	// fill planeMatrix and offset with content
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -207,20 +227,21 @@ void Globe::cutPlanes(double planes[3][4], double cut[3])
 		offset(i) = -planes[i][3];
 	}
 
-	Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset); //.lu().solve(offset);
+	// solve LGS. colPivHouseholderQr is an algorithm by Eigen (very fast, see doc:
+	// http://eigen.tuxfamily.org/dox/group__TopicLinearAlgebraDecompositions.html)
+	// if there are still performance problems, call this method not so often
+	Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset);
 
-	// copy return value to avoid memory issues
-	for (int i = 0; i < 3; i++)
-	{
-		cut[i] = cutPoint(i);
-	}
+	return Vector3d(cutPoint(0), cutPoint(1), cutPoint(2));
 }
 
-void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4], double cameraPosition[3], double intersection[3])
+Vector3d Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4],
+        Vector3d cameraPosition)
 {
+	Vector3d intersection;
 
 	double planes[3][4];
-	double intersectionOfPlanes[3];
+	// store them into one array for easier access
 	for (int i = 0; i < 4; i++)
 	{
 		planes[0][i] = plane1[i];
@@ -228,25 +249,27 @@ void Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plan
 		planes[2][i] = plane3[i];
 	}
 
-	cutPlanes(planes, intersectionOfPlanes);
+    //calculate intersection of planes and store result in intersectionOfPlanes
+	Vector3d intersectionOfPlanes = cutPlanes(planes);
 
+	// get intersection with world
 	vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
-	this->getOOBTree()->IntersectWithLine(cameraPosition, intersectionOfPlanes, intersectPoint, NULL);
+	this->getOBBTree()->IntersectWithLine(cameraPosition.array(), intersectionOfPlanes.array(),
+	        intersectPoint, nullptr);
 
 	if (intersectPoint->GetNumberOfPoints() > 0)
 	{
-		intersectPoint->GetPoint(0, intersection);
+		intersectPoint->GetPoint(0, intersection.array());
 	}
 	else
 	{
-		for (int i = 0; i < 3; i++)
-		{
-			intersection[i] = 0;
-		}
+		// no intersection
+		intersection = Vector3d(0, 0, 0);
 	}
+	return intersection;
 }
 
-std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double cameraPosition[])
+std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], Vector3d cameraPosition)
 {
 	// left, right, bottom, top, near, far
 	double planeArray[6][4];
@@ -258,61 +281,76 @@ std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], double camer
 		}
 	}
 
-
+	// calculate intersection points for each edge of the viewing frustum
 	std::vector<Vector3d> worldIntersectionPoints;
 	for (int j = 0; j < 4; j++)
 	{
-		Vector3d intersection;
-
-		getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2], planeArray[5], cameraPosition,
-			intersection.array());
+		// some math to get the right planes (l/r/l/r and b/b/t/t, the last plane is the far clipping)
+		Vector3d intersection = getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2],
+		        planeArray[5], cameraPosition);
 		worldIntersectionPoints.push_back(intersection);
 	}
 
 	return worldIntersectionPoints;
 }
 
-std::vector<Coordinate> Globe::getGlobeCoordinates(std::vector<Vector3d> worldPoints, double radius)
+std::vector<Coordinate> Globe::getGlobeCoordinates(std::vector<Vector3d> worldPoints)
 {
 	std::vector<Coordinate> globeCoordinates;
 	for (Vector3d worldCoordinate : worldPoints)
 	{
-		globeCoordinates.push_back(Coordinate::getCoordinatesFromGlobePoint(worldCoordinate.array(), radius));
+		globeCoordinates.push_back(getCoordinatesFromGlobePoint(worldCoordinate.array()));
 	}
 	return globeCoordinates;
 }
 
-std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<Vector3d> worldPoints, double planeWidth,
-		double planeHeight)
+std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<Vector3d> worldPoints)
 {
 	std::vector<Coordinate> globeCoordinates;
 	for (Vector3d worldCoordinate : worldPoints)
 	{
-		globeCoordinates.push_back(
-			Coordinate::getCoordinatesFromPlanePoint(worldCoordinate.x, worldCoordinate.y, planeWidth, planeHeight));
+		Vector2d point(worldCoordinate.x, worldCoordinate.y);
+		globeCoordinates.push_back(getCoordinatesFromPlanePoint(point));
 	}
 	return globeCoordinates;
 }
 
-Coordinate Globe::getCenterGlobeCoordinate(double cameraPosition[],
-		double globeRadius)
+Coordinate Globe::getCenterGlobeCoordinate(Vector3d cameraPosition)
 {
-	double globeOrigin[3] =
-	{ 0, 0, 0 };
+	Vector3d globeOrigin(0, 0, 0);
 
 	vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
-	this->getOOBTree() ->IntersectWithLine(cameraPosition, globeOrigin, intersectPoints, NULL);
+	this->getOBBTree()->IntersectWithLine(cameraPosition.array(), globeOrigin.array(),
+	        intersectPoints, nullptr);
 	Vector3d centerPoint;
 	intersectPoints->GetPoint(0, centerPoint.array());
-	return Coordinate::getCoordinatesFromGlobePoint(centerPoint.array(), globeRadius);
+	return getCoordinatesFromGlobePoint(centerPoint.array());
 }
 
-vtkSmartPointer<vtkOBBTree> Globe::getOOBTree(){
-    //Karte
-    if(this->getDisplayModeInterpolation() > 0.9){
-        return myPlaneTree;
-    }else{
-    //Globe
-        return mySphereTree;
-    }
+vtkSmartPointer<vtkOBBTree> Globe::getOBBTree()
+{
+	//Map
+	if (this->getDisplayModeInterpolation() > 0.9)
+	{
+		return myPlaneTree;
+	}
+	else
+	{
+		//Globe
+		return mySphereTree;
+	}
+}
+
+Coordinate Globe::getCoordinatesFromGlobePoint(Vector3d point)
+{
+	return Coordinate(asin(point.z / GLOBE_RADIUS) * 180 / M_PI,
+	        atan2(point.x, point.y) * 180 / M_PI);
+}
+
+Coordinate Globe::getCoordinatesFromPlanePoint(Vector2d point)
+{
+	double latitude = point.x / (PLANE_WIDTH / 2) * 180;
+	double longitude = point.y / (PLANE_HEIGHT / 2) * 90;
+
+	return Coordinate(latitude, longitude);
 }

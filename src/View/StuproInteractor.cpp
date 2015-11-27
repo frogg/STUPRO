@@ -10,6 +10,7 @@
 #include <vtkRenderWindowInteractor.h>
 #include <cmath>
 #include <cstdlib>
+#include <Globe/Globe.hpp>
 
 vtkStandardNewMacro(StuproInteractor);
 
@@ -71,6 +72,11 @@ void StuproInteractor::zoomWithFactor(float factor)
 		this->CurrentRenderer->UpdateLightsGeometryToFollowCamera();
 	}
 
+	if (this->myVtkPVStuproView->getGlobe())
+	{
+		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
+	}
+	
 	rwi->Render();
 }
 
@@ -186,5 +192,10 @@ void StuproInteractor::Rotate()
 		this->CurrentRenderer->ResetCameraClippingRange();
 	}
 
+	if (this->myVtkPVStuproView->getGlobe())
+	{
+		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
+	}
+	
 	rwi->Render();
 }
