@@ -12,51 +12,69 @@
 #include <cstdlib>
 #include <Globe/Globe.hpp>
 
-vtkStandardNewMacro(StuproInteractor);
+
+// Needs to be created for vtk to register this Class.
+vtkStandardNewMacro(StuproInteractor)
+
+
+StuproInteractor::StuproInteractor() {
+
+	zoomFactor = 120;
+	//Zoom out when initialized.
+	//zoomWithFactor(-(zoomFactor * 15));
+}
+
+
 
 StuproInteractor *StuproInteractor::New(vtkPVStuproView *application)
 {
-	StuproInteractor *retval = new StuproInteractor();
-	retval->myVtkPVStuproView = application;
-	return retval;
+	StuproInteractor *stuproInteracctor = new StuproInteractor();
+	stuproInteracctor->myVtkPVStuproView = application;
+
+	return stuproInteracctor;
+}
+
+// One RenderWindow can have multiple renderers, we need to determine
+// the one we clicked via our mouse position.
+void StuproInteractor::setCurrentRendererViaPosition()
+{
+	this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
+		this->Interactor->GetEventPosition()[1]);
 }
 
 void StuproInteractor::OnMouseWheelForward()
 {
-	this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
-							this->Interactor->GetEventPosition()[1]);
-
+	setCurrentRendererViaPosition();
+	float minDistance = 2.75f;
 	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
 	// TODO: Set better min-distance.
-	if(camera->GetDistance() >= myVtkPVStuproView->getGlobeRadius() * 1.75f)
+	if (camera->GetDistance() >= myVtkPVStuproView->getGlobeRadius() * minDistance)
 	{
-		zoomWithFactor(120);
+		zoomWithFactor(zoomFactor);
 	}
 }
 
 void StuproInteractor::OnMouseWheelBackward()
 {
-	this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
-							this->Interactor->GetEventPosition()[1]);
-
+	setCurrentRendererViaPosition();
+	float maxDistance = 8.0f;
 	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
-	if(camera->GetDistance() <= myVtkPVStuproView->getGlobeRadius() * 8.f)
+	if (camera->GetDistance() <= myVtkPVStuproView->getGlobeRadius() * maxDistance)
 	{
-		zoomWithFactor(-120);
+		zoomWithFactor(-(zoomFactor));
 	}
 }
 
 void StuproInteractor::zoomWithFactor(float factor)
 {
-	this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
-							this->Interactor->GetEventPosition()[1]);
+	setCurrentRendererViaPosition();
 
-	if(this->CurrentRenderer == NULL)
+	if (this->CurrentRenderer == NULL)
 	{
 		return;
 	}
 
-	vtkRenderWindowInteractor *rwi = this->Interactor;
+	vtkRenderWindowInteractor *renderWindowInteractor = this->Interactor;
 	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
 	double *center = this->CurrentRenderer->GetCenter();
 
@@ -67,30 +85,30 @@ void StuproInteractor::zoomWithFactor(float factor)
 
 	camera->Dolly(zoomFactor);
 
-	if(rwi->GetLightFollowCamera())
+	if (renderWindowInteractor->GetLightFollowCamera())
 	{
 		this->CurrentRenderer->UpdateLightsGeometryToFollowCamera();
 	}
 
+	
 	if (this->myVtkPVStuproView->getGlobe())
 	{
 		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
 	}
-	
-	rwi->Render();
-}
+	renderWindowInteractor->Render();
+
+	}
 
 void StuproInteractor::OnMiddleButtonDown()
 {
-	this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
-							this->Interactor->GetEventPosition()[1]);
+	setCurrentRendererViaPosition();
 
-	if(this->CurrentRenderer == NULL)
+	if (this->CurrentRenderer == NULL)
 	{
 		return;
 	}
 
-	if(myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayMap)
+	if (myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayMap)
 	{
 		this->GrabFocus(this->EventCallbackCommand);
 		this->StartPan();
@@ -99,14 +117,13 @@ void StuproInteractor::OnMiddleButtonDown()
 
 void StuproInteractor::OnMiddleButtonUp()
 {
-	this->FindPokedRenderer(this->Interactor->GetEventPosition()[0],
-							this->Interactor->GetEventPosition()[1]);
+	setCurrentRendererViaPosition();
 
-	switch(this->State)
+	switch (this->State)
 	{
 	case VTKIS_PAN:
 		this->EndPan();
-		if(this->Interactor)
+		if (this->Interactor)
 		{
 			this->ReleaseFocus();
 		}
@@ -116,78 +133,80 @@ void StuproInteractor::OnMiddleButtonUp()
 
 void StuproInteractor::OnRightButtonDown()
 {
+	//TODO: Implement independent cameraMovement from Globe in order to
+	//		tilt the camera
 	OnLeftButtonDown();
 }
 
 void StuproInteractor::OnRightButtonUp()
 {
+	//TODO: Implement independent cameraMovement from Globe in order to
+	//		tilt the camera
 	OnLeftButtonUp();
 }
 
-/**
- * Basically a copy of the internal Rotate()-function.
- * Override function to prevent rotating the DisplayMap around the y-axis.
- */
+
+Vector2d StuproInteractor::calculateRotationParameters(){
+	// Slows the rotation down when closer to the globe/map
+	double distanceOptimization = 2.5;
+	// TODO find a better solution
+	double distanceFactor = pow(1 - (1 / sqrt(this->CurrentRenderer->GetActiveCamera()->GetDistance() * distanceOptimization)), 2);
+	//the horizontal and vertical rotation
+	Vector2d rotationParameters(0,
+		-(this->Interactor->GetEventPosition()[1] - this->Interactor->GetLastEventPosition()[1])*distanceFactor);
+
+	//Set the horizontal rotation only if in DisplayGlobe.
+	if (myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayGlobe)
+	{
+		rotationParameters.x = -(this->Interactor->GetEventPosition()[0] - this->Interactor->GetLastEventPosition()[0])*distanceFactor;
+	}
+	return rotationParameters;
+}
+
+
+Vector2d StuproInteractor::calculateCameraRotators(Vector2d rotationParameters){
+	int *windowSize = this->CurrentRenderer->GetRenderWindow()->GetSize();
+	double degrees = 180.0;
+	// azimuth and elevation for the camera
+	Vector2d cameraRotators(rotationParameters.x / static_cast<double>(windowSize[0]) * degrees,
+		rotationParameters.y / static_cast<double>(windowSize[1]) * degrees);
+
+	double directionOfProjection[3], viewUp[3];
+
+	this->CurrentRenderer->GetActiveCamera()->GetDirectionOfProjection(directionOfProjection);
+	vtkMath::Normalize(directionOfProjection);
+	this->CurrentRenderer->GetActiveCamera()->GetViewUp(viewUp);
+	vtkMath::Normalize(viewUp);
+
+	// If we are exactly over the north / southpole we need to disable further elevation
+	// otherwise the interactor starts jumping around
+	double angle = vtkMath::DegreesFromRadians(acos(vtkMath::Dot(directionOfProjection, viewUp)));
+	if ((angle + cameraRotators.y) > 179.0 ||
+		(angle + cameraRotators.y) < 1.0)
+	{
+		cameraRotators.y = 0.0;
+	}
+	return cameraRotators;
+}
+
+
+
 void StuproInteractor::Rotate()
 {
-	if(this->CurrentRenderer == NULL)
+	// if there is no Renderer found, break
+	if (this->CurrentRenderer == NULL)
 	{
 		return;
 	}
 
+	Vector2d rotationParameters = calculateRotationParameters();
+	Vector2d cameraRotators = calculateCameraRotators(rotationParameters);
+
 	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
-	vtkRenderWindowInteractor *rwi = this->Interactor;
+	camera->Azimuth(cameraRotators.x);
+	camera->Elevation(cameraRotators.y);
 
-	// Slows the rotation down when closer to the globe/map
-	double disFac = 1 / sqrt(camera->GetDistance() * 5 / 2);
-	double distanceFactor = pow(1 - disFac, 2);
-
-	int dx = 0;
-
-	//Set the horizontal rotation only if in DisplayGlobe.
-	if(myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayGlobe)
-	{
-		dx = -(rwi->GetEventPosition()[0] - rwi->GetLastEventPosition()[0])*distanceFactor;
-	}
-
-	int dy = -(rwi->GetEventPosition()[1] - rwi->GetLastEventPosition()[1])*distanceFactor;
-
-	int *size = this->CurrentRenderer->GetRenderWindow()->GetSize();
-
-	double a = dx / static_cast<double>(size[0]) * 180.0;
-	double e = dy / static_cast<double>(size[1]) * 180.0;
-
-	if(rwi->GetShiftKey())
-	{
-		if(abs(dx) >= abs(dy))
-		{
-			e = 0.0;
-		}
-		else
-		{
-			a = 0.0;
-		}
-	}
-
-	camera->Azimuth(a);
-
-	double dop[3], vup[3];
-
-	camera->GetDirectionOfProjection(dop);
-	vtkMath::Normalize(dop);
-	camera->GetViewUp(vup);
-	vtkMath::Normalize(vup);
-
-	double angle = vtkMath::DegreesFromRadians(acos(vtkMath::Dot(dop, vup)));
-	if((angle + e) > 179.0 ||
-	   (angle + e) < 1.0)
-	{
-		e = 0.0;
-	}
-
-	camera->Elevation(e);
-
-	if(this->AutoAdjustCameraClippingRange)
+	if (this->AutoAdjustCameraClippingRange)
 	{
 		this->CurrentRenderer->ResetCameraClippingRange();
 	}
@@ -197,5 +216,6 @@ void StuproInteractor::Rotate()
 		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
 	}
 	
-	rwi->Render();
+	this->Interactor->Render();
 }
+

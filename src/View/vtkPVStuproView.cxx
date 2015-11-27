@@ -51,9 +51,9 @@ void vtkPVStuproView::initRenderer()
 	interactorStyle->SetAutoAdjustCameraClippingRange(false);
 	interactor->SetInteractorStyle(interactorStyle);
 
-	// TODO: Zoom out using a fix factor for now.
+	// Zoom out.
 	this->GetRenderWindow()->Render();
-	interactorStyle->zoomWithFactor(-1800.f);
+	//interactorStyle->zoomWithFactor(-1800.f);
 }
 
 void vtkPVStuproView::registerTimerCallback()
