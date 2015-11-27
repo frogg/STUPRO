@@ -25,12 +25,11 @@ elseif(${KRONOS_QT_VERSION} EQUAL 5)
     find_package(Qt5Widgets REQUIRED)
 endif()
 
-# find CppUnit headers and libraries
-find_package(CppUnit REQUIRED)
+# find GTest headers and libraries
+find_package(GTest REQUIRED)
 
 # test sources
-file(GLOB_RECURSE Test_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.cpp)
-file(GLOB_RECURSE Test_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.hpp)
+file(GLOB_RECURSE Test_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/**/Test*.cpp)
 
 # include main library headers
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -39,10 +38,10 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/libs)
 
 # include CppUnit headers
-include_directories(${CPPUNIT_INCLUDE_DIR})
+include_directories(${GTEST_INCLUDE_DIR})
 
 # create an executable for the test runner
-add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES} ${Test_HEADERS})
+add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES})
 
 # set C++ standard to C++11
 set_property(TARGET UnitTester PROPERTY CXX_STANDARD 11)
@@ -50,7 +49,7 @@ set_property(TARGET UnitTester PROPERTY CXX_STANDARD 11)
 # link against kronos and CppUnit libraries
 target_link_libraries(UnitTester
   StuproViewPlugin
-  cppunit
+  ${GTEST_BOTH_LIBRARIES}
 )
 
 # link against Qt libraries
