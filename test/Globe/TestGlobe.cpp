@@ -1,10 +1,7 @@
-#include "TestGlobe.hpp"
-
-#include <cppunit/TestAssert.h>
+#include <gtest/gtest.h>
 #include <Globe/Globe.hpp>
 
-
-void TestGlobe::testResolution() {
+TEST(TestGlobe, resolution) {
     /*
     Globe globe = *new Globe();
     globe.setResolution(Vector2u(42, 42));
@@ -16,8 +13,7 @@ void TestGlobe::testResolution() {
     */
 }
 
-
-void TestGlobe::testZoomLevel() {
+TEST(TestGlobe, zoomLevel) {
     /*
     Globe globe = *new Globe();
 
@@ -27,8 +23,7 @@ void TestGlobe::testZoomLevel() {
     */
 }
 
-
-void TestGlobe::testPlaneCoordinates() {
+TEST(TestGlobe, planeCoordinates) {
     /*
     Globe globe = *new Globe();
 
