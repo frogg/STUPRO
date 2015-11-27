@@ -102,6 +102,12 @@ public:
 	QString getString(QString key) const;
 
 	/**
+	* Get a boolean value from the configuration file.
+	* @param key The key of the value to get
+	*/
+	bool getBoolean(QString key) const;
+
+	/**
 	 * Get an integer value from the configuration file.
 	 * @param key The key of the value to get
 	 */

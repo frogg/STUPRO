@@ -121,6 +121,10 @@ QString Configuration::getString(QString key) const {
 	return this->getConfigurationValue(key, ConfigurationValue::TYPE_STRING).getStringValue();
 }
 
+bool Configuration::getBoolean(QString key) const {
+	return this->getConfigurationValue(key, ConfigurationValue::TYPE_BOOLEAN).getBooleanValue();
+}
+
 int Configuration::getInteger(QString key) const {
 	return this->getConfigurationValue(key, ConfigurationValue::TYPE_INTEGER).getIntegerValue();
 }
