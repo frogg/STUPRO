@@ -1,0 +1,17 @@
+{
+  "globe": {
+    "radius": 42,
+    "name": "Foo",
+    "spheric": true
+  },
+  "latitude": 12.2345,
+  "deeply": {
+    "nested": {
+      "configuration": {
+        "group": {
+          "longitude": 5.234
+        }
+      }
+    }
+  }
+}
