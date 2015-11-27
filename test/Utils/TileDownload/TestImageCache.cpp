@@ -46,15 +46,15 @@ void TestImageCache::testCacheImage() {
 		for (int y = 0; y < 512; ++y) {
 			if (y <= 256) {
 				if (x <= 256) {
-					image.setPixel(x, y, qRgb(255, 0, 255));
+					image.setPixel(x, y, qRgb(0xff, 0x00, 0xff));
 				} else {
-					image.setPixel(x, y, qRgb(255, 255, 255));
+					image.setPixel(x, y, qRgb(0xff, 0xff, 0xff));
 				}
 			} else {
 				if (x <= 256) {
-					image.setPixel(x, y, qRgb(255, 255, 255));
+					image.setPixel(x, y, qRgb(0xff, 0xff, 0xff));
 				} else {
-					image.setPixel(x, y, qRgb(255, 0, 255));
+					image.setPixel(x, y, qRgb(0xff, 0x00, 0xff));
 				}
 			}
 		}
@@ -103,7 +103,6 @@ void TestImageCache::testCacheRetrieval() {
 	CPPUNIT_ASSERT_EQUAL((short) 42, retrievedImage.getMaximumHeight());
 	CPPUNIT_ASSERT_EQUAL(512, retrievedImage.getImage().width());
 	CPPUNIT_ASSERT_EQUAL(512, retrievedImage.getImage().height());
-	CPPUNIT_ASSERT_EQUAL(qRgb(0x00, 0x00, 0x00), retrievedImage.getImage().pixel(128, 128));
 }
 
 void TestImageCache::testClearCache() {
