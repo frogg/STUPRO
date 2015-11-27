@@ -16,6 +16,9 @@
                 <DataType value="vtkPolyData"/>
             </DataTypeDomain>
         </InputProperty>
+        <Property name="reloadTheStuff"
+    			animateable="1"
+    			command="reloadStuff" />
     </SourceProxy>
     <SourceProxy name="CellDerivatives" class="vtkCellDerivatives" label="Cell Filter">
         <Documentation

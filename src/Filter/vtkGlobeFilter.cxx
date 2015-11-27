@@ -40,25 +40,28 @@ vtkGlobeFilter::vtkGlobeFilter()
   std::cout << "Hello" << endl;
 
 }
+vtkInformationVector *temp;
+int tempvar=2;
 
 int vtkGlobeFilter::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **inputVector,
   vtkInformationVector *outputVector)
 {
-      std::cout << "dataRequested" << endl;
+    temp=outputVector;
+      std::cout << "dataRequested" << tempvar<< endl;
   // get the info objects
-vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+//vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
 vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
 // get the input and output
-vtkPolyData *input = vtkPolyData::SafeDownCast(
-  inInfo->Get(vtkDataObject::DATA_OBJECT()));
-vtkPolyData *output = vtkPolyData::SafeDownCast(
+//vtkPolyData *input = vtkPolyData::SafeDownCast(
+//  inInfo->Get(vtkDataObject::DATA_OBJECT()));
+    vtkPolyData *output = vtkPolyData::SafeDownCast(
   outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-    int numberOfQuadsRight=20;
-    int numberOfQuadsUp=20;
+    int numberOfQuadsRight=200;
+    int numberOfQuadsUp=200;
     
     int nmbPoints=5*numberOfQuadsRight*numberOfQuadsUp;
 
@@ -78,32 +81,32 @@ vtkPolyData *output = vtkPolyData::SafeDownCast(
     vtkIdType pts[4];
     for (int i=0; i<numberOfQuadsRight; i++) {
         for (int j=0; j<numberOfQuadsUp; j++) {
-        cout << 5.0*i << endl;
+
             
-    pts[0]  = newPoints->InsertNextPoint(-1.0+2.0*i, 0.0+2.0*j, sin(-1.0+2.0*i)*2);
-    pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2);
-    pts[2]  = newPoints->InsertNextPoint(0.0+2.0*i, 1.0+2.0*j, sin(0.0+2.0*i)*2);
+    pts[0]  = newPoints->InsertNextPoint(-1.0+2.0*i, 0.0+2.0*j, sin(-1.0+2.0*i)*2*tempvar);
+    pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
+    pts[2]  = newPoints->InsertNextPoint(0.0+2.0*i, 1.0+2.0*j, sin(0.0+2.0*i)*2*tempvar);
     newPolys->InsertNextCell(3, pts);
     newNormals->InsertTuple3(pts[0], 1.0, 0.0, 0.0);
     newNormals->InsertTuple3(pts[1], 1.0, 0.0, 0.0);
     newNormals->InsertTuple3(pts[2], 1.0, 0.0, 0.0);
             
-    pts[1]  = newPoints->InsertNextPoint(-1.0+2.0*i, 2.0+2.0*j, sin(-1.0+2.0*i)*2);
+    pts[1]  = newPoints->InsertNextPoint(-1.0+2.0*i, 2.0+2.0*j, sin(-1.0+2.0*i)*2*tempvar);
     newPolys->InsertNextCell(3, pts);
     newNormals->InsertTuple3(pts[1], 1.0, 0.0, 0.0);
             
-    pts[0]  = newPoints->InsertNextPoint(1.0+2.0*i, 2.0+2.0*j, sin(1.0+2.0*i)*2);
+    pts[0]  = newPoints->InsertNextPoint(1.0+2.0*i, 2.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
     newPolys->InsertNextCell(3, pts);
     newNormals->InsertTuple3(pts[0], 1.0, 0.0, 0.0);
             
-    pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2);
+    pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
     newNormals->InsertTuple3(pts[0], 1.0, 0.0, 0.0);
     newPolys->InsertNextCell(3, pts);
         }
     
     }
   
-    output->CopyStructure( input );
+   // output->CopyStructure( input );
     newPoints->Squeeze();
     output->SetPoints(newPoints);
     newPoints->Delete();
@@ -119,8 +122,11 @@ vtkPolyData *output = vtkPolyData::SafeDownCast(
     return 1;
 }
 void vtkGlobeFilter::reloadStuff(void){
-    this->UpdateDataObject();
-    
+    tempvar++;
+    RequestData(nullptr, nullptr, temp);
+        this->UpdateDataObject();
+    this->Update();
+    this->UpdateInformation();
 }
 const char *vtkGlobeFilter::GetVectorModeAsString(void)
 {
