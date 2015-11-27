@@ -9,7 +9,7 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <cmath>
-#include <cstdlib>
+
 
 // Needs to be created for vtk to register this Class.
 vtkStandardNewMacro(StuproInteractor)
