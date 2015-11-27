@@ -41,6 +41,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/View/
 	${CMAKE_CURRENT_SOURCE_DIR}/Filter/
 	${CMAKE_CURRENT_SOURCE_DIR}/Sources/
+	${CMAKE_CURRENT_SOURCE_DIR}/Reader/
 )
 
 # register a ParaView plugin
@@ -53,10 +54,12 @@ add_paraview_plugin(
 		View/vtkPVStuproView.cxx
 		Filter/vtkGlobeFilter.cxx
 		Sources/vtkGlobeSource.cxx
+		Reader/vtkCityReader.cxx
 	SERVER_MANAGER_XML
 		View/KronosView.xml
 		Filter/KronosFilter.xml
 		Sources/KronosSources.xml
+		Reader/KronosReader.xml
 	SOURCES
 		${StuproView_SOURCE_FILES}
 )

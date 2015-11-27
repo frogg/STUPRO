@@ -60,8 +60,8 @@ vtkInformation *outInfo = outputVector->GetInformationObject(0);
     vtkPolyData *output = vtkPolyData::SafeDownCast(
   outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-    int numberOfQuadsRight=200;
-    int numberOfQuadsUp=200;
+    int numberOfQuadsRight=20;
+    int numberOfQuadsUp=20;
     
     int nmbPoints=5*numberOfQuadsRight*numberOfQuadsUp;
 
@@ -118,14 +118,16 @@ vtkInformation *outInfo = outputVector->GetInformationObject(0);
     newPolys->Squeeze();
     output->SetPolys(newPolys);
     newPolys->Delete();
-
+    
     return 1;
 }
 void vtkGlobeFilter::reloadStuff(void){
     tempvar++;
+
     RequestData(nullptr, nullptr, temp);
         this->UpdateDataObject();
     this->Update();
+
     this->UpdateInformation();
 }
 const char *vtkGlobeFilter::GetVectorModeAsString(void)
