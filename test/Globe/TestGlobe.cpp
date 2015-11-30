@@ -8,8 +8,8 @@ TEST(TestGlobe, resolution) {
 
     Vector2u vector = globe.getResolution();
 
-    CPPUNIT_ASSERT_EQUAL(42,(int)vector.x);
-    CPPUNIT_ASSERT_EQUAL(42,(int)vector.y);
+    EXPECT_EQ(42,(int)vector.x);
+    EXPECT_EQ(42,(int)vector.y);
     */
 }
 
@@ -19,7 +19,7 @@ TEST(TestGlobe, zoomLevel) {
 
     globe.setZoomLevel(42);
 
-    CPPUNIT_ASSERT_EQUAL(42,(int)globe.getZoomLevel());
+    EXPECT_EQ(42,(int)globe.getZoomLevel());
     */
 }
 
@@ -36,7 +36,7 @@ TEST(TestGlobe, planeCoordinates) {
     std::vector<Coordinate> coordinate = globe.getPlaneCoordinates(point);
 
     //top left corner = (-180 | 0)
-    CPPUNIT_ASSERT_EQUAL(-180, coordinate.pop_back());
-    CPPUNIT_ASSERT_EQUAL(0, coordinate.pop_back());
+    EXPECT_EQ(-180, coordinate.pop_back());
+    EXPECT_EQ(0, coordinate.pop_back());
     */
 }
