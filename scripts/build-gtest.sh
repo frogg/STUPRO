@@ -7,9 +7,6 @@ CMAKE_FLAGS="\
  -D BUILD_GTEST=ON\
  -D BUILD_GMOCK=OFF"
 
-mkdir -p $BUILD_DIR
-cd $BUILD_DIR
-
 if [ $GTEST_CLEAN_BUILD ]; then
   echo "GTEST_CLEAN_BUILD is set, cleaning GTest build directory..."
   rm -rf $BUILD_DIR
@@ -23,6 +20,9 @@ else
     fi
   fi
 fi
+
+mkdir -p $BUILD_DIR
+cd $BUILD_DIR
 
 cmake $CMAKE_FLAGS $SRC_DIR > /dev/null
 if [ $? != 0 ]; then
