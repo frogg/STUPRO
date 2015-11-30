@@ -5,9 +5,6 @@ PV_CMAKE_FLAGS="\
  -D CMAKE_BUILD_TYPE=Release\
  -D BUILD_TESTING=OFF\
  -D BUILD_DOCUMENTATION=OFF\
- -D Module_vtkGeovisCore=ON\
- -D Module_vtkIOGeoJSON=ON\
- -D Module_vtkViewsGeovis=ON\
  -D PARAVIEW_USE_MPI=ON"
 
 PV_GIT_URL="https://github.com/Kitware/ParaView.git"
