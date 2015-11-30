@@ -32,6 +32,7 @@ elseif(EXISTS "${GTest_LIB}/libgtest_main.a" AND EXISTS "${GTest_LIB}/libgtest.a
 else()
     message (FATAL_ERROR
         "GTest library not found, enter the path to a built GTest library in GTest_LIB"
+        "(Was given ${GTest_LIB})"
     )
 endif()
 
@@ -40,6 +41,7 @@ if(EXISTS ${GTest_INCLUDES})
 else()
     message (FATAL_ERROR
         "GTest includes not found, enter the path to the GTest include directory in GTest_INCLUDES"
+        "(Was given ${GTest_INCLUDES})"
     )
 endif()
 
