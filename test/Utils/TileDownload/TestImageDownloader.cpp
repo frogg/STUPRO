@@ -55,23 +55,17 @@ TEST(TestImageDownloader, getTile) {
 	EXPECT_EQ(512, image.width());
 	EXPECT_EQ(512, image.height());
 
-	// for (int x = 0; x < 8; x++) {
-	//  for (int y = 0; y < 4; y++) {
-	//      downloader.getTile(0, x, y);
-	//  }
-	// }
-
-	// CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, -1, 0, 0), InvalidTileZoomException);
-	// CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, 16, 0, 0), InvalidTileZoomException);
+	// ASSERT_THROW(downloader.getTile(layerName, -1, 0, 0), InvalidTileZoomException);
+	// ASSERT_THROW(downloader.getTile(layerName, 16, 0, 0), InvalidTileZoomException);
 
 	// for (int zoom = 0; zoom < 16; zoom++) {
-	//  CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, -1, 0), InvalidTilePositionException);
-	//  CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, 8 << zoom, 0),
+	//  ASSERT_THROW(downloader.getTile(layerName, zoom, -1, 0), InvalidTilePositionException);
+	//  ASSERT_THROW(downloader.getTile(layerName, zoom, 8 << zoom, 0),
 	//                       InvalidTilePositionException);
-	//  CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, 0, -1), InvalidTilePositionException);
-	//  CPPUNIT_ASSERT_THROW(downloader.getTile(layerName, zoom, 0, 4 << zoom),
+	//  ASSERT_THROW(downloader.getTile(layerName, zoom, 0, -1), InvalidTilePositionException);
+	//  ASSERT_THROW(downloader.getTile(layerName, zoom, 0, 4 << zoom),
 	//                       InvalidTilePositionException);
 	// }
 	//
-	// CPPUNIT_ASSERT_THROW(downloader.getTile("non-existing layer", 0, 0, 0), InvalidLayerException);
+	// ASSERT_THROW(downloader.getTile("non-existing layer", 0, 0, 0), InvalidLayerException);
 }
