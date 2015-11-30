@@ -36,7 +36,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # include external library headers
 include_directories(${CMAKE_SOURCE_DIR}/libs)
 
-# include CppUnit headers
+# include GTest headers
 include_directories(${GTEST_INCLUDE_DIR})
 
 # create an executable for the test runner
@@ -45,7 +45,7 @@ add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES})
 # set C++ standard to C++11
 set_property(TARGET UnitTester PROPERTY CXX_STANDARD 11)
 
-# link against kronos and CppUnit libraries
+# link against kronos and GTest libraries
 target_link_libraries(UnitTester
   StuproViewPlugin
   ${GTEST_BOTH_LIBRARIES}
