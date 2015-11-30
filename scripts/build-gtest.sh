@@ -10,6 +10,20 @@ CMAKE_FLAGS="\
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
+if [ $GTEST_CLEAN_BUILD ]; then
+  echo "GTEST_CLEAN_BUILD is set, cleaning GTest build directory..."
+  rm -rf $BUILD_DIR
+else
+  if [ $GTEST_REBUILD ]; then
+    echo "GTEST_REBUILD is set"
+  else
+    if [ -d $BUILD_DIR ]; then
+      echo "$BUILD_DIR already exists, assuming GTest libraries are already built"
+      exit 0
+    fi
+  fi
+fi
+
 cmake $CMAKE_FLAGS $SRC_DIR > /dev/null
 if [ $? != 0 ]; then
   echo "Aborting GTest build due to cmake errors"
