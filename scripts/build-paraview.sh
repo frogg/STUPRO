@@ -13,7 +13,7 @@ PV_CMAKE_FLAGS="\
 PV_GIT_URL="https://github.com/Kitware/ParaView.git"
 PV_GIT_TAG="v4.3.1"
 
-NUM_WORKERS=4
+NUM_WORKERS=$(nproc)
 
 # store current working directory for later references
 ROOT_DIR=$PWD

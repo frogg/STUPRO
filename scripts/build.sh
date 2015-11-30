@@ -13,7 +13,7 @@ if [ $? != 0 ]; then
   exit 1
 fi
 
-make -j 4
+make -j $(nproc)
 
 if [ $? != 0 ]; then
   echo "Aborting due to errors while building kronos"
