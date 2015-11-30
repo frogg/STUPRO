@@ -11,6 +11,8 @@ before_install:
   - ./scripts/build-paraview.sh
   # build astyle because the astyle version in the official repos is outdated
   - ./scripts/download-and-install-astyle.sh
+  # build GTest libraries
+  - ./scripts/build-gtest.sh
   # run build preparation script
   - ./scripts/pre-build.sh
 
