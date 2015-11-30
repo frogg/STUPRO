@@ -9,7 +9,6 @@ set(KRONOS_QT_VERSION 4)
 
 # find ParaView headers and libraries
 find_package(ParaView REQUIRED)
-message(STATUS ${PARAVIEW_USE_FILE})
 include(${PARAVIEW_USE_FILE})
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
