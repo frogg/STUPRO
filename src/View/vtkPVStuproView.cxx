@@ -1,6 +1,8 @@
 #include <Globe/Globe.hpp>
 #include <StuproInteractor.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
+#include <Utils/Config/Configuration.hpp>
+
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -30,9 +32,9 @@ void vtkPVStuproView::initParameters()
 {
 	// Initialize parameters.
 	this->displayMode = DisplayGlobe;
-	this->globeRadius = 0.5f;
-	this->planeSize = 1.f;
-	this->heightFactor = 0.05f;
+	this->globeRadius = Configuration::getInstance().getFloat("globe.radius");
+	this->planeSize = Configuration::getInstance().getFloat("globe.planeSize");
+	this->heightFactor = Configuration::getInstance().getFloat("globe.heightFactor");
 }
 
 void vtkPVStuproView::initRenderer()
@@ -72,7 +74,7 @@ void vtkPVStuproView::registerTimerCallback()
 		if(std::abs(interpolationTarget - client.displayModeInterpolation) > 0.000001f)
 		{
 			// Controls the speed of the globe-map transition.
-			float effectSpeed = 2.f;
+			float effectSpeed = Configuration::getInstance().getFloat("globe.transitionEffectSpeed");
 
 			// Smoothly transition interpolation value based on previous and target value.
 			client.globe->setDisplayModeInterpolation((interpolationTarget * effectSpeed +

@@ -56,15 +56,15 @@ TEST_F(TestImageCache, cacheImage) {
 		for (int y = 0; y < 512; ++y) {
 			if (y <= 256) {
 				if (x <= 256) {
-					image.setPixel(x, y, qRgb(255, 0, 255));
+					image.setPixel(x, y, qRgb(0xff, 0x00, 0xff));
 				} else {
-					image.setPixel(x, y, qRgb(255, 255, 255));
+					image.setPixel(x, y, qRgb(0xff, 0xff, 0xff));
 				}
 			} else {
 				if (x <= 256) {
-					image.setPixel(x, y, qRgb(255, 255, 255));
+					image.setPixel(x, y, qRgb(0xff, 0xff, 0xff));
 				} else {
-					image.setPixel(x, y, qRgb(255, 0, 255));
+					image.setPixel(x, y, qRgb(0xff, 0x00, 0xff));
 				}
 			}
 		}
@@ -108,6 +108,7 @@ TEST_F(TestImageCache, cacheRetrieval) {
 
 	MetaImage retrievedImage = ImageCache::getInstance()
 							   .getCachedImage(QString("test-layer"), 8, 3, 7);
+
 	EXPECT_TRUE(retrievedImage.hasMetaData());
 	EXPECT_EQ((short) 1, retrievedImage.getMinimumHeight());
 	EXPECT_EQ((short) 42, retrievedImage.getMaximumHeight());
