@@ -7,6 +7,8 @@ CMAKE_FLAGS="\
  -D BUILD_GTEST=ON\
  -D BUILD_GMOCK=OFF"
 
+LIBRARAY_PATH="googletest/libgtest.so"
+
 if [ $GTEST_CLEAN_BUILD ]; then
   echo "GTEST_CLEAN_BUILD is set, cleaning GTest build directory..."
   rm -rf $BUILD_DIR
@@ -14,8 +16,8 @@ else
   if [ $GTEST_REBUILD ]; then
     echo "GTEST_REBUILD is set"
   else
-    if [ -d $BUILD_DIR ]; then
-      echo "$BUILD_DIR already exists, assuming GTest libraries are already built"
+    if [ -f $BUILD_DIR$LIBRARAY_PATH ]; then
+      echo "$BUILD_DIR$LIBRARAY_PATH already exists, assuming GTest libraries are already built"
       exit 0
     fi
   fi
