@@ -5,7 +5,7 @@
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
 #include <string>
 
-TEST(TestConfigUtil, loadConfig) {
+TEST(TestConfigUtil, LoadConfig) {
 	QMap<QString, ImageLayerDescription> layers;
 
 	try {
@@ -35,7 +35,7 @@ TEST(TestConfigUtil, loadConfig) {
 	EXPECT_EQ(512, heightmap.getTileSize());
 };
 
-TEST(ConfigUtil, layerSteps) {
+TEST(TestConfigUtil, LayerSteps) {
 	QMap<QString, ImageLayerDescription> layers;
 
 	try {

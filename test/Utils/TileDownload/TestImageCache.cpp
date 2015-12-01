@@ -44,13 +44,13 @@ public:
 	};
 };
 
-TEST_F(TestImageCache, directorySetup) {
+TEST_F(TestImageCache, DirectorySetup) {
 	EXPECT_FALSE(QDir("cache").exists());
 	ImageCache::getInstance();
 	EXPECT_TRUE(QDir("cache").exists());
 }
 
-TEST_F(TestImageCache, cacheImage) {
+TEST_F(TestImageCache, CacheImage) {
 	QImage image(512, 512, QImage::Format_RGB32);
 	for (int x = 0; x < 512; ++x) {
 		for (int y = 0; y < 512; ++y) {
@@ -89,7 +89,7 @@ TEST_F(TestImageCache, cacheImage) {
 	}
 }
 
-TEST_F(TestImageCache, cacheRetrieval) {
+TEST_F(TestImageCache, CacheRetrieval) {
 	/* Test the method that checks whether an image has been cached yet */
 	EXPECT_FALSE(ImageCache::getInstance().isImageCached(QString("test-layer"), 8, 3, 7));
 
@@ -116,7 +116,7 @@ TEST_F(TestImageCache, cacheRetrieval) {
 	EXPECT_EQ(512, retrievedImage.getImage().height());
 }
 
-TEST_F(TestImageCache, clearCache) {
+TEST_F(TestImageCache, ClearCache) {
 	QImage image(512, 512, QImage::Format_RGB32);
 	ImageCache::getInstance().cacheImage(MetaImage(image, 1, 42),
 										 QString("layer-to-clear"), 2, 1, 3);

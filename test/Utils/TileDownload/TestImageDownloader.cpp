@@ -9,7 +9,7 @@
 #include <Utils/TileDownload/MetaImage.hpp>
 #include <future>
 
-TEST(TestImageDownloader, getAvailableLayers) {
+TEST(TestImageDownloader, GetAvailableLayers) {
 	ASSERT_NO_THROW({
 		ImageDownloader downloader([](ImageTile tile) {
 
@@ -22,7 +22,7 @@ TEST(TestImageDownloader, getAvailableLayers) {
 	});
 }
 
-TEST(TestImageDownloader, getTile) {
+TEST(TestImageDownloader, GetTile) {
 	std::promise<ImageTile> promise;
 	std::future<ImageTile> future = promise.get_future();
 

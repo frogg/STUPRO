@@ -1,7 +1,7 @@
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
 #include <gtest/gtest.h>
 
-TEST(TestImageLayerDescription, getTilePorisionFromCoordinates) {
+TEST(TestImageLayerDescription, GetTilePorisionFromCoordinates) {
     double latitude = 51.501414;
     double longitude = -0.141554;
 

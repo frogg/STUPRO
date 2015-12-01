@@ -2,7 +2,7 @@
 #include <qimage.h>
 #include <Utils/TileDownload/MetaImage.hpp>
 
-TEST(TestMetaData, metaData) {
+TEST(TestMetaData, MetaData) {
 	QImage image(512, 512, QImage::Format_RGB32);
 	MetaImage metaImageOne(image, 10, 42);
 
@@ -20,7 +20,7 @@ TEST(TestMetaData, metaData) {
 	EXPECT_EQ((short) 43, metaImageTwo.getMaximumHeight());
 }
 
-TEST(TestMetaImage, image) {
+TEST(TestMetaImage, Image) {
 	QImage image(512, 512, QImage::Format_RGB32);
 	MetaImage metaImage(image, 1, 2);
 
