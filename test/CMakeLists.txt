@@ -37,7 +37,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/libs)
 
 # include GTest headers
-include_directories(${GTEST_INCLUDE_DIR})
+include_directories(${GTEST_INCLUDE_DIRS})
 
 # create an executable for the test runner
 add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES})

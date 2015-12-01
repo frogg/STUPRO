@@ -4,11 +4,7 @@
 
 set(GTEST_FOUND "NO")
 
-message("Looking for GTest...")
-
 find_package(GTest QUIET)
-
-message("Did find GTest")
 
 if (NOT ${GTest_FOUND})
 	message("The Google Testing Framework was not found in the system path."
@@ -46,7 +42,7 @@ if (NOT ${GTest_FOUND})
 	endif()
 
 	if(EXISTS ${GTest_INCLUDES})
-	    set(GTEST_INCLUDE_DIR ${GTest_INCLUDES})
+	    set(GTEST_INCLUDE_DIRS ${GTest_INCLUDES})
 	else()
 	    message (FATAL_ERROR
 		"GTest includes not found, enter the path to the GTest include directory in GTest_INCLUDES"
