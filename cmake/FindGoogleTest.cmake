@@ -2,7 +2,7 @@
 # Find the GTest includes and library
 #
 
-set(GTEST_FOUND "NO")
+set(GTest_FOUND "NO")
 
 find_package(GTest QUIET)
 
@@ -51,4 +51,4 @@ if (NOT ${GTest_FOUND})
 	    )
 	endif()
 endif()
-set(GTEST_FOUND "YES")
+set(GTest_FOUND "YES")
