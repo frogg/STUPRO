@@ -25,7 +25,7 @@ elseif(${KRONOS_QT_VERSION} EQUAL 5)
 endif()
 
 # find GTest headers and libraries
-find_package(GTest REQUIRED)
+find_package(GoogleTest REQUIRED)
 
 # test sources
 file(GLOB_RECURSE Test_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/**/Test*.cpp)
