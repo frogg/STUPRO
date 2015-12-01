@@ -9,6 +9,7 @@
 #include <qurl.h>
 #include <qvariant.h>
 #include <Utils/TileDownload/MetaImage.hpp>
+#include <Utils/Misc/Macros.hpp>
 #include <exception>
 #include <future>
 #include <string>
@@ -23,7 +24,7 @@ struct DownloadFailedException : public std::exception {
 
 	DownloadFailedException(QString reason) : reason(reason.toStdString()) { }
 
-	const char *what() const noexcept override {
+	const char *what() const KRONOS_NOTHROW override{
 		return reason.c_str();
 	}
 };

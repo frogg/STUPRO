@@ -12,7 +12,7 @@
 #	define KRONOS_MACOS
 #elif defined(__linux__)
 #	define KRONOS_LINUX
-#elif
+#else
 #	error Unrecognized Operating System!
 #endif
 

@@ -75,6 +75,7 @@ build_paraview_client(
 	paraview_stupro
 	TITLE "ParaView - Kronos-Edition"
 	ORGANIZATION "Kitware Inc."
+	SPLASH_IMAGE "Splash.png"
 	VERSION_MAJOR 1
 	VERSION_MINOR 0
 	VERSION_PATCH 0
@@ -82,6 +83,8 @@ build_paraview_client(
 	PVMAIN_WINDOW_INCLUDE StuproWindow.hpp
 	REQUIRED_PLUGINS StuproViewPlugin
 	SOURCES ${ParaView_SOURCE_FILES}
+	GUI_CONFIGURATION_XMLS
+      ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewSources.xml
 )
 
 # use C++11 to compile the client
