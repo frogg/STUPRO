@@ -4,7 +4,11 @@
 
 set(GTEST_FOUND "NO")
 
-find_package(GTest)
+message("Looking for GTest...")
+
+find_package(GTest QUIET)
+
+message("Did find GTest")
 
 if (NOT ${GTest_FOUND})
 	message("The Google Testing Framework was not found in the system path."
