@@ -31,7 +31,7 @@ struct InvalidLayerException : public std::exception {
 		this->reason = message.toStdString();
 	}
 
-	const char * what() const noexcept override {
+	const char * what() const KRONOS_NOTHROW override{
 		return reason.c_str();
 	}
 };

@@ -2,6 +2,7 @@
 #define KRONOS_CONFIGURATION_HPP
 
 #include <Utils/Config/ConfigurationValue.hpp>
+#include <Utils/Misc/Macros.hpp>
 
 #include <QString>
 #include <QMap>
@@ -17,7 +18,7 @@ struct ConfigurationException : public std::exception {
 
 	ConfigurationException(QString reason) : reason(reason.toStdString()) { }
 
-	const char *what() const noexcept override {
+	const char *what() const KRONOS_NOTHROW override{
 		return reason.c_str();
 	}
 };
