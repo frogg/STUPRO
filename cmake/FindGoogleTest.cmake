@@ -43,6 +43,7 @@ if (NOT ${GTest_FOUND})
 
 	if(EXISTS ${GTest_INCLUDES})
 	    set(GTEST_INCLUDE_DIRS ${GTest_INCLUDES})
+	    message ("Setting gtest include path to ${GTEST_INCLUDE_DIRS}")
 	else()
 	    message (FATAL_ERROR
 		"GTest includes not found, enter the path to the GTest include directory in GTest_INCLUDES"
