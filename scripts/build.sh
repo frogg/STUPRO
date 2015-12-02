@@ -4,6 +4,9 @@ BUILD_DIR=bin
 ABS_BUILD_DIR=$ROOT_DIR/$BUILD_DIR
 ABS_PV_DIR=$ROOT_DIR/bin/paraview/bin/
 
+echo "Running $(cmake --version)"
+exit 0
+
 mkdir -p $ABS_BUILD_DIR
 cd $ABS_BUILD_DIR
 cmake -D ParaView_DIR=$ABS_PV_DIR $ROOT_DIR
