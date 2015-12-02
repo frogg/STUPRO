@@ -1,4 +1,10 @@
-cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
+# on windows, we'll need CMake >= 3.4.0 to be able to export all symbols of the plugin
+if (WIN32)
+	cmake_minimum_required(VERSION 3.4.0 FATAL_ERROR)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+else()
+	cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
+endif()
 
 # find pthread (C++11 threading) library and headers
 find_package(Threads REQUIRED)
