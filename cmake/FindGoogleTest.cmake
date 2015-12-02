@@ -24,15 +24,20 @@ if (NOT ${GTEST_FOUND})
 			"${GTest_LIB}/libgtest_main.so"
 			"${GTest_LIB}/libgtest.so"
 		)
-	elseif(EXISTS "${GTest_LIB}/libgtest_main.dll" AND EXISTS "${GTest_LIB}/libgtest.dll")
-		set(GTEST_BOTH_LIBRARIES
-			"${GTest_LIB}/libgtest_main.dll"
-			"${GTest_LIB}/libgtest.dll"
-		)
 	elseif(EXISTS "${GTest_LIB}/libgtest_main.a" AND EXISTS "${GTest_LIB}/libgtest.a")
 		set(GTEST_BOTH_LIBRARIES
 			"${GTest_LIB}/libgtest_main.a"
 			"${GTest_LIB}/libgtest.a"
+		)
+	elseif(EXISTS "${GTest_LIB}/gtest_main.dll" AND EXISTS "${GTest_LIB}/gtest.dll")
+		set(GTEST_BOTH_LIBRARIES
+			"${GTest_LIB}/gtest_main.dll"
+			"${GTest_LIB}/gtest.dll"
+		)
+	elseif(EXISTS "${GTest_LIB}/gtest_main.lib" AND EXISTS "${GTest_LIB}/gtest.lib")
+		set(GTEST_BOTH_LIBRARIES
+			"${GTest_LIB}/gtest_main.lib"
+			"${GTest_LIB}/gtest.lib"
 		)
 	else()
 		message (FATAL_ERROR
