@@ -49,7 +49,7 @@ set_property(TARGET UnitTester PROPERTY CXX_STANDARD 11)
 
 # link against kronos and CppUnit libraries
 target_link_libraries(UnitTester
-  StuproViewPlugin
+  KronosPlugin
   cppunit
 )
 
