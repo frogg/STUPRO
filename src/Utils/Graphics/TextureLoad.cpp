@@ -22,10 +22,10 @@ vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QIma
 	static const int CHANNEL_GREEN = 1;
 	static const int CHANNEL_BLUE = 2;
 	static const int CHANNEL_ALPHA = 3;
-	
+
 	// Number of channels in an RGBA image.
 	static const int CHANNEL_COUNT = 4;
-	
+
 	// Create a VTK image to load the RGBA data into.
 	vtkSmartPointer<vtkImageData> vtkimage = vtkImageData::New();
 
@@ -37,7 +37,7 @@ vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QIma
 	if (width != (unsigned int)alpha.width() || height != (unsigned int)alpha.height())
 	{
 		throw std::runtime_error(QString("RGB (%1x%2) and Alpha (%3x%4) texture sizes mismatch")
-				.arg(width).arg(height).arg(alpha.width()).arg(alpha.height()));
+				.arg(width).arg(height).arg(alpha.width()).arg(alpha.height()).toStdString());
 	}
 
 	// Initialize parameters for vtkImageData.
