@@ -1,6 +1,9 @@
 #ifndef SRC_UTILS_MISC_DEBUGLOG_HPP_
 #define SRC_UTILS_MISC_DEBUGLOG_HPP_
 
+#include <fstream>
+#include <string>
+
 /**
  * Utility class for debug logging. Use like a standard output stream (cout).
  * 
