@@ -33,6 +33,24 @@ file(GLOB_RECURSE StuproView_SOURCE_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.h"
 )
 
+# Custom Files needed to be included in add_paraview_plugin
+file(GLOB CUSTOM_VIEW
+        "${CMAKE_CURRENT_SOURCE_DIR}/View/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/View/*.cxx"
+)
+file(GLOB CUSTOM_FILTER
+        "${CMAKE_CURRENT_SOURCE_DIR}/Filter/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Filter/*.cxx"
+)
+file(GLOB CUSTOM_SOURCE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.cxx"
+)
+file(GLOB CUSTOM_READER
+        "${CMAKE_CURRENT_SOURCE_DIR}/Reader/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Reader/*.cxx"
+)
+
 include_directories(${CMAKE_SOURCE_DIR}/libs)
 
 # directories to include (important for auto-generated code)
@@ -58,11 +76,11 @@ add_paraview_plugin(
 	"1.0.0"
 	REQUIRED_ON_SERVER
 	REQUIRED_ON_CLIENT
-	SERVER_MANAGER_SOURCES
-		View/vtkPVStuproView.cxx
-		Filter/vtkGlobeFilter.cxx
-		Sources/vtkGlobeSource.cxx
-		Reader/vtkCityReader.cxx
+        SERVER_MANAGER_SOURCES
+                ${CUSTOM_VIEW}
+                ${CUSTOM_FILTER}
+                ${CUSTOM_SOURCE}
+                ${CUSTOM_READER}
 	SERVER_MANAGER_XML
 		View/KronosView.xml
 		Filter/KronosFilter.xml
