@@ -40,13 +40,13 @@ ParaView MPI functionality requires the openMPI library, run `apt-get install op
 Alternatively, if you don't want to go through the trouble of building ParaView completely on your own, consider running the `build-paraview.sh` script located in the `scripts` folder from inside the project's root directory to automatically build ParaView inside the binary directory.
 
 #### GTest
-For running unit tests we're using [GTest](https://github.com/google/googletest/). GTest is already contained in the lib folder as a submodule and you'll have to build it yourself since GTest is not on the apt repositories. A script responsible for building the GTest libraries is already present at `scripts/build-gtest.sh`. Make sure to run `git submodule init` and `git submodule update` (or execute `./scripts/pre-build.sh`) before building GTest to make sure the submodule is installed and up to date.
+For running unit tests we're using [GTest](https://github.com/google/googletest/). GTest is already contained in the lib folder as a submodule, but you'll have to build it yourself since GTest is not on the apt repositories. A script responsible for building the GTest libraries is already present at `scripts/build-gtest.sh`. Make sure to run `git submodule init` and `git submodule update` (or execute `./scripts/pre-build.sh`) before building GTest to make sure the submodule is installed and up to date. When building GTest yourself, you may use the CMake flags `BUILD_SHARED_LIBS=ON`, `BUILD_GTEST=ON` and `BUILD_GMOCK=OFF` to prevent GMock from building and build GTest as a shared library.
 
 ### Building Kronos
 If all dependencies are installed, building Kronos is as easy as configuring it using `cmake`. Switch into a directory of your choice (we recommend not using the project's root directory, so `cmake` doesn't put auto-generated source files and other CMake-related files into the source folders). To generate the Makefiles for building Kronos, execute `cmake` in one of the following ways:
-* Use `cmake [path to kronos]` directly for the non-interactive mode.
-* Run `ccmake [path to kronos]` to get a console-based user interface where you can change the build options without the use of command line parameters. When done configuring, press `c` to configure CMake and when finished without errors, press `g` to generate the Makefiles.
-* Run `cmake-gui [path to kronos]` to get a nice window-based user interface, similar to the `ccmake` one. Change the flags to your likings, then configure and generate the Makefiles.
+* Use `cmake [path to Kronos]` directly for the non-interactive mode.
+* Run `ccmake [path to Kronos]` to get a console-based user interface where you can change the build options without the use of command line parameters. When done configuring, press `c` to configure CMake and when finished without errors, press `g` to generate the Makefiles.
+* Run `cmake-gui [path to Kronos]` to get a nice window-based user interface, similar to the `ccmake` one. Change the flags to your likings, then configure and generate the Makefiles.
 
 When the Makefiles are done, simply run `make` to build Kronos.
 
