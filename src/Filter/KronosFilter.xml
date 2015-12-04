@@ -1,5 +1,29 @@
 <ServerManagerConfiguration>
 <ProxyGroup name="filters">
+    
+    <SourceProxy name="SpericalToCartesianFilter" class="SpericalToCartesianFilter" label="Conversion from sperical (lat/long) to cartesian coordinate system">
+        <!-- Documentation shown... somewhere -->
+        <Documentation
+        long_help="Hello, this is my long help."
+        short_help="Shut up." />
+        
+        <InputProperty
+            name="Input"
+            command="SetInputConnection">
+            
+            <!-- Acceptable groups as inputs -->
+            <ProxyGroupDomain name="groups">
+                <Group name="sources"/>
+                <Group name="filters"/>
+            </ProxyGroupDomain>
+            
+            <!-- (super)classes to accept via input -->
+            <DataTypeDomain name="input_type">
+                <DataType value="vtkDataSet"/>
+            </DataTypeDomain>
+        </InputProperty>
+    </SourceProxy>
+
     <SourceProxy name="CustomFilter" class="vtkGlobeFilter" label="My Custom Filter">
         <Documentation
             long_help="Create point attribute array by projecting points onto an elevation vector."

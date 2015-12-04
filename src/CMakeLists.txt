@@ -61,6 +61,7 @@ add_paraview_plugin(
 	SERVER_MANAGER_SOURCES
 		View/vtkPVStuproView.cxx
 		Filter/vtkGlobeFilter.cxx
+		Filter/SpericalToCartesianFilter.cpp
 		Sources/vtkGlobeSource.cxx
 		Reader/vtkCityReader.cxx
 	SERVER_MANAGER_XML
