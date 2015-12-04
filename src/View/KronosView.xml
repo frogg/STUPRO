@@ -1,10 +1,17 @@
 <ServerManagerConfiguration>
-  <ProxyGroup name="views">
-    <RenderViewProxy name="StuproView" class="vtkPVStuproView"
-        label="STUPRO View"
-        processes="client|renderserver|dataserver"
-        base_proxygroup="views" base_proxyname="RenderView">
+	<ProxyGroup name="views">
+		<!-- Register the view using the corresponding class. -->
+		<RenderViewProxy name="StuproView"
+			class="vtkPVStuproView"
+			label="Kronos View"
+			processes="client|renderserver|dataserver"
+			base_proxygroup="views"
+			base_proxyname="RenderView">
 
+		<!--
+		Adds a button to the property-panel to switch the display mode.
+		The command-attribute has to be a method in the view-class.
+		-->
 		<Property name="SwitchCurrentDisplaymode"
 			animateable="1"
 			command="switchCurrentDisplayMode" />
