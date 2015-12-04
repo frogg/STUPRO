@@ -16,7 +16,7 @@ struct FileOpenException : public std::exception {
 
 	FileOpenException(QString message) : reason(message.toStdString()) { }
 
-	const char *what() const noexcept override {
+	const char *what() const KRONOS_NOTHROW override{
 		return reason.c_str();
 	}
 };
@@ -29,7 +29,7 @@ struct JsonParseException : public std::exception {
 
 	JsonParseException(QString message) : reason(message.toStdString()) { }
 
-	const char *what() const noexcept override {
+	const char *what() const KRONOS_NOTHROW override{
 		return reason.c_str();
 	}
 };

@@ -2,6 +2,7 @@
 #define KRONOS_UTILS_TILEDOWNLOAD_IMAGELAYERDESCRIPTION_HPP
 
 #include <Utils/TileDownload/LayerStep.hpp>
+#include <Utils/Misc/Macros.hpp>
 
 #include <QString>
 #include <QList>
@@ -15,7 +16,7 @@ struct InvalidTileLocationException : public std::exception {
 
     InvalidTileLocationException(QString message) : reason(message.toStdString()) { }
 
-    const char * what() const noexcept override {
+	const char * what() const KRONOS_NOTHROW override{
         return reason.c_str();
     }
 };

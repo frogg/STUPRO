@@ -1,8 +1,7 @@
 #include <Utils/Config/ConfigurationValue.hpp>
 
-const QList<QString> ConfigurationValue::TYPE_NAMES = {
-  "Unknown", "String", "Boolean", "Integer", "Double"
-};
+// Has to use the constructor + <<-operator instead of an initializer-list
+const QList<QString> ConfigurationValue::TYPE_NAMES = QList<QString>() << "Unknown" << "String" << "Boolean" << "Integer" << "Double";
 
 const QString ConfigurationValue::getTypeNameFromInteger(int type) {
   if (type >= 0 && type < ConfigurationValue::TYPE_NAMES.size()) {
