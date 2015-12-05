@@ -2,10 +2,9 @@
 --style=java
 
 # tab indent equals 4 spaces
---indent=force-tab=4
+--indent=tab=4
 
-# class/switch/namespace indent
-#--indent-classes
+# switch/namespace indent
 --indent-switches
 --indent-namespaces
 
@@ -13,10 +12,9 @@
 --indent-preproc-block
 --indent-preproc-define
 
-# spaces around operators and if/while/for, but not around parenthesis and angle brackets
+# spaces around operators in if/while/for but not around angled brackets
 --pad-oper
 --pad-header
---unpad-paren
 --close-templates
 
 # align pointer operators * and & to the name
@@ -25,12 +23,12 @@
 # add braces to single line if/while/for statements
 --add-brackets
 
-# convert all whitespaces into tabs (if possible)#
---convert-tabs
-
-# max line length
+# max line length before line break
 --max-code-length=100
 
-# other options
-#--recursive
+# dunno! :D
+--min-conditional-indent=2
+--indent-col1-comments
+
+# in the output, only display files that were actually formatted
 --formatted
