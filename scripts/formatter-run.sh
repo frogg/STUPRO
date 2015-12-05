@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FORMATTER_DIRS=( "src" "test" "include" )
+FORMATTER_DIRS=( "src" "test" )
 
 if [[ $1 == "" ]]; then
 	COMMAND=astyle
