@@ -10,5 +10,5 @@ fi
 
 for i in "${FORMATTER_DIRS[@]}"
 do
-  $COMMAND --options=.astyle-options-v2 --recursive --suffix=none "$i/*.cpp" "$i/*.hpp" "$i/*.?sh"
+  $COMMAND --options=.astyle-options --recursive --suffix=none "$i/*.cpp" "$i/*.hpp" "$i/*.?sh"
 done
