@@ -69,12 +69,18 @@ int SpericalToCartesianFilter::RequestData(
     newNormals->SetName("Normals");
     vtkIdType pts[4];
     
-            
-            
-    pts[0]  = newPoints->InsertNextPoint(-0.5,0.5,1);
-    pts[1]  = newPoints->InsertNextPoint(-0.5,0.0,0);
-    pts[2]  = newPoints->InsertNextPoint(+0.5,0.7,0);
-    newPolys->InsertNextCell(3, pts);
+    for(int i=0; i<input->GetNumberOfPoints()/3; i++){
+        input->GetPoint(i,coodinate);
+        pts[0]  = newPoints->InsertNextPoint(coodinate[0]*2,coodinate[1]*2,coodinate[2]);
+        input->GetPoint(i+1,coodinate);
+        pts[1]  = newPoints->InsertNextPoint(coodinate[0]*2,coodinate[1]*2,coodinate[2]);
+        input->GetPoint(i+2,coodinate);
+        pts[2]  = newPoints->InsertNextPoint(coodinate[0]*2,coodinate[1]*2,coodinate[2]);
+        newPolys->InsertNextCell(3, pts);
+    }
+ 
+    
+
     
     // output->CopyStructure( input );
     newPoints->Squeeze();
