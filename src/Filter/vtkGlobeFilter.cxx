@@ -105,6 +105,7 @@ vtkInformation *outInfo = outputVector->GetInformationObject(0);
         }
     
     }
+
   
    // output->CopyStructure( input );
     newPoints->Squeeze();
@@ -126,6 +127,7 @@ void vtkGlobeFilter::reloadStuff(void){
     this->Modified();
     this->Update();
     this->UpdateInformation();
+
 }
 const char *vtkGlobeFilter::GetVectorModeAsString(void)
 {
