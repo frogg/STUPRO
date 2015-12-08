@@ -1,5 +1,4 @@
 <ServerManagerConfiguration>
-<<<<<<< HEAD:src/View/StuproView.xml
 	<ProxyGroup name="views">
 		<!-- Register the view using the corresponding class. -->
 		<RenderViewProxy name="StuproView"
@@ -18,17 +17,3 @@
 		</RenderViewProxy>
 	</ProxyGroup>
 </ServerManagerConfiguration>
-=======
-  <ProxyGroup name="views">
-    <RenderViewProxy name="StuproView" class="vtkPVStuproView"
-        label="STUPRO View"
-        processes="client|renderserver|dataserver"
-        base_proxygroup="views" base_proxyname="RenderView">
-
-		<Property name="SwitchCurrentDisplaymode"
-			animateable="1"
-			command="switchCurrentDisplayMode" />
-    </RenderViewProxy>
-  </ProxyGroup>
-  </ServerManagerConfiguration>
->>>>>>> feature/customFilterSourceView:src/View/KronosView.xml
