@@ -1,14 +1,18 @@
-#include "SpericalToCartesianFilter.hpp"
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
-#include "vtkDataSet.h"
-#include "vtkDemandDrivenPipeline.h"
-#include "vtkStreamingDemandDrivenPipeline.h"
-#include "vtkObjectFactory.h"
+/**
+ */
+#include "SpericalToCartesianFilter.h"
 
 #include "vtkCellData.h"
+#include "vtkDataSet.h"
+#include "vtkInformation.h"
+#include "vtkInformationVector.h"
+#include "vtkObjectFactory.h"
+#include "vtkDemandDrivenPipeline.h"
+#include "vtkStreamingDemandDrivenPipeline.h"
 
+#include <math.h>
 
+// Still the same everytime
 vtkStandardNewMacro(SpericalToCartesianFilter);
 
 int SpericalToCartesianFilter::RequestData(
@@ -28,6 +32,9 @@ int SpericalToCartesianFilter::RequestData(
     
     // For now: use the exact input as output.
     output->CopyStructure(input);
+    
+    // TODO: Call different filters.
+    
     vtkWarningMacro(<< " CALLED RequestData IN FLOW FILTER");
     
     return 1;
@@ -70,7 +77,3 @@ void SpericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
     
     os << indent << "Hello, this is our filter." << endl;
 }
-
-
-
-

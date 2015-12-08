@@ -37,5 +37,49 @@
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>
+        <SourceProxy name="KronosFlowFilter" class="vtkFlowVisualisationFilter" label="Kronos Flow-Visualisation">
+            <!-- Documentation shown... somewhere -->
+            <Documentation
+            long_help="Hello, this is my long help."
+            short_help="Hello, this is my help." />
+            
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                
+                <!-- Acceptable groups as inputs -->
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                
+                <!-- (super)classes to accept via input -->
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkDataSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            
+            <!-- Initialize our filter-property for the visualization method. -->
+            <IntVectorProperty
+                name="VisualisationMethod"
+                command="switchVisualisationMethod"
+                label="Current Visualisation Method"
+                number_of_elements="1"
+                default_values="0">
+                
+                <!-- Make a combobox with selections. -->
+                <EnumerationDomain name="enum">
+                    <!-- Mapping using values matching the codefiles -->
+                    <Entry value="0" text="Streamlines"/>
+                    <Entry value="1" text="Pathlines"/>
+                    <Entry value="2" text="LIC"/>
+                </EnumerationDomain>
+                
+                <Documentation>
+                    This is empty. Or maybe not. Just setting the visualisation method. Does nothing important for now.
+                </Documentation>
+            </IntVectorProperty>
+        </SourceProxy>
+
     </ProxyGroup>
 </ServerManagerConfiguration>
