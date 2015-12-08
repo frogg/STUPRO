@@ -1,33 +1,100 @@
-# braces
+# use attached brackets:
+#
+# int Foo(bool isBar) {
+#     if (isBar) {
+#         bar();
+#         return 1;
+#     } else
+#         return 0;
+# }
 --style=java
 
 # tab indent equals 4 spaces
 --indent=tab=4
 
-# switch/namespace indent
+# indent cases in switch statements
+#
+# switch (foo)
+# {
+#     case 1:
+#         a += 1;
+#         break;
+#     case 2:
+#     {
+#         a += 2;
+#         break;
+#     }
+# }
 --indent-switches
+
+# indent contents of namespaces
+#
+# namespace foospace
+# {
+#     class Foo
+#     {
+#         public:
+#             Foo();
+#             virtual ~Foo();
+#     };
+# }
 --indent-namespaces
 
-# indent preprocessor directives
+# indent preprocessor blocks
+#
+# #ifdef _WIN32
+#     #include <windows.h>
+#     #ifndef NO_EXPORT
+#         #define EXPORT
+#     #endif
+# #endif
 --indent-preproc-block
+
+# indent multiline preprocessor definitions ending with backslashes
+#
+# #define Is_Bar(arg,a,b) \
+#     (Is_Foo((arg), (a)) \
+#      || Is_Foo((arg), (b)))
 --indent-preproc-define
 
-# spaces around operators in if/while/for but not around angled brackets
+# insert spaces around operands
+#
+# if (foo == 2)
+#     a = bar((b - c) * a, d--);
 --pad-oper
+
+# insert space after if/for/while
+#
+# if (isFoo((a+2), b))
+#     bar(a, b);
 --pad-header
+
+# remove spaces around angled brackets in template definitions
+#
+# Stack<int,List<int>> stack1;
 --close-templates
 
 # align pointer operators * and & to the name
+#
+# char *foo1;
+# char &foo2;
+# String ^s1;
 --align-pointer=name
 
 # add braces to single line if/while/for statements
+#
+# if (isFoo) {
+#     isFoo = false;
+# }
 --add-brackets
 
 # max line length before line break
 --max-code-length=100
 
-# dunno! :D
+# indent multiline headers at least two tabs
 --min-conditional-indent=2
+
+# also indent comments that are on col 1
 --indent-col1-comments
 
 # in the output, only display files that were actually formatted
