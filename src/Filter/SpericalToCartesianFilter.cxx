@@ -33,7 +33,11 @@ int SpericalToCartesianFilter::RequestData(
     // For now: use the exact input as output.
     output->CopyStructure(input);
     
-    // TODO: Call different filters.
+    double coodinate[3];
+    for(int i=0; i<input->GetNumberOfPoints(); i++){
+        input->GetPoint(i,coodinate);
+        vtkWarningMacro(<< coodinate[0] << ";" << coodinate[1] << ";" << coodinate[2]  << "number of points");
+    }
     
     vtkWarningMacro(<< " CALLED RequestData IN FLOW FILTER");
     
