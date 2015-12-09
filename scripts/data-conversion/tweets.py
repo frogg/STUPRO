@@ -1,6 +1,7 @@
 from twitter import *
 import html
 import cgi
+import json
 from DataUtility import DataUtility
 
 import sys
@@ -74,5 +75,7 @@ print "written to %s" % outfile
 
 d = DataUtility()
 
-print d.read_csv_file(outfile)
+twitterjsondata = d.read_csv_file(outfile)
 
+with open('data.json', 'w') as fp:
+    json.dump(twitterjsondata, fp)
