@@ -38,6 +38,7 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
     vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
     // For now: use the exact input as output.
     output->CopyStructure(input);
+    output->CopyAttributes(input);
 
     vtkPoints *points = output->GetPoints();
     for(int i=0; i<points->GetNumberOfPoints(); i++){
