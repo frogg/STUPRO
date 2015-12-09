@@ -7,3 +7,6 @@ build
 
 # mac madness
 *.DS_Store
+
+# my keys
+scripts/data-conversion/tweet_config.py
