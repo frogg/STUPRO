@@ -38,9 +38,10 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
     vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
     // For now: use the exact input as output.
     output->CopyStructure(input);
-    output->CopyAttributes(input);
+  //  output->CopyAttributes(input);
 
     vtkPoints *points = output->GetPoints();
+    //get the point of the output and transform them to cartesian coordinate system
     for(int i=0; i<points->GetNumberOfPoints(); i++){
         points->SetPoint(i, transformToCartesian(points->GetPoint(i)));
     }
@@ -49,7 +50,9 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
 }
 
 double* SpericalToCartesianFilter::transformToCartesian(double* point,double heightOffset){
+    //+M_PI/2 because of expected input of formula (source wikipedia)
     double lat = point[0]*M_PI/180 + M_PI/2;
+    //+M_PI because of expected input of formula (source wikipedia)
     double longi = point[1]*M_PI/180 + M_PI;
     double radius = heightOffset + point[2];
     point[0] = radius * sin(lat) * cos(longi);
