@@ -28,6 +28,7 @@ protected:
 private:
     SpericalToCartesianFilter(const SpericalToCartesianFilter&);  // Not implemented.
     void operator=(const SpericalToCartesianFilter&);  // Not implemented.
+    double* transformToCartesian(double* point,double heightOffset = 1);
     
 };
 

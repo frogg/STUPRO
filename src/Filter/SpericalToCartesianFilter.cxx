@@ -19,7 +19,7 @@
 #include "vtkPointData.h"
 #include "vtkCellIterator.h"
 
-#include <math.h>
+#include <cmath>
 
 // Still the same everytime
 vtkStandardNewMacro(SpericalToCartesianFilter)
@@ -42,15 +42,21 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
 
     vtkPoints *points = output->GetPoints();
     for(int i=0; i<points->GetNumberOfPoints(); i++){
-        double *coord = points->GetPoint(i);
-        for (int j = 0; j < 3; j++) {
-            std::cout << "Set Point " << coord[j] << " to " << coord[j] * 2 << std::endl;
-            coord[j] = 2 * coord[j];
-        }
-        points->SetPoint(i, coord);
+        points->SetPoint(i, transformToCartesian(points->GetPoint(i)));
     }
 
     return 1;
+}
+
+double* SpericalToCartesianFilter::transformToCartesian(double* point,double heightOffset){
+    double lat = point[0]*M_PI/180 + M_PI/2;
+    double longi = point[1]*M_PI/180 + M_PI;
+    double radius = heightOffset + point[2];
+    point[0] = radius * sin(lat) * cos(longi);
+    point[1] = radius * sin(lat) * sin(longi);
+    point[2] = radius * cos(lat);
+    std::cout <<  point[0] << ";" << point[1] << ";" << point[2] << std::endl;
+    return point;
 }
 
 int SpericalToCartesianFilter::ProcessRequest(
