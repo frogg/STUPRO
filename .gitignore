@@ -12,3 +12,4 @@ build
 
 # my keys
 scripts/data-conversion/tweet_config.py
+scripts/data-conversion/*.config
