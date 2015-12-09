@@ -24,8 +24,13 @@ class DataUtility:
         with open(filename) as json_file:
             return json.load(json_file)
 
-    def write_json_file(self, data, filename):
+    def write_json_file(self, data, filename, minified=False):
         """
         Write some data stored in a dictionary as a new JSON file.
         """
-        open(filename, 'w').write(json.dumps(data, indent=4))
+        file = open(filename, 'w')
+
+        if minified:
+            file.write(json.dumps(data, separators=(',',':')))
+        else:
+            file.write(json.dumps(data, indent=4))
