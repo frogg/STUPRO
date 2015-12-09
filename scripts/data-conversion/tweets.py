@@ -1,7 +1,7 @@
 from twitter import *
 import html
 import cgi
-#import unicodecsv as csv
+from DataUtility import DataUtility
 
 import sys
 import csv
@@ -12,13 +12,13 @@ latitude = 48.778283	# geographical centre of search
 longitude = 9.176183	# geographical centre of search
 
 max_range = 1000 		# search range in kilometres
-num_results = 5000		# minimum results to obtain
+num_results = 100		# minimum results to obtain
 
 outfile = "output.csv"
 
 #load credentials from config
 config = {}
-execfile("config.py", config)
+execfile("tweet_config.py", config)
 
 
 twitter = Twitter(auth = OAuth(config["access_key"], config["access_secret"], config["consumer_key"], config["consumer_secret"]))
@@ -71,3 +71,8 @@ while result_count <  num_results:
 csvfile.close()
 
 print "written to %s" % outfile
+
+d = DataUtility()
+
+print d.read_csv_file(outfile)
+
