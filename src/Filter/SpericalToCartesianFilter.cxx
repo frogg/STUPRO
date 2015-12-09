@@ -43,7 +43,7 @@ int SpericalToCartesianFilter::RequestData(
     
     double coodinate[3];
     for(int i=0; i<input->GetNumberOfPoints(); i++){
-        input->GetPoint(i,coodinate);
+        input->GetPoint(i,coodinate);//->SetData;
         vtkWarningMacro(<< coodinate[0] << ";" << coodinate[1] << ";" << coodinate[2]  << "number of points"
                         );
         //coodinate[0] = 1000; //doesn't work
