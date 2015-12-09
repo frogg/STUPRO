@@ -10,6 +10,7 @@
 #include "vtkDemandDrivenPipeline.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkPoints.h"
+#include "vtkPointData.h"
 #include "vtkPolyData.h"
 
 
@@ -51,8 +52,15 @@ int SpericalToCartesianFilter::RequestData(
     //points defining a cell
     vtkWarningMacro(<< input->GetNumberOfCells()  << "number of cells");
 
-//    output->CopyStructure(input);
+    output->CopyStructure(input);
+   // output->GetPointData()->GetNumberOfArrays();
+    //SetTuble
+    vtkPointData* pointData = output->GetPointData();
+    pointData->GetNumberOfArrays()
     
+    vtkWarningMacro(<< output->GetPointData()->GetVectors()->GetArrayType()  << "arraytype");
+    //CellData,FieldData
+    /*
     int nmbPoints=4;
     
     vtkCellArray *newPolys;
@@ -78,23 +86,19 @@ int SpericalToCartesianFilter::RequestData(
         pts[2]  = newPoints->InsertNextPoint(coodinate[0]*2,coodinate[1]*2,coodinate[2]);
         newPolys->InsertNextCell(3, pts);
     }
- 
-    
-
-    
-    // output->CopyStructure( input );
-    newPoints->Squeeze();
+     newPoints->Squeeze();
     output->SetPoints(newPoints);
     newPoints->Delete();
-    
+    */
  /*   newNormals->Squeeze();
     output->GetPointData()->SetNormals(newNormals);
     newNormals->Delete();
 */
+    /*
     newPolys->Squeeze();
     output->SetPolys(newPolys);
     newPolys->Delete();
-
+*/
     /*--test */
     vtkWarningMacro(<< " CALLED RequestData IN FLOW FILTER");
     
