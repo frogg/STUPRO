@@ -20,7 +20,7 @@
             animateable="1"
             command="reloadStuff" />
         </SourceProxy>
-        <SourceProxy name="SpericalToCartesianFilter" class="SpericalToCartesianFilter" label="test">
+        <SourceProxy name="SpericalToCartesianFilter" class="SpericalToCartesianFilter" label="Kronos Spherical to Cartesian">
             <Documentation
                 long_help="nopevation vector."
                 short_help="Create a point array representing elevation.">
@@ -33,7 +33,7 @@
                     <Group name="filters"/>
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
-                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkDataSet"/>
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>

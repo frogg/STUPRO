@@ -18,6 +18,8 @@
 #include "vtkFloatArray.h"
 #include "vtkPointData.h"
 #include "vtkCellIterator.h"
+#include "vtkImageDataToPointSet.h"
+#include "vtkSmartPointer.h"
 
 #include <cmath>
 
@@ -34,11 +36,25 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
     
     // Cast the input- and output-vectors to something useful.
     vtkDataSet *input = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-    
-    vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
-    // For now: use the exact input as output.
-    output->CopyStructure(input);
-  //  output->CopyAttributes(input);
+
+    vtkDataSet *data = vtkDataSet::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+    data->CopyStructure(input);
+    data->CopyAttributes(input);
+
+    vtkPointSet *output = NULL;
+    if (data->IsA("vtkImageData")) {
+
+        vtkSmartPointer<vtkImageDataToPointSet> filter = vtkSmartPointer<vtkImageDataToPointSet>::New();
+        filter->SetInputData(data);
+        filter->Update();
+        std::cout << filter->GetOutput()->GetClassName() << std::endl;
+        output = filter->GetOutput();
+
+    } else if (data->IsA("vtkPointSet")) {
+        output = vtkPointSet::SafeDownCast(data);
+    } else {
+        return -1;
+    }
 
     vtkPoints *points = output->GetPoints();
     //get the point of the output and transform them to cartesian coordinate system
@@ -50,15 +66,18 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
 }
 
 double* SpericalToCartesianFilter::transformToCartesian(double* point,double heightOffset){
-    //+M_PI/2 because of expected input of formula (source wikipedia)
-    double lat = point[0]*M_PI/180 + M_PI/2;
-    //+M_PI because of expected input of formula (source wikipedia)
-    double longi = point[1]*M_PI/180 + M_PI;
+    double lon = point[0]*M_PI/180; //
+    double lat = point[1]*M_PI/180; //
     double radius = heightOffset + point[2];
-    point[0] = radius * sin(lat) * cos(longi);
-    point[1] = radius * sin(lat) * sin(longi);
-    point[2] = radius * cos(lat);
-    std::cout <<  point[0] << ";" << point[1] << ";" << point[2] << std::endl;
+
+    std::cout << "Input: " << (int)point[0] << ";" << (int)point[1] << ";" << (int)point[2] << std::endl;
+
+    point[0] = radius * cos(lat) * cos(lon);
+    point[1] = radius * cos(lat) * sin(lon);
+    point[2] = radius * sin(lat);
+
+    std::cout << "Output: " << point[0] << ";" << point[1] << ";" << point[2] << std::endl;
+
     return point;
 }
 
