@@ -62,7 +62,7 @@ add_paraview_plugin(
 		View/vtkPVStuproView.cxx
 		Filter/vtkGlobeFilter.cxx
 		Sources/vtkGlobeSource.cxx
-		Reader/vtkCityReader.cxx
+		Reader/vtkKronosReader.cxx
 	SERVER_MANAGER_XML
 		View/KronosView.xml
 		Filter/KronosFilter.xml

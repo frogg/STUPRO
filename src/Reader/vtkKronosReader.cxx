@@ -1,4 +1,4 @@
-#include "vtkCityReader.h"
+#include "vtkKronosReader.h"
 #include "vtkCommand.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkIdTypeArray.h"
@@ -44,55 +44,60 @@
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// vtkCityReader
+// vtkKronosReader
 
-vtkStandardNewMacro(vtkCityReader);
+vtkStandardNewMacro(vtkKronosReader);
 
-vtkCityReader::vtkCityReader()
+vtkKronosReader::vtkKronosReader()
 {
-    cout << "Hello" << endl;
+    cout << "Kronos Reader init." << endl;
     this->SetNumberOfInputPorts(0);
     this->SetNumberOfOutputPorts(1);
 }
 
-vtkCityReader::~vtkCityReader()
+vtkKronosReader::~vtkKronosReader()
 {
 
 }
-
-void vtkCityReader::PrintSelf(ostream& os, vtkIndent indent)
-{
-
-}
-
-int vtkCityReader::ProcessRequest	(vtkInformation * 	request, vtkInformationVector ** 	inInfo,
-                 vtkInformationVector * 	outInfo
-                 ){
-    cout << "test" << endl;
-    return 1;
-}
-
-void vtkCityReader::SetFileName(std::string name){
+void vtkKronosReader::SetFileName(std::string name){
     cout<<name<<endl;
 }
 
-int vtkCityReader::RequestData(
+void vtkKronosReader::SetCameraPos(double x,double y,double z){
+    this->cameraPos = Vector3d(x,y,z);
+    this->distanzToFocalPoint = (this->cameraFocalPoint - this->cameraPos).length();
+    cout << "setc" << endl;
+    this->Modified();
+    
+}
+void vtkKronosReader::SetCameraFocalPoint(double x,double y,double z){
+    this->cameraFocalPoint = Vector3d(x,y,z);
+    this->distanzToFocalPoint = (this->cameraFocalPoint - this->cameraPos).length();
+    cout << "setf" << endl;
+    this->Modified();
+}
+int vtkKronosReader::RequestData(
   vtkInformation*,
   vtkInformationVector**,
   vtkInformationVector* outputVector)
 {
+    cout << this->distanzToFocalPoint << endl;
+    int tempvar=int (this->distanzToFocalPoint);
 
-    int tempvar=1;
-    vtkPolyData* output = vtkPolyData::GetData(outputVector);
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+
+
+    vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+
     int numberOfQuadsRight=20;
     int numberOfQuadsUp=20;
-    
+
     int nmbPoints=5*numberOfQuadsRight*numberOfQuadsUp;
-    
+
     vtkCellArray *newPolys;
     newPolys = vtkCellArray::New();
     newPolys->Allocate(newPolys->EstimateSize(nmbPoints, 3));
-    
+
     vtkPoints *newPoints;
     newPoints = vtkPoints::New();
     vtkFloatArray *newNormals;
@@ -101,12 +106,12 @@ int vtkCityReader::RequestData(
     newNormals->SetNumberOfComponents(3);
     newNormals->Allocate(3*nmbPoints);
     newNormals->SetName("Normals");
-    
+
     vtkIdType pts[4];
     for (int i=0; i<numberOfQuadsRight; i++) {
         for (int j=0; j<numberOfQuadsUp; j++) {
-            
-            
+
+
             pts[0]  = newPoints->InsertNextPoint(-1.0+2.0*i, 0.0+2.0*j, sin(-1.0+2.0*i)*2*tempvar);
             pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
             pts[2]  = newPoints->InsertNextPoint(0.0+2.0*i, 1.0+2.0*j, sin(0.0+2.0*i)*2*tempvar);
@@ -114,33 +119,34 @@ int vtkCityReader::RequestData(
             newNormals->InsertTuple3(pts[0], -1.0, 0.0, 0.0);
             newNormals->InsertTuple3(pts[1], -1.0, 0.0, 0.0);
             newNormals->InsertTuple3(pts[2], -1.0, 0.0, 0.0);
-            
+
             pts[1]  = newPoints->InsertNextPoint(-1.0+2.0*i, 2.0+2.0*j, sin(-1.0+2.0*i)*2*tempvar);
             newPolys->InsertNextCell(3, pts);
             newNormals->InsertTuple3(pts[1], -1.0, 0.0, 0.0);
-            
+
             pts[0]  = newPoints->InsertNextPoint(1.0+2.0*i, 2.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
             newPolys->InsertNextCell(3, pts);
             newNormals->InsertTuple3(pts[0], -1.0, 0.0, 0.0);
-            
+
             pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
             newNormals->InsertTuple3(pts[0], -1.0, 0.0, 0.0);
             newPolys->InsertNextCell(3, pts);
         }
-        
+
     }
-    
+
     // output->CopyStructure( input );
     newPoints->Squeeze();
     output->SetPoints(newPoints);
     newPoints->Delete();
-    
+
     newNormals->Squeeze();
     output->GetPointData()->SetNormals(newNormals);
     newNormals->Delete();
-    
+
     newPolys->Squeeze();
     output->SetPolys(newPolys);
+
     newPolys->Delete();
 
   return 1;
