@@ -113,6 +113,7 @@ build_paraview_client(
 	SOURCES ${ParaView_SOURCE_FILES}
 	GUI_CONFIGURATION_XMLS
       ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewSources.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/ParaViewFilters.xml
 )
 
 # use C++11 to compile the client
