@@ -1,0 +1,23 @@
+{
+    "meta": {
+        "geographicRange": {
+            "upperLeft": {
+                "longitude": 41.0,
+                "latitude": -83.0
+            },
+            "bottomRight": {
+                "longitude": 11.0,
+                "latitude": -53.0
+            },
+            "stepSize": 0.5
+        },
+        "dateRange": {
+            "start": "2012-10-22T00:00:00.000Z",
+            "end": "2012-11-02T00:00:00.000Z"
+        },
+        "downloadedSets": 0
+    },
+    "data": {
+
+    }
+}
