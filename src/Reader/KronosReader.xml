@@ -21,12 +21,6 @@
                         number_of_elements="3"
                         default_values="0.0 0.0 0.0">
           </DoubleVectorProperty>
-          <DoubleVectorProperty
-                        name="cameraFocalPoint"
-                        command="SetCameraFocalPoint"
-                        number_of_elements="3"
-                        default_values="0.0 0.0 0.0">
-          </DoubleVectorProperty>
           <Hints>
               <ReaderFactory extensions="kJson"
               file_description="Kronos Json" />
