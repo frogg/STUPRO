@@ -11,7 +11,7 @@ cd $ABS_ASTYLE_DIR
 $(wget -O astyle_2.05.1_linux.tar.gz $ASTYLE_SRC_URL)
 tar zxf astyle_2.05.1_linux.tar.gz
 cd ./astyle/build/gcc/
-make release -j 4
+make release -j $(nproc)
 sudo make install
 
 cd $ROOT_DIR

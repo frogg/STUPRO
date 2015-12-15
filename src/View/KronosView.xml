@@ -8,12 +8,13 @@
 			base_proxygroup="views"
 			base_proxyname="RenderView">
 
-			<!--
-			Adds a button to the property-panel to switch the display mode.
-			The command-attribute has to be a method in the view-class.
-			-->
-			<Property name="SwitchCurrentDisplaymode"
-				command="switchCurrentDisplayMode" />
-		</RenderViewProxy>
-	</ProxyGroup>
+		<!--
+		Adds a button to the property-panel to switch the display mode.
+		The command-attribute has to be a method in the view-class.
+		-->
+		<Property name="SwitchCurrentDisplaymode"
+			animateable="1"
+			command="switchCurrentDisplayMode" />
+    </RenderViewProxy>
+  </ProxyGroup>
 </ServerManagerConfiguration>

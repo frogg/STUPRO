@@ -1,34 +1,29 @@
-#include "TestGlobe.hpp"
-
-#include <cppunit/TestAssert.h>
+#include <gtest/gtest.h>
 #include <Globe/Globe.hpp>
 
-
-void TestGlobe::testResolution() {
+TEST(TestGlobe, resolution) {
     /*
     Globe globe = *new Globe();
     globe.setResolution(Vector2u(42, 42));
 
     Vector2u vector = globe.getResolution();
 
-    CPPUNIT_ASSERT_EQUAL(42,(int)vector.x);
-    CPPUNIT_ASSERT_EQUAL(42,(int)vector.y);
+    EXPECT_EQ(42,(int)vector.x);
+    EXPECT_EQ(42,(int)vector.y);
     */
 }
 
-
-void TestGlobe::testZoomLevel() {
+TEST(TestGlobe, zoomLevel) {
     /*
     Globe globe = *new Globe();
 
     globe.setZoomLevel(42);
 
-    CPPUNIT_ASSERT_EQUAL(42,(int)globe.getZoomLevel());
+    EXPECT_EQ(42,(int)globe.getZoomLevel());
     */
 }
 
-
-void TestGlobe::testPlaneCoordinates() {
+TEST(TestGlobe, planeCoordinates) {
     /*
     Globe globe = *new Globe();
 
@@ -41,7 +36,7 @@ void TestGlobe::testPlaneCoordinates() {
     std::vector<Coordinate> coordinate = globe.getPlaneCoordinates(point);
 
     //top left corner = (-180 | 0)
-    CPPUNIT_ASSERT_EQUAL(-180, coordinate.pop_back());
-    CPPUNIT_ASSERT_EQUAL(0, coordinate.pop_back());
+    EXPECT_EQ(-180, coordinate.pop_back());
+    EXPECT_EQ(0, coordinate.pop_back());
     */
 }
