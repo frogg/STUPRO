@@ -9,6 +9,8 @@
 #include <vtkPointSet.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <cmath>
+#include <vtkPVInformationKeys.h>
+#include <vtkInformationVector.h>
 
 // Still the same everytime
 vtkStandardNewMacro(SpericalToCartesianFilter)
@@ -36,6 +38,28 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
 	}
 
 	return 1;
+}
+int SpericalToCartesianFilter::RequestUpdateExtent(vtkInformation *, vtkInformationVector **inputVector, vtkInformationVector *outputVector)
+{
+      vtkDebugMacro("Request-Update");
+     // get the info object
+     vtkInformation *outInfo = outputVector->GetInformationObject(0);
+     outInfo->Set(vtkPVInformationKeys::WHOLE_BOUNDING_BOX(),
+     -100,
+     100,
+     -100,
+     100,
+     -1000,
+     1000);
+     
+     /*
+     int vtkStreamingDemandDrivenPipeline::SetWholeBoundingBox	( 	int 	port,
+     double 	bb[6]
+     )
+     
+     Set/Get the whole bounding box of an output port data object. The whole whole bounding box is meta data for data sets. It gets set by the algorithm during the update information pass.
+     */
+    return 1;
 }
 
 double* SpericalToCartesianFilter::transformToCartesian(double* point, double heightOffset)

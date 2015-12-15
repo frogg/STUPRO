@@ -43,7 +43,7 @@ protected:
 private:
 	SpericalToCartesianFilter(const SpericalToCartesianFilter&);  // Not implemented.
 	void operator=(const SpericalToCartesianFilter&);  // Not implemented.
-
+    int RequestUpdateExtent(vtkInformation *, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
 	double* transformToCartesian(double* point, double heightOffset = 100);
 
 };
