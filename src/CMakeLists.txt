@@ -15,12 +15,23 @@ include(${PARAVIEW_USE_FILE})
 include(ParaViewBranding)
 
 # find Qt headers and libraries
-find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
-include(${QT_USE_FILE})
+if("${KRONOS_QT_VERSION}" STREQUAL "5")
+    find_package(Qt5Core REQUIRED)
+    find_package(Qt5Gui REQUIRED)
+    find_package(Qt5Network REQUIRED)
+    find_package(Qt5Widgets REQUIRED)
+else()
+	find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
+	include(${QT_USE_FILE})
+endif()
 
 # automatically wrap *.ui files and classes inheriting from QObject
 set(CMAKE_AUTOMOC TRUE)
-QT4_WRAP_UI(UISrcs StuproWindow.ui)
+if("${KRONOS_QT_VERSION}" STREQUAL "5")
+	QT5_WRAP_UI(UISrcs StuproWindow.ui)
+else()
+	QT4_WRAP_UI(UISrcs StuproWindow.ui)
+endif()
 # fallback (works only for CMake 3.0 and above)
 # set(CMAKE_AUTOUIC TRUE)
 
@@ -37,6 +48,24 @@ file(GLOB_RECURSE StuproView_SOURCE_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.cxx"
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.h"
+)
+
+# Custom Files needed to be included in add_paraview_plugin
+file(GLOB CUSTOM_VIEW
+        "${CMAKE_CURRENT_SOURCE_DIR}/View/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/View/*.cxx"
+)
+file(GLOB CUSTOM_FILTER
+        "${CMAKE_CURRENT_SOURCE_DIR}/Filter/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Filter/*.cxx"
+)
+file(GLOB CUSTOM_SOURCE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Sources/*.cxx"
+)
+file(GLOB CUSTOM_READER
+        "${CMAKE_CURRENT_SOURCE_DIR}/Reader/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Reader/*.cxx"
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/libs)
@@ -64,11 +93,11 @@ add_paraview_plugin(
 	"1.0.0"
 	REQUIRED_ON_SERVER
 	REQUIRED_ON_CLIENT
-	SERVER_MANAGER_SOURCES
-		View/vtkPVStuproView.cxx
-		Filter/vtkGlobeFilter.cxx
-		Sources/vtkGlobeSource.cxx
-		Reader/vtkCityReader.cxx
+        SERVER_MANAGER_SOURCES
+                ${CUSTOM_VIEW}
+                ${CUSTOM_FILTER}
+                ${CUSTOM_SOURCE}
+                ${CUSTOM_READER}
 	SERVER_MANAGER_XML
 		View/KronosView.xml
 		Filter/KronosFilter.xml
@@ -80,7 +109,13 @@ add_paraview_plugin(
 )
 
 # link against Qt libraries
-target_link_libraries(KronosPlugin PRIVATE ${QT_LIBRARIES})
+if("${KRONOS_QT_VERSION}" STREQUAL "5")
+	target_link_libraries(KronosPlugin PRIVATE
+		Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets
+	)
+else()
+	target_link_libraries(KronosPlugin PRIVATE ${QT_LIBRARIES})
+endif()
 
 # use C++11 to compile the plugin
 set_property(TARGET KronosPlugin PROPERTY CXX_STANDARD 11)
@@ -100,6 +135,7 @@ build_paraview_client(
 	SOURCES ${ParaView_SOURCE_FILES}
 	GUI_CONFIGURATION_XMLS
       ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewSources.xml
+      ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewFilters.xml
 )
 
 # use C++11 to compile the client
