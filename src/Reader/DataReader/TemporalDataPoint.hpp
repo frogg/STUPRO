@@ -2,6 +2,8 @@
 #define TemporalDataPoint_H
 
 #include "Datapoint.hpp"
+class Coordinate;
+
 /**
 * Holds a temporal DataPoint 
 * Data point is time-sensitive and does contain a UNIX GMT timestamp
