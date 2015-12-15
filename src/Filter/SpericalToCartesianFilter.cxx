@@ -50,18 +50,15 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
 }
 
 double* SpericalToCartesianFilter::transformToCartesian(double* point,double heightOffset){
-    double lon = point[0]*M_PI/180; //
-    double lat = point[1]*M_PI/180; //
+    //get longitude, latitude and radius out of points, heightOffset is a default value set in the header file
+    double lon = point[0]*M_PI/180;
+    double lat = point[1]*M_PI/180;
     double radius = heightOffset + point[2];
-
-    std::cout << "Input: " << (int)point[0] << ";" << (int)point[1] << ";" << (int)point[2] << std::endl;
-
+    //formula to transform the sphere coordinates to cartesian coordinate system
     point[0] = radius * cos(lat) * cos(lon);
     point[1] = radius * cos(lat) * sin(lon);
     point[2] = radius * sin(lat);
-
-    std::cout << "Output: " << point[0] << ";" << point[1] << ";" << point[2] << std::endl;
-
+    
     return point;
 }
 
