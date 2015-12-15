@@ -53,6 +53,7 @@ vtkKronosReader::vtkKronosReader()
     cout << "Kronos Reader init." << endl;
     this->SetNumberOfInputPorts(0);
     this->SetNumberOfOutputPorts(1);
+
 }
 
 vtkKronosReader::~vtkKronosReader()
@@ -70,7 +71,9 @@ void vtkKronosReader::SetCameraPos(double x,double y,double z){
     this->Modified();
     
 }
-
+void vtkKronosReader::SetUseOffscreenRenderingForScreenshots(int a){
+    
+}
 int vtkKronosReader::RequestData(
   vtkInformation*,
   vtkInformationVector**,
