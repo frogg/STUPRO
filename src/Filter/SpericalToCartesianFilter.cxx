@@ -37,21 +37,25 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
     // Cast the input- and output-vectors to something useful.
     vtkDataSet *input = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-    vtkDataSet *data = vtkDataSet::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
-    data->CopyStructure(input);
-    data->CopyAttributes(input);
+   // vtkDataSet *data = vtkDataSet::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+    //data->CopyStructure(input);
+   // data->CopyAttributes(input);
 
-    vtkPointSet *output = NULL;
-    if (data->IsA("vtkImageData")) {
-
+    vtkPointSet *output = vtkPointSet::SafeDownCast(vtkPointSet::New());
+    if (input->IsA("vtkImageData")) {
+        if (!output) return -1;
         vtkSmartPointer<vtkImageDataToPointSet> filter = vtkSmartPointer<vtkImageDataToPointSet>::New();
-        filter->SetInputData(data);
+        filter->SetInputData(input);
         filter->Update();
         std::cout << filter->GetOutput()->GetClassName() << std::endl;
-        output = filter->GetOutput();
+        vtkPointSet *filtered = filter->GetOutput();
+        output->CopyStructure(filtered);
+        output->CopyAttributes(filtered);
 
-    } else if (data->IsA("vtkPointSet")) {
-        output = vtkPointSet::SafeDownCast(data);
+    } else if (input->IsA("vtkPointSet")) {
+        vtkPointSet *tmp = vtkPointSet::SafeDownCast(input);
+        output->CopyStructure(tmp);
+        output->CopyAttributes(tmp);
     } else {
         return -1;
     }
