@@ -1,6 +1,6 @@
 #include "PrecipitationDataPoint.hpp"
 
-PrecipitationDataPoint::PrecipitationDataPoint(int dataType, int coordinate, int priority, int timestamp, float precipitation) :TemporalDataPoint(dataType, coordinate, priority, timestamp)
+PrecipitationDataPoint::PrecipitationDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, float precipitation) :TemporalDataPoint(dataType, coordinate, priority, timestamp)
 {
 	this->precipitationRate = precipitationRate;
 }
