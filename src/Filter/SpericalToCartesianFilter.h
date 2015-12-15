@@ -9,28 +9,43 @@
 #ifndef SpericalToCartesianFilter_hpp
 #define SpericalToCartesianFilter_hpp
 
-#include "vtkDataSetAlgorithm.h"
-#include <stdio.h>
+#include <vtkDataSetAlgorithm.h>
+#include <vtkSetGet.h>
+#include <iostream>
 
-class SpericalToCartesianFilter : public vtkDataSetAlgorithm{
+class vtkInformation;
+class vtkInformationVector;
+
+class SpericalToCartesianFilter: public vtkDataSetAlgorithm
+{
 public:
-    vtkTypeMacro(SpericalToCartesianFilter, vtkDataSetAlgorithm);
-    static SpericalToCartesianFilter *New();
-    int ProcessRequest(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) override;
-    void PrintSelf(ostream& os, vtkIndent indent) override;
+	vtkTypeMacro(SpericalToCartesianFilter, vtkDataSetAlgorithm)
+
+	static SpericalToCartesianFilter *New();
+
+	int ProcessRequest(vtkInformation *request, vtkInformationVector **inputVector,
+	        vtkInformationVector *outputVector) override;
+
+	void PrintSelf(ostream& os, vtkIndent indent) override;
+
 protected:
-    SpericalToCartesianFilter(){
-        
-    };
-    ~SpericalToCartesianFilter(){};
-    int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
+	SpericalToCartesianFilter()
+	{
+
+	}
+
+	~SpericalToCartesianFilter()
+	{
+	}
+
+	int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
 
 private:
-    SpericalToCartesianFilter(const SpericalToCartesianFilter&);  // Not implemented.
-    void operator=(const SpericalToCartesianFilter&);  // Not implemented.
-    double* transformToCartesian(double* point,double heightOffset = 100);
-    
-};
+	SpericalToCartesianFilter(const SpericalToCartesianFilter&);  // Not implemented.
+	void operator=(const SpericalToCartesianFilter&);  // Not implemented.
 
+	double* transformToCartesian(double* point, double heightOffset = 100);
+
+};
 
 #endif /* SpericalToCartesianFilter_hpp */
