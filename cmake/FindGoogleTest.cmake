@@ -29,6 +29,11 @@ if (NOT ${GTEST_FOUND})
 			"${GTest_LIB}/libgtest_main.a"
 			"${GTest_LIB}/libgtest.a"
 		)
+	elseif(EXISTS "${GTest_LIB}/libgtest_main.dylib" AND EXISTS "${GTest_LIB}/libgtest.dylib")
+		set(GTEST_BOTH_LIBRARIES
+			"${GTest_LIB}/libgtest_main.dylib"
+			"${GTest_LIB}/libgtest.dylib"
+		)
 	elseif(EXISTS "${GTest_LIB}/gtest_main.dll" AND EXISTS "${GTest_LIB}/gtest.dll")
 		set(GTEST_BOTH_LIBRARIES
 			"${GTest_LIB}/gtest_main.dll"
