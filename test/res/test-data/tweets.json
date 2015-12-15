@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "dataType": "tweets",
+    "temporal": true
+  },
+  "root": {
+    "children": [
+      {
+        "author": "BarackObama",
+        "content": "Progress #president",
+        "timestamp": 1439297110,
+        "longitude": 55.304718,
+        "latitude": 25.258171,
+        "children": []
+      },
+      {
+        "author": "elonmusk",
+        "content": "Is this working?",
+        "timestamp": 1439280065,
+        "longitude": -118.242775,
+        "latitude": 34.052223,
+        "children": [
+          {
+            "author": "nytimes",
+            "content": "This volcano looks like it is erupting #lava #dangerous",
+            "timestamp": 1439288745,
+            "longitude": -122.418335,
+            "latitude": 37.775,
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}

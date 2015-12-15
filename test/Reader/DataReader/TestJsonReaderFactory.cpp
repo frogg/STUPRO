@@ -7,6 +7,7 @@
 #include <Reader/DataReader/DataType.hpp>
 
 TEST(TestJsonReaderFactory, ReadValidFiles) {
+	// Test reading some city data
 	AbstractJsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
 
 	EXPECT_EQ(
@@ -17,5 +18,18 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 	EXPECT_EQ(
 		cityReader.hasTemporalData(),
 		false
+	);
+	
+	// Test reading some tweets
+	AbstractJsonReader tweetReader = JsonReaderFactory::createReader("res/test-data/tweets.json");
+
+	EXPECT_EQ(
+		tweetReader.getDataType(),
+		DataType::TWEETS
+	);
+	
+	EXPECT_EQ(
+		tweetReader.hasTemporalData(),
+		true
 	);
 }
