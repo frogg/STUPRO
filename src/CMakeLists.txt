@@ -87,11 +87,12 @@ add_paraview_plugin(
 	"1.0.0"
 	REQUIRED_ON_SERVER
 	REQUIRED_ON_CLIENT
-        SERVER_MANAGER_SOURCES
-                ${CUSTOM_VIEW}
-                ${CUSTOM_FILTER}
-                ${CUSTOM_SOURCE}
-                ${CUSTOM_READER}
+
+    SERVER_MANAGER_SOURCES
+        ${CUSTOM_VIEW}
+        ${CUSTOM_FILTER}
+        ${CUSTOM_SOURCE}
+        ${CUSTOM_READER}
 	SERVER_MANAGER_XML
 		View/KronosView.xml
 		Filter/KronosFilter.xml
@@ -128,8 +129,8 @@ build_paraview_client(
 	REQUIRED_PLUGINS KronosPlugin
 	SOURCES ${ParaView_SOURCE_FILES}
 	GUI_CONFIGURATION_XMLS
-      ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewSources.xml
-      ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewFilters.xml
+    ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewSources.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/ParaViewFilters.xml
 )
 
 # use C++11 to compile the client
