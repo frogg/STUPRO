@@ -1,6 +1,12 @@
-#include <Utils/Config/JsonReaderFactory.hpp>
+#include <Reader/DataReader/JsonReaderFactory.hpp>
 
-AbstractJsonReader JsonReaderFactory::createReader(const QString filename) const {
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
+
+#include <rapidjson/error/en.h>
+
+AbstractJsonReader JsonReaderFactory::createReader(const QString filename) {
     // Open the JSON file while checking for potential errors
     QFile jsonFile(filename);
     QFileInfo jsonFileInfo(filename);

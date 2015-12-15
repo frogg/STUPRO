@@ -2,6 +2,8 @@
 #define KRONOS_JSON_READER_FACTORY_HPP
 
 #include <Reader/DataReader/AbstractJsonReader.hpp>
+#include <QString>
+#include <Utils/Misc/Macros.hpp>
 
 #include <exception>
 
@@ -48,7 +50,7 @@ public:
      * @return A JSON reader for the given file that will handle the file's contents with respect
      * to its meta information
      */
-    static AbstractJsonReader createReader(const QString filename) const;
+    static AbstractJsonReader createReader(const QString filename);
 };
 
 #endif
