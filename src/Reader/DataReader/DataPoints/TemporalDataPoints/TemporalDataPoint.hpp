@@ -1,7 +1,7 @@
 #ifndef TemporalDataPoint_H
 #define TemporalDataPoint_H
 
-#include "Datapoint.hpp"
+#include <Reader/DataReader/DataPoints/DataPoint.hpp>
 class Coordinate;
 
 /**

@@ -1,6 +1,6 @@
 #include "TemperatureDataPoint.hpp"
 
-TemperatureDataPoint::TemperatureDataPoint(int dataType, int coordinate, int priority, int timestamp, float temperature) :TemporalDataPoint(dataType, coordinate, priority, timestamp)
+TemperatureDataPoint::TemperatureDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, float temperature) :TemporalDataPoint(dataType, coordinate, priority, timestamp)
 {
 	this->temperature = temperature;
 }
