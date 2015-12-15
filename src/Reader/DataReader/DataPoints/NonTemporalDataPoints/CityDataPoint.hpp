@@ -4,6 +4,7 @@
 
 
 #include "NonTemporalDataPoint.hpp"
+#include <QString>
 
 /**
  * Holds a DataPoint for a city, which includes its DataType, Coordinate, Priority and Name
@@ -12,7 +13,7 @@ class CityDataPoint:NonTemporalDataPoint {
     
 public:
     CityDataPoint(int dataType, Coordinate coordinate, int priority, QString name);
-    QString getName();
+    QString getName() const;
     
 private:
     QString mName;

@@ -1,8 +1,9 @@
 #ifndef KRONOS_ABSTRACT_JSON_READER_HPP
 #define KRONOS_ABSTRACT_JSON_READER_HPP
 
-#include <QMap>
+#include <rapidjson/document.h>
 #include <vtkPolyData.h>
+#include <Reader/DataReader/PointDataSet.hpp>
 
 class AbstractJsonReader {
 public:
@@ -10,20 +11,21 @@ public:
      * Create a new AbstractJsonReader from a map of data from a JSON file
      * @param data A potentially nested map of data from the JSON file
      */
-    AbstractJsonReader(QMap data);
+    AbstractJsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal);
+    
     virtual ~AbstractJsonReader() { }
 
     /**
      * Get the type of data read by this reader
      * @return The type of data read by this reader
      */
-    int getDataType();
+    int getDataType() const;
 
     /**
      * Check whether the data read by this reader is of temporal nature
      * @return True if each data point has time information, false otherwise
      */
-    bool hasTemporalData();
+    bool hasTemporalData() const;
 
     /**
      * Get all data stored in the file this reader uses, pruned by a specified zoom level.
@@ -33,6 +35,7 @@ public:
      * point's data stored in the data point's scalar values.
      */
     vtkPolyData getVtkDataSet(int zoomLevel);
+
 private:
     /**
      * Boolean flag denoting whether the data read by this reader contains time information
@@ -49,6 +52,9 @@ private:
      * A set of all points and their stored information read by this reader
      */
     PointDataSet pointDataSet;
+    
+    
+    rapidjson::Value jsonDocument;
 };
 
 #endif

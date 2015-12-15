@@ -6,6 +6,6 @@ FlightDataPoint::FlightDataPoint(int dataType, Coordinate coordinate, int priori
     
 }
 
-Coordinate FlightDataPoint::getDestination() {
+Coordinate FlightDataPoint::getDestination() const {
     return this->mDestination;
 }

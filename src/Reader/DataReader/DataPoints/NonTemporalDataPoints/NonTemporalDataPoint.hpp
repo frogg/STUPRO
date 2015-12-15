@@ -2,7 +2,7 @@
 #define NonTemporalDataPoint_h
 
 
-#include "DataPoint.hpp"
+#include <Reader/DataReader/DataPoints/DataPoint.hpp>
 
 /**
  * Holds a DataPoint for a Non-Temporal Datapoint
