@@ -4,6 +4,7 @@
 
 
 #include "NonTemporalDataPoint.hpp"
+#include <QString>
 
 /**
  * Holds a DataPoint for a city, which includes its DataType, Coordinate, Priority and Name

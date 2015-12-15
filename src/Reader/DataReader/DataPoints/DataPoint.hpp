@@ -1,7 +1,7 @@
 #ifndef DataPoint_h
 #define DataPoint_h
 
-
+#include <Globe/Coordinate.hpp>
 
 /**
  * Holds a Coordinate along with its DataType.

@@ -7,6 +7,6 @@ CityDataPoint::CityDataPoint(int dataType, Coordinate coordinate, int priority, 
     
 }
 
-QString CityDataPoint::getName() {
+QString CityDataPoint::getName() const {
     return this->mName;
 }
