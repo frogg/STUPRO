@@ -21,7 +21,7 @@ if(UNIX)
     get_filename_component(testName ${test} NAME_WE)
     add_test(
       NAME ${testName}
-      COMMAND UnitTester ${testName}
+      COMMAND UnitTester --gtest_filter=${testName}.*
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test
     )
   endforeach()
