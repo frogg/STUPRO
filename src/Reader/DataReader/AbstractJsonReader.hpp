@@ -52,9 +52,9 @@ private:
      * A set of all points and their stored information read by this reader
      */
     PointDataSet pointDataSet;
-    
-    
-    rapidjson::Value jsonDocument;
+
+
+    // rapidjson::Value jsonDocument;
 };
 
 #endif

@@ -13,7 +13,7 @@
 
 AbstractJsonReader::AbstractJsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal) : dataType(dataType), temporal(temporal) {
     
-    this->jsonDocument = jsonDocument;
+    // this->jsonDocument = jsonDocument;
     
     switch (this->dataType) {
             
