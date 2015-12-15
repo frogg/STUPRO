@@ -30,35 +30,15 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
                                             vtkInformationVector **inputVector,
                                             vtkInformationVector *outputVector) {
     
-    // Read the info out of the vectors.
-    vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-    vtkInformation *outInfo = outputVector->GetInformationObject(0);
-    
-    // Cast the input- and output-vectors to something useful.
-    vtkDataSet *input = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+    vtkDataSet *input = vtkDataSet::GetData(inputVector[0]);
+    vtkPointSet *output = vtkPointSet::GetData(outputVector);
 
-   // vtkDataSet *data = vtkDataSet::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
-    //data->CopyStructure(input);
-   // data->CopyAttributes(input);
-
-    vtkPointSet *output = vtkPointSet::SafeDownCast(vtkPointSet::New());
-    if (input->IsA("vtkImageData")) {
-        if (!output) return -1;
-        vtkSmartPointer<vtkImageDataToPointSet> filter = vtkSmartPointer<vtkImageDataToPointSet>::New();
-        filter->SetInputData(input);
-        filter->Update();
-        std::cout << filter->GetOutput()->GetClassName() << std::endl;
-        vtkPointSet *filtered = filter->GetOutput();
-        output->CopyStructure(filtered);
-        output->CopyAttributes(filtered);
-
-    } else if (input->IsA("vtkPointSet")) {
-        vtkPointSet *tmp = vtkPointSet::SafeDownCast(input);
-        output->CopyStructure(tmp);
-        output->CopyAttributes(tmp);
-    } else {
-        return -1;
+    if (!input || !output) {
+        vtkErrorMacro(<< "You must supply valid input and output ports")
     }
+
+    output->CopyStructure(input);
+    output->CopyAttributes(input);
 
     vtkPoints *points = output->GetPoints();
     //get the point of the output and transform them to cartesian coordinate system
@@ -91,29 +71,24 @@ int SpericalToCartesianFilter::ProcessRequest(
                                                vtkInformationVector *outputVector) {
     
     if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA())) {
-        vtkWarningMacro(<< "ProcessRequest CALLED WITH REQUEST_DATA");
         return this->RequestData(request, inputVector, outputVector);
     }
     
     if(request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT())) {
-        vtkWarningMacro(<< "ProcessRequest CALLED WITH REQUEST_UPDATE_EXTENT");
         return this->RequestUpdateExtent(request, inputVector, outputVector);
     }
     
     // create the output
     if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT())) {
-        vtkDebugMacro(<< "ProcessRequest CALLED WITH REQUEST_DATA_OBJECT");
         return this->RequestDataObject(request, inputVector, outputVector);
     }
     
     // execute information
     if(request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION())) {
-        vtkWarningMacro(<< "ProcessRequest CALLED WITH REQUEST_INFORMATION");
         return this->RequestInformation(request, inputVector, outputVector);
     }
-    
-    vtkWarningMacro(<< "ProcessRequest CALLED WITH NOTHING");
-    return Superclass::ProcessRequest(request, inputVector, outputVector); //this->RequestData(request, inputVector, outputVector);
+
+    return Superclass::ProcessRequest(request, inputVector, outputVector);
 }
 
 
