@@ -1,7 +1,7 @@
 #ifndef CityDataPoint_h
 #define CityDataPoint_h
 
-#define QString int
+
 
 #include "NonTemporalDataPoint.hpp"
 

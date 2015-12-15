@@ -2,7 +2,7 @@
 #define DataPoint_h
 
 
-#define Coordinate int
+
 /**
  * Holds a Coordinate along with its DataType.
  */
