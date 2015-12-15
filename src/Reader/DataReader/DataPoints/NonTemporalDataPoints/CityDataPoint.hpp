@@ -13,7 +13,7 @@ class CityDataPoint:NonTemporalDataPoint {
     
 public:
     CityDataPoint(int dataType, Coordinate coordinate, int priority, QString name);
-    QString getName();
+    QString getName() const;
     
 private:
     QString mName;

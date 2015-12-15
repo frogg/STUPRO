@@ -11,7 +11,7 @@ class FlightDataPoint:NonTemporalDataPoint {
     
 public:
     FlightDataPoint(int dataType, Coordinate coordinate, int priority, Coordinate destination);
-    Coordinate getDestination();
+    Coordinate getDestination() const;
     
 private:
     Coordinate mDestination;
