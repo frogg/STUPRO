@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
+
 # test runner class
 set(MAIN_CLASS
     ${CMAKE_CURRENT_SOURCE_DIR}/TestRunner.cpp
@@ -5,7 +7,6 @@ set(MAIN_CLASS
 )
 
 set(CMAKE_AUTOMOC TRUE)
-set(KRONOS_QT_VERSION 4)
 
 # find ParaView headers and libraries
 find_package(ParaView REQUIRED)
@@ -15,14 +16,14 @@ include(${PARAVIEW_USE_FILE})
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # find Qt headers and libraries
-if(${KRONOS_QT_VERSION} EQUAL 4)
-    find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
-    include(${QT_USE_FILE})
-elseif(${KRONOS_QT_VERSION} EQUAL 5)
+if("${KRONOS_QT_VERSION}" STREQUAL "5")
     find_package(Qt5Core REQUIRED)
     find_package(Qt5Gui REQUIRED)
     find_package(Qt5Network REQUIRED)
     find_package(Qt5Widgets REQUIRED)
+else()
+    find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
+    include(${QT_USE_FILE})
 endif()
 
 # find CppUnit headers and libraries
@@ -54,13 +55,13 @@ target_link_libraries(UnitTester
 )
 
 # link against Qt libraries
-if(${KRONOS_QT_VERSION} EQUAL 4)
-    target_link_libraries(UnitTester
-        ${QT_LIBRARIES}
-    )
-elseif(${KRONOS_QT_VERSION} EQUAL 5)
+if("${KRONOS_QT_VERSION}" STREQUAL "5")
     target_link_libraries(UnitTester
         Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets
+    )
+else()
+    target_link_libraries(UnitTester
+        ${QT_LIBRARIES}
     )
 endif()
 
