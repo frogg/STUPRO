@@ -65,32 +65,27 @@ void vtkKronosReader::SetFileName(std::string name){
 
 void vtkKronosReader::SetCameraPos(double x,double y,double z){
     this->cameraPos = Vector3d(x,y,z);
-    this->distanzToFocalPoint = (this->cameraFocalPoint - this->cameraPos).length();
-    cout << "setc" << endl;
+    this->distanceToFocalPoint = (this->cameraPos).length();
+
     this->Modified();
     
 }
-void vtkKronosReader::SetCameraFocalPoint(double x,double y,double z){
-    this->cameraFocalPoint = Vector3d(x,y,z);
-    this->distanzToFocalPoint = (this->cameraFocalPoint - this->cameraPos).length();
-    cout << "setf" << endl;
-    this->Modified();
-}
+
 int vtkKronosReader::RequestData(
   vtkInformation*,
   vtkInformationVector**,
   vtkInformationVector* outputVector)
 {
-    cout << this->distanzToFocalPoint << endl;
-    int tempvar=int (this->distanzToFocalPoint);
+    cout << this->distanceToFocalPoint << endl;
+    int tempvar=int ((this->distanceToFocalPoint-27.0)/50);
 
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
 
     vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-    int numberOfQuadsRight=20;
-    int numberOfQuadsUp=20;
+    int numberOfQuadsRight=50;
+    int numberOfQuadsUp=50;
 
     int nmbPoints=5*numberOfQuadsRight*numberOfQuadsUp;
 

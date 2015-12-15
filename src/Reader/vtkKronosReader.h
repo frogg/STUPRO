@@ -10,7 +10,6 @@ public:
 	vtkTypeMacro(vtkKronosReader, vtkPolyDataAlgorithm);
 	void SetFileName(std::string name);
     void SetCameraPos(double x,double y,double z);
-    void SetCameraFocalPoint(double x,double y,double z);
 protected:
 	vtkKronosReader();
 	~vtkKronosReader();
@@ -20,8 +19,7 @@ protected:
 		vtkInformationVector**,
 		vtkInformationVector*) override;
     Vector3d cameraPos = Vector3d();
-    Vector3d cameraFocalPoint = Vector3d();
-    double distanzToFocalPoint = 0.0;
+    double distanceToFocalPoint = 0.0;
 private:
 	vtkKronosReader(const vtkKronosReader&); // Not implemented
 	void operator=(const vtkKronosReader&);   // Not implemented
