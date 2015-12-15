@@ -15,15 +15,32 @@
                   This Property defines the path to the data source.
               </Documentation>
           </StringVectorProperty>
+          <IntVectorProperty command="SetUseOffscreenRenderingForScreenshots"
+              name="UseOffscreenRenderingForScreenshots"
+              number_of_elements="1"
+              default_values="0">
+              <Hints>
+                  <PropertyLink group="views"
+                  proxy="RenderView"
+                  property="UseOffscreenRenderingForScreenshots"/>
+              </Hints>
+          </IntVectorProperty>
           <DoubleVectorProperty
                         name="cameraPos"
                         command="SetCameraPos"
                         number_of_elements="3"
+                        immediate_update="1"
                         default_values="0.0 0.0 0.0">
+         <Hints>
+             <PropertyLink group="views"
+             proxy="RenderView"
+             property="CameraPosition"/>
+         </Hints>
           </DoubleVectorProperty>
           <Hints>
               <ReaderFactory extensions="kJson"
               file_description="Kronos Json" />
+          
           </Hints>
       </SourceProxy>
   </ProxyGroup>

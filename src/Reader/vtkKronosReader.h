@@ -10,6 +10,7 @@ public:
 	vtkTypeMacro(vtkKronosReader, vtkPolyDataAlgorithm);
 	void SetFileName(std::string name);
     void SetCameraPos(double x,double y,double z);
+    void SetUseOffscreenRenderingForScreenshots(int a);
 protected:
 	vtkKronosReader();
 	~vtkKronosReader();

@@ -7,11 +7,44 @@
 //
 
 #include "AbstractJsonReader.hpp"
+#include <vtkSmartPointer.h>
+#include <vtkDataArray.h>
+#include <Reader/DataReader/DataType.hpp>
 
 AbstractJsonReader::AbstractJsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal) : dataType(dataType), temporal(temporal) {
     
     this->jsonDocument = jsonDocument;
     
+    switch (this->dataType) {
+            
+        case DataType::CITIES:
+            //Cities
+            break;
+
+        case DataType::FLIGHTS:
+            //Flights
+            break;
+            
+        case DataType::TWEETS:
+            //Tweets
+            break;
+            
+        case DataType::PRECIPITATION:
+            //PRECIPITATION
+            break;
+            
+        case DataType::TEMPERATURE:
+            //TEMPERATURE
+            break;
+            
+        case DataType::WIND:
+            //WIND
+            break;
+            
+            
+        default:
+            break;
+    }
     
     
 }
@@ -26,5 +59,19 @@ bool AbstractJsonReader::hasTemporalData() const {
 }
 
 vtkPolyData AbstractJsonReader::getVtkDataSet(int zoomLevel) {
-    //hier wird es interessant
+    
+    this->pointDataSet.getDataPoints();
+    
+    /*
+    vtkPolyData* polydata = vtkPolyData::New();
+
+    vtkPoints* points = vtkPoints::New();
+    
+    vtkDataArray* dataArray = vtkDataArray::New();
+    
+    points->SetData(dataArray);
+    
+    polydata->SetPoints(points);
+    
+    return polydata;*/
 }

@@ -15,8 +15,6 @@
 #include "vtkTextCodec.h"
 #include "vtkTextCodecFactory.h"
 
-#include <vtksys/ios/sstream>
-#include <vtksys/ios/iostream>
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>

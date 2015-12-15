@@ -1,6 +1,6 @@
 #ifndef STUPRO_GLOBE_COORDINATE_HPP
 #define STUPRO_GLOBE_COORDINATE_HPP
-
+#include <Utils/Math/Vector2.hpp>
 /**
  * Holds a lat/long coordinate.
  */
