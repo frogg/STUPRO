@@ -54,7 +54,7 @@ JsonReader JsonReaderFactory::createReader(const QString filename) {
     // Extract meta data and create a new JSON reader
     rapidjson::Value& metaData = jsonDocument["meta"];
     return JsonReader(
-        jsonDocument,
+        jsonDocument["root"],
         JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
         metaData["temporal"].GetBool()
     );
