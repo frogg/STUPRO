@@ -64,7 +64,11 @@ int SpericalToCartesianFilter::RequestUpdateExtent(vtkInformation *, vtkInformat
 
 double* SpericalToCartesianFilter::transformToCartesian(double* point, double heightOffset)
 {
-	//get longitude, latitude and radius out of points, heightOffset is a default value set in the header file
+    //invalid input
+    if(point[0] <= 90 || -90 <= point[0] || point[1] <= 180 || -180 <= point[1]){
+        vtkWarningMacro(<< "Latitude and Longitude not in expected input scope.")
+    }
+    //get longitude, latitude and radius out of points, heightOffset is a default value set in the header file
 	double lon = point[0] * M_PI / 180;
 	double lat = point[1] * M_PI / 180;
 	double radius = heightOffset + point[2];
