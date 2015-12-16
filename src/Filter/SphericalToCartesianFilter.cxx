@@ -1,4 +1,4 @@
-#include "SpericalToCartesianFilter.h"
+#include "SphericalToCartesianFilter.h"
 
 #include "vtkCellData.h"
 #include "vtkCellArray.h"
@@ -21,16 +21,15 @@
 
 #include <cmath>
 
-// Still the same everytime
-vtkStandardNewMacro(SpericalToCartesianFilter)
+vtkStandardNewMacro(SphericalToCartesianFilter)
 
-int SpericalToCartesianFilter::RequestData(vtkInformation *,
+int SphericalToCartesianFilter::RequestData(vtkInformation *,
                                             vtkInformationVector **inputVector,
                                             vtkInformationVector *outputVector) {
+
     vtkPointSet *output = this->createOutputData(vtkDataSet::GetData(inputVector[0]), outputVector);
 
     vtkPoints *points = output->GetPoints();
-    //get the point of the output and transform them to cartesian coordinate system
     for(int i=0; i<points->GetNumberOfPoints(); i++){
         points->SetPoint(i, transformToCartesian(points->GetPoint(i)));
     }
@@ -38,7 +37,13 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *,
     return 1;
 }
 
-double* SpericalToCartesianFilter::transformToCartesian(double* point,double heightOffset){
+double* SphericalToCartesianFilter::transformToCartesian(double* point,double heightOffset){
+
+    // possible optimizations:
+    //  * sin(x)^2 + cos(x)^2 = 1
+    //  * remove std::cout
+    //  * use this method multi-threaded
+
     double lon = point[0]*M_PI/180; //
     double lat = point[1]*M_PI/180; //
     double radius = heightOffset + point[2];
@@ -54,13 +59,13 @@ double* SpericalToCartesianFilter::transformToCartesian(double* point,double hei
     return point;
 }
 
-vtkPointSet *SpericalToCartesianFilter::createOutputData(vtkDataSet *const input, vtkInformationVector *outputVector) {
+vtkPointSet *SphericalToCartesianFilter::createOutputData(vtkDataSet *const input, vtkInformationVector *outputVector) {
     vtkPointSet *output = vtkPointSet::GetData(outputVector);
-    /*if (input->IsA("vtkPointSet")) {
+    if (input && input->IsA("vtkPointSet") && output && output->IsA(input->GetClassName())) {
         output->CopyStructure(vtkPointSet::SafeDownCast(input));
         output->CopyAttributes(vtkPointSet::SafeDownCast(input));
     } else {
-      */  output = vtkStructuredGrid::New();
+        output = vtkStructuredGrid::New();
         outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), output);
 
         // use a warp scalar filter to convert to a structured grid
@@ -71,64 +76,60 @@ vtkPointSet *SpericalToCartesianFilter::createOutputData(vtkDataSet *const input
 
         output->CopyStructure(filtered);
         output->CopyAttributes(filtered);
-    //}
-
+    }
     return output;
 }
 
-int SpericalToCartesianFilter::ProcessRequest(vtkInformation *request,
+int SphericalToCartesianFilter::ProcessRequest(vtkInformation *request,
                                               vtkInformationVector **inputVector,
                                               vtkInformationVector *outputVector) {
     
     if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA())) {
         return this->RequestData(request, inputVector, outputVector);
-    }
-    
-    if(request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT())) {
+    } else if(request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT())) {
         return 1;
-    }
-    
-    // create the output
-    if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT())) {
+    } else if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT())) {
         return this->RequestDataObject(request, inputVector, outputVector);
-    }
-    
-    // execute information
-    if(request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION())) {
+    } else if(request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION())) {
         return 1;
+    } else {
+        return Superclass::ProcessRequest(request, inputVector, outputVector);
     }
-    
-    vtkWarningMacro(<< "ProcessRequest CALLED WITH NOTHING");
-    return Superclass::ProcessRequest(request, inputVector, outputVector); //this->RequestData(request, inputVector, outputVector);
 }
 
-int SpericalToCartesianFilter::RequestDataObject(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) {
+int SphericalToCartesianFilter::RequestDataObject(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) {
     vtkImageData *inImage = vtkImageData::GetData(inputVector[0]);
     vtkPointSet *inPoints = vtkPointSet::GetData(inputVector[0]);
     vtkRectilinearGrid *inGrid = vtkRectilinearGrid::GetData(inputVector[0]);
 
-    if (inImage || inGrid || inPoints) {
-        vtkPointSet *output = vtkPointSet::GetData(outputVector);
-        if (!output) {
-            vtkNew<vtkStructuredGrid> newOutput;
-            outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), newOutput.GetPointer());
-        }
-        return 1;
+    vtkPointSet *output = vtkPointSet::GetData(outputVector);
+    if ((inImage || inGrid) && !output) {
+        vtkNew<vtkStructuredGrid> newOutput;
+        outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), newOutput.GetPointer());
+    } else  if (inPoints && (!output || !output->IsA(inPoints->GetClassName()))) {
+        output = inPoints->NewInstance();
+        outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), output);
+        output->Delete();
     } else {
-      return this->Superclass::RequestDataObject(request,
-                                                 inputVector,
-                                                 outputVector);
+        return this->Superclass::RequestDataObject(request, inputVector, outputVector);
     }
+    return 1;
 }
 
 
-void SpericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
+void SphericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
     this->Superclass::PrintSelf(os, indent);
     
-    os << indent << "Hello, this is our filter." << endl;
+    os << indent << "Spherical to cartesian coordinate conversion, Kronos Project" << endl;
 }
 
-int SpericalToCartesianFilter::FillInputPortInformation(int port, vtkInformation *info) {
+int SphericalToCartesianFilter::FillOutputPortInformation(int, vtkInformation* info) {
+  // now add our info
+  info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPointSet");
+  return 1;
+}
+
+int SphericalToCartesianFilter::FillInputPortInformation(int, vtkInformation *info) {
     info->Remove(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
     info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
     info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
