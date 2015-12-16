@@ -3,7 +3,7 @@
 #include <vtkSmartPointer.h>
 
 
-TEST(SpericalToCartesianFilter, ValidCalls) {
+TEST(TestSphericalToCartesianFilter, ValidCalls) {
     vtkSmartPointer<SpericalToCartesianFilter> filter = vtkSmartPointer<SpericalToCartesianFilter>::New();
     double points[2];
     points[0] = 0;
@@ -44,7 +44,7 @@ TEST(SpericalToCartesianFilter, ValidCalls) {
 */
 }
 
-TEST(SpericalToCartesianFilter, InvalidCalls) {
+TEST(SphericalToCartesianFilter, InvalidCalls) {
     /*
     EXPECT_THROW(
                  Configuration::getInstance().getString("globe.invalid"),

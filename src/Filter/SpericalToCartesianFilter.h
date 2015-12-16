@@ -12,13 +12,18 @@
 #include <vtkDataSetAlgorithm.h>
 #include <vtkSetGet.h>
 #include <iostream>
-//#include <gtest/gtest.h>
+#include <Utils/Misc/Macros.hpp>
 
 class vtkInformation;
 class vtkInformationVector;
 
+
 class SpericalToCartesianFilter: public vtkDataSetAlgorithm
 {
+    
+    KRONOS_FRIEND_TEST(TestSphericalToCartesianFilter, ValidCalls);
+    KRONOS_FRIEND_TEST(TestSphericalToCartesianFilter, InvalidCalls);
+    
 public:
 	vtkTypeMacro(SpericalToCartesianFilter, vtkDataSetAlgorithm)
 
@@ -29,7 +34,6 @@ public:
 
 	void PrintSelf(ostream& os, vtkIndent indent) override;
 
-    double* transformToCartesian(double* point, double heightOffset = 100);
 
 protected:
 	SpericalToCartesianFilter()
@@ -47,8 +51,9 @@ private:
 	SpericalToCartesianFilter(const SpericalToCartesianFilter&);  // Not implemented.
 	void operator=(const SpericalToCartesianFilter&);  // Not implemented.
     int RequestUpdateExtent(vtkInformation *, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
-   // FRIEND_TEST(TestSpericalToCartesianFilter, ValidCalls);
-   // FRIEND_TEST(TestSpericalToCartesianFilter, InvalidCalls);
+    double* transformToCartesian(double* point, double heightOffset = 100);
+
+
 };
 
 #endif /* SpericalToCartesianFilter_hpp */
