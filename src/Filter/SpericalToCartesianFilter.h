@@ -9,15 +9,20 @@
 #ifndef SpericalToCartesianFilter_hpp
 #define SpericalToCartesianFilter_hpp
 
-#include "vtkDataSetAlgorithm.h"
+#include "vtkPointSetAlgorithm.h"
 #include <stdio.h>
 
-class SpericalToCartesianFilter : public vtkDataSetAlgorithm{
+class vtkPointSet;
+class vtkDataSet;
+
+class SpericalToCartesianFilter : public vtkPointSetAlgorithm {
 public:
-    vtkTypeMacro(SpericalToCartesianFilter, vtkDataSetAlgorithm);
+    vtkTypeMacro(SpericalToCartesianFilter, vtkPointSetAlgorithm)
     static SpericalToCartesianFilter *New();
     int ProcessRequest(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) override;
+    int RequestDataObject(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) override;
     void PrintSelf(ostream& os, vtkIndent indent) override;
+    int FillInputPortInformation(int port, vtkInformation *info) override;
 protected:
     SpericalToCartesianFilter(){
         
@@ -29,7 +34,7 @@ private:
     SpericalToCartesianFilter(const SpericalToCartesianFilter&);  // Not implemented.
     void operator=(const SpericalToCartesianFilter&);  // Not implemented.
     double* transformToCartesian(double* point,double heightOffset = 100);
-    
+    vtkPointSet *createOutputData(vtkDataSet* const input, vtkInformationVector *outputVector);
 };
 
 

@@ -1,64 +1,33 @@
-/**
- */
 #include "SpericalToCartesianFilter.h"
 
 #include "vtkCellData.h"
+#include "vtkCellArray.h"
+#include "vtkCellIterator.h"
 #include "vtkDataSet.h"
+#include "vtkDemandDrivenPipeline.h"
+#include "vtkFloatArray.h"
+#include "vtkImageData.h"
+#include "vtkImageDataToPointSet.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
-#include "vtkDemandDrivenPipeline.h"
-#include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkPointData.h"
 #include "vtkPoints.h"
-#include "vtkPointData.h"
 #include "vtkPolyData.h"
-
-
-#include "vtkCellArray.h"
-#include "vtkFloatArray.h"
-#include "vtkPointData.h"
-#include "vtkCellIterator.h"
-#include "vtkImageDataToPointSet.h"
+#include "vtkRectilinearGrid.h"
 #include "vtkSmartPointer.h"
+#include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkWarpScalar.h"
 
 #include <cmath>
 
 // Still the same everytime
 vtkStandardNewMacro(SpericalToCartesianFilter)
 
-int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
+int SpericalToCartesianFilter::RequestData(vtkInformation *,
                                             vtkInformationVector **inputVector,
                                             vtkInformationVector *outputVector) {
-    
-    // Read the info out of the vectors.
-    vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-    vtkInformation *outInfo = outputVector->GetInformationObject(0);
-    
-    // Cast the input- and output-vectors to something useful.
-    vtkDataSet *input = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-
-   // vtkDataSet *data = vtkDataSet::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
-    //data->CopyStructure(input);
-   // data->CopyAttributes(input);
-
-    vtkPointSet *output = vtkPointSet::SafeDownCast(vtkPointSet::New());
-    if (input->IsA("vtkImageData")) {
-        if (!output) return -1;
-        vtkSmartPointer<vtkImageDataToPointSet> filter = vtkSmartPointer<vtkImageDataToPointSet>::New();
-        filter->SetInputData(input);
-        filter->Update();
-        std::cout << filter->GetOutput()->GetClassName() << std::endl;
-        vtkPointSet *filtered = filter->GetOutput();
-        output->CopyStructure(filtered);
-        output->CopyAttributes(filtered);
-
-    } else if (input->IsA("vtkPointSet")) {
-        vtkPointSet *tmp = vtkPointSet::SafeDownCast(input);
-        output->CopyStructure(tmp);
-        output->CopyAttributes(tmp);
-    } else {
-        return -1;
-    }
+    vtkPointSet *output = this->createOutputData(vtkDataSet::GetData(inputVector[0]), outputVector);
 
     vtkPoints *points = output->GetPoints();
     //get the point of the output and transform them to cartesian coordinate system
@@ -85,35 +54,71 @@ double* SpericalToCartesianFilter::transformToCartesian(double* point,double hei
     return point;
 }
 
-int SpericalToCartesianFilter::ProcessRequest(
-                                               vtkInformation *request,
-                                               vtkInformationVector **inputVector,
-                                               vtkInformationVector *outputVector) {
+vtkPointSet *SpericalToCartesianFilter::createOutputData(vtkDataSet *const input, vtkInformationVector *outputVector) {
+    vtkPointSet *output = vtkPointSet::GetData(outputVector);
+    /*if (input->IsA("vtkPointSet")) {
+        output->CopyStructure(vtkPointSet::SafeDownCast(input));
+        output->CopyAttributes(vtkPointSet::SafeDownCast(input));
+    } else {
+      */  output = vtkStructuredGrid::New();
+        outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), output);
+
+        // use a warp scalar filter to convert to a structured grid
+        vtkSmartPointer<vtkWarpScalar> filter = vtkSmartPointer<vtkWarpScalar>::New();
+        filter->SetInputData(input);
+        filter->Update();
+        vtkPointSet *filtered = filter->GetOutput();
+
+        output->CopyStructure(filtered);
+        output->CopyAttributes(filtered);
+    //}
+
+    return output;
+}
+
+int SpericalToCartesianFilter::ProcessRequest(vtkInformation *request,
+                                              vtkInformationVector **inputVector,
+                                              vtkInformationVector *outputVector) {
     
     if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA())) {
-        vtkWarningMacro(<< "ProcessRequest CALLED WITH REQUEST_DATA");
         return this->RequestData(request, inputVector, outputVector);
     }
     
     if(request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT())) {
-        vtkWarningMacro(<< "ProcessRequest CALLED WITH REQUEST_UPDATE_EXTENT");
-        return this->RequestUpdateExtent(request, inputVector, outputVector);
+        return 1;
     }
     
     // create the output
     if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT())) {
-        vtkDebugMacro(<< "ProcessRequest CALLED WITH REQUEST_DATA_OBJECT");
         return this->RequestDataObject(request, inputVector, outputVector);
     }
     
     // execute information
     if(request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION())) {
-        vtkWarningMacro(<< "ProcessRequest CALLED WITH REQUEST_INFORMATION");
-        return this->RequestInformation(request, inputVector, outputVector);
+        return 1;
     }
     
     vtkWarningMacro(<< "ProcessRequest CALLED WITH NOTHING");
     return Superclass::ProcessRequest(request, inputVector, outputVector); //this->RequestData(request, inputVector, outputVector);
+}
+
+int SpericalToCartesianFilter::RequestDataObject(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) {
+    vtkImageData *inImage = vtkImageData::GetData(inputVector[0]);
+    vtkPointSet *inPoints = vtkPointSet::GetData(inputVector[0]);
+    vtkRectilinearGrid *inGrid = vtkRectilinearGrid::GetData(inputVector[0]);
+
+    if (inImage || inGrid || inPoints) {
+        vtkPointSet *output = vtkPointSet::GetData(outputVector);
+        if (!output) {
+            vtkNew<vtkStructuredGrid> newOutput;
+            outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), newOutput.GetPointer());
+        }
+        return 1;
+    } else {
+      return this->Superclass::RequestDataObject(request,
+                                                 inputVector,
+                                                 outputVector);
+    }
 }
 
 
@@ -121,4 +126,12 @@ void SpericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
     this->Superclass::PrintSelf(os, indent);
     
     os << indent << "Hello, this is our filter." << endl;
+}
+
+int SpericalToCartesianFilter::FillInputPortInformation(int port, vtkInformation *info) {
+    info->Remove(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
+    info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
+    info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
+    info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkRectilinearGrid");
+    return 1;
 }
