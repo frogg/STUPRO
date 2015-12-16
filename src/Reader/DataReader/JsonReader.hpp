@@ -1,11 +1,16 @@
 #ifndef KRONOS_ABSTRACT_JSON_READER_HPP
 #define KRONOS_ABSTRACT_JSON_READER_HPP
 
+#include <Utils/Misc/Macros.hpp>
+
 #include <rapidjson/document.h>
 #include <vtkPolyData.h>
 #include <Reader/DataReader/PointDataSet.hpp>
 
 class JsonReader {
+    
+    KRONOS_FRIEND_TEST(TestJsonReader, ReadCityData);
+    
 public:
     /**
      * Create a new AbstractJsonReader from a map of data from a JSON file
