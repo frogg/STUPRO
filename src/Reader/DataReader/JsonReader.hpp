@@ -5,15 +5,15 @@
 #include <vtkPolyData.h>
 #include <Reader/DataReader/PointDataSet.hpp>
 
-class AbstractJsonReader {
+class JsonReader {
 public:
     /**
      * Create a new AbstractJsonReader from a map of data from a JSON file
      * @param data A potentially nested map of data from the JSON file
      */
-    AbstractJsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal);
+    JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal);
     
-    virtual ~AbstractJsonReader() { }
+    virtual ~JsonReader() { }
 
     /**
      * Get the type of data read by this reader

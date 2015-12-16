@@ -1,17 +1,17 @@
 //
-//  AbstractJsonReader.cpp
+//  JsonReader.cpp
 //  kronos
 //
 //  Created by Frederik Riedel on 15.12.15.
 //
 //
 
-#include "AbstractJsonReader.hpp"
+#include "JsonReader.hpp"
 #include <vtkSmartPointer.h>
 #include <vtkDataArray.h>
 #include <Reader/DataReader/DataType.hpp>
 
-AbstractJsonReader::AbstractJsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal) : dataType(dataType), temporal(temporal) {
+JsonReader::JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal) : dataType(dataType), temporal(temporal) {
     
     // this->jsonDocument = jsonDocument;
     
@@ -50,15 +50,15 @@ AbstractJsonReader::AbstractJsonReader(rapidjson::Value& jsonDocument, int dataT
 }
 
 
-int AbstractJsonReader::getDataType() const {
+int JsonReader::getDataType() const {
     return this->dataType;
 }
 
-bool AbstractJsonReader::hasTemporalData() const {
+bool JsonReader::hasTemporalData() const {
     return temporal;
 }
 
-vtkPolyData AbstractJsonReader::getVtkDataSet(int zoomLevel) {
+vtkPolyData JsonReader::getVtkDataSet(int zoomLevel) {
     
     this->pointDataSet.getDataPoints();
     
