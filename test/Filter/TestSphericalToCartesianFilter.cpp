@@ -1,33 +1,44 @@
 #include <gtest/gtest.h>
 #include <Filter/SpericalToCartesianFilter.h>
 #include <vtkSmartPointer.h>
+#include <cmath>
+#include <iostream>
 
 
 TEST(TestSphericalToCartesianFilter, ValidCalls) {
     vtkSmartPointer<SpericalToCartesianFilter> filter = vtkSmartPointer<SpericalToCartesianFilter>::New();
-    double points[2];
+    double points[3];
     points[0] = 0;
     points[1] = 0;
+    points[2] = 0;
+
     
     double result[3];
     
-    filter->transformToCartesian(result,100);
-    std::cout<<result[0] << "test";
-    std::cout<<result[1] << "test";
-    std::cout<<result[2] << "test";
+    filter->transformToCartesian(result,200);
 
-    /*
-    vtkPoints *points = output->GetPoints();
-    //get the point of the output and transform them to cartesian coordinate system
-    for (int i = 0; i < points->GetNumberOfPoints(); i++)
-    {
-        points->SetPoint(i, transformToCartesian(points->GetPoint(i)));
-    }
-    */
+
+    EXPECT_TRUE(std::abs(result[1]) < 0.01);
+    EXPECT_TRUE(std::abs(result[1]) < 0.01);
+    EXPECT_TRUE(std::abs(result[0]-200.0) < 0.01);
     
-   /* EXPECT_TRUE(Configuration::getInstance().hasKey("globe.radius"));
-    EXPECT_TRUE(!Configuration::getInstance().hasKey("globe.invalid"));
+    std::cout<<result[0] << ":   x" << std::endl;
+    std::cout<<result[1] << ":   y" << std::endl;
+    std::cout<<result[2] << ":   z" << std::endl;
     
+    points[0] = 90;
+    points[1] = 0;
+    points[2] = 0;
+    filter->transformToCartesian(result,200);
+
+    std::cout<<result[0] << ":   x" << std::endl;
+    std::cout<<result[1] << ":   y" << std::endl;
+    std::cout<<result[2] << ":   z" << std::endl;
+
+//    EXPECT_TRUE(std::abs(result[0]-100) < 0.01);
+ //   EXPECT_TRUE(std::abs(result[0]-100) < 0.01);
+
+/*
     EXPECT_EQ(
               42,
               Configuration::getInstance().getInteger("globe.radius")

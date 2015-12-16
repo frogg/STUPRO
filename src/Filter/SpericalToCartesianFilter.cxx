@@ -70,9 +70,10 @@ double* SpericalToCartesianFilter::transformToCartesian(double* point, double he
 	double radius = heightOffset + point[2];
 
 	//formula to transform the sphere coordinates to cartesian coordinate system
-	point[0] = radius * cos(lat) * cos(lon);
-	point[1] = radius * cos(lat) * sin(lon);
-	point[2] = radius * sin(lat);
+    //strange order because of ParaView cartesian coordinate system orientation
+	point[2] = radius * cos(lat) * cos(lon);
+	point[0] = radius * cos(lat) * sin(lon);
+	point[1] = radius * sin(lat);
 
 	return point;
 }
