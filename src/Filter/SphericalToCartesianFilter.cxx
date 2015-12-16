@@ -45,9 +45,8 @@ double* SphericalToCartesianFilter::transformToCartesian(double* point, double h
     //  * remove std::cout
     //  * use this method multi-threaded
     
-    
     //invalid input
-    if(point[0] <= 90 || -90 <= point[0] || point[1] <= 180 || -180 <= point[1]){
+    if(point[0] >= 180 || -180 >= point[0] || point[1] >= 90 || -90 >= point[1]){
         vtkWarningMacro(<< "Latitude and Longitude not in expected input scope.")
     }
     //get longitude, latitude and radius out of points, heightOffset is a default value set in the header file
