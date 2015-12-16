@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <Filter/SpericalToCartesianFilter.h>
+#include <Filter/SphericalToCartesianFilter.h>
 #include <vtkSmartPointer.h>
 #include <cmath>
 #include <iostream>
@@ -7,7 +7,7 @@
 
 // write further tests with http://www.random-science-tools.com/maths/coordinate-converter.htm
 TEST(TestSphericalToCartesianFilter, ValidCalls) {
-    vtkSmartPointer<SpericalToCartesianFilter> filter = vtkSmartPointer<SpericalToCartesianFilter>::New();
+    vtkSmartPointer<SphericalToCartesianFilter> filter = vtkSmartPointer<SphericalToCartesianFilter>::New();
     double points[3];
     points[0] = 0;
     points[1] = 0;
