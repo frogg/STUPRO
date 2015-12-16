@@ -25,7 +25,7 @@ static QMap<QString, int> dataTypeMap() {
 
 const QMap<QString, int> JsonReaderFactory::DATA_TYPES = dataTypeMap();
 
-AbstractJsonReader JsonReaderFactory::createReader(const QString filename) {
+JsonReader JsonReaderFactory::createReader(const QString filename) {
     // Open the JSON file while checking for potential errors
     QFile jsonFile(filename);
     QFileInfo jsonFileInfo(filename);
@@ -53,7 +53,7 @@ AbstractJsonReader JsonReaderFactory::createReader(const QString filename) {
 
     // Extract meta data and create a new JSON reader
     rapidjson::Value& metaData = jsonDocument["meta"];
-    return AbstractJsonReader(
+    return JsonReader(
         jsonDocument,
         JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
         metaData["temporal"].GetBool()
