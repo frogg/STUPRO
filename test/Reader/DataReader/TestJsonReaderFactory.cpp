@@ -33,3 +33,15 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 		true
 	);
 }
+
+TEST(TestJsonReaderFactory, ReadInvalidFiles) {
+	EXPECT_THROW(
+		JsonReaderFactory::createReader("res/test-data/non-existant.json"),
+		JsonFileOpenException
+	);
+	
+	EXPECT_THROW(
+		JsonReaderFactory::createReader("res/test-data/invalid.json"),
+		JsonParseException
+	);
+}
