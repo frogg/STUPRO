@@ -1,11 +1,3 @@
-//
-//  JsonReader.cpp
-//  kronos
-//
-//  Created by Frederik Riedel on 15.12.15.
-//
-//
-
 #include "JsonReader.hpp"
 #include <vtkSmartPointer.h>
 #include <vtkDataArray.h>
