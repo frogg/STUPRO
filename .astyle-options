@@ -12,21 +12,6 @@
 # tab indent equals 4 spaces
 --indent=tab=4
 
-# indent cases in switch statements
-#
-# switch (foo)
-# {
-#     case 1:
-#         a += 1;
-#         break;
-#     case 2:
-#     {
-#         a += 2;
-#         break;
-#     }
-# }
---indent-switches
-
 # indent contents of namespaces
 #
 # namespace foospace
@@ -69,17 +54,12 @@
 #     bar(a, b);
 --pad-header
 
-# remove spaces around angled brackets in template definitions
-#
-# Stack<int,List<int>> stack1;
---close-templates
-
 # align pointer operators * and & to the name
 #
-# char *foo1;
-# char &foo2;
-# String ^s1;
---align-pointer=name
+# char* foo1;
+# char& foo2;
+# String^ s1;
+--align-pointer=type
 
 # add braces to single line if/while/for statements
 #
