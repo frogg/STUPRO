@@ -1,7 +1,20 @@
 #!/bin/sh
+YOUR_FAULT=false
 FORMATTER_CHECK=$(./scripts/formatter-check.sh)
+
 if [ $? != 0 ]; then
-    echo "Found formatting errors in source files, aborting commit"
+  USERNAME=$(git config user.name)
+  while read -r line; do
+    if [[ $line == *"$USERNAME"* ]]; then
+      echo $line
+      YOUR_FAULT=true
+    fi
+  done <<< "$FORMATTER_CHECK"
+  if [ "$YOUR_FAULT" == true ]; then
+    echo "Found formatting errors that seem to be introduced by YOU!!!"
     exit 1
+  else
+    echo "Found formatting errors that weren't introduced by you, assuming that's okay"
+    exit 0
+  fi
 fi
-echo "Formatting seems fine"
