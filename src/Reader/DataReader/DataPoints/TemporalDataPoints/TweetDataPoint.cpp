@@ -8,12 +8,12 @@ TweetDataPoint::TweetDataPoint(Coordinate coordinate, int priority, int timestam
 	this->content = content;
 }
 
-QString TweetDataPoint::getAuthor()
+QString TweetDataPoint::getAuthor() const
 {
 	return this->author;
 };
 
-QString TweetDataPoint::getContent()
+QString TweetDataPoint::getContent() const
 {
 	return this->content;
 };

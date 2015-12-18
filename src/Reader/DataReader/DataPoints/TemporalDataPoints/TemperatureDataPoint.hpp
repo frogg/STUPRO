@@ -9,7 +9,7 @@ class TemperatureDataPoint : public TemporalDataPoint
 {
 public:	
 	TemperatureDataPoint(Coordinate coordinate, int priority, int timestamp, float temperature);
-	float getTemperature();
+	float getTemperature() const;
 private:
 	/**
 	* @return The temperature in degrees Fahrenheit

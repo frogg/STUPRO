@@ -7,7 +7,7 @@ PrecipitationDataPoint::PrecipitationDataPoint(Coordinate coordinate, int priori
 	this->precipitationRate = precipitationRate;
 }
 
-float PrecipitationDataPoint::getPrecipitationRate()
+float PrecipitationDataPoint::getPrecipitationRate() const
 {
 	return this->precipitationRate;
 }

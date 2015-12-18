@@ -7,7 +7,7 @@ TemperatureDataPoint::TemperatureDataPoint(Coordinate coordinate, int priority, 
 	this->temperature = temperature;
 }
 
-float TemperatureDataPoint::getTemperature()
+float TemperatureDataPoint::getTemperature() const
 {
 	return this->temperature;
 }

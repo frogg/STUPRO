@@ -13,11 +13,11 @@ public:
 	/**
 	* @return The author of the Twitter-message
 	*/
-	QString getAuthor();
+	QString getAuthor() const;
 	/**
 	* @return The content of the Twitter-message
 	*/
-	QString getContent();
+	QString getContent() const;
 private:
 	QString author;
 	QString content;

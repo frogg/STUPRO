@@ -13,7 +13,7 @@ public:
 	* Get the precipitationrate for a temporal DataPoint
 	* @return The precipitation-prediction for the hour after the timestamp
 	*/
-	float getPrecipitationRate();
+	float getPrecipitationRate() const;
 private:
 	float precipitationRate;
 };

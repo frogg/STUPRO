@@ -6,7 +6,7 @@ TemporalDataPoint::TemporalDataPoint(int dataType, Coordinate coordinate, int pr
 }
 
 
-int TemporalDataPoint::getTimestamp()
+int TemporalDataPoint::getTimestamp() const
 {
 	return this->timestamp;
 }

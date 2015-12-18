@@ -17,7 +17,7 @@ public:
 	* Get the timestamp for a temporal DataPoint
 	* @return The timestamp in UNIX GMT format
 	*/
-	int getTimestamp();
+	int getTimestamp() const;
 private:
 	int timestamp;
 };

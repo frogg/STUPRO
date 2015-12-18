@@ -12,11 +12,11 @@ public:
 	/**
 	* @return The winddirection in degrees from 0� to 360�
 	*/
-	float getDirection();
+	float getDirection() const;
 	/**
 	* @return The windspedd in miles per hour
 	*/
-	float getSpeed();
+	float getSpeed() const;
 private:
 	float direction;
 	float speed;

@@ -8,12 +8,12 @@ WindDataPoint::WindDataPoint(Coordinate coordinate, int priority, int timestamp,
 	this->speed = speed;
 }
 
-float WindDataPoint::getDirection()
+float WindDataPoint::getDirection() const
 {
 	return this->direction;
 }
 
-float WindDataPoint::getSpeed()
+float WindDataPoint::getSpeed() const
 {
 	return this->speed;
 }
