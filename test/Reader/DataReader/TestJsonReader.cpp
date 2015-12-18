@@ -7,6 +7,7 @@
 #include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 
 #include <vtkSmartPointer.h>
 #include <iostream>
@@ -34,6 +35,43 @@ TEST(TestJsonReader, ReadCityData) {
 	
 	EXPECT_EQ(
 		firstDataPoint->getCoordinate().lon(),
+		-118.242775
+	);
+}
+
+TEST(TestJsonReader, ReadTwitterData) {
+	JsonReader twitterReader = JsonReaderFactory::createReader("res/test-data/tweets.json");
+	EXPECT_EQ(
+		twitterReader.pointDataSet.getDataPoints().size(),
+		3
+	);
+	
+	const TweetDataPoint* testDataPoint = dynamic_cast<const TweetDataPoint*>(
+		twitterReader.pointDataSet.getDataPoints().at(1)
+	);
+	
+	EXPECT_EQ(
+		testDataPoint->getAuthor().toStdString(),
+		"elonmusk"
+	);
+	
+	EXPECT_EQ(
+		testDataPoint->getContent().toStdString(),
+		"Is this working?"
+	);
+	
+	EXPECT_EQ(
+		testDataPoint->getTimestamp(),
+		1439280065
+	);
+	
+	EXPECT_EQ(
+		testDataPoint->getCoordinate().lat(),
+		34.052223
+	);
+	
+	EXPECT_EQ(
+		testDataPoint->getCoordinate().lon(),
 		-118.242775
 	);
 }
