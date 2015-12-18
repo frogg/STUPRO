@@ -9,7 +9,7 @@
 class TweetDataPoint:TemporalDataPoint
 {
 public:
-	TweetDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, QString author, QString content);
+	TweetDataPoint(Coordinate coordinate, int priority, int timestamp, QString author, QString content);
 	/**
 	* @return The author of the Twitter-message
 	*/

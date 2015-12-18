@@ -8,9 +8,9 @@
 class WindDataPoint :TemporalDataPoint
 {
 public:
-	WindDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, float direction, float speed);
+	WindDataPoint(Coordinate coordinate, int priority, int timestamp, float direction, float speed);
 	/**
-	* @return The winddirection in degrees from 0° to 360°
+	* @return The winddirection in degrees from 0ï¿½ to 360ï¿½
 	*/
 	float getDirection();
 	/**

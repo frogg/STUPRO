@@ -1,7 +1,8 @@
 #include "CityDataPoint.hpp"
 
+#include <Reader/DataReader/DataType.hpp>
 
-CityDataPoint::CityDataPoint(int dataType, Coordinate coordinate, int priority, QString name):NonTemporalDataPoint(dataType,coordinate,priority) {
+CityDataPoint::CityDataPoint(Coordinate coordinate, int priority, QString name):NonTemporalDataPoint(DataType::CITIES,coordinate,priority) {
     
     this->mName = name;
     

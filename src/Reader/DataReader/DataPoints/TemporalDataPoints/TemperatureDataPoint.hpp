@@ -8,7 +8,7 @@
 class TemperatureDataPoint :TemporalDataPoint
 {
 public:	
-	TemperatureDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, float temperature);
+	TemperatureDataPoint(Coordinate coordinate, int priority, int timestamp, float temperature);
 	float getTemperature();
 private:
 	/**

@@ -8,7 +8,7 @@
 class PrecipitationDataPoint :TemporalDataPoint
 {
 public:
-	PrecipitationDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, float precipitation);
+	PrecipitationDataPoint(Coordinate coordinate, int priority, int timestamp, float precipitation);
 	/**
 	* Get the precipitationrate for a temporal DataPoint
 	* @return The precipitation-prediction for the hour after the timestamp
