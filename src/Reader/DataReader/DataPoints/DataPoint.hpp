@@ -14,6 +14,7 @@ public:
      */
     DataPoint(int dataType, Coordinate coordinate, int priority);
     DataPoint() { }
+    virtual ~DataPoint() { }
     int getDataType() const;
     int getPriority() const;
     Coordinate getCoordinate() const;
