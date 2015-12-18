@@ -26,6 +26,16 @@ TEST(TestJsonReader, ReadCityData) {
 		firstDataPoint->getName().toStdString(),
 		"Los Angeles"
 	);
+	
+	EXPECT_EQ(
+		firstDataPoint->getCoordinate().lat(),
+		34.052223
+	);
+	
+	EXPECT_EQ(
+		firstDataPoint->getCoordinate().lon(),
+		-118.242775
+	);
 }
 
 /*TEST(TestJsonReader, TestShitty) {
