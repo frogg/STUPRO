@@ -30,37 +30,42 @@ int SphericalToCartesianFilter::RequestData(vtkInformation *,
     
     vtkPointSet *output = this->createOutputData(vtkDataSet::GetData(inputVector[0]), outputVector);
     
-    vtkPoints *points = output->GetPoints();
-    for(int i=0; i<points->GetNumberOfPoints(); i++){
-        points->SetPoint(i, transformToCartesian(points->GetPoint(i)));
-    }
+    transformToCartesian(output->GetPoints());
     
     return 1;
 }
 
-double* SphericalToCartesianFilter::transformToCartesian(double* point, double heightOffset)
-{
+void SphericalToCartesianFilter::transformToCartesian(vtkPoints *points, double heightOffset) {
     // possible optimizations:
     //  * sin(x)^2 + cos(x)^2 = 1
-    //  * remove std::cout
     //  * use this method multi-threaded
+    //  * use single precision
     
-    //invalid input
-    if(point[0] > 180 || -180 > point[0] || point[1] > 90 || -90 > point[1]){
-        vtkWarningMacro(<< "Latitude and Longitude not in expected input scope." << point[0] << ";" << point[1])
+    // check for invalid input, bounds are returned as (xmin,xmax, ymin,ymax, zmin,zmax)
+    double *bounds = points->GetBounds();
+    if(bounds[0] < -180 || bounds[1] > 180 || bounds[2] < -90 || bounds[3] > 90 || bounds[4] < -heightOffset){
+        vtkWarningMacro(<< "Data not in expected input scope: The data bounds:\n"
+                        << "  Latitude:  (" << bounds[2] << "," << bounds[3] << ")\n"
+                        << "  Longitude: (" << bounds[0] << "," << bounds[1] << ")\n"
+                        << "  Height:    (" << bounds[4] << "," << bounds[5] << ")")
     }
-    //get longitude, latitude and radius out of points, heightOffset is a default value set in the header file
-    double lon = point[0] * M_PI / 180;
-    double lat = point[1] * M_PI / 180;
-    double radius = heightOffset + point[2];
-    
-    //formula to transform the sphere coordinates to cartesian coordinate system
-    //strange order because of ParaView cartesian coordinate system orientation
-    point[2] = radius * cos(lat) * cos(lon);
-    point[0] = radius * cos(lat) * sin(lon);
-    point[1] = radius * sin(lat);
-    
-    return point;
+
+    for(int i=0; i<points->GetNumberOfPoints(); i++){
+        double *point = points->GetPoint(i);
+
+        //get longitude, latitude and radius out of points, heightOffset is a default value set in the header file
+        double lon = point[0] * M_PI / 180;
+        double lat = point[1] * M_PI / 180;
+        double radius = heightOffset + point[2];
+
+        //formula to transform the sphere coordinates to cartesian coordinate system
+        //strange order because of ParaView cartesian coordinate system orientation
+        point[2] = radius * cos(lat) * cos(lon);
+        point[0] = radius * cos(lat) * sin(lon);
+        point[1] = radius * sin(lat);
+
+        points->SetPoint(i, point);
+    }
 }
 
 int SphericalToCartesianFilter::RequestUpdateExtent(vtkInformation *, vtkInformationVector **inputVector, vtkInformationVector *outputVector)

@@ -7,6 +7,7 @@
 
 class vtkPointSet;
 class vtkDataSet;
+class vtkPoints;
 
 /**
  * The SphericalToCartesianFilter class is a vtk filter which is able to convert the coordinate system of the data.
@@ -57,11 +58,11 @@ private:
     
     /**
      * This method transforms the coordinate system of a point
-     * @param point a point in gps coordinates. Note that the output is written directly into this array for speed reasons.
+     * @param points vtkPoints in gps coordinates. The output is written in place for speed reasons.
      * @param heightOffset the height offset to add to the height of the point
-     * @return the resulting point (this is the same as point)
+     * @warning outputs a warning if the input dataset is not in the correct bounds
      */
-    double* transformToCartesian(double* point,double heightOffset = 100);
+    void transformToCartesian(vtkPoints *points, double heightOffset = 100);
     
     /**
      * Convenience method to copy the input to the output. Sometimes the output needs to be re-created and registered in Paraview.
