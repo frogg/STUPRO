@@ -5,9 +5,11 @@
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
 #include <Reader/DataReader/DataType.hpp>
+#include <Reader/DataReader/DataPoints/DataPoint.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 
 #include <vtkSmartPointer.h>
+#include <iostream>
 
 TEST(TestJsonReader, ReadCityData) {
 	JsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
@@ -16,13 +18,12 @@ TEST(TestJsonReader, ReadCityData) {
 		4
 	);
 	
-	const CityDataPoint& firstDataPoint = static_cast<const CityDataPoint&>(
+	const CityDataPoint* firstDataPoint = dynamic_cast<const CityDataPoint*>(
 		cityReader.pointDataSet.getDataPoints().at(1)
 	);
 	
-	
 	EXPECT_EQ(
-		firstDataPoint.getName().toStdString(),
+		firstDataPoint->getName().toStdString(),
 		"Los Angeles"
 	);
 }
