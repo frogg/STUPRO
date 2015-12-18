@@ -3,6 +3,8 @@
 
 #include <Utils/Misc/Macros.hpp>
 
+#include <QString>
+
 #include <rapidjson/document.h>
 #include <vtkPolyData.h>
 #include <Reader/DataReader/PointDataSet.hpp>
@@ -58,8 +60,13 @@ private:
      */
     PointDataSet pointDataSet;
 
-
-    // rapidjson::Value jsonDocument;
+    /**
+     * Iterate through a JSON representation of data points and save them to the PointDataSet this
+     * reader holds.
+     * @param jsonValue ...
+     * @param depth ...
+     */
+    void indexDataPoints(rapidjson::Value& jsonValue, int depth);
 };
 
 #endif
