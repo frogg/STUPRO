@@ -13,6 +13,7 @@ public:
      * Constructs a DataPoint from DataType, Coordinate and Priority
      */
     DataPoint(int dataType, Coordinate coordinate, int priority);
+    DataPoint() { }
     int getDataType() const;
     int getPriority() const;
     Coordinate getCoordinate() const;
