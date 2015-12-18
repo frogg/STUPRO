@@ -3,10 +3,29 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
+#include <QPair>
 
 #include <rapidjson/error/en.h>
 
-AbstractJsonReader JsonReaderFactory::createReader(const QString filename) {
+#include <Reader/DataReader/DataType.hpp>
+
+// Workaround to make static initialization possible in the IDE we all love -- Visual Studio.
+static QMap<QString, int> dataTypeMap() {
+    QMap<QString, int> map;
+    
+    map.insert("cities", DataType::CITIES);
+    map.insert("flights", DataType::FLIGHTS);
+    map.insert("tweets", DataType::TWEETS);
+    map.insert("precipitation", DataType::PRECIPITATION);
+    map.insert("temperature", DataType::TEMPERATURE);
+    map.insert("wind", DataType::WIND);
+    
+    return map;
+}
+
+const QMap<QString, int> JsonReaderFactory::DATA_TYPES = dataTypeMap();
+
+JsonReader JsonReaderFactory::createReader(const QString filename) {
     // Open the JSON file while checking for potential errors
     QFile jsonFile(filename);
     QFileInfo jsonFileInfo(filename);
@@ -31,4 +50,12 @@ AbstractJsonReader JsonReaderFactory::createReader(const QString filename) {
             rapidjson::GetParseError_En(jsonDocument.GetParseError())
         );
     }
+
+    // Extract meta data and create a new JSON reader
+    rapidjson::Value& metaData = jsonDocument["meta"];
+    return JsonReader(
+        jsonDocument["root"],
+        JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
+        metaData["temporal"].GetBool()
+    );
 }

@@ -1,8 +1,10 @@
 #ifndef KRONOS_JSON_READER_FACTORY_HPP
 #define KRONOS_JSON_READER_FACTORY_HPP
 
-#include <Reader/DataReader/AbstractJsonReader.hpp>
 #include <QString>
+#include <QMap>
+
+#include <Reader/DataReader/JsonReader.hpp>
 #include <Utils/Misc/Macros.hpp>
 
 #include <exception>
@@ -50,7 +52,13 @@ public:
      * @return A JSON reader for the given file that will handle the file's contents with respect
      * to its meta information
      */
-    static AbstractJsonReader createReader(const QString filename);
+    static JsonReader createReader(const QString filename);
+private:
+	/**
+	 * This QMap maps the string notation of a data type (e.g. 'cities') as present in a JSON file's
+	 * meta header to the respective type's integer value (e.g. DataType::CITIES).
+	 */
+	static const QMap<QString, int> DATA_TYPES;
 };
 
 #endif

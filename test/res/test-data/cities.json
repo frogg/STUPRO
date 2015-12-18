@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "dataType": "cities",
+    "temporal": false
+  },
+  "root": {
+    "children": [
+      {
+        "name": "Dubai",
+        "longitude": 55.304718,
+        "latitude": 25.258171,
+        "children": []
+      },
+      {
+        "name": "Los Angeles",
+        "longitude": -118.242775,
+        "latitude": 34.052223,
+        "children": [
+          {
+            "name": "San Francisco",
+            "longitude": -122.418335,
+            "latitude": 37.775,
+            "children": [
+              {
+                "name": "Burlingame",
+                "longitude": -122.365,
+                "latitude": 37.584167,
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

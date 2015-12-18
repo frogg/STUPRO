@@ -1,19 +1,24 @@
 #ifndef KRONOS_ABSTRACT_JSON_READER_HPP
 #define KRONOS_ABSTRACT_JSON_READER_HPP
 
+#include <Utils/Misc/Macros.hpp>
+#include <vtkSmartPointer.h>
 #include <rapidjson/document.h>
 #include <vtkPolyData.h>
 #include <Reader/DataReader/PointDataSet.hpp>
 
-class AbstractJsonReader {
+class JsonReader {
+    
+    KRONOS_FRIEND_TEST(TestJsonReader, ReadCityData);
+    
 public:
     /**
      * Create a new AbstractJsonReader from a map of data from a JSON file
      * @param data A potentially nested map of data from the JSON file
      */
-    AbstractJsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal);
+    JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal);
     
-    virtual ~AbstractJsonReader() { }
+    virtual ~JsonReader() { }
 
     /**
      * Get the type of data read by this reader
@@ -34,7 +39,7 @@ public:
      * @return All data relevant to the specified zoom level, formatted as vtkPolyData with each
      * point's data stored in the data point's scalar values.
      */
-    vtkPolyData getVtkDataSet(int zoomLevel);
+    vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel);
 
 private:
     /**
@@ -52,9 +57,9 @@ private:
      * A set of all points and their stored information read by this reader
      */
     PointDataSet pointDataSet;
-    
-    
-    rapidjson::Value jsonDocument;
+
+
+    // rapidjson::Value jsonDocument;
 };
 
 #endif
