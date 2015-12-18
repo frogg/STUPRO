@@ -1,5 +1,5 @@
 #include "JsonReader.hpp"
-#include <vtkSmartPointer.h>
+
 #include <vtkDataArray.h>
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
@@ -54,13 +54,52 @@ bool JsonReader::hasTemporalData() const {
     return temporal;
 }
 
-vtkPolyData JsonReader::getVtkDataSet(int zoomLevel) {
+vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     
+    
+    
+
+    
+    
+    vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
+    
+    vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
+    
+    
+    
+    QList<DataPoint> dataPoints = this->pointDataSet.getDataPoints();
+    
+    
+    QList<DataPoint> relevantZoomLevelDataPoints = QList<DataPoint>();
+    
+    for(QList<DataPoint>::iterator iterator = dataPoints.begin();iterator!=dataPoints.end();iterator++) {
+        
+        //all prioritys which are less or eqla to the zoomLevel will be written into the vtkPolyData
+        if(iterator->getPriority() <= zoomLevel) {
+            
+            //add point to vtkPoints newPoints
+            newPoints->InsertNextPoint(iterator->getCoordinate().lat(), iterator->getCoordinate().lon(), 0);
+            
+            relevantZoomLevelDataPoints.append(*iterator);
+            
+            //newScalars->InsertNextValue(iterator->get)
+        }
+        
+    }
+    
+    dataSet->SetPoints(newPoints);
     
     switch (this->dataType) {
             
-        case DataType::CITIES:
+        case DataType::CITIES: {
             //Cities
+            vtkSmartPointer<vtkCharArray> cityNames = vtkSmartPointer<vtkCharArray>::New();
+            
+            cityNames->SetNumberOfComponents(1);
+            cityNames->SetName("cityNames");
+
+            dataSet->GetPointData()->SetScalars(cityNames);
+        }
             break;
             
         case DataType::FLIGHTS:
@@ -87,47 +126,20 @@ vtkPolyData JsonReader::getVtkDataSet(int zoomLevel) {
         default:
             break;
     }
-    
 
     
     
-    vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
-    
-    vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
-    
-    vtkSmartPointer<vtkCharArray> newScalars = vtkSmartPointer<vtkCharArray>::New();
-    
-    newScalars->SetNumberOfComponents(1);
-    newScalars->SetName("Name");
     
     
-    QList<DataPoint> dataPoints = this->pointDataSet.getDataPoints();
     
+    vtkCharArray* nameScalars = (vtkCharArray*)dataSet->GetPointData()->GetScalars("cityName");
     
-    QList<DataPoint>::iterator iterator;
+    //nameScalars->PrintSelf(std::cout, vtkIndent(1));
     
-    for(iterator = dataPoints.begin();iterator!=dataPoints.end();iterator++) {
-        
-        //all prioritys which are less or eqla to the zoomLevel will be written into the vtkPolyData
-        if(iterator->getPriority() <= zoomLevel) {
-            
-            //add point to vtkPoints newPoints
-            newPoints->InsertNextPoint(iterator->getCoordinate().lat(), iterator->getCoordinate().lon(), 0);
-            
-            //newScalars->InsertNextValue(iterator->get)
-        }
-        
-        
-        
-    }
-    
-    
-    dataSet->SetPoints(newPoints);
-    dataSet->GetPointData()->SetScalars(newScalars);
-    dataSet->GetPointData()->GetScalars("Name");
+    std::cout << "Name des Arrays:" << nameScalars->GetName() << std::endl;
     
     //hier vielleicht den Datentyp übergeben
-    dataSet->SetActiveAttributeInfo(<#vtkInformation *info#>, <#int fieldAssociation#>, <#int attributeType#>, <#const char *name#>, <#int arrayType#>, <#int numComponents#>, <#int numTuples#>)
+    //dataSet->SetActiveAttribute(<#vtkInformation *info#>, <#int fieldAssociation#>, <#const char *attributeName#>, <#int attributeType#>)
     
     return dataSet;
 }
