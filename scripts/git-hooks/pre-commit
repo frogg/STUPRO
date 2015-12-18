@@ -11,10 +11,11 @@ if [ $? != 0 ]; then
     fi
   done <<< "$FORMATTER_CHECK"
   if [ "$YOUR_FAULT" == true ]; then
-    echo "Found formatting errors that seem to be introduced by YOU!!!"
+    echo -e "\e[31mFound formatting errors that seem to be introduced by YOU \e[33m😒\e[39m"
     exit 1
   else
-    echo "Found formatting errors that weren't introduced by you, assuming that's okay"
+    echo -e "\e[33mFound formatting errors that weren't introduced by you, assuming that's okay \e[91m❤️\e[39m"
     exit 0
   fi
 fi
+echo -e "\e[32mFormatting seems fine \e[33m✨\e[39m"
