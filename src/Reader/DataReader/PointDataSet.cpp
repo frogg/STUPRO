@@ -5,12 +5,9 @@ PointDataSet::PointDataSet()
 	points = QList<DataPoint>();
 }
 
-void PointDataSet::addPoint(DataPoint* datapoint)
+void PointDataSet::addPoint(DataPoint& datapoint)
 {
-	if (datapoint != nullptr)
-	{
-		points.append(*datapoint);
-	}
+	points.append(datapoint);
 }
 
 QList<DataPoint> PointDataSet::getDataPoints()

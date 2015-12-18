@@ -14,7 +14,7 @@ public:
     /*
 	* adds a DataPoint into a list, which contains only Data of a kind
 	*/
-	void addPoint(DataPoint* dataPoint);
+	void addPoint(DataPoint& dataPoint);
 	
     /*
 	* @return The list containing severeral DataPoints, of a kind
