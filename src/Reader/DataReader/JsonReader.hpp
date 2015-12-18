@@ -12,6 +12,7 @@
 class JsonReader {
     
     KRONOS_FRIEND_TEST(TestJsonReader, ReadCityData);
+    KRONOS_FRIEND_TEST(TestJsonReader, ReadTwitterData);
     
 public:
     /**
