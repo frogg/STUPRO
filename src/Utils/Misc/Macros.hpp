@@ -16,6 +16,10 @@
 #	error Unrecognized Operating System!
 #endif
 
+/**
+ * Mathematical Pi constant.
+ */
+#define KRONOS_PI 3.141592653589793238462643383279502884L
 
 /**
  * KRONOS_NOTHROW Macro.
