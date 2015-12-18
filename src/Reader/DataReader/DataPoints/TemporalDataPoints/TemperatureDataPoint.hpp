@@ -5,7 +5,7 @@
 /**
 * Holds a DataPoint for the Temperature at a specific Coordinate, which further includes its DataType, Coordinate and Priority 
 */
-class TemperatureDataPoint :TemporalDataPoint
+class TemperatureDataPoint : public TemporalDataPoint
 {
 public:	
 	TemperatureDataPoint(Coordinate coordinate, int priority, int timestamp, float temperature);

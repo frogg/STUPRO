@@ -9,7 +9,7 @@
  * Data point is not time-sensitive and doesn't contain a timestamp
  * static data e.g. cities or available flight routes
  */
-class NonTemporalDataPoint:DataPoint {
+class NonTemporalDataPoint : public DataPoint {
 public:
     
     //all parameters are passed to parent class

@@ -6,7 +6,7 @@
 /**
 * Holds a DataPoint for a Twitter-message at a specific Coordinate, which further includes its DataType, Coordinate, Priority, author and the content 
 */
-class TweetDataPoint:TemporalDataPoint
+class TweetDataPoint : public TemporalDataPoint
 {
 public:
 	TweetDataPoint(Coordinate coordinate, int priority, int timestamp, QString author, QString content);

@@ -7,7 +7,7 @@
 /**
  * Holds information for a flight (departure location and destination), its dataType and its priority
  */
-class FlightDataPoint:NonTemporalDataPoint {
+class FlightDataPoint : public NonTemporalDataPoint {
     
 public:
     FlightDataPoint(Coordinate coordinate, int priority, Coordinate destination);

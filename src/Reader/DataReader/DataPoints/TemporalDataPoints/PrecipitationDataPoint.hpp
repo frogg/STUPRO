@@ -5,7 +5,7 @@
 /**
 * Holds a DataPoint for the PrecipitationRate at a specific Coordinate, which further includes its DataType, Coordinate and Priority
 */
-class PrecipitationDataPoint :TemporalDataPoint
+class PrecipitationDataPoint : public TemporalDataPoint
 {
 public:
 	PrecipitationDataPoint(Coordinate coordinate, int priority, int timestamp, float precipitation);

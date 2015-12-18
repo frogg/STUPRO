@@ -9,7 +9,7 @@
 /**
  * Holds a DataPoint for a city, which includes its DataType, Coordinate, Priority and Name
  */
-class CityDataPoint:NonTemporalDataPoint {
+class CityDataPoint : public NonTemporalDataPoint {
     
 public:
     CityDataPoint(Coordinate coordinate, int priority, QString name);

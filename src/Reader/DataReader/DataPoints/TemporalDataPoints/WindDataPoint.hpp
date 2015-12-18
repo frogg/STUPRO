@@ -5,7 +5,7 @@
 /**
 * Holds a DataPoint for the Winddata at a specific Coordinate, which further includes its DataType, Coordinate, Priority, winddirection and windspeed
 */
-class WindDataPoint :TemporalDataPoint
+class WindDataPoint : public TemporalDataPoint
 {
 public:
 	WindDataPoint(Coordinate coordinate, int priority, int timestamp, float direction, float speed);
