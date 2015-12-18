@@ -2,9 +2,9 @@
 #define KRONOS_ABSTRACT_JSON_READER_HPP
 
 #include <Utils/Misc/Macros.hpp>
-
 #include <QString>
 
+#include <vtkSmartPointer.h>
 #include <rapidjson/document.h>
 #include <vtkPolyData.h>
 #include <Reader/DataReader/PointDataSet.hpp>
@@ -41,7 +41,7 @@ public:
      * @return All data relevant to the specified zoom level, formatted as vtkPolyData with each
      * point's data stored in the data point's scalar values.
      */
-    vtkPolyData getVtkDataSet(int zoomLevel);
+    vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel);
 
 private:
     /**

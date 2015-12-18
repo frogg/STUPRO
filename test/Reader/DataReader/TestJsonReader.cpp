@@ -7,9 +7,10 @@
 #include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 
+#include <vtkSmartPointer.h>
+
 TEST(TestJsonReader, ReadCityData) {
 	JsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
-	
 	EXPECT_EQ(
 		cityReader.pointDataSet.getDataPoints().size(),
 		4
@@ -25,3 +26,9 @@ TEST(TestJsonReader, ReadCityData) {
 		"Los Angeles"
 	);
 }
+
+/*TEST(TestJsonReader, TestShitty) {
+    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cities.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(9);
+    EXPECT_EQ(false, true);
+}*/
