@@ -49,8 +49,6 @@ protected:
      * Documentation see vtkPointSetAlgorithm
      */
     int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
-
-    int RequestUpdateExtent(vtkInformation *, vtkInformationVector **inputVector, vtkInformationVector *outputVector);
     
 private:
     SphericalToCartesianFilter(const SphericalToCartesianFilter&);  // Not implemented.

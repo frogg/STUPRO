@@ -36,7 +36,7 @@ int SphericalToCartesianFilter::RequestData(vtkInformation *,
 }
 
 void SphericalToCartesianFilter::transformToCartesian(vtkPoints *points, double heightOffset) {
-    // possible optimizations:
+    // possible optimizations if necessary:
     //  * sin(x)^2 + cos(x)^2 = 1
     //  * use this method multi-threaded
     //  * use single precision
@@ -67,30 +67,6 @@ void SphericalToCartesianFilter::transformToCartesian(vtkPoints *points, double 
         points->SetPoint(i, point);
     }
 }
-
-int SphericalToCartesianFilter::RequestUpdateExtent(vtkInformation *, vtkInformationVector **inputVector, vtkInformationVector *outputVector)
-{
-    vtkDebugMacro("Request-Update");
-    // get the info object
-    vtkInformation *outInfo = outputVector->GetInformationObject(0);
-    outInfo->Set(vtkPVInformationKeys::WHOLE_BOUNDING_BOX(),
-                 -100,
-                 100,
-                 -100,
-                 100,
-                 -1000,
-                 1000);
-    
-    /*
-     int vtkStreamingDemandDrivenPipeline::SetWholeBoundingBox	( 	int 	port,
-     double 	bb[6]
-     )
-     
-     Set/Get the whole bounding box of an output port data object. The whole whole bounding box is meta data for data sets. It gets set by the algorithm during the update information pass.
-     */
-    return 1;
-}
-
 
 vtkPointSet *SphericalToCartesianFilter::createOutputData(vtkDataSet *const input, vtkInformationVector *outputVector) {
     vtkPointSet *output = vtkPointSet::GetData(outputVector);
