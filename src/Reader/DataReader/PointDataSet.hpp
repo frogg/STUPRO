@@ -14,15 +14,15 @@ public:
     /*
 	* adds a DataPoint into a list, which contains only Data of a kind
 	*/
-	void addPoint(DataPoint& dataPoint);
+	void addPoint(DataPoint* dataPoint);
 	
     /*
 	* @return The list containing severeral DataPoints, of a kind
 	*/
-	QList<DataPoint> getDataPoints();
+	QList<DataPoint*> getDataPoints();
 
 private:
-	QList<DataPoint> points;
+	QList<DataPoint*> points;
 };
 
 #endif /* PointDataSet_H */
