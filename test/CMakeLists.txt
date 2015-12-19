@@ -71,7 +71,10 @@ set_target_properties(UnitTester
     RUNTIME_OUTPUT_DIRECTORY "${TEST_BIN_DIR}"
 )
 
-# copy over test resource folder
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${TEST_BIN_DIR})
-# delete the resource folder when executing make clean
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${TEST_BIN_DIR}/res")
+# make sure not to copy or delete the resource folder if we are doing an in-source build
+if(NOT ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${TEST_BIN_DIR}"))
+    # copy over test resource folder
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${TEST_BIN_DIR})
+    # delete the resource folder when executing make clean
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${TEST_BIN_DIR}/res")
+endif()
