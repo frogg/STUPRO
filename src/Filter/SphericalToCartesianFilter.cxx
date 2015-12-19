@@ -45,9 +45,9 @@ void SphericalToCartesianFilter::transformToCartesian(vtkPoints *points, double 
     double *bounds = points->GetBounds();
     if(bounds[0] < -180 || bounds[1] > 180 || bounds[2] < -90 || bounds[3] > 90 || bounds[4] < -heightOffset){
         vtkWarningMacro(<< "Data not in expected input scope: The data bounds:\n"
-                        << "  Latitude:  (" << bounds[2] << "," << bounds[3] << ")\n"
-                        << "  Longitude: (" << bounds[0] << "," << bounds[1] << ")\n"
-                        << "  Height:    (" << bounds[4] << "," << bounds[5] << ")")
+                        << "  Latitude:  (" << bounds[2] << "," << bounds[3] << ") -- expected: (-180,180)\n"
+                        << "  Longitude: (" << bounds[0] << "," << bounds[1] << ") -- expected: ( -90, 90)\n"
+                        << "  Height:    (" << bounds[4] << "," << bounds[5] << ") -- expected: (-" << heightOffset << ", beliebig")
     }
 
     for(int i=0; i<points->GetNumberOfPoints(); i++){
