@@ -144,7 +144,9 @@ set_property(TARGET paraview_stupro PROPERTY CXX_STANDARD 11)
 
 # copy over all required resources
 file(
-	COPY ${CMAKE_CURRENT_SOURCE_DIR}/../res
-	DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+	COPY ${CMAKE_SOURCE_DIR}/res
+	DESTINATION ${KRONOS_BIN_DIR}/
 	PATTERN glsl EXCLUDE
 )
+# delete the resource folder when executing make clean
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${KRONOS_BIN_DIR}/res")

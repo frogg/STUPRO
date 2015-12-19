@@ -63,5 +63,15 @@ else()
     )
 endif()
 
+# change binary output paths
+set_target_properties(UnitTester
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${TEST_BIN_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${TEST_BIN_DIR}"
+    RUNTIME_OUTPUT_DIRECTORY "${TEST_BIN_DIR}"
+)
+
 # copy over test resource folder
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${TEST_BIN_DIR})
+# delete the resource folder when executing make clean
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${TEST_BIN_DIR}/res")
