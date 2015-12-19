@@ -34,4 +34,7 @@
 #	define KRONOS_NOTHROW noexcept
 #endif
 
+#define KRONOS_FRIEND_TEST(testCaseName,testName)\
+friend class testCaseName##_##testName##_Test
+
 #endif
