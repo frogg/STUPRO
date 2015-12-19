@@ -1,13 +1,14 @@
 /**
  */
 
-#include "SpericalToCartesianFilter.h"
+#include <SpericalToCartesianFilter.h>
 #include <vtkIndent.h>
 #include <vtkInformation.h>
 #include <vtkObjectFactory.h>
 #include <vtkPoints.h>
 #include <vtkPointSet.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
+#include <Utils/Misc/Macros.hpp>
 #include <cmath>
 
 // Still the same everytime
@@ -41,8 +42,8 @@ int SpericalToCartesianFilter::RequestData(vtkInformation *vtkNotUsed(request),
 double* SpericalToCartesianFilter::transformToCartesian(double* point, double heightOffset)
 {
 	//get longitude, latitude and radius out of points, heightOffset is a default value set in the header file
-	double lon = point[0] * M_PI / 180;
-	double lat = point[1] * M_PI / 180;
+	double lon = point[0] * KRONOS_PI / 180;
+	double lat = point[1] * KRONOS_PI / 180;
 	double radius = heightOffset + point[2];
 
 	//formula to transform the sphere coordinates to cartesian coordinate system
