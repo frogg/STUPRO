@@ -1,25 +1,33 @@
-#ifndef TemporalDataPoint_H
-#define TemporalDataPoint_H
+#ifndef KRONOS_TEMPORALDATAPOINT_HPP
+#define KRONOS_TEMPORALDATAPOINT_HPP
 
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
-class Coordinate;
+#include <Globe/Coordinate.hpp>
 
 /**
-* Holds a temporal DataPoint 
-* Data point is time-sensitive and does contain a UNIX GMT timestamp
-* temporal DataPoints can be dynamic data e.g. Tweets, Precipitation-, Temperature- or WindData
-*/
-class TemporalDataPoint : public DataPoint
-{
+ * Holds a data point for piece of temporal data. Therefore it is time-sensitive and contains a
+ * UNIX GMT timestamp. This applies to dynamic data like a list of tweets or weather data.
+ */
+class TemporalDataPoint : public DataPoint {
+
 public:
-	TemporalDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp);
 	/**
-	* Get the timestamp for a temporal DataPoint
-	* @return The timestamp in UNIX GMT format
+	 * Create a new TemporalDataPoint.
+	 * @param dataType The point's data type
+	 * @param coordinate The point's coordinates
+	 * @param priority The point's zoom level priority
+	 */
+	TemporalDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp);
+	
+	/**
+	* Get the timestamp of the data in this point.
+	* @return This point's timestamp in UNIX GMT format
 	*/
 	int getTimestamp() const;
+
 private:
 	int timestamp;
+
 };
 
-#endif /* TemporalDataPoint_h */
+#endif

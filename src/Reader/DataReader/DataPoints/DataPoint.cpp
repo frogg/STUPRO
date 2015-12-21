@@ -1,23 +1,16 @@
-#include "DataPoint.hpp"
-#include <iostream>
+#include <Reader/DataReader/DataPoints/DataPoint.hpp>
 
-DataPoint::DataPoint(int dataType, Coordinate coordinate, int priority) {
-    
-    this->mCoordinate = coordinate;
-    this->mDataType = dataType;
-    this->mPriority = priority;
-    
-}
-
+DataPoint::DataPoint(int dataType, Coordinate coordinate, int priority)
+        : dataType(dataType), coordinate(coordinate), priority(priority) { }
 
 int DataPoint::getDataType() const {
-    return this->mDataType;
+    return this->dataType;
 }
 
 int DataPoint::getPriority() const {
-    return this->mPriority;
+    return this->priority;
 }
 
 Coordinate DataPoint::getCoordinate() const {
-    return this->mCoordinate;
+    return this->coordinate;
 }
