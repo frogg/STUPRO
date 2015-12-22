@@ -17,22 +17,34 @@
 #include "vtkSmartPointer.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkWarpScalar.h"
+#include <vtkPoints.h>
 
 #include <vtkPVInformationKeys.h>
+#include <vtkAbstractTransform.h>
+#include "GeometryTransform.h"
 
 #include <cmath>
 
+SphericalToCartesianFilter::SphericalToCartesianFilter() {
+    this->transformGlobe = GeometryTransform::New(true);
+    this->transformPassthrough = GeometryTransform::New(false);
+    this->Transform = this->transformGlobe;
+}
+
+SphericalToCartesianFilter::~SphericalToCartesianFilter() {
+    /*delete this->transformGlobe;
+    delete this->transformPassthrough;*/
+}
+
 vtkStandardNewMacro(SphericalToCartesianFilter)
 
-int SphericalToCartesianFilter::RequestData(vtkInformation *,
+int SphericalToCartesianFilter::RequestData(vtkInformation *info,
                                             vtkInformationVector **inputVector,
                                             vtkInformationVector *outputVector) {
     
-    vtkPointSet *output = this->createOutputData(vtkDataSet::GetData(inputVector[0]), outputVector);
+    this->Transform = this->transformGlobe;
     
-    transformToCartesian(output->GetPoints());
-    
-    return 1;
+    return this->Superclass::RequestData(info, inputVector, outputVector);
 }
 
 void SphericalToCartesianFilter::transformToCartesian(vtkPoints *points, double heightOffset) {
@@ -67,64 +79,6 @@ void SphericalToCartesianFilter::transformToCartesian(vtkPoints *points, double 
         points->SetPoint(i, point);
     }
 }
-
-vtkPointSet *SphericalToCartesianFilter::createOutputData(vtkDataSet *const input, vtkInformationVector *outputVector) {
-    vtkPointSet *output = vtkPointSet::GetData(outputVector);
-    if (input && input->IsA("vtkPointSet") && output && output->IsA(input->GetClassName())) {
-        output->CopyStructure(vtkPointSet::SafeDownCast(input));
-        output->CopyAttributes(vtkPointSet::SafeDownCast(input));
-    } else {
-        output = vtkStructuredGrid::New();
-        outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), output);
-        
-        // use a warp scalar filter to convert to a structured grid
-        vtkSmartPointer<vtkWarpScalar> filter = vtkSmartPointer<vtkWarpScalar>::New();
-        filter->SetInputData(input);
-        filter->Update();
-        vtkPointSet *filtered = filter->GetOutput();
-        
-        output->CopyStructure(filtered);
-        output->CopyAttributes(filtered);
-    }
-    return output;
-}
-
-int SphericalToCartesianFilter::ProcessRequest(vtkInformation *request,
-                                               vtkInformationVector **inputVector,
-                                               vtkInformationVector *outputVector) {
-    
-    if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA())) {
-        return this->RequestData(request, inputVector, outputVector);
-    } else if(request->Has(vtkStreamingDemandDrivenPipeline::REQUEST_UPDATE_EXTENT())) {
-        return 1;
-    } else if(request->Has(vtkDemandDrivenPipeline::REQUEST_DATA_OBJECT())) {
-        return this->RequestDataObject(request, inputVector, outputVector);
-    } else if(request->Has(vtkDemandDrivenPipeline::REQUEST_INFORMATION())) {
-        return 1;
-    } else {
-        return Superclass::ProcessRequest(request, inputVector, outputVector);
-    }
-}
-
-int SphericalToCartesianFilter::RequestDataObject(vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) {
-    vtkImageData *inImage = vtkImageData::GetData(inputVector[0]);
-    vtkPointSet *inPoints = vtkPointSet::GetData(inputVector[0]);
-    vtkRectilinearGrid *inGrid = vtkRectilinearGrid::GetData(inputVector[0]);
-    
-    vtkPointSet *output = vtkPointSet::GetData(outputVector);
-    if ((inImage || inGrid) && !output) {
-        vtkNew<vtkStructuredGrid> newOutput;
-        outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), newOutput.GetPointer());
-    } else  if (inPoints && (!output || !output->IsA(inPoints->GetClassName()))) {
-        output = inPoints->NewInstance();
-        outputVector->GetInformationObject(0)->Set(vtkDataObject::DATA_OBJECT(), output);
-        output->Delete();
-    } else {
-        return this->Superclass::RequestDataObject(request, inputVector, outputVector);
-    }
-    return 1;
-}
-
 
 void SphericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
     this->Superclass::PrintSelf(os, indent);
