@@ -13,6 +13,7 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TemperatureDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverDataPoint.hpp>
 
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal) : 
         dataType(dataType), temporal(temporal) {
@@ -95,6 +96,17 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
                     (float) jsonValue[i]["speed"].GetDouble()
                 );
                 break;
+			case DataType::CLOUDCOVER:
+				dataPoint = new CloudCoverDataPoint(
+					Coordinate(
+					jsonValue[i]["latitude"].GetDouble(),
+					jsonValue[i]["longitude"].GetDouble()
+					),
+					depth,
+					jsonValue[i]["timestamp"].GetInt(),
+					(float)jsonValue[i]["cloudCover"].GetDouble()
+					);
+				break;
         }
         
         this->pointDataSet.addPoint(dataPoint);

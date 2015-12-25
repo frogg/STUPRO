@@ -19,6 +19,7 @@ static QMap<QString, int> dataTypeMap() {
     map.insert("precipitation", DataType::PRECIPITATION);
     map.insert("temperature", DataType::TEMPERATURE);
     map.insert("wind", DataType::WIND);
+	map.insert("cloudCover", DataType::CLOUDCOVER);
     
     return map;
 }
