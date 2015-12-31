@@ -142,6 +142,9 @@ build_paraview_client(
 # use C++11 to compile the client
 set_property(TARGET paraview_stupro PROPERTY CXX_STANDARD 11)
 
+#for postgres use
+set( CMAKE_CXX_FLAGS "-lpqxx -lpq" )
+
 # make sure not to copy or delete the resource folder if we are doing an in-source build
 if(NOT ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${KRONOS_BIN_DIR}"))
 	# copy over all required resources
