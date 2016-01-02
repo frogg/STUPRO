@@ -102,13 +102,13 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			case DataType::CLOUDCOVER:
 				dataPoint = new CloudCoverDataPoint(
 					Coordinate(
-					jsonValue[i]["latitude"].GetDouble(),
-					jsonValue[i]["longitude"].GetDouble()
+					    jsonValue[i]["latitude"].GetDouble(),
+					    jsonValue[i]["longitude"].GetDouble()
 					),
 					depth,
 					jsonValue[i]["timestamp"].GetInt(),
-					(float)jsonValue[i]["cloudCover"].GetDouble()
-					);
+					(float) jsonValue[i]["cloudCover"].GetDouble()
+				);
 				break;
         }
         
