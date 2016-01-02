@@ -10,7 +10,6 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 
 #include <vtkSmartPointer.h>
-#include <iostream>
 
 TEST(TestJsonReader, ReadCityData) {
 	JsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
@@ -76,8 +75,41 @@ TEST(TestJsonReader, ReadTwitterData) {
 	);
 }
 
-/*TEST(TestJsonReader, TestShitty) {
+TEST(TestJsonReader, WriteVtkPolyData) {
     JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cities.json");
+	
     vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(9);
-    EXPECT_EQ(false, true);
-}*/
+	vtkSmartPointer<vtkPolyData> lessPolyData = jsonReader.getVtkDataSet(0);
+    
+	// Test the actual points along with their coordinates
+	
+	EXPECT_EQ(
+		polyData->GetNumberOfPoints(),
+		4
+	);
+	
+	EXPECT_EQ(
+		lessPolyData->GetNumberOfPoints(),
+		2
+	);
+	
+	double testPointCoordinates[3];
+	polyData->GetPoint(2, testPointCoordinates);
+	
+	EXPECT_FLOAT_EQ(
+		-122.418335,
+		testPointCoordinates[0]
+	);
+	
+	EXPECT_FLOAT_EQ(
+		37.775,
+		testPointCoordinates[1]
+	);
+	
+	EXPECT_FLOAT_EQ(
+		0,
+		testPointCoordinates[2]
+	);
+	
+	// TODO: Test the scalar data attached to each point
+}
