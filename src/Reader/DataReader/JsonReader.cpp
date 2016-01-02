@@ -2,11 +2,14 @@
 
 #include <vtkDataArray.h>
 #include <vtkFloatArray.h>
+#include <vtkDoubleArray.h>
 #include <vtkPointData.h>
 #include <vtkDataArray.h>
 #include <vtkCharArray.h>
-#include <Reader/DataReader/DataType.hpp>
+#include <vtkCellArray.h>
+#include <vtkPoints.h>
 
+#include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/FlightDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
@@ -113,85 +116,35 @@ bool JsonReader::hasTemporalData() const {
 }
 
 vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
-    /*vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
+    // Create an empty data set and a point array the data set will contain
+    vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     
-    vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
+    // Iterate over all data points and extract those that are relevant with respect to the given
+    // zoom level
+    QList<DataPoint*> relevantDataPoints = QList<DataPoint*>();
     
-    
-    
-    QList<DataPoint> dataPoints = this->pointDataSet.getDataPoints();
-    
-    
-    QList<DataPoint> relevantZoomLevelDataPoints = QList<DataPoint>();
-    
-    for(QList<DataPoint>::iterator iterator = dataPoints.begin();iterator!=dataPoints.end();iterator++) {
-        
-        //all prioritys which are less or eqla to the zoomLevel will be written into the vtkPolyData
-        if(iterator->getPriority() <= zoomLevel) {
-            
-            //add point to vtkPoints newPoints
-            newPoints->InsertNextPoint(iterator->getCoordinate().lat(), iterator->getCoordinate().lon(), 0);
-            
-            relevantZoomLevelDataPoints.append(*iterator);
-            
-            //newScalars->InsertNextValue(iterator->get)
+    for(QList<DataPoint*>::iterator iterator = this->pointDataSet.getDataPoints().begin();
+            iterator != this->pointDataSet.getDataPoints().end(); ++iterator) {
+        if((*iterator)->getPriority() <= zoomLevel) {
+            relevantDataPoints.append((*iterator));
         }
-        
     }
     
-    dataSet->SetPoints(newPoints);
-    
-    switch (this->dataType) {
-            
-        case DataType::CITIES: {
-            //Cities
-            vtkSmartPointer<vtkCharArray> cityNames = vtkSmartPointer<vtkCharArray>::New();
-            
-            cityNames->SetNumberOfComponents(1);
-            cityNames->SetName("cityNames");
-
-            dataSet->GetPointData()->SetScalars(cityNames);
-        }
-            break;
-            
-        case DataType::FLIGHTS:
-            //Flights
-            break;
-            
-        case DataType::TWEETS:
-            //Tweets
-            break;
-            
-        case DataType::PRECIPITATION:
-            //PRECIPITATION
-            break;
-            
-        case DataType::TEMPERATURE:
-            //TEMPERATURE
-            break;
-            
-        case DataType::WIND:
-            //WIND
-            break;
-            
-            
-        default:
-            break;
+    // Iterate through all relevant data points and add their coordinates as new points
+    for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+            iterator != relevantDataPoints.end(); ++iterator) {
+        // Insert the new point with its longitude, latitude and a height of zero
+        points->InsertNextPoint(
+            (*iterator)->getCoordinate().lon(),
+            (*iterator)->getCoordinate().lat(),
+            0
+        );
     }
-
     
+    dataSet->SetPoints(points);
     
+    // TODO: Add relevant scalars depending on the data type
     
-    
-    
-    vtkCharArray* nameScalars = (vtkCharArray*)dataSet->GetPointData()->GetScalars("cityName");
-    
-    //nameScalars->PrintSelf(std::cout, vtkIndent(1));
-    
-    std::cout << "Name des Arrays:" << nameScalars->GetName() << std::endl;
-    
-    //hier vielleicht den Datentyp übergeben
-    //dataSet->SetActiveAttribute(<#vtkInformation *info#>, <#int fieldAssociation#>, <#const char *attributeName#>, <#int attributeType#>)
-    
-    return dataSet;*/
+    return dataSet;
 }
