@@ -27,6 +27,10 @@ public:
      * Constant to be used if the data represents a set of wind data points.
      */
     const static int WIND = 5;
+	/**
+	* Constant to be used if the data represents a set of cloudCover data points.
+	*/
+	const static int CLOUDCOVER = 6;
 };
 
 #endif
