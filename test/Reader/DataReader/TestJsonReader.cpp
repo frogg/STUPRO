@@ -75,7 +75,7 @@ TEST(TestJsonReader, ReadTwitterData) {
 	);
 }
 
-TEST(TestJsonReader, WriteVtkPolyData) {
+TEST(TestJsonReader, WriteNonTemporalVtkPolyData) {
     JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cities.json");
 	
     vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(9);
