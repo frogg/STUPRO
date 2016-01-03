@@ -1,12 +1,11 @@
 #include "JsonReader.hpp"
 
 #include <vtkDataArray.h>
-#include <vtkFloatArray.h>
-#include <vtkDoubleArray.h>
 #include <vtkPointData.h>
+#include <vtkPointSource.h>
 #include <vtkDataArray.h>
-#include <vtkCharArray.h>
-#include <vtkCellArray.h>
+#include <vtkStringArray.h>
+#include <vtkTypeInt32Array.h>
 #include <vtkPoints.h>
 
 #include <Reader/DataReader/DataType.hpp>
@@ -17,6 +16,8 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverDataPoint.hpp>
+
+#include <Utils/Config/Configuration.hpp>
 
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal) : 
         dataType(dataType), temporal(temporal) {
@@ -156,7 +157,80 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     
     dataSet->SetPoints(points);
     
-    // TODO: Add relevant scalars depending on the data type
+    // Create some data arrays all temporal data sets have in common. The timestamp array will not
+    // be used if the data set is non-temporal.
+    
+    // An integer array containing the priority of each data point. This is added as a convenience
+    // measure for potentially using it later on with `vtkPointSetToLabelHierarchy`.
+    vtkSmartPointer<vtkTypeInt32Array> priorities = vtkSmartPointer<vtkTypeInt32Array>::New();
+    priorities->SetNumberOfComponents(relevantDataPoints.size());
+    priorities->SetName("priorities");
+    
+    // An integer array containing the timestamp of each data point. 32-bit integers are sufficient
+    // since UNIX timestamps are being used.
+    vtkSmartPointer<vtkTypeInt32Array> timestamps = vtkSmartPointer<vtkTypeInt32Array>::New();
+    timestamps->SetNumberOfComponents(relevantDataPoints.size());
+    timestamps->SetName("timestamps");
+    
+    // Add relevant data arrays depending on the data type
+    switch (this->dataType) {
+        case DataType::CITIES: {
+            vtkSmartPointer<vtkStringArray> cityNames = vtkSmartPointer<vtkStringArray>::New();
+            cityNames->SetNumberOfComponents(relevantDataPoints.size());
+            cityNames->SetName("names");
+            
+            for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+                    iterator != relevantDataPoints.end(); ++iterator) {
+                const CityDataPoint* dataPoint = dynamic_cast<const CityDataPoint*>(
+            		(*iterator)
+            	);
+                
+                // Invert the priority before adding it since with `vtkPointSetToLabelHierarchy`,
+                // higher priority values are more visible, which is the other way around than
+                // the definition in these `DataReader` classes.
+                priorities->InsertNextValue(
+                    Configuration::getInstance().getInteger("dataReader.maximumPriority")
+                    - dataPoint->getPriority()
+                );
+                
+                cityNames->InsertNextValue(dataPoint->getName().toStdString());
+            }
+
+            dataSet->GetPointData()->AddArray(cityNames);
+            break;
+        }
+            
+        case DataType::FLIGHTS:
+            // TODO
+            break;
+            
+        case DataType::TWEETS:
+            // TODO
+            break;
+            
+        case DataType::PRECIPITATION:
+            // TODO
+            break;
+            
+        case DataType::TEMPERATURE:
+            // TODO
+            break;
+            
+        case DataType::WIND:
+            // TODO
+            break;
+            
+        case DataType::CLOUDCOVER:
+            // TODO
+            break;
+    }
+    
+    // Finally, add the aforementioned common arrays if necessary
+    if (this->hasTemporalData()) {
+        dataSet->GetPointData()->AddArray(timestamps);
+    }
+    
+    dataSet->GetPointData()->AddArray(priorities);
     
     return dataSet;
 }
