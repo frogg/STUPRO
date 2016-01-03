@@ -426,3 +426,86 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 		priorityArray->GetValue(0)
 	);
 }
+
+TEST(TestJsonReader, WriteWindToVtkPolyData) {
+    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/wind.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority")
+	);
+
+	// Test the associated array of wind speeds
+	vtkSmartPointer<vtkDataArray> abstractSpeedsArray = polyData->GetPointData()
+		->GetArray("speeds");
+	ASSERT_TRUE(abstractSpeedsArray);
+	vtkSmartPointer<vtkTypeFloat32Array> speedsArray = vtkTypeFloat32Array::SafeDownCast(
+		abstractSpeedsArray
+	);
+	ASSERT_TRUE(speedsArray);
+	
+	EXPECT_EQ(
+		1,
+		speedsArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_FLOAT_EQ(
+		0.4,
+		speedsArray->GetValue(0)
+	);
+	
+	// Test the associated array of wind directions
+	vtkSmartPointer<vtkDataArray> abstractDirectionsArray = polyData->GetPointData()
+		->GetArray("directions");
+	ASSERT_TRUE(abstractDirectionsArray);
+	vtkSmartPointer<vtkTypeFloat32Array> directionsArray = vtkTypeFloat32Array::SafeDownCast(
+		abstractDirectionsArray
+	);
+	ASSERT_TRUE(directionsArray);
+	
+	EXPECT_EQ(
+		1,
+		directionsArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_FLOAT_EQ(
+		120.0,
+		directionsArray->GetValue(0)
+	);
+	
+	// Test the associated array of timestamps
+	vtkSmartPointer<vtkDataArray> abstractTimestampArray = polyData->GetPointData()
+		->GetArray("timestamps");
+	ASSERT_TRUE(abstractTimestampArray);
+	vtkSmartPointer<vtkTypeInt32Array> timestampArray = vtkTypeInt32Array::SafeDownCast(
+		abstractTimestampArray
+	);
+	ASSERT_TRUE(timestampArray);
+	
+	EXPECT_EQ(
+		1,
+		timestampArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_EQ(
+		1439288745,
+		timestampArray->GetValue(0)
+	);
+	
+	// Test the associated array of data point priorities
+	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
+		->GetArray("priorities");
+	ASSERT_TRUE(abstractPriorityArray);
+	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+		abstractPriorityArray
+	);
+	ASSERT_TRUE(priorityArray);
+	
+	EXPECT_EQ(
+		1,
+		priorityArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_EQ(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority"),
+		priorityArray->GetValue(0)
+	);
+}
