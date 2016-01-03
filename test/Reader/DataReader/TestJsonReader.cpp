@@ -22,8 +22,8 @@
 TEST(TestJsonReader, ReadCityData) {
 	JsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
 	EXPECT_EQ(
-		cityReader.pointDataSet.getDataPoints().size(),
-		4
+		4,
+		cityReader.pointDataSet.getDataPoints().size()
 	);
 	
 	const CityDataPoint* firstDataPoint = dynamic_cast<const CityDataPoint*>(
@@ -31,26 +31,26 @@ TEST(TestJsonReader, ReadCityData) {
 	);
 	
 	EXPECT_EQ(
-		firstDataPoint->getName().toStdString(),
-		"Los Angeles"
+		"Los Angeles",
+		firstDataPoint->getName().toStdString()
 	);
 	
 	EXPECT_EQ(
-		firstDataPoint->getCoordinate().lat(),
-		34.052223
+		34.052223,
+		firstDataPoint->getCoordinate().lat()
 	);
 	
 	EXPECT_EQ(
-		firstDataPoint->getCoordinate().lon(),
-		-118.242775
+		-118.242775,
+		firstDataPoint->getCoordinate().lon()
 	);
 }
 
 TEST(TestJsonReader, ReadTwitterData) {
 	JsonReader twitterReader = JsonReaderFactory::createReader("res/test-data/tweets.json");
 	EXPECT_EQ(
-		twitterReader.pointDataSet.getDataPoints().size(),
-		3
+		3,
+		twitterReader.pointDataSet.getDataPoints().size()
 	);
 	
 	const TweetDataPoint* testDataPoint = dynamic_cast<const TweetDataPoint*>(
@@ -58,28 +58,28 @@ TEST(TestJsonReader, ReadTwitterData) {
 	);
 	
 	EXPECT_EQ(
-		testDataPoint->getAuthor().toStdString(),
-		"elonmusk"
+		"elonmusk",
+		testDataPoint->getAuthor().toStdString()
 	);
 	
 	EXPECT_EQ(
-		testDataPoint->getContent().toStdString(),
-		"Is this working?"
+		"Is this working?",
+		testDataPoint->getContent().toStdString()
 	);
 	
 	EXPECT_EQ(
-		testDataPoint->getTimestamp(),
-		1439280065
+		1439280065,
+		testDataPoint->getTimestamp()
 	);
 	
 	EXPECT_EQ(
-		testDataPoint->getCoordinate().lat(),
-		34.052223
+		34.052223,
+		testDataPoint->getCoordinate().lat()
 	);
 	
 	EXPECT_EQ(
-		testDataPoint->getCoordinate().lon(),
-		-118.242775
+		-118.242775,
+		testDataPoint->getCoordinate().lon()
 	);
 }
 
