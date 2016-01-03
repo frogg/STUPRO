@@ -82,8 +82,8 @@ TEST(TestJsonReader, ReadTwitterData) {
 	);
 }
 
-TEST(TestJsonReader, WriteNonTemporalVtkPolyData) {
-    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cities.json");
+TEST(TestJsonReader, TestPointCoordinatesInVtkPolyData) {
+	JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cities.json");
 	
     vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(9);
 	vtkSmartPointer<vtkPolyData> lessPolyData = jsonReader.getVtkDataSet(0);
@@ -117,9 +117,14 @@ TEST(TestJsonReader, WriteNonTemporalVtkPolyData) {
 		0,
 		testPointCoordinates[2]
 	);
-	
-	// Test the scalar data attached to each point
-	
+}
+
+TEST(TestJsonReader, WriteCitiesToVtkPolyData) {
+    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cities.json");	
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority")
+	);
+
 	// Test the associated array of city names
 	vtkSmartPointer<vtkAbstractArray> abstractCityNameArray = polyData->GetPointData()
 		->GetAbstractArray("names");
