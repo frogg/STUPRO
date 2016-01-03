@@ -17,6 +17,7 @@
 #include <vtkAbstractArray.h>
 #include <vtkDataArray.h>
 #include <vtkTypeInt32Array.h>
+#include <vtkDoubleArray.h>
 
 TEST(TestJsonReader, ReadCityData) {
 	JsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
@@ -161,5 +162,55 @@ TEST(TestJsonReader, WriteCitiesToVtkPolyData) {
 	EXPECT_EQ(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority") - 1,
 		priorityArray->GetValue(2)
+	);
+}
+
+TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
+    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/flights.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority")
+	);
+
+	// Test the associated array of destination coordinates
+	vtkSmartPointer<vtkDataArray> abstractDestinationArray = polyData->GetPointData()
+		->GetArray("destinations");
+	ASSERT_TRUE(abstractDestinationArray);
+	vtkSmartPointer<vtkDoubleArray> destinationArray = vtkDoubleArray::SafeDownCast(
+		abstractDestinationArray
+	);
+	ASSERT_TRUE(destinationArray);
+	
+	EXPECT_EQ(
+		2,
+		destinationArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_FLOAT_EQ(
+		34.052223,
+		destinationArray->GetTuple2(0)[0]
+	);
+	
+	EXPECT_FLOAT_EQ(
+		-118.242775,
+		destinationArray->GetTuple2(0)[1]
+	);
+	
+	// Test the associated array of data point priorities
+	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
+		->GetArray("priorities");
+	ASSERT_TRUE(abstractPriorityArray);
+	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+		abstractPriorityArray
+	);
+	ASSERT_TRUE(priorityArray);
+	
+	EXPECT_EQ(
+		1,
+		priorityArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_EQ(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority"),
+		priorityArray->GetValue(0)
 	);
 }

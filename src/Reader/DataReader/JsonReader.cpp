@@ -6,6 +6,7 @@
 #include <vtkDataArray.h>
 #include <vtkStringArray.h>
 #include <vtkTypeInt32Array.h>
+#include <vtkDoubleArray.h>
 #include <vtkPoints.h>
 
 #include <Reader/DataReader/DataType.hpp>
@@ -136,16 +137,16 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     // Iterate over all data points and extract those that are relevant with respect to the given
     // zoom level
     QList<DataPoint*> relevantDataPoints = QList<DataPoint*>();
-    
-    for(QList<DataPoint*>::iterator iterator = this->pointDataSet.getDataPoints().begin();
-            iterator != this->pointDataSet.getDataPoints().end(); ++iterator) {
-        if((*iterator)->getPriority() <= zoomLevel) {
-            relevantDataPoints.append((*iterator));
+        
+    for (int i = 0; i < this->pointDataSet.getDataPoints().size(); i++) {
+        DataPoint* point = this->pointDataSet.getDataPoints().at(i);
+        if (point->getPriority() <= zoomLevel) {
+            relevantDataPoints.append(point);
         }
     }
     
     // Iterate through all relevant data points and add their coordinates as new points
-    for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+    for (QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
             iterator != relevantDataPoints.end(); ++iterator) {
         // Insert the new point with its longitude, latitude and a height of zero
         points->InsertNextPoint(
@@ -200,9 +201,36 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             break;
         }
             
-        case DataType::FLIGHTS:
-            // TODO
+        case DataType::FLIGHTS: {
+            vtkSmartPointer<vtkDoubleArray> destinations = vtkSmartPointer<vtkDoubleArray>::New();
+            // Twice the amount of components since destination coordinates are tuples
+            destinations->SetNumberOfComponents(relevantDataPoints.size() * 2);
+            destinations->SetName("destinations");
+            
+            for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+                    iterator != relevantDataPoints.end(); ++iterator) {
+                const FlightDataPoint* dataPoint = dynamic_cast<const FlightDataPoint*>(
+                    (*iterator)
+                );
+                
+                // Invert the priority before adding it since with `vtkPointSetToLabelHierarchy`,
+                // higher priority values are more visible, which is the other way around than
+                // the definition in these `DataReader` classes.
+                priorities->InsertNextValue(
+                    Configuration::getInstance().getInteger("dataReader.maximumPriority")
+                    - dataPoint->getPriority()
+                );
+                
+                // Insert the new destination as a new tuple of latitude and longitude
+                destinations->InsertNextTuple2(
+                    dataPoint->getDestination().lat(),
+                    dataPoint->getDestination().lon()
+                );
+            }
+
+            dataSet->GetPointData()->AddArray(destinations);
             break;
+        }
             
         case DataType::TWEETS:
             // TODO
