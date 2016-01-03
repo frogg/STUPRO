@@ -32,7 +32,7 @@ JsonReader JsonReaderFactory::createReader(const QString filename) {
     QFileInfo jsonFileInfo(filename);
 
     if (!jsonFile.open(QIODevice::ReadOnly)) {
-        throw JsonFileOpenException(jsonFileInfo.absoluteFilePath(), jsonFile.errorString());
+        throw JsonReaderFileOpenException(jsonFileInfo.absoluteFilePath(), jsonFile.errorString());
     }
 
     // Read from the opened stream and save the file's contents in a string
@@ -46,7 +46,7 @@ JsonReader JsonReaderFactory::createReader(const QString filename) {
     jsonDocument.Parse(configText.toStdString().c_str());
 
     if (jsonDocument.HasParseError()) {
-        throw JsonParseException(
+        throw JsonReaderParseException(
             jsonFileInfo.absoluteFilePath(),
             rapidjson::GetParseError_En(jsonDocument.GetParseError())
         );
