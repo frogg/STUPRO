@@ -509,3 +509,67 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 		priorityArray->GetValue(0)
 	);
 }
+
+TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
+    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cloud-coverage.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority")
+	);
+
+	// Test the associated array of cloud coverage values
+	vtkSmartPointer<vtkDataArray> abstractCoverageArray = polyData->GetPointData()
+		->GetArray("cloudCovers");
+	ASSERT_TRUE(abstractCoverageArray);
+	vtkSmartPointer<vtkTypeFloat32Array> coverageArray = vtkTypeFloat32Array::SafeDownCast(
+		abstractCoverageArray
+	);
+	ASSERT_TRUE(coverageArray);
+	
+	EXPECT_EQ(
+		1,
+		coverageArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_FLOAT_EQ(
+		0.4,
+		coverageArray->GetValue(0)
+	);
+	
+	// Test the associated array of timestamps
+	vtkSmartPointer<vtkDataArray> abstractTimestampArray = polyData->GetPointData()
+		->GetArray("timestamps");
+	ASSERT_TRUE(abstractTimestampArray);
+	vtkSmartPointer<vtkTypeInt32Array> timestampArray = vtkTypeInt32Array::SafeDownCast(
+		abstractTimestampArray
+	);
+	ASSERT_TRUE(timestampArray);
+	
+	EXPECT_EQ(
+		1,
+		timestampArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_EQ(
+		1439288745,
+		timestampArray->GetValue(0)
+	);
+	
+	// Test the associated array of data point priorities
+	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
+		->GetArray("priorities");
+	ASSERT_TRUE(abstractPriorityArray);
+	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+		abstractPriorityArray
+	);
+	ASSERT_TRUE(priorityArray);
+	
+	EXPECT_EQ(
+		1,
+		priorityArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_EQ(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority"),
+		priorityArray->GetValue(0)
+	);
+}

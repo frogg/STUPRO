@@ -320,9 +320,23 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             break;
         }
             
-        case DataType::CLOUDCOVER:
-            // TODO
+        case DataType::CLOUDCOVER: {
+            vtkSmartPointer<vtkTypeFloat32Array> coverageValues
+                = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            coverageValues->SetNumberOfComponents(relevantDataPoints.size());
+            coverageValues->SetName("cloudCovers");
+            
+            for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+                    iterator != relevantDataPoints.end(); ++iterator) {
+                const CloudCoverDataPoint* dataPoint
+                    = dynamic_cast<const CloudCoverDataPoint*>((*iterator));
+                
+                coverageValues->InsertNextValue(dataPoint->getCloudCover());
+            }
+
+            dataSet->GetPointData()->AddArray(coverageValues);
             break;
+        }
     }
     
     // Finally, add the aforementioned common arrays if necessary
