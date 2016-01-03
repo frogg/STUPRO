@@ -178,6 +178,15 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             Configuration::getInstance().getInteger("dataReader.maximumPriority")
             - (*iterator)->getPriority()
         );
+        
+        // Add timestamps if they exist
+        if (this->hasTemporalData()) {
+            const TemporalDataPoint* temporalDataPoint = dynamic_cast<const TemporalDataPoint*>(
+                (*iterator)
+            );
+            
+            timestamps->InsertNextValue(temporalDataPoint->getTimestamp());
+        }
     }
     
     dataSet->SetPoints(points);
