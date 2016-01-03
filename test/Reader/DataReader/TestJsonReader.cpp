@@ -9,7 +9,14 @@
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 
+#include <Utils/Config/Configuration.hpp>
+
 #include <vtkSmartPointer.h>
+#include <vtkPointData.h>
+#include <vtkStringArray.h>
+#include <vtkAbstractArray.h>
+#include <vtkDataArray.h>
+#include <vtkTypeInt32Array.h>
 
 TEST(TestJsonReader, ReadCityData) {
 	JsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
@@ -84,13 +91,13 @@ TEST(TestJsonReader, WriteNonTemporalVtkPolyData) {
 	// Test the actual points along with their coordinates
 	
 	EXPECT_EQ(
-		polyData->GetNumberOfPoints(),
-		4
+		4,
+		polyData->GetNumberOfPoints()
 	);
 	
 	EXPECT_EQ(
-		lessPolyData->GetNumberOfPoints(),
-		2
+		2,
+		lessPolyData->GetNumberOfPoints()
 	);
 	
 	double testPointCoordinates[3];
@@ -111,5 +118,43 @@ TEST(TestJsonReader, WriteNonTemporalVtkPolyData) {
 		testPointCoordinates[2]
 	);
 	
-	// TODO: Test the scalar data attached to each point
+	// Test the scalar data attached to each point
+	
+	// Test the associated array of city names
+	vtkSmartPointer<vtkAbstractArray> abstractCityNameArray = polyData->GetPointData()
+		->GetAbstractArray("names");
+	ASSERT_TRUE(abstractCityNameArray);
+	vtkSmartPointer<vtkStringArray> cityNameArray = vtkStringArray::SafeDownCast(
+		abstractCityNameArray
+	);
+	ASSERT_TRUE(cityNameArray);
+	
+	EXPECT_EQ(
+		4,
+		cityNameArray->GetNumberOfValues()
+	);
+	
+	EXPECT_EQ(
+		"San Francisco",
+		cityNameArray->GetValue(2)
+	);
+	
+	// Test the associated array of data point priorities
+	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
+		->GetArray("priorities");
+	ASSERT_TRUE(abstractPriorityArray);
+	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+		abstractPriorityArray
+	);
+	ASSERT_TRUE(priorityArray);
+	
+	EXPECT_EQ(
+		4,
+		priorityArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_EQ(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority") - 1,
+		priorityArray->GetValue(2)
+	);
 }
