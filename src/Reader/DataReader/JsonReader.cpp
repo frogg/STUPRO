@@ -145,19 +145,6 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
         }
     }
     
-    // Iterate through all relevant data points and add their coordinates as new points
-    for (QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
-            iterator != relevantDataPoints.end(); ++iterator) {
-        // Insert the new point with its longitude, latitude and a height of zero
-        points->InsertNextPoint(
-            (*iterator)->getCoordinate().lon(),
-            (*iterator)->getCoordinate().lat(),
-            0
-        );
-    }
-    
-    dataSet->SetPoints(points);
-    
     // Create some data arrays all temporal data sets have in common. The timestamp array will not
     // be used if the data set is non-temporal.
     
@@ -173,6 +160,28 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     timestamps->SetNumberOfComponents(relevantDataPoints.size());
     timestamps->SetName("timestamps");
     
+    // Iterate through all relevant data points, add their coordinates as new points and fill the
+    // array of priority values.
+    for (QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+            iterator != relevantDataPoints.end(); ++iterator) {
+        // Insert the new point with its longitude, latitude and a height of zero
+        points->InsertNextPoint(
+            (*iterator)->getCoordinate().lon(),
+            (*iterator)->getCoordinate().lat(),
+            0
+        );
+        
+        // Invert the priority before adding it since with `vtkPointSetToLabelHierarchy`,
+        // higher priority values are more visible, which is the other way around than
+        // the definition in these `DataReader` classes.
+        priorities->InsertNextValue(
+            Configuration::getInstance().getInteger("dataReader.maximumPriority")
+            - (*iterator)->getPriority()
+        );
+    }
+    
+    dataSet->SetPoints(points);
+    
     // Add relevant data arrays depending on the data type
     switch (this->dataType) {
         case DataType::CITIES: {
@@ -185,14 +194,6 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
                 const CityDataPoint* dataPoint = dynamic_cast<const CityDataPoint*>(
             		(*iterator)
             	);
-                
-                // Invert the priority before adding it since with `vtkPointSetToLabelHierarchy`,
-                // higher priority values are more visible, which is the other way around than
-                // the definition in these `DataReader` classes.
-                priorities->InsertNextValue(
-                    Configuration::getInstance().getInteger("dataReader.maximumPriority")
-                    - dataPoint->getPriority()
-                );
                 
                 cityNames->InsertNextValue(dataPoint->getName().toStdString());
             }
@@ -211,14 +212,6 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
                     iterator != relevantDataPoints.end(); ++iterator) {
                 const FlightDataPoint* dataPoint = dynamic_cast<const FlightDataPoint*>(
                     (*iterator)
-                );
-                
-                // Invert the priority before adding it since with `vtkPointSetToLabelHierarchy`,
-                // higher priority values are more visible, which is the other way around than
-                // the definition in these `DataReader` classes.
-                priorities->InsertNextValue(
-                    Configuration::getInstance().getInteger("dataReader.maximumPriority")
-                    - dataPoint->getPriority()
                 );
                 
                 // Insert the new destination as a new tuple of latitude and longitude
