@@ -6,6 +6,7 @@
 #include <vtkDataArray.h>
 #include <vtkStringArray.h>
 #include <vtkTypeInt32Array.h>
+#include <vtkTypeFloat32Array.h>
 #include <vtkDoubleArray.h>
 #include <vtkPoints.h>
 
@@ -258,9 +259,23 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             break;
         }
             
-        case DataType::PRECIPITATION:
-            // TODO
+        case DataType::PRECIPITATION: {
+            vtkSmartPointer<vtkTypeFloat32Array> precipitationRates
+                = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            precipitationRates->SetNumberOfComponents(relevantDataPoints.size());
+            precipitationRates->SetName("precipitationRates");
+            
+            for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+                    iterator != relevantDataPoints.end(); ++iterator) {
+                const PrecipitationDataPoint* dataPoint
+                    = dynamic_cast<const PrecipitationDataPoint*>((*iterator));
+                
+                precipitationRates->InsertNextValue(dataPoint->getPrecipitationRate());
+            }
+
+            dataSet->GetPointData()->AddArray(precipitationRates);
             break;
+        }
             
         case DataType::TEMPERATURE:
             // TODO

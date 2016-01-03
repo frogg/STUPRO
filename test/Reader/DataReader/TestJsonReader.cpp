@@ -17,6 +17,7 @@
 #include <vtkAbstractArray.h>
 #include <vtkDataArray.h>
 #include <vtkTypeInt32Array.h>
+#include <vtkTypeFloat32Array.h>
 #include <vtkDoubleArray.h>
 
 TEST(TestJsonReader, ReadCityData) {
@@ -295,5 +296,69 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 	EXPECT_EQ(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority") - 1,
 		priorityArray->GetValue(2)
+	);
+}
+
+TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
+    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/precipitation.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority")
+	);
+
+	// Test the associated array of precipitation rates
+	vtkSmartPointer<vtkDataArray> abstractPrecipitationRateArray = polyData->GetPointData()
+		->GetArray("precipitationRates");
+	ASSERT_TRUE(abstractPrecipitationRateArray);
+	vtkSmartPointer<vtkTypeFloat32Array> precipitationRateArray = vtkTypeFloat32Array::SafeDownCast(
+		abstractPrecipitationRateArray
+	);
+	ASSERT_TRUE(precipitationRateArray);
+	
+	EXPECT_EQ(
+		1,
+		precipitationRateArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_FLOAT_EQ(
+		24.0,
+		precipitationRateArray->GetValue(0)
+	);
+	
+	// Test the associated array of timestamps
+	vtkSmartPointer<vtkDataArray> abstractTimestampArray = polyData->GetPointData()
+		->GetArray("timestamps");
+	ASSERT_TRUE(abstractTimestampArray);
+	vtkSmartPointer<vtkTypeInt32Array> timestampArray = vtkTypeInt32Array::SafeDownCast(
+		abstractTimestampArray
+	);
+	ASSERT_TRUE(timestampArray);
+	
+	EXPECT_EQ(
+		1,
+		timestampArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_EQ(
+		1439288745,
+		timestampArray->GetValue(0)
+	);
+	
+	// Test the associated array of data point priorities
+	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
+		->GetArray("priorities");
+	ASSERT_TRUE(abstractPriorityArray);
+	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+		abstractPriorityArray
+	);
+	ASSERT_TRUE(priorityArray);
+	
+	EXPECT_EQ(
+		1,
+		priorityArray->GetNumberOfComponents()
+	);
+	
+	EXPECT_EQ(
+		Configuration::getInstance().getInteger("dataReader.maximumPriority"),
+		priorityArray->GetValue(0)
 	);
 }
