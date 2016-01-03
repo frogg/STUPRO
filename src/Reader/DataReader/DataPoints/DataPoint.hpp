@@ -36,6 +36,11 @@ public:
      */
     Coordinate getCoordinate() const;
     
+    /**
+     * The maximum priority a data point can have.
+     */
+    const static int MAXIMUM_PRIORITY = 10;
+    
 private:
     Coordinate coordinate;
     int dataType;

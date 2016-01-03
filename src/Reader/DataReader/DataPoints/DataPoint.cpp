@@ -1,5 +1,7 @@
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
 
+const int DataPoint::MAXIMUM_PRIORITY;
+
 DataPoint::DataPoint(int dataType, Coordinate coordinate, int priority)
         : dataType(dataType), coordinate(coordinate), priority(priority) { }
 
