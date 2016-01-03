@@ -277,9 +277,23 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             break;
         }
             
-        case DataType::TEMPERATURE:
-            // TODO
+        case DataType::TEMPERATURE: {
+            vtkSmartPointer<vtkTypeFloat32Array> temperatures
+                = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            temperatures->SetNumberOfComponents(relevantDataPoints.size());
+            temperatures->SetName("temperatures");
+            
+            for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+                    iterator != relevantDataPoints.end(); ++iterator) {
+                const TemperatureDataPoint* dataPoint
+                    = dynamic_cast<const TemperatureDataPoint*>((*iterator));
+                
+                temperatures->InsertNextValue(dataPoint->getTemperature());
+            }
+
+            dataSet->GetPointData()->AddArray(temperatures);
             break;
+        }
             
         case DataType::WIND:
             // TODO
