@@ -225,9 +225,29 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             break;
         }
             
-        case DataType::TWEETS:
-            // TODO
+        case DataType::TWEETS: {
+            vtkSmartPointer<vtkStringArray> authors = vtkSmartPointer<vtkStringArray>::New();
+            authors->SetNumberOfComponents(relevantDataPoints.size());
+            authors->SetName("authors");
+            
+            vtkSmartPointer<vtkStringArray> contents = vtkSmartPointer<vtkStringArray>::New();
+            contents->SetNumberOfComponents(relevantDataPoints.size());
+            contents->SetName("contents");
+            
+            for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
+                    iterator != relevantDataPoints.end(); ++iterator) {
+                const TweetDataPoint* dataPoint = dynamic_cast<const TweetDataPoint*>(
+                    (*iterator)
+                );
+                
+                authors->InsertNextValue(dataPoint->getAuthor().toStdString());
+                contents->InsertNextValue(dataPoint->getContent().toStdString());
+            }
+
+            dataSet->GetPointData()->AddArray(authors);
+            dataSet->GetPointData()->AddArray(contents);
             break;
+        }
             
         case DataType::PRECIPITATION:
             // TODO
