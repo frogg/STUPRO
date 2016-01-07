@@ -1,25 +1,25 @@
-#ifndef NonTemporalDataPoint_h
-#define NonTemporalDataPoint_h
+#ifndef KRONOS_NONTEMPORALDATAPOINT_HPP
+#define KRONOS_NONTEMPORALDATAPOINT_HPP
 
 
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
 
 /**
- * Holds a DataPoint for a Non-Temporal Datapoint
- * Data point is not time-sensitive and doesn't contain a timestamp
- * static data e.g. cities or available flight routes
+ * Holds a data point for piece of non-temporal data. Therefore it is not time-sensitive and does
+ * not contain a timestamp. This applies to static data like a list of cities or possible flight
+ * routes.
  */
-class NonTemporalDataPoint:DataPoint {
+class NonTemporalDataPoint : public DataPoint {
+
 public:
-    
-    //all parameters are passed to parent class
-    //is there a more elegant way to do that?
-    NonTemporalDataPoint(int dataType, Coordinate coordinate, int priority):DataPoint(dataType,coordinate,priority) {
-    }
-    
-    
+    /**
+     * Create a new NonTemporalDataPoint.
+     * @param dataType The point's data type
+     * @param coordinate The point's coordinates
+     * @param priority The point's zoom level priority
+     */
+    NonTemporalDataPoint(int dataType, Coordinate coordinate, int priority);
+
 };
 
-
-
-#endif /* NonTemporalDataPoint_h */
+#endif

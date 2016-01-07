@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "dataType": "wind",
+    "temporal": true
+  },
+  "root": {
+    "children": [
+      {
+        "speed": 0.4,
+        "direction": 120,
+        "timestamp": 1439288745,
+        "longitude": -122.418335,
+        "latitude": 37.775,
+        "children": []
+      }
+    ]
+  }
+}

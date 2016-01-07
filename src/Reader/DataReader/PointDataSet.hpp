@@ -1,28 +1,35 @@
-#ifndef PointDataSet_H
-#define PointDataSet_H
+#ifndef KRONOS_POINTDATASET_HPP
+#define KRONOS_POINTDATASET_HPP
 
 #include <QList>
-#include "DataPoints/DataPoint.hpp"
+#include <Reader/DataReader/DataPoints/DataPoint.hpp>
+
 /**
-* stores all Datapoints of one type (e.g. Flight-Data) in one list 
+* Stores a set of data points of one type in a list
 */
-class PointDataSet
-{
+class PointDataSet {
+
 public:
+	/**
+	 * Create a new PointDataSet which will store a set of points.
+	 */
 	PointDataSet();
 	
-    /*
-	* adds a DataPoint into a list, which contains only Data of a kind
-	*/
+	/**
+	 * Add a new point of data to this set.
+	 * @param dataPoint A pointer to the data point to be added
+	 */
 	void addPoint(DataPoint* dataPoint);
-	
-    /*
-	* @return The list containing severeral DataPoints, of a kind
-	*/
-	QList<DataPoint> getDataPoints();
+
+	/**
+	 * Get a list of all data points in this set.
+	 * @return A list of data point pointers this set stores
+	 */
+	QList<DataPoint*> getDataPoints();
 
 private:
-	QList<DataPoint> points;
+	QList<DataPoint*> points;
+
 };
 
-#endif /* PointDataSet_H */
+#endif

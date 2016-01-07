@@ -38,7 +38,8 @@
 #include "vtkPoints.h"
 #include <math.h>
 #include <ctype.h>
-
+#include <cmath>
+#include <Utils/Config/Configuration.hpp>
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -46,9 +47,14 @@
 
 vtkStandardNewMacro(vtkKronosReader);
 
-vtkKronosReader::vtkKronosReader()
+
+vtkKronosReader::vtkKronosReader() : cameraPos(),globeRadius(0.0),distanceToFocalPoint(0.0),fileName(""),zoomLevel(0)
 {
-    cout << "Kronos Reader init." << endl;
+
+    if(Configuration::getInstance().hasKey("globe.radius")){
+        globeRadius = Configuration::getInstance().getDouble("globe.radius");
+    }
+    
     this->SetNumberOfInputPorts(0);
     this->SetNumberOfOutputPorts(1);
 
@@ -59,34 +65,60 @@ vtkKronosReader::~vtkKronosReader()
 
 }
 void vtkKronosReader::SetFileName(std::string name){
-    cout<<name<<endl;
+    //Set Filename
+    this->fileName=QString::fromStdString(name);
 }
 
 void vtkKronosReader::SetCameraPos(double x,double y,double z){
     this->cameraPos = Vector3d(x,y,z);
+    //Calcs distanz to 0,0,0
     this->distanceToFocalPoint = (this->cameraPos).length();
+    //Check if Zoomlevel Changed
+    int tempZoom = this->zoomLevel;
+    calcLOD();
+    if (tempZoom!=this->zoomLevel) {
+        //Set Modified flag;
+        this->Modified();
+    }
+}
 
-    this->Modified();
-    
+
+void vtkKronosReader::calcLOD(){
+    int LOD = 0;
+    if(this->globeRadius!=0.0f){
+        float distanceToSurface=this->distanceToFocalPoint-this->globeRadius;
+        if (distanceToSurface>0.0f){
+            int count = 10;
+            for(int i = 0 ; i < 10; i++){
+                count-=1;
+                if (this->globeRadius*(i+1) > distanceToSurface) {
+                    LOD=count;
+                    break;
+                }
+            }
+        }
+        else{
+            //if camera is in GLOBUS (normaly not the case)
+            LOD=0;
+        }
+    }
+    this->zoomLevel=int(LOD);
 }
-void vtkKronosReader::SetUseOffscreenRenderingForScreenshots(int a){
-    
-}
+
 int vtkKronosReader::RequestData(
   vtkInformation*,
   vtkInformationVector**,
   vtkInformationVector* outputVector)
 {
-    cout << this->distanceToFocalPoint << endl;
-    int tempvar=int ((this->distanceToFocalPoint-27.0)/50);
-
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
-
-
     vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+    
+    cout << "ZOOMLEVEL " << zoomLevel << endl;
+    
+    int tempvar=this->zoomLevel;
 
-    int numberOfQuadsRight=50;
-    int numberOfQuadsUp=50;
+    int numberOfQuadsRight=1;
+    int numberOfQuadsUp=1;
 
     int nmbPoints=5*numberOfQuadsRight*numberOfQuadsUp;
 
@@ -104,8 +136,8 @@ int vtkKronosReader::RequestData(
     newNormals->SetName("Normals");
 
     vtkIdType pts[4];
-    for (int i=0; i<numberOfQuadsRight; i++) {
-        for (int j=0; j<numberOfQuadsUp; j++) {
+    for (int i=-1.0; i<numberOfQuadsRight; i++) {
+        for (int j=-1.0; j<numberOfQuadsUp; j++) {
 
 
             pts[0]  = newPoints->InsertNextPoint(-1.0+2.0*i, 0.0+2.0*j, sin(-1.0+2.0*i)*2*tempvar);
@@ -131,7 +163,7 @@ int vtkKronosReader::RequestData(
 
     }
 
-    // output->CopyStructure( input );
+    //output->CopyStructure( input );
     newPoints->Squeeze();
     output->SetPoints(newPoints);
     newPoints->Delete();

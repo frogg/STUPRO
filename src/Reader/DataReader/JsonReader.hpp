@@ -2,6 +2,8 @@
 #define KRONOS_ABSTRACT_JSON_READER_HPP
 
 #include <Utils/Misc/Macros.hpp>
+#include <QString>
+
 #include <vtkSmartPointer.h>
 #include <rapidjson/document.h>
 #include <vtkPolyData.h>
@@ -10,6 +12,7 @@
 class JsonReader {
     
     KRONOS_FRIEND_TEST(TestJsonReader, ReadCityData);
+    KRONOS_FRIEND_TEST(TestJsonReader, ReadTwitterData);
     
 public:
     /**
@@ -58,8 +61,13 @@ private:
      */
     PointDataSet pointDataSet;
 
-
-    // rapidjson::Value jsonDocument;
+    /**
+     * Iterate through a JSON representation of data points and save them to the PointDataSet this
+     * reader holds.
+     * @param jsonValue ...
+     * @param depth ...
+     */
+    void indexDataPoints(rapidjson::Value& jsonValue, int depth);
 };
 
 #endif

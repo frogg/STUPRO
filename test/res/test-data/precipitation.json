@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "dataType": "precipitation",
+    "temporal": true
+  },
+  "root": {
+    "children": [
+      {
+        "precipitationRate": 24.0,
+        "timestamp": 1439288745,
+        "longitude": -122.418335,
+        "latitude": 37.775,
+        "children": []
+      }
+    ]
+  }
+}

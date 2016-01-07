@@ -4,5 +4,8 @@
     "planeSize": 1.0,
     "heightFactor": 0.05,
     "transitionEffectSpeed": 2.0
+  },
+  "dataReader": {
+    "maximumPriority": 10
   }
 }

@@ -25,8 +25,8 @@ struct ReaderException : public std::exception {
 /**
  * Exception thrown if the JSON file could not be opened.
  */
-struct JsonFileOpenException : public ReaderException {
-	JsonFileOpenException(QString path, QString errorDescription)
+struct JsonReaderFileOpenException : public ReaderException {
+	JsonReaderFileOpenException(QString path, QString errorDescription)
 			: ReaderException(
 				QString("The JSON file at '%1' could not be opened: %2")
 				.arg(path).arg(errorDescription)
@@ -36,8 +36,8 @@ struct JsonFileOpenException : public ReaderException {
 /**
  * Exception thrown if the content of the JSON file could not be parsed.
  */
-struct JsonParseException : public ReaderException {
-	JsonParseException(QString path, QString errorDescription)
+struct JsonReaderParseException : public ReaderException {
+	JsonReaderParseException(QString path, QString errorDescription)
 			: ReaderException(
 				QString("The JSON file at '%1' could not be parsed: %2")
 				.arg(path).arg(errorDescription)

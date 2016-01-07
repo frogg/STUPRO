@@ -37,11 +37,11 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 TEST(TestJsonReaderFactory, ReadInvalidFiles) {
 	EXPECT_THROW(
 		JsonReaderFactory::createReader("res/test-data/non-existant.json"),
-		JsonFileOpenException
+		JsonReaderFileOpenException
 	);
 	
 	EXPECT_THROW(
 		JsonReaderFactory::createReader("res/test-data/invalid.json"),
-		JsonParseException
+		JsonReaderParseException
 	);
 }

@@ -1,17 +1,15 @@
-#include "TweetDataPoint.hpp"
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 
-TweetDataPoint::TweetDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, QString author, QString content) :TemporalDataPoint(dataType, coordinate, priority, timestamp)
-{
-	this->author = author;
-	this->content = content;
-}
+#include <Reader/DataReader/DataType.hpp>
 
-QString TweetDataPoint::getAuthor()
-{
+TweetDataPoint::TweetDataPoint(Coordinate coordinate, int priority, int timestamp, QString author,
+		QString content) : TemporalDataPoint(DataType::TWEETS, coordinate, priority, timestamp),
+			author(author), content(content) { }
+
+QString TweetDataPoint::getAuthor() const {
 	return this->author;
 };
 
-QString TweetDataPoint::getContent()
-{
+QString TweetDataPoint::getContent() const {
 	return this->content;
 };

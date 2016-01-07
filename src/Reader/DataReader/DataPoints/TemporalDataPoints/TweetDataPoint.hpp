@@ -1,29 +1,42 @@
-#ifndef TweetDataPoint_H
-#define TweetDataPoint_H
+#ifndef KRONOS_TWEETDATAPOINT_HPP
+#define KRONOS_TWEETDATAPOINT_HPP
 
-#include "TemporalDataPoint.hpp"
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/TemporalDataPoint.hpp>
 #include <QString>
+
 /**
-* Holds a DataPoint for a Twitter-message at a specific Coordinate, which further includes its DataType, Coordinate, Priority, author and the content 
-*/
-class TweetDataPoint:TemporalDataPoint
-{
+ * Holds a data point for a tweet with its author and content
+ */
+class TweetDataPoint : public TemporalDataPoint {
+
 public:
-	TweetDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, QString author, QString content);
 	/**
-	* @return The author of the Twitter-message
-	*/
-	QString getAuthor();
+	 * Create a new TweetDataPoint.
+	 * @param coordinate The point's coordinates
+	 * @param priority The point's zoom level priority
+	 * @param timestamp The point's timestamp
+	 * @param author The tweet's author
+	 * @param content The tweet's content
+	 */
+	TweetDataPoint(Coordinate coordinate, int priority, int timestamp, QString author,
+		QString content);
+	
 	/**
-	* @return The content of the Twitter-message
-	*/
-	QString getContent();
+     * Get the author of the Twitter message of this data point.
+     * @return The author of this point's tweet
+     */
+	QString getAuthor() const;
+	
+	/**
+	 * Get the content of the Twitter message of this data point.
+	 * @return The content of this point's tweet
+	 */
+	QString getContent() const;
+
 private:
 	QString author;
 	QString content;
+
 };
 
-#endif /*TweetDataPoint_H*/
-
-
-//warum #define QString int???
+#endif

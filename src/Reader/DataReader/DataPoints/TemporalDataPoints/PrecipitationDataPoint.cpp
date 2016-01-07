@@ -1,12 +1,11 @@
-#include "PrecipitationDataPoint.hpp"
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
+#include <Reader/DataReader/DataType.hpp>
 
-PrecipitationDataPoint::PrecipitationDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, float precipitation) :TemporalDataPoint(dataType, coordinate, priority, timestamp)
-{
-	this->precipitationRate = precipitationRate;
-}
+PrecipitationDataPoint::PrecipitationDataPoint(Coordinate coordinate, int priority, int timestamp,
+		float precipitationRate) : TemporalDataPoint(DataType::PRECIPITATION, coordinate, priority,
+			timestamp), precipitationRate(precipitationRate) { }
 
-float PrecipitationDataPoint::getPrecipitationRate()
-{
+float PrecipitationDataPoint::getPrecipitationRate() const {
 	return this->precipitationRate;
 }
 

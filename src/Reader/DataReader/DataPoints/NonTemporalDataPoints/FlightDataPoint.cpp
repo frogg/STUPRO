@@ -1,11 +1,10 @@
-#include "FlightDataPoint.hpp"
+#include <Reader/DataReader/DataPoints/NonTemporalDataPoints/FlightDataPoint.hpp>
+#include <Reader/DataReader/DataType.hpp>
 
-FlightDataPoint::FlightDataPoint(int dataType, Coordinate coordinate, int priority, Coordinate destination):NonTemporalDataPoint(dataType,coordinate,priority) {
-    
-    this->mDestination = destination;
-    
-}
+FlightDataPoint::FlightDataPoint(Coordinate coordinate, int priority, Coordinate destination)
+        : NonTemporalDataPoint(DataType::FLIGHTS, coordinate, priority),
+            destination(destination) { }
 
 Coordinate FlightDataPoint::getDestination() const {
-    return this->mDestination;
+    return this->destination;
 }

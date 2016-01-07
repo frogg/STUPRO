@@ -1,18 +1,15 @@
-#include "WindDataPoint.hpp"
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
+#include <Reader/DataReader/DataType.hpp>
 
-WindDataPoint::WindDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp, float direction, float speed) :TemporalDataPoint(dataType, coordinate, priority, timestamp)
-{
-	this->direction = direction;
-	this->speed = speed;
-}
+WindDataPoint::WindDataPoint(Coordinate coordinate, int priority, int timestamp, float direction,
+		float speed) : TemporalDataPoint(DataType::WIND, coordinate, priority, timestamp),
+			direction(direction), speed(speed) { }
 
-float WindDataPoint::getDirection()
-{
+float WindDataPoint::getDirection() const {
 	return this->direction;
 }
 
-float WindDataPoint::getSpeed()
-{
+float WindDataPoint::getSpeed() const {
 	return this->speed;
 }
 
