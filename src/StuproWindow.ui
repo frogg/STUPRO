@@ -159,6 +159,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>PlaceSearchWidget</class>
+   <extends>QWidget</extends>
+   <header>PlaceSearchWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>pqPipelineBrowserWidget</class>
    <extends>QWidget</extends>
    <header>pqPipelineBrowserWidget.h</header>
