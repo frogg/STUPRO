@@ -9,6 +9,7 @@
 #include <vtkTypeFloat32Array.h>
 #include <vtkDoubleArray.h>
 #include <vtkPoints.h>
+#include "vtkCellArray.h"
 
 #include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
@@ -135,6 +136,9 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     
+    // Create an empty vert data set
+    vtkCellArray *verts = vtkCellArray::New();
+    
     // Iterate over all data points and extract those that are relevant with respect to the given
     // zoom level
     QList<DataPoint*> relevantDataPoints = QList<DataPoint*>();
@@ -145,6 +149,13 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             relevantDataPoints.append(point);
         }
     }
+    
+    // Add 
+    
+    verts->Allocate(verts->EstimateSize(1,relevantDataPoints.size()));
+
+    verts->InsertNextCell(relevantDataPoints.size());
+    
     
     // Create some data arrays all temporal data sets have in common. The timestamp array will not
     // be used if the data set is non-temporal.
@@ -166,11 +177,14 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     for (QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
             iterator != relevantDataPoints.end(); ++iterator) {
         // Insert the new point with its longitude, latitude and a height of zero
-        points->InsertNextPoint(
+        // and add point to verts
+        verts->InsertCellPoint(points->InsertNextPoint(
             (*iterator)->getCoordinate().lon(),
             (*iterator)->getCoordinate().lat(),
             0
-        );
+        ));
+        
+        
         
         // Invert the priority before adding it since with `vtkPointSetToLabelHierarchy`,
         // higher priority values are more visible, which is the other way around than
@@ -189,8 +203,10 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             timestamps->InsertNextValue(temporalDataPoint->getTimestamp());
         }
     }
-    
+
     dataSet->SetPoints(points);
+    
+    dataSet->SetVerts(verts);
     
     // Add relevant data arrays depending on the data type
     switch (this->dataType) {

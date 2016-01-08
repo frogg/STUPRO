@@ -120,7 +120,11 @@ int vtkKronosReader::RequestData(
     JsonReader jsonReader = JsonReaderFactory::createReader(this->fileName);
     
     vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(this->zoomLevel);
-    output->DeepCopy(polyData);
+
+
+    output->SetPoints(polyData->GetPoints());
+    
+    output->SetVerts(polyData->GetVerts());
 
   return 1;
 }
