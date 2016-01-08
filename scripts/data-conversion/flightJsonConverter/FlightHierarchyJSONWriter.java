@@ -74,8 +74,8 @@ public class FlightHierarchyJSONWriter {
 			coordinatesDestination1.put("longitude",
 					new Double(Double.parseDouble(entry1.getValue()[4])));
 
-			flightObject1.put("startposition", coordinatesSource1);
-			flightObject1.put("endposition", coordinatesDestination1);
+			flightObject1.put("startPosition", coordinatesSource1);
+			flightObject1.put("endPosition", coordinatesDestination1);
 			// -------------------------------------------------------------------------------------------------
 			JSONArray level2 = new JSONArray();
 			for (Entry<Integer, String[]> entry2 : zoom2.entrySet()) {
@@ -100,8 +100,8 @@ public class FlightHierarchyJSONWriter {
 									new Double(Double.parseDouble(entry2
 											.getValue()[4])));
 
-					flightObject2.put("startposition", coordinatesSource2);
-					flightObject2.put("endposition", coordinatesDestination2);
+					flightObject2.put("startPosition", coordinatesSource2);
+					flightObject2.put("endPosition", coordinatesDestination2);
 					// -------------------------------------------------------------------------------------------------
 					JSONArray level3 = new JSONArray();
 					for (Entry<Integer, String[]> entry3 : zoom3.entrySet()) {
@@ -120,9 +120,9 @@ public class FlightHierarchyJSONWriter {
 									new Double(Double.parseDouble(entry3
 											.getValue()[4])));
 
-							flightObject3.put("startposition",
+							flightObject3.put("startPosition",
 									coordinatesSource3);
-							flightObject3.put("endposition",
+							flightObject3.put("endPosition",
 									coordinatesDestination3);
 							// -------------------------------------------------------------------------------------------------
 							JSONArray level4 = new JSONArray();
@@ -154,9 +154,9 @@ public class FlightHierarchyJSONWriter {
 													.parseDouble(entry4
 															.getValue()[4])));
 
-									flightObject4.put("startposition",
+									flightObject4.put("startPosition",
 											coordinatesSource4);
-									flightObject4.put("endposition",
+									flightObject4.put("endPosition",
 											coordinatesDestination4);
 									// -------------------------------------------------------------------------------------------------
 									JSONArray level5 = new JSONArray();
@@ -188,9 +188,9 @@ public class FlightHierarchyJSONWriter {
 																	Double.parseDouble(entry5
 																			.getValue()[4])));
 
-											flightObject5.put("startposition",
+											flightObject5.put("startPosition",
 													coordinatesSource5);
-											flightObject5.put("endposition",
+											flightObject5.put("endPosition",
 													coordinatesDestination5);
 
 											level5.add(flightObject5);
