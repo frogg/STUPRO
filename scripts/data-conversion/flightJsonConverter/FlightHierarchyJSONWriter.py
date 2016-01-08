@@ -69,7 +69,6 @@ def main(argv):
 #################################################### end level 2       
         flight = {'startPosition':{'latitude':entry1[1],'longitude':entry1[2]},'endPosition':{'latitude':entry1[3],'longitude':entry1[4]},'children':level2Entries}
         level1Entries.append(flight)
-        level1Entries.append(flight)
 
     flights = {'meta': {'dataType': 'flights', 'temporal': False}, 'root': {'children': level1Entries}}	
     d.write_json_file(flights,'flights.json', True)
