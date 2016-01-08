@@ -82,6 +82,22 @@
    <addaction name="menu_Help"/>
   </widget>
   <widget class="pqStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="placeSearchDock">
+    <property name="allowedAreas">
+      <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    </property>
+    <property name="windowTitle">
+      <string>Search for places</string>
+    </property>
+    <attribute name="dockWidgetArea">
+      <number>1</number>
+    </attribute>
+    <widget class="PlaceSearchWidget" name="placeSearchWidget">
+      <property name="contextMenuPolicy">
+        <enum>Qt::ActionsContextMenu</enum>
+      </property>
+    </widget>
+  </widget>
   <widget class="QDockWidget" name="pipelineBrowserDock">
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
