@@ -39,6 +39,8 @@ endif()
 set(ParaView_SOURCE_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/PlaceSearchWidget.cxx
+	${CMAKE_CURRENT_SOURCE_DIR}/PlaceSearchWidget.h
 	${UISrcs}
 )
 
