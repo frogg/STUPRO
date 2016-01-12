@@ -8,11 +8,14 @@
 
 #define CHECK_POINT(POINT,VALUE,PRECISION){\
     if(std::abs((POINT)[0]-(VALUE)[0]) < PRECISION) GTEST_SUCCEED(); \
-    else GTEST_MESSAGE_(QString("FAILURE: Exp: %1, Actual: %2").arg(POINT_TO_STRING(POINT)).arg(POINT_TO_STRING(VALUE)).toStdString().c_str(), ::testing::TestPartResult::kFatalFailure);\
+    else GTEST_MESSAGE_(QString("FAILURE X: Exp: %1, Actual: %2").arg(POINT_TO_STRING(POINT)).arg(POINT_TO_STRING(VALUE)).toStdString().c_str(),\
+                        ::testing::TestPartResult::kFatalFailure);\
     if(std::abs((POINT)[1]-(VALUE)[1]) < PRECISION) GTEST_SUCCEED(); \
-    else GTEST_MESSAGE_("FAILURE AT Y", ::testing::TestPartResult::kFatalFailure);\
+    else GTEST_MESSAGE_(QString("FAILURE Y: Exp: %1, Actual: %2").arg(POINT_TO_STRING(POINT)).arg(POINT_TO_STRING(VALUE)).toStdString().c_str(),\
+                        ::testing::TestPartResult::kFatalFailure);\
     if(std::abs((POINT)[2]-(VALUE)[2]) < PRECISION) GTEST_SUCCEED(); \
-    else GTEST_MESSAGE_("FAILURE AT Z", ::testing::TestPartResult::kFatalFailure);}
+    else GTEST_MESSAGE_(QString("FAILURE X: Exp: %1, Actual: %2").arg(POINT_TO_STRING(POINT)).arg(POINT_TO_STRING(VALUE)).toStdString().c_str(),\
+                        ::testing::TestPartResult::kFatalFailure);}
 
 #define POINT_TO_STRING(POINT)\
     QString("( %1 / %2 / %3 )").arg((POINT)[0]).arg((POINT)[1]).arg((POINT)[2])
