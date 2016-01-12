@@ -36,8 +36,8 @@ Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const
 	float lon = interpolateLinear(bounds.y, bounds.y2(), interpolation.y);
 
 	// Converts a lat/long flat position into a x/y/z globe position.
-	lon = lon * KRONOS_PI / 360.f;
-	lat = lat * KRONOS_PI / 180.f;
+	lon = lon * 2.f*KRONOS_PI / 360.f;
+	lat = lat * 0.5f*KRONOS_PI / 180.f;
 
 	float cosLat = cos(lat);
 	float sinLat = sin(lat);
