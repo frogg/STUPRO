@@ -41,7 +41,7 @@ currentlyDownloadedDataSets = 0
 current_longitude = start_lon
 while current_longitude >= end_lon:
     print "Long", current_longitude
-    
+
     current_latitude = start_lat
     while current_latitude <= end_lat:
         print "Lat", current_latitude
@@ -54,13 +54,14 @@ while current_longitude >= end_lon:
 
                 hoursArray = data["hourly"]["data"]
 
-                #for x in hoursArray:
-                    #print datetime.datetime.fromtimestamp(x["time"]).strftime('%Y-%m-%d %H:%M:%S')
+                for hourdata in hoursArray:
+                    hourdata["longitude"] = current_longitude
+                    hourdata["latitude"] = current_latitude
 
                 #next day
                 current_time+=86400
                 globallyDownloadedSets = currentlyDownloadedDataSets+1
-                
+
                 #speichern in JSON config
                 weather_config["meta"]["downloadedSets"] = globallyDownloadedSets
                 weather_config["data"] = weather_config["data"] + hoursArray
@@ -70,4 +71,3 @@ while current_longitude >= end_lon:
     current_longitude-=1
 
 print "Done."
-
