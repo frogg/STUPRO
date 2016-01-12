@@ -3,6 +3,8 @@
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Utils/Config/Configuration.hpp>
 
+#include <Utils/testDB.hpp>
+
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -26,6 +28,9 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	initRenderer();
 	registerTimerCallback();
 	initGlobe();
+
+	TestDb db;
+	db.openDatabase();
 }
 
 void vtkPVStuproView::initParameters()
