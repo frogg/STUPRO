@@ -39,6 +39,8 @@
 #include <math.h>
 #include <ctype.h>
 #include <cmath>
+#include <Reader/DataReader/JsonReaderFactory.hpp>
+#include <Reader/DataReader/JsonReader.hpp>
 #include <Utils/Config/Configuration.hpp>
 
 
@@ -115,67 +117,14 @@ int vtkKronosReader::RequestData(
     
     cout << "ZOOMLEVEL " << zoomLevel << endl;
     
-    int tempvar=this->zoomLevel;
-
-    int numberOfQuadsRight=1;
-    int numberOfQuadsUp=1;
-
-    int nmbPoints=5*numberOfQuadsRight*numberOfQuadsUp;
-
-    vtkCellArray *newPolys;
-    newPolys = vtkCellArray::New();
-    newPolys->Allocate(newPolys->EstimateSize(nmbPoints, 3));
-
-    vtkPoints *newPoints;
-    newPoints = vtkPoints::New();
-    vtkFloatArray *newNormals;
-    newPoints->Allocate(nmbPoints);
-    newNormals = vtkFloatArray::New();
-    newNormals->SetNumberOfComponents(3);
-    newNormals->Allocate(3*nmbPoints);
-    newNormals->SetName("Normals");
-
-    vtkIdType pts[4];
-    for (int i=-1.0; i<numberOfQuadsRight; i++) {
-        for (int j=-1.0; j<numberOfQuadsUp; j++) {
+    JsonReader jsonReader = JsonReaderFactory::createReader(this->fileName);
+    
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(this->zoomLevel);
 
 
-            pts[0]  = newPoints->InsertNextPoint(-1.0+2.0*i, 0.0+2.0*j, sin(-1.0+2.0*i)*2*tempvar);
-            pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
-            pts[2]  = newPoints->InsertNextPoint(0.0+2.0*i, 1.0+2.0*j, sin(0.0+2.0*i)*2*tempvar);
-            newPolys->InsertNextCell(3, pts);
-            newNormals->InsertTuple3(pts[0], -1.0, 0.0, 0.0);
-            newNormals->InsertTuple3(pts[1], -1.0, 0.0, 0.0);
-            newNormals->InsertTuple3(pts[2], -1.0, 0.0, 0.0);
-
-            pts[1]  = newPoints->InsertNextPoint(-1.0+2.0*i, 2.0+2.0*j, sin(-1.0+2.0*i)*2*tempvar);
-            newPolys->InsertNextCell(3, pts);
-            newNormals->InsertTuple3(pts[1], -1.0, 0.0, 0.0);
-
-            pts[0]  = newPoints->InsertNextPoint(1.0+2.0*i, 2.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
-            newPolys->InsertNextCell(3, pts);
-            newNormals->InsertTuple3(pts[0], -1.0, 0.0, 0.0);
-
-            pts[1]  = newPoints->InsertNextPoint(1.0+2.0*i, 0.0+2.0*j, sin(1.0+2.0*i)*2*tempvar);
-            newNormals->InsertTuple3(pts[0], -1.0, 0.0, 0.0);
-            newPolys->InsertNextCell(3, pts);
-        }
-
-    }
-
-    //output->CopyStructure( input );
-    newPoints->Squeeze();
-    output->SetPoints(newPoints);
-    newPoints->Delete();
-
-    newNormals->Squeeze();
-    output->GetPointData()->SetNormals(newNormals);
-    newNormals->Delete();
-
-    newPolys->Squeeze();
-    output->SetPolys(newPolys);
-
-    newPolys->Delete();
+    output->SetPoints(polyData->GetPoints());
+    
+    output->SetVerts(polyData->GetVerts());
 
   return 1;
 }
