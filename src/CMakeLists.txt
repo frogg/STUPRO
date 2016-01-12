@@ -25,6 +25,12 @@ else()
 	include(${QT_USE_FILE})
 endif()
 
+# find and include PostgreSQL libraries
+find_library(PQXX_LIB NAMES pqxx libpqxx DOC "PostgreSQL libpqxx library")
+find_library(PQ_LIB NAMES pq libpq DOC "PostgreSQL libpq library")
+find_path(PQXX_HEADERS pqxx DOC "PostgreSQL header files")
+include_directories(${PQXX_HEADERS})
+
 # automatically wrap *.ui files and classes inheriting from QObject
 set(CMAKE_AUTOMOC TRUE)
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
@@ -109,6 +115,9 @@ add_paraview_plugin(
 		${StuproView_ENCODED_SHADERS}
 )
 
+# link against PostgreSQL libraries
+target_link_libraries(KronosPlugin PRIVATE ${PQXX_LIB} ${PQ_LIB})
+
 # link against Qt libraries
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
 	target_link_libraries(KronosPlugin PRIVATE
@@ -141,9 +150,6 @@ build_paraview_client(
 
 # use C++11 to compile the client
 set_property(TARGET paraview_stupro PROPERTY CXX_STANDARD 11)
-
-#for postgres use
-set( CMAKE_CXX_FLAGS "-lpqxx -lpq" )
 
 # make sure not to copy or delete the resource folder if we are doing an in-source build
 if(NOT ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${KRONOS_BIN_DIR}"))
