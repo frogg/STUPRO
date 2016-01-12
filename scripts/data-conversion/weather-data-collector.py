@@ -58,6 +58,7 @@ while current_longitude >= end_lon:
                 sys.exit(0)       #exit program
 
             try:
+                #checks if we have already downloaded this data set, if yes don't download it again
                 if currentlyDownloadedDataSets >= globallyDownloadedSets:
                     url = 'https://api.forecast.io/forecast/{0}/{1},{2},{3}?units=si'.format(get_api_key(), current_longitude, current_latitude, current_time)
                     print url
