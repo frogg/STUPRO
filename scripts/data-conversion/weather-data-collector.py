@@ -4,10 +4,12 @@ import urllib2
 import requests
 import datetime
 import time
+import sys, select, os
 from DataUtility import DataUtility
 
 config_file_name = 'forecastio.config'
 
+#warning: don't interrupt program using ctrl c, press enter instead to avoid file writing problems
 def get_api_key():
     if os.path.isfile(config_file_name) and len(open('forecastio.config', 'rb').read().splitlines()) > 0:
         return open('forecastio.config', 'rb').read().splitlines()[0]
@@ -33,6 +35,8 @@ end_lon = weather_config["meta"]["geographicRange"]["bottomRight"]["longitude"]
 
 globallyDownloadedSets = weather_config["meta"]["downloadedSets"]
 
+
+
 currentlyDownloadedDataSets = 0
 
 
@@ -47,26 +51,46 @@ while current_longitude >= end_lon:
         print "Lat", current_latitude
         current_time = start_time
         while current_time <= end_time:
-            if currentlyDownloadedDataSets >= globallyDownloadedSets:
-                url = 'https://api.forecast.io/forecast/{0}/{1},{2},{3}?units=si'.format(get_api_key(), current_longitude, current_latitude, current_time)
-                print url
-                data = json.load(urllib2.urlopen(url, timeout=1.5))
 
-                hoursArray = data["hourly"]["data"]
+            #hit enter to exit program while executing to prevent writing interruption.
+            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                line = raw_input()
+                sys.exit(0)       #exit program
 
-                for hourdata in hoursArray:
-                    hourdata["longitude"] = current_longitude
-                    hourdata["latitude"] = current_latitude
+            try:
+                if currentlyDownloadedDataSets >= globallyDownloadedSets:
+                    url = 'https://api.forecast.io/forecast/{0}/{1},{2},{3}?units=si'.format(get_api_key(), current_longitude, current_latitude, current_time)
+                    print url
+                    data = json.load(urllib2.urlopen(url, timeout=1.5))
 
+                    hoursArray = data["hourly"]["data"]
+
+
+                    #add lat and lon to hourly data
+                    for hourdata in hoursArray:
+                        hourdata["longitude"] = current_longitude
+                        hourdata["latitude"] = current_latitude
+
+
+
+                    globallyDownloadedSets = currentlyDownloadedDataSets
+
+                    #store in JSON file
+                    weather_config["meta"]["downloadedSets"] = globallyDownloadedSets
+                    weather_config["data"] = weather_config["data"] + hoursArray
+                    d.write_json_file(weather_config,'weather-data-collection.json')
+                currentlyDownloadedDataSets+=1
                 #next day
                 current_time+=86400
-                globallyDownloadedSets = currentlyDownloadedDataSets+1
-
-                #speichern in JSON config
-                weather_config["meta"]["downloadedSets"] = globallyDownloadedSets
-                weather_config["data"] = weather_config["data"] + hoursArray
-                d.write_json_file(weather_config,'weather-data-collection.json')
-            currentlyDownloadedDataSets+=1
+            except KeyError as e:
+                #no weather data available for this request :(
+                print "No weather data available for this request :("
+                current_time+=86400
+                currentlyDownloadedDataSets+=1
+                if currentlyDownloadedDataSets > globallyDownloadedSets:
+                    globallyDownloadedSets = currentlyDownloadedDataSets
+                    weather_config["meta"]["downloadedSets"] = globallyDownloadedSets
+                    d.write_json_file(weather_config,'weather-data-collection.json')
         current_latitude+=1
     current_longitude-=1
 
