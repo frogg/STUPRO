@@ -7,25 +7,12 @@ using namespace pqxx;
 void createTable();
 void insertOperation();
 void selectOperation();
-int openDatabase();
+int  openDatabase();
 void closeDatabase();
 
 connection C("dbname=testdb user=stuproTest password=quappi \
              hostaddr=127.0.0.1 port=5432");
 
-int main(int argc, char* argv[])
-{
-   try{
-       openDatabase();
-       createTable();
-       //insertOperation();
-       selectOperation();
-       closeDatabase();
-   }catch (const std::exception &e){
-      cerr << e.what() << std::endl;
-      return 1;
-   }
-}
 
 int openDatabase(){
     if (C.is_open()) {
