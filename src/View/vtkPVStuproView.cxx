@@ -17,6 +17,7 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 #include <cmath>
+#include <Utils/testDB.cpp>
 
 vtkStandardNewMacro(vtkPVStuproView);
 
