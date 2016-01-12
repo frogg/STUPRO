@@ -1,20 +1,14 @@
-#include <Globe/Globe.hpp>
-#include <StuproInteractor.hpp>
-#include <Utils/Misc/MakeUnique.hpp>
+#include <stddef.h>
 #include <Utils/Config/Configuration.hpp>
-
-#include <vtkCallbackCommand.h>
+#include <Utils/Misc/MakeUnique.hpp>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
-#include <vtkIndent.h>
-#include <vtkInteractorStyle.h>
+#include <vtkInformation.h>
 #include <vtkObjectFactory.h>
 #include <vtkPVStuproView.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkSmartPointer.h>
-#include <cmath>
+#include <vtkMatrix4x4.h>
 
 vtkStandardNewMacro(vtkPVStuproView);
 
@@ -39,10 +33,30 @@ void vtkPVStuproView::initParameters()
 
 void vtkPVStuproView::initRenderer()
 {
-	// Set fitting clipping range.
-	float r1 = this->globeRadius * 100.f;
-	float r2 = 0.001f;
-	this->GetRenderer()->ResetCameraClippingRange(r1, r2, r1, r2, r1, r2);
+	this->activeCameraCallback = vtkCallbackCommand::New();
+
+	this->activeCameraCallback->SetCallback(
+	        [](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
+	        {
+		        vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
+
+		        view->cameraModifiedCallback = vtkCallbackCommand::New();
+
+		        view->cameraModifiedCallback->SetCallback(
+				        [](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
+				        {
+					        vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
+					        view->getGlobe()->updateGlobeTileVisibility();
+				        });
+		        view->cameraModifiedCallback->SetClientData(clientdata);
+
+		        vtkRenderer * renderer = vtkRenderer::SafeDownCast(object);
+
+		        renderer->GetActiveCamera()->AddObserver(vtkCommand::ModifiedEvent, view->cameraModifiedCallback);
+	        });
+	this->activeCameraCallback->SetClientData(this);
+
+	this->GetRenderer()->AddObserver(vtkCommand::ActiveCameraEvent, this->activeCameraCallback);
 }
 
 void vtkPVStuproView::registerTimerCallback()

@@ -1,16 +1,13 @@
 #ifndef KRONOS_PVVIEW_H
 #define KRONOS_PVVIEW_H
 
+#include <vtkCallbackCommand.h>
 #include <vtkPVRenderView.h>
 #include <vtkSetGet.h>
+#include <vtkSmartPointer.h>
 #include <vtkWin32Header.h>
-#include <iostream>
 #include <memory>
-
-// TODO/FIXME: Somehow, VS13 needs an include for std::memory here instead of
-// a normal forward-declarion.
 #include <Globe/Globe.hpp>
-//class Globe;
 
 /**
  * This class represents our own, custom vtkPVRenderView. It is responsible
@@ -125,6 +122,9 @@ private:
 	float planeSize;
 	float displayModeInterpolation;
 	float heightFactor;
+	vtkSmartPointer<vtkCallbackCommand> clipCallback;
+	vtkSmartPointer<vtkCallbackCommand> activeCameraCallback;
+	vtkSmartPointer<vtkCallbackCommand> cameraModifiedCallback;
 };
 
 #endif

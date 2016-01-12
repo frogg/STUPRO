@@ -3,6 +3,8 @@
 
 #include <Globe/Globe.hpp>
 #include <Utils/Math/Rect.hpp>
+#include <Utils/Math/Vector2.hpp>
+#include <Utils/Math/Vector3.hpp>
 #include <vtkActor.h>
 #include <vtkShader2.h>
 #include <vtkSmartPointer.h>
@@ -55,12 +57,21 @@ public:
 		/**
 		 * Normalizes the location by clamping the tiles to [0;(zoomLevel+1)*2] and [0;zoomLevel+1].
 		 */
-		Location getNormalized() const;
+		Location getClampedLocation() const;
 
 		/**
 		 * Returns the starting/ending longitude/latitude of the tile this location describes.
 		 */
 		RectF getBounds() const;
+		
+		/**
+		 * Returns the normal vector of this tile when displayed in globe mode.
+		 * 
+		 * @param interpolation
+		 *        Bilinear interpolation coefficient for the position within the rectangle:
+		 *        0 => left/top, 0.5 => center, 1 => right/bottom
+		 */
+		Vector3f getNormalVector(Vector2f interpolation = Vector2f(0.5f, 0.5f)) const;
 	};
 
 	/**

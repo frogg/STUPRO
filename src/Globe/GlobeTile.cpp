@@ -2,22 +2,25 @@
 #include <Utils/Graphics/TextureLoad.hpp>
 #include <Utils/Math/Functions.hpp>
 #include <Utils/Math/Vector2.hpp>
+#include <Utils/Math/Vector3.hpp>
+#include <Utils/Misc/Macros.hpp>
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
+#include <vtkProp.h>
 #include <vtkProperty.h>
 #include <vtkRenderer.h>
 #include <vtkShader2Collection.h>
 #include <vtkShaderProgram2.h>
 #include <vtkUniformVariables.h>
-#include <string>
+#include <cmath>
 
 extern const char* GlobeShader_fsh;
 extern const char* GlobeShader_vsh;
 
-GlobeTile::Location GlobeTile::Location::getNormalized() const
+GlobeTile::Location GlobeTile::Location::getClampedLocation() const
 {
 	return Location(zoomLevel, absoluteModulo<int>(longitude, (1 << zoomLevel) * 2),
-			absoluteModulo<int>(latitude, (1 << zoomLevel)));
+	        absoluteModulo<int>(latitude, (1 << zoomLevel)));
 }
 
 RectF GlobeTile::Location::getBounds() const
@@ -26,8 +29,31 @@ RectF GlobeTile::Location::getBounds() const
 	return RectF(longitude * size - 180.f, 90.f - latitude * size - size, size, size);
 }
 
+Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const
+{
+	RectF bounds = getBounds();
+	float lat = interpolateLinear(bounds.x, bounds.x2(), interpolation.x);
+	float lon = interpolateLinear(bounds.y, bounds.y2(), interpolation.y);
+
+	// Converts a lat/long flat position into a x/y/z globe position.
+	lon = lon * KRONOS_PI / 360.f;
+	lat = lat * KRONOS_PI / 180.f;
+
+	float cosLat = cos(lat);
+	float sinLat = sin(lat);
+	float cosLon = cos(lon);
+	float sinLon = sin(lon);
+	float x = -cosLat * cosLon;
+	float y = sinLat;
+	float z = cosLat * sinLon;
+
+	return Vector3f(x, y, z);
+}
+
 GlobeTile::GlobeTile(const Globe & globe, Location location) :
-		myGlobe(globe), myLocation(location), myIsVisible(false)
+		myGlobe(globe),
+		myLocation(location),
+		myIsVisible(false)
 {
 	// Initialize members.
 	myLowerHeight = 0.f;
@@ -114,7 +140,7 @@ void GlobeTile::initShaders()
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
 	float globeRadius = GLOBE_RADIUS;
-    float planeSize = PLANE_SIZE;
+	float planeSize = PLANE_SIZE;
 	float displayModeInterpolation = 0.f;
 	float heightFactor = 100.f;
 
@@ -167,7 +193,7 @@ void GlobeTile::updateUniforms()
 void GlobeTile::setVisibility(bool visible)
 {
 	myIsVisible = visible;
-	
+
 	myActor->SetVisibility(visible);
 }
 

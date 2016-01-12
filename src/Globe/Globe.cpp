@@ -6,20 +6,21 @@
  */
 
 #include <Globe/Globe.hpp>
-#include <Utils/TileDownload/ImageTile.hpp>
-#include <Utils/TileDownload/MetaImage.hpp>
-#include <qimage.h>
+#include <Globe/GlobeTile.hpp>
 #include <qmap.h>
+#include <Utils/Misc/Macros.hpp>
+#include <Utils/Misc/MakeUnique.hpp>
+#include <Utils/TileDownload/ImageTile.hpp>
 #include <vtkAlgorithm.h>
+#include <vtkCamera.h>
+#include <vtkMatrix4x4.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkSphereSource.h>
-#include <View/vtkPVStuproView.h>
-#include <Globe/GlobeTile.hpp>
-#include <Utils/Misc/MakeUnique.hpp>
-#include <Utils/Misc/Macros.hpp>
-#include <Eigen-v3.2.6/Dense>
 #include <cmath>
+#include <cstddef>
 
 Globe::Globe(vtkRenderer & renderer) :
 		myRenderer(renderer), myDownloader([=](ImageTile tile)
@@ -83,7 +84,7 @@ GlobeTile & Globe::getTileAt(int lon, int lat) const
 
 unsigned int Globe::getTileIndex(int lon, int lat) const
 {
-	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getNormalized();
+	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getClampedLocation();
 
 	return (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
 }
@@ -166,6 +167,18 @@ bool Globe::checkIfRepaintIsNeeded()
 void Globe::updateGlobeTileVisibility()
 {
 	// TODO: Update globe tile visibility based on camera position!
+	vtkCamera * camera = getRenderer().GetActiveCamera();
+	
+	Vector3d cameraDirectionDouble;
+	camera->GetDirectionOfProjection(cameraDirectionDouble.array());
+
+	Vector3f cameraDirection = Vector3f(cameraDirectionDouble);
+	
+	vtkSmartPointer<vtkMatrix4x4> normalTransform = vtkMatrix4x4::New();
+	normalTransform->DeepCopy(camera->GetModelViewTransformMatrix());
+	normalTransform->Invert();
+	normalTransform->Transpose();
+	
 	unsigned int height = 1 << myZoomLevel;
 	unsigned int width = height * 2;
 
@@ -180,7 +193,28 @@ void Globe::updateGlobeTileVisibility()
 				continue;
 			}
 			
-			//myTiles[index]->setVisibility(false);
+			GlobeTile & tile = *myTiles[index];
+			
+			bool visible = true;
+			
+			Vector3f tileNormal = tile.getLocation().getNormalVector();
+			
+			float arrayNormal[4];
+			arrayNormal[0] = tileNormal.x;
+			arrayNormal[1] = tileNormal.y;
+			arrayNormal[2] = tileNormal.z;
+			arrayNormal[3] = 0.f;
+			
+			normalTransform->MultiplyPoint(arrayNormal, arrayNormal);
+			
+			Vector3f transformedTileNormal(arrayNormal);
+			
+			if (transformedTileNormal.dot(cameraDirection) < 0.f)
+			{
+				visible = false;
+			}
+			
+			tile.setVisibility(visible);
 		}
 	}
 }
