@@ -64,11 +64,12 @@ vtkKronosReader::vtkKronosReader() : cameraPos(),globeRadius(0.0),distanceToFoca
 
 vtkKronosReader::~vtkKronosReader()
 {
-
+    
 }
 void vtkKronosReader::SetFileName(std::string name){
     //Set Filename
     this->fileName=QString::fromStdString(name);
+    this->jsonReader = JsonReaderFactory::createReader(this->fileName);
 }
 
 void vtkKronosReader::SetCameraPos(double x,double y,double z){
@@ -117,14 +118,16 @@ int vtkKronosReader::RequestData(
     
     cout << "ZOOMLEVEL " << zoomLevel << endl;
     
-    JsonReader jsonReader = JsonReaderFactory::createReader(this->fileName);
+    if(this->jsonReader!=nullptr){
+        vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(this->zoomLevel);
+        
+        
+        output->SetPoints(polyData->GetPoints());
+        
+        output->SetVerts(polyData->GetVerts());
+    }
     
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(this->zoomLevel);
 
-
-    output->SetPoints(polyData->GetPoints());
-    
-    output->SetVerts(polyData->GetVerts());
 
   return 1;
 }

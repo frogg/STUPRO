@@ -5,6 +5,8 @@
 #include "vtkPolyDataAlgorithm.h"
 #include "Utils/Math/Vector3.hpp"
 #include "QString"
+#include <Reader/DataReader/JsonReaderFactory.hpp>
+#include <Reader/DataReader/JsonReader.hpp>
 class vtkKronosReader : public vtkPolyDataAlgorithm {
 public:
     vtkTypeMacro(vtkKronosReader, vtkPolyDataAlgorithm);
@@ -31,6 +33,7 @@ private:
     double distanceToFocalPoint;
     int zoomLevel;
     QString fileName;
+    std::unique_ptr<JsonReader> jsonReader;
 
 };
 

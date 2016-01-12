@@ -52,7 +52,7 @@ public:
      * @return A JSON reader for the given file that will handle the file's contents with respect
      * to its meta information
      */
-    static JsonReader createReader(const QString filename);
+    static std::unique_ptr<JsonReader> createReader(const QString filename);
 private:
 	/**
 	 * This QMap maps the string notation of a data type (e.g. 'cities') as present in a JSON file's
