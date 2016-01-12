@@ -44,7 +44,7 @@ int SphericalToCartesianFilter::RequestData(vtkInformation *info,
 
 	return this->Superclass::RequestData(info, inputVector, outputVector);
 
-    // TODO: Fix outline view (should look like an sphere source outline)
+    // TODO: Generate correct surface normals here or correct transformation
 }
 
 void SphericalToCartesianFilter::PrintSelf(ostream &os, vtkIndent indent) {

@@ -37,16 +37,19 @@ private:
         const double lat = gps.y * M_PI / 180;
         const double radius = baseAltitude + gps.z;
 
-        derivatives.z = Vector3<T>(world);
+        derivatives.x.z = world.x;
+        derivatives.y.z = world.y;
+        derivatives.z.z = world.z;
 
         world *= radius;
 
-        derivatives.x = Vector3<T>(world);
-        derivatives.x.y = 0;
+        derivatives.x.x = world.x * M_PI / 180;
+        derivatives.y.x = 0;
+        derivatives.z.x = world.z * M_PI / 180;
 
-        derivatives.y.x = -sin(lat)*sin(lon)*radius;
-        derivatives.y.y = cos(lat)*radius;
-        derivatives.y.z = -sin(lat)*cos(lon)*radius;
+        derivatives.x.y = -sin(lat)*sin(lon)*radius* M_PI / 180;
+        derivatives.y.y = cos(lat)*radius* M_PI / 180;
+        derivatives.z.y = -sin(lat)*cos(lon)*radius* M_PI / 180;
     }
 
     template<typename T> void worldToGPSCoordinates(const Vector3<T> world, Vector3<T> &gps) {
