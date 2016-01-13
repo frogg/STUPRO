@@ -8,6 +8,7 @@
 #include <Utils/Misc/Macros.hpp>
 
 #include <exception>
+#include <memory>
 
 /**
  * Super class for all exceptions thrown while a JSON file is being loaded.

@@ -7,6 +7,8 @@
 #include "QString"
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
+#include <memory>
+
 class vtkKronosReader : public vtkPolyDataAlgorithm {
 public:
     vtkTypeMacro(vtkKronosReader, vtkPolyDataAlgorithm);
