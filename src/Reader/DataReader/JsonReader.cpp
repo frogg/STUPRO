@@ -24,6 +24,7 @@
 
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal) : 
         dataType(dataType), temporal(temporal) {
+    this->cachingEnabled = true;
     this->pointDataSet = PointDataSet();
     this->indexDataPoints(jsonDocument["children"], 0);
 }
@@ -131,7 +132,33 @@ bool JsonReader::hasTemporalData() const {
     return temporal;
 }
 
+void JsonReader::setCachingEnabled(bool cachingEnabled) {
+    this->cachingEnabled = cachingEnabled;
+}
+
+bool JsonReader::isCachingEnabled() const {
+    return this->cachingEnabled;
+}
+
+void JsonReader::cacheAllData() {
+    this->setCachingEnabled(true);
+    
+    for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
+            i++) {
+        this->getVtkDataSet(i);
+    }
+}
+
+void JsonReader::clearCache() {
+    this->cache.clear();
+}
+
 vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
+    // If possible, retrieve the data set from the cache
+    if (this->cachingEnabled && this->cache.contains(zoomLevel)) {
+        return this->cache.value(zoomLevel);
+    }
+    
     // Create an empty data set and a point array the data set will contain
     vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
@@ -361,6 +388,11 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     }
     
     dataSet->GetPointData()->AddArray(priorities);
+    
+    // Save the data set to the cached if desired
+    if (this->cachingEnabled) {
+        this->cache.insert(zoomLevel, dataSet);
+    }
     
     return dataSet;
 }

@@ -3,6 +3,7 @@
 
 #include <Utils/Misc/Macros.hpp>
 #include <QString>
+#include <QMap>
 
 #include <vtkSmartPointer.h>
 #include <rapidjson/document.h>
@@ -43,6 +44,31 @@ public:
      * point's data stored in the data point's scalar values.
      */
     vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel);
+    
+    /**
+     * Specify whether vtkPolyData for a specific zoom level should be cached after it has been
+     * created using the method `getVtkDataSet(int zoomLevel)` and be retrieved from the cache
+     * in subsequent method calls.
+     * @param cachingEnabled True if data should be cached, false otherwise
+     */
+    void setCachingEnabled(bool cachingEnabled);
+    
+    /**
+     * Check whether this reader caches vtkPolyData.
+     * @return True if data is being cached, false otherwise
+     */
+    bool isCachingEnabled() const;
+    
+    /**
+     * Cache vtkPolyData for all possible zoom levels. This will take some time for once but enable
+     * quick retrieval for future method calls.
+     */
+    void cacheAllData();
+    
+    /**
+     * Clear all cached vtkPolyData
+     */
+    void clearCache();
 
 private:
     /**
@@ -60,12 +86,22 @@ private:
      * A set of all points and their stored information read by this reader
      */
     PointDataSet pointDataSet;
+    
+    /**
+     * A map with cached vtkPolyData for specified zoom levels
+     */
+    QMap<int, vtkSmartPointer<vtkPolyData>> cache;
+    
+    /**
+     * Boolean flag denoting whether a cache should be used
+     */
+    bool cachingEnabled;
 
     /**
      * Iterate through a JSON representation of data points and save them to the PointDataSet this
      * reader holds.
-     * @param jsonValue ...
-     * @param depth ...
+     * @param jsonValue JSON object to be used
+     * @param depth Current recursion depth
      */
     void indexDataPoints(rapidjson::Value& jsonValue, int depth);
 };
