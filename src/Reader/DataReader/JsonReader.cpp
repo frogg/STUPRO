@@ -257,10 +257,13 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             
         case DataType::FLIGHTS: {
             vtkSmartPointer<vtkDoubleArray> destinations = vtkSmartPointer<vtkDoubleArray>::New();
-            // Twice the amount of components since destination coordinates are tuples
-            destinations->SetNumberOfComponents(relevantDataPoints.size() * 2);
+            vtkIdType numberOfTuples[1];
+            numberOfTuples[0] = relevantDataPoints.size();
+            destinations->SetNumberOfComponents(2);
+            destinations->SetNumberOfTuples(*numberOfTuples);
             destinations->SetName("destinations");
             
+            int tupleNumber = 0;
             for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
                     iterator != relevantDataPoints.end(); ++iterator) {
                 const FlightDataPoint* dataPoint = dynamic_cast<const FlightDataPoint*>(
@@ -268,10 +271,13 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
                 );
                 
                 // Insert the new destination as a new tuple of latitude and longitude
-                //destinations->InsertNextTuple2(
-                //    dataPoint->getDestination().lat(),
-                //    dataPoint->getDestination().lon()
-                //);
+                double coordinates[2] = {
+                    dataPoint->getDestination().lat(),
+                    dataPoint->getDestination().lon()
+                };
+                destinations->SetTuple(tupleNumber, coordinates);
+                
+                tupleNumber++;
             }
 
             dataSet->GetPointData()->AddArray(destinations);
