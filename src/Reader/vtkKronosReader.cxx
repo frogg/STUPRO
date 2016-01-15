@@ -66,11 +66,17 @@ vtkKronosReader::~vtkKronosReader()
 {
     
 }
+
+
+
 void vtkKronosReader::SetFileName(std::string name){
     //Set Filename
     this->fileName=QString::fromStdString(name);
     this->jsonReader = JsonReaderFactory::createReader(this->fileName);
+   // this->jsonReader->cacheAllData();
 }
+
+
 
 void vtkKronosReader::SetCameraPos(double x,double y,double z){
     this->cameraPos = Vector3d(x,y,z);

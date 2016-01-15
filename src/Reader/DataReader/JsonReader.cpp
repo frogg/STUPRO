@@ -268,10 +268,10 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
                 );
                 
                 // Insert the new destination as a new tuple of latitude and longitude
-                destinations->InsertNextTuple2(
-                    dataPoint->getDestination().lat(),
-                    dataPoint->getDestination().lon()
-                );
+                //destinations->InsertNextTuple2(
+                //    dataPoint->getDestination().lat(),
+                //    dataPoint->getDestination().lon()
+                //);
             }
 
             dataSet->GetPointData()->AddArray(destinations);
