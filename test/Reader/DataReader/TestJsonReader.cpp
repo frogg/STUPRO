@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <string>
+#include <memory>
 
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
@@ -21,14 +22,15 @@
 #include <vtkDoubleArray.h>
 
 TEST(TestJsonReader, ReadCityData) {
-	JsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
+	std::unique_ptr<JsonReader> cityReader = 
+			JsonReaderFactory::createReader("res/test-data/cities.json");
 	EXPECT_EQ(
 		4,
-		cityReader.pointDataSet.getDataPoints().size()
+		cityReader->pointDataSet.getDataPoints().size()
 	);
 	
 	const CityDataPoint* firstDataPoint = dynamic_cast<const CityDataPoint*>(
-		cityReader.pointDataSet.getDataPoints().at(1)
+		cityReader->pointDataSet.getDataPoints().at(1)
 	);
 	
 	EXPECT_EQ(
@@ -48,14 +50,15 @@ TEST(TestJsonReader, ReadCityData) {
 }
 
 TEST(TestJsonReader, ReadTwitterData) {
-	JsonReader twitterReader = JsonReaderFactory::createReader("res/test-data/tweets.json");
+	std::unique_ptr<JsonReader> twitterReader =
+			JsonReaderFactory::createReader("res/test-data/tweets.json");
 	EXPECT_EQ(
 		3,
-		twitterReader.pointDataSet.getDataPoints().size()
+		twitterReader->pointDataSet.getDataPoints().size()
 	);
 	
 	const TweetDataPoint* testDataPoint = dynamic_cast<const TweetDataPoint*>(
-		twitterReader.pointDataSet.getDataPoints().at(1)
+		twitterReader->pointDataSet.getDataPoints().at(1)
 	);
 	
 	EXPECT_EQ(
@@ -85,10 +88,11 @@ TEST(TestJsonReader, ReadTwitterData) {
 }
 
 TEST(TestJsonReader, TestPointCoordinatesInVtkPolyData) {
-	JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cities.json");
+	std::unique_ptr<JsonReader> jsonReader =
+			JsonReaderFactory::createReader("res/test-data/cities.json");
 	
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(9);
-	vtkSmartPointer<vtkPolyData> lessPolyData = jsonReader.getVtkDataSet(0);
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(9);
+	vtkSmartPointer<vtkPolyData> lessPolyData = jsonReader->getVtkDataSet(0);
     
 	// Test the actual points along with their coordinates
 	
@@ -122,8 +126,9 @@ TEST(TestJsonReader, TestPointCoordinatesInVtkPolyData) {
 }
 
 TEST(TestJsonReader, WriteCitiesToVtkPolyData) {
-    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cities.json");	
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+    std::unique_ptr<JsonReader> jsonReader =
+			JsonReaderFactory::createReader("res/test-data/cities.json");	
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority")
 	);
 
@@ -167,8 +172,9 @@ TEST(TestJsonReader, WriteCitiesToVtkPolyData) {
 }
 
 TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
-    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/flights.json");
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+    std::unique_ptr<JsonReader> jsonReader =
+			JsonReaderFactory::createReader("res/test-data/flights.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority")
 	);
 
@@ -217,8 +223,9 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 }
 
 TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
-    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/tweets.json");
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+    std::unique_ptr<JsonReader> jsonReader =
+			JsonReaderFactory::createReader("res/test-data/tweets.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority")
 	);
 
@@ -300,8 +307,9 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 }
 
 TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
-    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/precipitation.json");
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+    std::unique_ptr<JsonReader> jsonReader =
+			JsonReaderFactory::createReader("res/test-data/precipitation.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority")
 	);
 
@@ -364,8 +372,9 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 }
 
 TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
-    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/temperature.json");
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+    std::unique_ptr<JsonReader> jsonReader =
+			JsonReaderFactory::createReader("res/test-data/temperature.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority")
 	);
 
@@ -428,8 +437,9 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 }
 
 TEST(TestJsonReader, WriteWindToVtkPolyData) {
-    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/wind.json");
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+    std::unique_ptr<JsonReader> jsonReader =
+			JsonReaderFactory::createReader("res/test-data/wind.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority")
 	);
 
@@ -511,8 +521,9 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 }
 
 TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
-    JsonReader jsonReader = JsonReaderFactory::createReader("res/test-data/cloud-coverage.json");
-    vtkSmartPointer<vtkPolyData> polyData = jsonReader.getVtkDataSet(
+    std::unique_ptr<JsonReader> jsonReader =
+			JsonReaderFactory::createReader("res/test-data/cloud-coverage.json");
+    vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(
 		Configuration::getInstance().getInteger("dataReader.maximumPriority")
 	);
 
