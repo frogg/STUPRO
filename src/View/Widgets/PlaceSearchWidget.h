@@ -5,16 +5,17 @@
 #include <QWidget>
 
 class PlaceSearchWidget : public QWidget {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
-    PlaceSearchWidget(QWidget* parent = 0);
+    // PlaceSearchWidget(const QString & title, QWidget * parent = 0, Qt::WindowFlags flags = 0);
+    PlaceSearchWidget(QWidget * parent = 0, Qt::WindowFlags flags = 0);
     ~PlaceSearchWidget() {}
 
 private:
     QLineEdit* searchBar;
 
-private slots:
+public slots:
     void startSearch();
 };
 
