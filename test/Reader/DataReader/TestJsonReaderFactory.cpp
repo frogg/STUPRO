@@ -7,7 +7,6 @@
 #include <Reader/DataReader/DataType.hpp>
 
 TEST(TestJsonReaderFactory, ReadValidFiles) {
-    /*
 	// Test reading some city data
 	JsonReader cityReader = JsonReaderFactory::createReader("res/test-data/cities.json");
 
@@ -33,11 +32,9 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 		tweetReader.hasTemporalData(),
 		true
 	);
-     */
 }
 
 TEST(TestJsonReaderFactory, ReadInvalidFiles) {
-    /*
 	EXPECT_THROW(
 		JsonReaderFactory::createReader("res/test-data/non-existant.json"),
 		JsonReaderFileOpenException
@@ -47,5 +44,4 @@ TEST(TestJsonReaderFactory, ReadInvalidFiles) {
 		JsonReaderFactory::createReader("res/test-data/invalid.json"),
 		JsonReaderParseException
 	);
-    */
 }
