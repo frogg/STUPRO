@@ -5,7 +5,7 @@ using namespace pqxx;
 
 class PostgresDB {
 public:
-    PostgresDB(const std::string &databaseName, const std::string &user, const std::string &password, const std::string &hostaddr, const std::string &port);
+    explicit PostgresDB(const std::string &databaseName, const std::string &user, const std::string &password, const std::string &hostaddr, const std::string &port);
     int openDatabase();
     void closeDatabase();
 

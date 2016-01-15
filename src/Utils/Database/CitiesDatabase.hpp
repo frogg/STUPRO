@@ -6,9 +6,12 @@ using namespace pqxx;
 
 class CitiesDatabase : public PostgresDB {
 public:
-    void createTable();
+    CitiesDatabase (const std::string &databaseName, const std::string &user, const std::string &password, const std::string &hostaddr, const std::string &port) : PostgresDB(databaseName,user,password, hostaddr, port){
+        
+    };
+    void createCitiesTable();
     void insertOperation();
-    void selectOperation();
+   // void selectOperation();
 };
 
 

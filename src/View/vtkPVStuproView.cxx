@@ -3,7 +3,7 @@
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Utils/Config/Configuration.hpp>
 
-#include <Utils/Database/PostgresDB.hpp>
+#include <Utils/Database/CitiesDatabase.hpp>
 
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
@@ -29,10 +29,9 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	registerTimerCallback();
 	initGlobe();
 
-	PostgresDB db ("testdb","stuproTest","quappi","127.0.0.1","5432");
-    //this->dbConnection = new connection("dbname=testdb user=stuproTest password=quappi
-    //hostaddr=127.0.0.1 port=5432");
+	CitiesDatabase db ("testdb","stuproTest","quappi","127.0.0.1","5432");
 	db.openDatabase();
+    db.createCitiesTable();
 }
 
 void vtkPVStuproView::initParameters()
