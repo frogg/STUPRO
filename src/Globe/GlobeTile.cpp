@@ -32,12 +32,12 @@ RectF GlobeTile::Location::getBounds() const
 Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const
 {
 	RectF bounds = getBounds();
-	float lat = interpolateLinear(bounds.x, bounds.x2(), interpolation.x);
-	float lon = interpolateLinear(bounds.y, bounds.y2(), interpolation.y);
+	float lon = interpolateLinear(bounds.x, bounds.x2(), interpolation.x);
+	float lat = interpolateLinear(bounds.y, bounds.y2(), interpolation.y);
 
 	// Converts a lat/long flat position into a x/y/z globe position.
-	lon = lon * 2.f*KRONOS_PI / 360.f;
-	lat = lat * 0.5f*KRONOS_PI / 180.f;
+	lon = (lon + 90.f) * 2.f * KRONOS_PI / 360.f;
+	lat = lat * 0.5f * KRONOS_PI / 180.f;
 
 	float cosLat = cos(lat);
 	float sinLat = sin(lat);
@@ -46,6 +46,12 @@ Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const
 	float x = -cosLat * cosLon;
 	float y = sinLat;
 	float z = cosLat * sinLon;
+	
+	if (this->latitude == 0 && this->longitude == 0)
+	{
+		std::cout << "exp: " << Vector3f(-1, 1, -1).norm().x << " " << Vector3f(-1, 1, -1).norm().y << " " << Vector3f(-1, 1, -1).norm().z << std::endl;
+		std::cout << "got: " << x << " " << y << " " << z << std::endl;
+	}
 
 	return Vector3f(x, y, z);
 }

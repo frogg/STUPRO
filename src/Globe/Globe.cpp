@@ -24,7 +24,7 @@
 
 Globe::Globe(vtkRenderer & renderer) :
 		myRenderer(renderer), myDownloader([=](ImageTile tile)
-		{	onTileLoad(tile);}), myZoomLevel(1), myDisplayModeInterpolation(0)
+		{	onTileLoad(tile);}), myZoomLevel(3), myDisplayModeInterpolation(0)
 {
 
 	createOBBTrees();
@@ -173,6 +173,7 @@ void Globe::updateGlobeTileVisibility()
 	camera->GetDirectionOfProjection(cameraDirectionDouble.array());
 
 	Vector3f cameraDirection = Vector3f(cameraDirectionDouble);
+	cameraDirection = Vector3f(0.f, 0.f, -1.f);
 	
 	vtkSmartPointer<vtkMatrix4x4> normalTransform = vtkMatrix4x4::New();
 	normalTransform->DeepCopy(camera->GetModelViewTransformMatrix());
@@ -209,7 +210,7 @@ void Globe::updateGlobeTileVisibility()
 			
 			Vector3f transformedTileNormal(arrayNormal);
 			
-			if (transformedTileNormal.dot(cameraDirection) < 0.f)
+			if (transformedTileNormal.dot(cameraDirection) > 0.f)
 			{
 				visible = false;
 			}
