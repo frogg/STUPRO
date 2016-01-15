@@ -42,12 +42,12 @@ for index, item in enumerate(csv_content):
     all_flights.append(
         {
             'startPosition': {
-                'longitude': item['srcLongitude'],
-                'latitude': item['srcLatitude']
+                'longitude': float(item['srcLongitude']),
+                'latitude': float(item['srcLatitude'])
             },
             'endPosition': {
-                'longitude': item['destLongitude'],
-                'latitude': item['destLatitude']
+                'longitude': float(item['destLongitude']),
+                'latitude': float(item['destLatitude'])
             },
             'length': distance(
                 float(item['srcLatitude']), float(item['srcLongitude']),
@@ -80,8 +80,8 @@ for index in range(1, maximal_zoom_level - 1):
         current_distance = maxint
         for parent_index, parent in enumerate(new_tree):
             parent_distance = distance(
-                float(item['startPosition']['latitude']), float(item['startPosition']['longitude']),
-                float(parent['startPosition']['latitude']), float(parent['startPosition']['longitude'])
+                item['startPosition']['latitude'], item['startPosition']['longitude'],
+                parent['startPosition']['latitude'], parent['startPosition']['longitude']
             )
             
             if (parent_distance < current_distance):
