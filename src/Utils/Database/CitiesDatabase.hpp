@@ -11,6 +11,7 @@ public:
     };
     void createCitiesTable();
     void insertOperation();
+    void getCity();
    // void selectOperation();
 };
 
