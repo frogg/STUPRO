@@ -26,7 +26,7 @@ static QMap<QString, int> dataTypeMap() {
 
 const QMap<QString, int> JsonReaderFactory::DATA_TYPES = dataTypeMap();
 
-std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filename) {
+JsonReader JsonReaderFactory::createReader(const QString filename) {
     // Open the JSON file while checking for potential errors
     QFile jsonFile(filename);
     QFileInfo jsonFileInfo(filename);
@@ -54,9 +54,9 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 
     // Extract meta data and create a new JSON reader
     rapidjson::Value& metaData = jsonDocument["meta"];
-    std::unique_ptr<JsonReader> jsonReader = makeUnique<JsonReader>(jsonDocument["root"],
-                                                       JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
-                                                       metaData["temporal"].GetBool()
-                                                       );
-    return std::move(jsonReader);
+    return JsonReader(
+        jsonDocument["root"],
+        JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
+        metaData["temporal"].GetBool()
+    );
 }
