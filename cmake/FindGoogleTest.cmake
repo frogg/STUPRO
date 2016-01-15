@@ -7,8 +7,6 @@ set(GTest_FOUND "NO")
 find_package(GTest QUIET)
 
 if (NOT ${GTEST_FOUND})
-	message("The Google Testing Framework was not found in the system path."
-		"Trying some manual adjusted paths instead...")
 	set(GTest_LIB "${CMAKE_BINARY_DIR}/gtest/googletest/"
 		CACHE PATH
 		"Path to GTest build"
@@ -53,7 +51,6 @@ if (NOT ${GTEST_FOUND})
 
 	if(EXISTS ${GTest_INCLUDES})
 		set(GTEST_INCLUDE_DIRS ${GTest_INCLUDES})
-		message("Setting gtest include path to ${GTEST_INCLUDE_DIRS}")
 	else()
 		message(FATAL_ERROR
 			"GTest includes not found, enter the path to the GTest include directory in GTest_INCLUDES"
