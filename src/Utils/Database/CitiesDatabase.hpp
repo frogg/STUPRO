@@ -1,19 +1,17 @@
 #include <pqxx/pqxx>
+#include <Utils/Database/PostgresDB.hpp>
 
 using namespace std;
 using namespace pqxx;
 
-class TestDb {
+class CitiesDatabase : public PostgresDB {
 public:
-    TestDb();
-
-    int openDatabase();
-    void closeDatabase();
-
     void createTable();
     void insertOperation();
     void selectOperation();
-
-private:
-    connection* dbConnection;
 };
+
+
+
+
+
