@@ -71,14 +71,28 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
                 );
                 break;                
             case DataType::PRECIPITATION:
-                dataPoint = new PrecipitationDataPoint(
-                    Coordinate(
-                        jsonValue[i]["latitude"].GetDouble(),
-                        jsonValue[i]["longitude"].GetDouble()
-                    ),
-                    depth,
-                    jsonValue[i]["timestamp"].GetInt(),
-                    (float) jsonValue[i]["precipitationRate"].GetDouble()
+				int precipitationType = PrecipitationDataPoint::NOPRECIPITATION;
+				if (jsonValue[i]["precipitationType"].GetString() == "rain") {
+					precipitationType = PrecipitationDataPoint::RAIN;
+				} else if (jsonValue[i]["precipitationType"].GetString() == "snow") {
+					precipitationType = PrecipitationDataPoint::SNOW;
+				} else if (jsonValue[i]["precipitationType"].GetString() == "sleet") {
+					precipitationType = PrecipitationDataPoint::SLEET;
+				} else if (jsonValue[i]["precipitationType"].GetString() == "hail") {
+					precipitationType = PrecipitationDataPoint::HAIL;
+				} else if (jsonValue[i]["precipitationType"].GetString() == "NoData") {
+					precipitationType = PrecipitationDataPoint::NOPRECIPITATION;
+				}
+				
+				dataPoint = new PrecipitationDataPoint(
+					Coordinate(
+					jsonValue[i]["latitude"].GetDouble(),
+					jsonValue[i]["longitude"].GetDouble()
+					),
+					depth,
+					jsonValue[i]["timestamp"].GetInt(),
+					(float)jsonValue[i]["precipitationRate"].GetDouble(),
+					precipitationType
                 );
                 break;                
             case DataType::TEMPERATURE:
@@ -313,6 +327,11 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
                 = vtkSmartPointer<vtkTypeFloat32Array>::New();
             precipitationRates->SetNumberOfComponents(relevantDataPoints.size());
             precipitationRates->SetName("precipitationRates");
+
+			vtkSmartPointer<vtkTypeInt32Array> precipitationTypes
+				= vtkSmartPointer<vtkTypeInt32Array>::New();
+			precipitationTypes->SetNumberOfComponents(relevantDataPoints.size());
+			precipitationTypes->SetName("precipitationTypes");
             
             for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
                     iterator != relevantDataPoints.end(); ++iterator) {
@@ -320,9 +339,11 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
                     = dynamic_cast<const PrecipitationDataPoint*>((*iterator));
                 
                 precipitationRates->InsertNextValue(dataPoint->getPrecipitationRate());
+				precipitationTypes->InsertNextValue(dataPoint->getPrecipitationType());
             }
 
             dataSet->GetPointData()->AddArray(precipitationRates);
+			dataSet->GetPointData()->AddArray(precipitationTypes);
             break;
         }
             

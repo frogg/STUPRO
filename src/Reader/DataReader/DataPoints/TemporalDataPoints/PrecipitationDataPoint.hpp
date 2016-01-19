@@ -17,7 +17,7 @@ public:
 	 * @param precipitation The point's precipitation data
 	 */
 	PrecipitationDataPoint(Coordinate coordinate, int priority, int timestamp,
-		float precipitationRate);
+		float precipitationRate, int precipitationType);
 	
 	/**
 	* Get the precipitation rate of this data point.
@@ -25,9 +25,25 @@ public:
 	*/
 	float getPrecipitationRate() const;
 
+	/**
+	 * Get the precipitation Type of this data point.
+	 * The possible Types are: "rain" = 1, "snow" = 2, "sleet" = 3, "hail" = 4, or none applied = 0
+	 * @return The precipitation type of this data point
+	 */
+	int getPrecipitationType() const;
+	
+	/**
+	* Constant to be used if the data represents a set of tweets.
+	*/
+	const static int NOPRECIPITATION = 0;
+	const static int RAIN = 1;
+	const static int SNOW = 2;
+	const static int SLEET = 3;
+	const static int HAIL = 4;
+
 private:
 	float precipitationRate;
-
+	int precipitationType;
 };
 
 #endif
