@@ -46,12 +46,6 @@ Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const
 	float x = -cosLat * cosLon;
 	float y = sinLat;
 	float z = cosLat * sinLon;
-	
-	if (this->latitude == 0 && this->longitude == 0)
-	{
-		std::cout << "exp: " << Vector3f(-1, 1, -1).norm().x << " " << Vector3f(-1, 1, -1).norm().y << " " << Vector3f(-1, 1, -1).norm().z << std::endl;
-		std::cout << "got: " << x << " " << y << " " << z << std::endl;
-	}
 
 	return Vector3f(x, y, z);
 }
@@ -148,7 +142,7 @@ void GlobeTile::initShaders()
 	float globeRadius = GLOBE_RADIUS;
 	float planeSize = PLANE_SIZE;
 	float displayModeInterpolation = 0.f;
-	float heightFactor = 100.f;
+	float heightFactor = 10.f;
 
 	RectF bounds = myLocation.getBounds();
 	Vector2f startBounds = bounds.x1y1();

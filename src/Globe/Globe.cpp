@@ -8,6 +8,7 @@
 #include <Globe/Globe.hpp>
 #include <Globe/GlobeTile.hpp>
 #include <qmap.h>
+#include <Utils/Math/Vector4.hpp>
 #include <Utils/Misc/Macros.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Utils/TileDownload/ImageTile.hpp>
@@ -21,10 +22,14 @@
 #include <vtkSphereSource.h>
 #include <cmath>
 #include <cstddef>
+#include <iostream>
 
 Globe::Globe(vtkRenderer & renderer) :
-		myRenderer(renderer), myDownloader([=](ImageTile tile)
-		{	onTileLoad(tile);}), myZoomLevel(3), myDisplayModeInterpolation(0)
+		myRenderer(renderer),
+		myDownloader([=](ImageTile tile)
+		{	onTileLoad(tile);}),
+		myZoomLevel(3),
+		myDisplayModeInterpolation(0)
 {
 
 	createOBBTrees();
@@ -168,18 +173,21 @@ void Globe::updateGlobeTileVisibility()
 {
 	// TODO: Update globe tile visibility based on camera position!
 	vtkCamera * camera = getRenderer().GetActiveCamera();
-	
-	Vector3d cameraDirectionDouble;
-	camera->GetDirectionOfProjection(cameraDirectionDouble.array());
 
-	Vector3f cameraDirection = Vector3f(cameraDirectionDouble);
-	cameraDirection = Vector3f(0.f, 0.f, -1.f);
-	
+	Vector3f cameraDirection = Vector3f(0.f, 0.f, -1.f);
+
 	vtkSmartPointer<vtkMatrix4x4> normalTransform = vtkMatrix4x4::New();
 	normalTransform->DeepCopy(camera->GetModelViewTransformMatrix());
 	normalTransform->Invert();
 	normalTransform->Transpose();
-	
+
+	double clipNear = -1.f, clipFar = 1.f;
+
+	// Get Model-View-Projection transformation matrix.
+	vtkMatrix4x4 * fullTransform = camera->GetCompositeProjectionTransformMatrix(
+	        (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
+	        clipFar);
+
 	unsigned int height = 1 << myZoomLevel;
 	unsigned int width = height * 2;
 
@@ -188,33 +196,42 @@ void Globe::updateGlobeTileVisibility()
 		for (unsigned int lon = 0; lon < width; ++lon)
 		{
 			std::size_t index = getTileIndex(lon, lat);
-			
+
 			if (index >= myTiles.size())
 			{
 				continue;
 			}
-			
+
 			GlobeTile & tile = *myTiles[index];
-			
+
 			bool visible = true;
-			
-			Vector3f tileNormal = tile.getLocation().getNormalVector();
-			
-			float arrayNormal[4];
-			arrayNormal[0] = tileNormal.x;
-			arrayNormal[1] = tileNormal.y;
-			arrayNormal[2] = tileNormal.z;
-			arrayNormal[3] = 0.f;
-			
-			normalTransform->MultiplyPoint(arrayNormal, arrayNormal);
-			
-			Vector3f transformedTileNormal(arrayNormal);
-			
-			if (transformedTileNormal.dot(cameraDirection) > 0.f)
+
+			Vector4f tileNormal(tile.getLocation().getNormalVector(), 0.f);
+			Vector4f tilePosition(tileNormal.xyz() * GLOBE_RADIUS, 1.f);
+
+			normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
+
+			if (tileNormal.xyz().dot(cameraDirection) > 0.f)
 			{
 				visible = false;
 			}
-			
+			else
+			{
+				fullTransform->MultiplyPoint(tilePosition.array(), tilePosition.array());
+
+				for (std::size_t i = 0; i < 3; ++i)
+				{
+					float & coord = tilePosition.array()[i];
+					coord /= tilePosition.w;
+
+					if (coord < -1.f || coord > 1.f)
+					{
+						visible = false;
+						break;
+					}
+				}
+			}
+
 			tile.setVisibility(visible);
 		}
 	}
@@ -285,7 +302,7 @@ Vector3d Globe::getIntersectionPoint(double plane1[4], double plane2[4], double 
 		planes[2][i] = plane3[i];
 	}
 
-    //calculate intersection of planes and store result in intersectionOfPlanes
+	//calculate intersection of planes and store result in intersectionOfPlanes
 	Vector3d intersectionOfPlanes = cutPlanes(planes);
 
 	// get intersection with world

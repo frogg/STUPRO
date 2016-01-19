@@ -1,26 +1,29 @@
-#ifndef STUPRO_VECTOR3_HPP
-#define STUPRO_VECTOR3_HPP
+#ifndef STUPRO_VECTOR4_HPP
+#define STUPRO_VECTOR4_HPP
 
-#include <Utils/Math/Vector2.hpp>
+#include <Utils/Math/Vector4.hpp>
 #include <Utils/Math/ArithmeticFunctors.hpp>
 #include <limits>
 #include <cmath>
 
 /**
- * Generic 3-dimensional vector class (vector in the mathematical sense).
+ * Generic 4-dimensional vector class (vector in the mathematical sense).
  */
 template<typename T>
-class Vector3
+class Vector4
 {
 public:
 
 	typedef T ValueType;
-	
+
 	/**
 	 * Constructs a zero vector.
 	 */
-	Vector3() :
-			x(0), y(0), z(0)
+	Vector4() :
+			x(0),
+			y(0),
+			z(0),
+			w(0)
 	{
 	}
 
@@ -30,19 +33,26 @@ public:
 	 * @param x The x-coordinate for the vector
 	 * @param y The y-coordinate for the vector
 	 * @param z The z-coordinate for the vector
+	 * @param w The w-coordinate for the vector
 	 */
-	Vector3(T x, T y, T z) :
-			x(x), y(y), z(z)
+	Vector4(T x, T y, T z, T w) :
+			x(x),
+			y(y),
+			z(z),
+			w(w)
 	{
 	}
 
 	/**
 	 * Constructs a vector from an array/pointer.
 	 * 
-	 * @param a The array to construct the vector from (x = a[0], y = a[1], y = a[2])
+	 * @param a The array to construct the vector from (x = a[0], y = a[1], y = a[2], w = a[3])
 	 */
-	Vector3(const T a[]) :
-			x(a[0]), y(a[1]), z(a[2])
+	Vector4(const T a[]) :
+			x(a[0]),
+			y(a[1]),
+			z(a[2]),
+			w(a[3])
 	{
 	}
 
@@ -51,19 +61,40 @@ public:
 	 * 
 	 * @param v The vector to copy the coordinates from.
 	 */
-	Vector3(const Vector3<T> & v) :
-			x(v.x), y(v.y), z(v.z)
+	Vector4(const Vector4<T> & v) :
+			x(v.x),
+			y(v.y),
+			z(v.z),
+			w(v.w)
 	{
 	}
 
 	/**
-	 * Constructs a 3D vector from a 2D vector and a z-coordinate.
+	 * Constructs a 4D vector from a 2D vector and z/w-coordinates.
 	 * 
 	 * @param xy The x and y coordinates for the vector
 	 * @param z The z-coordinate for the vector
+	 * @param w The w-coordinate for the vector
 	 */
-	Vector3(Vector2<T> xy, T z) :
-			x(xy.x), y(xy.y), z(z)
+	Vector4(Vector2<T> xy, T z, T w) :
+			x(xy.x),
+			y(xy.y),
+			z(z),
+			w(w)
+	{
+	}
+
+	/**
+	 * Constructs a 4D vector from a 3D vector and a w-coordinate.
+	 * 
+	 * @param xyz The x, y and z coordinates for the vector
+	 * @param w The w-coordinate for the vector
+	 */
+	Vector4(Vector3<T> xyz, T w) :
+			x(xyz.x),
+			y(xyz.y),
+			z(xyz.z),
+			w(w)
 	{
 	}
 
@@ -73,8 +104,11 @@ public:
 	 * @param v The vector to copy the coordinates from, converting them.
 	 */
 	template<typename T2>
-	explicit Vector3(Vector3<T2> v) :
-			x(v.x), y(v.y), z(v.z)
+	explicit Vector4(Vector4<T2> v) :
+			x(v.x),
+			y(v.y),
+			z(v.z),
+			w(v.w)
 	{
 	}
 
@@ -103,7 +137,7 @@ public:
 	{
 		return &x;
 	}
-	
+
 	/**
 	 * @return A 2D vector with the x and y components of this vector.
 	 */
@@ -113,15 +147,11 @@ public:
 	}
 
 	/**
-	 * Returns the cross product (vector product) of this vector with another one.
-	 * 
-	 * @param v The vector to cross multiply with.
-	 * 
-	 * @return The vectors' components cross-multiplied.
+	 * @return A 3D vector with the x, y and z components of this vector.
 	 */
-	Vector3<T> cross(Vector3<T> v) const
+	Vector3<T> xyz() const
 	{
-		return Vector3<T>(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+		return Vector3<T>(x, y, z);
 	}
 
 	/**
@@ -131,9 +161,9 @@ public:
 	 * 
 	 * @return The vectors' components multiplied pairwise and summed up.
 	 */
-	T dot(Vector3<T> v) const
+	T dot(Vector4<T> v) const
 	{
-		return x * v.x + y * v.y + z * v.z;
+		return x * v.x + y * v.y + z * v.z + w * v.w;
 	}
 
 	/**
@@ -162,9 +192,9 @@ public:
 	 * 
 	 * @return The vector divided by its length
 	 */
-	Vector3<float> norm() const
+	Vector4<float> norm() const
 	{
-		return Vector3<float>(*this) / length();
+		return Vector4<float>(*this) / length();
 	}
 
 	/**
@@ -173,7 +203,7 @@ public:
 	 * 
 	 * @return The vector divided by its length
 	 */
-	Vector3<T> normTyped() const
+	Vector4<T> normTyped() const
 	{
 		return *this / lengthTyped();
 	}
@@ -185,7 +215,7 @@ public:
 	 */
 	bool invalid() const
 	{
-		return x != x || y != y || z != z;
+		return x != x || y != y || z != z || w != w;
 	}
 
 	/**
@@ -204,14 +234,19 @@ public:
 	T z;
 
 	/**
-	 * A zero vector (0, 0, 0).
+	 * The w component of the vector.
 	 */
-	static const Vector3<T> Zero;
+	T w;
 
 	/**
-	 * An invalid vector (NaN, NaN, NaN).
+	 * A zero vector (0, 0, 0, 0).
 	 */
-	static const Vector3<T> Invalid;
+	static const Vector4<T> Zero;
+
+	/**
+	 * An invalid vector (NaN, NaN, NaN, NaN).
+	 */
+	static const Vector4<T> Invalid;
 
 	/**
 	 * Applies a functor with a vector parameter to the vector and returns the result.
@@ -222,11 +257,12 @@ public:
 	 * @return The component-wise result of func(*this, v)
 	 */
 	template<typename F>
-	Vector3<T> genericOperator(Vector3<T> v, F func) const
+	Vector4<T> genericOperator(Vector4<T> v, F func) const
 	{
 		v.x = func(x, v.x);
 		v.y = func(y, v.y);
 		v.z = func(z, v.z);
+		v.w = func(w, v.w);
 		return v;
 	}
 
@@ -239,20 +275,22 @@ public:
 	 * @return A reference to this vector
 	 */
 	template<typename F>
-	Vector3<T> & genericOperatorAssign(Vector3<T> v, F func)
+	Vector4<T> & genericOperatorAssign(Vector4<T> v, F func)
 	{
 		x = func(x, v.x);
 		y = func(y, v.y);
 		z = func(z, v.z);
+		w = func(w, v.w);
 		return *this;
 	}
 };
 
 template<typename T>
-const Vector3<T> Vector3<T>::Zero = Vector3<T>(0, 0, 0);
+const Vector4<T> Vector4<T>::Zero = Vector4<T>(0, 0, 0, 0);
 template<typename T>
-const Vector3<T> Vector3<T>::Invalid = Vector3<T>(std::numeric_limits<T>::signaling_NaN(),
-        std::numeric_limits<T>::signaling_NaN(), std::numeric_limits<T>::signaling_NaN());
+const Vector4<T> Vector4<T>::Invalid = Vector4<T>(std::numeric_limits<T>::signaling_NaN(),
+        std::numeric_limits<T>::signaling_NaN(), std::numeric_limits<T>::signaling_NaN(),
+        std::numeric_limits<T>::signaling_NaN());
 
 /**
  * Negates the vector's components and returns the result.
@@ -262,9 +300,9 @@ const Vector3<T> Vector3<T>::Invalid = Vector3<T>(std::numeric_limits<T>::signal
  * @return The vector with its components negated
  */
 template<typename T>
-Vector3<T> operator-(Vector3<T> v)
+Vector4<T> operator-(Vector4<T> v)
 {
-	return Vector3<T>(-v.x, -v.y, -v.z);
+	return Vector4<T>(-v.x, -v.y, -v.z, -v.w);
 }
 
 /**
@@ -276,7 +314,7 @@ Vector3<T> operator-(Vector3<T> v)
  * @return A vector of the summed up components.
  */
 template<typename T, typename T2>
-Vector3<T> operator+(Vector3<T> v, Vector3<T2> v2)
+Vector4<T> operator+(Vector4<T> v, Vector4<T2> v2)
 {
 	return v.genericOperator(v2, Add<T, T2>());
 }
@@ -290,7 +328,7 @@ Vector3<T> operator+(Vector3<T> v, Vector3<T2> v2)
  * @return A reference to the first vector
  */
 template<typename T, typename T2>
-Vector3<T> & operator+=(Vector3<T> & v, Vector3<T2> v2)
+Vector4<T> & operator+=(Vector4<T> & v, Vector4<T2> v2)
 {
 	return v.genericOperatorAssign(v2, Add<T, T2>());
 }
@@ -304,7 +342,7 @@ Vector3<T> & operator+=(Vector3<T> & v, Vector3<T2> v2)
  * @return A vector of the difference in the components.
  */
 template<typename T, typename T2>
-Vector3<T> operator-(Vector3<T> v, Vector3<T2> v2)
+Vector4<T> operator-(Vector4<T> v, Vector4<T2> v2)
 {
 	return v.genericOperator(v2, Subtract<T, T2>());
 }
@@ -318,7 +356,7 @@ Vector3<T> operator-(Vector3<T> v, Vector3<T2> v2)
  * @return A reference to the first vector.
  */
 template<typename T, typename T2>
-Vector3<T> & operator-=(Vector3<T> & v, Vector3<T2> v2)
+Vector4<T> & operator-=(Vector4<T> & v, Vector4<T2> v2)
 {
 	return v.genericOperatorAssign(v2, Subtract<T, T2>());
 }
@@ -332,7 +370,7 @@ Vector3<T> & operator-=(Vector3<T> & v, Vector3<T2> v2)
  * @return A vector of the multiplied components.
  */
 template<typename T, typename T2>
-Vector3<T> operator*(Vector3<T> v, Vector3<T2> v2)
+Vector4<T> operator*(Vector4<T> v, Vector4<T2> v2)
 {
 	return v.genericOperator(v2, Multiply<T, T2>());
 }
@@ -346,7 +384,7 @@ Vector3<T> operator*(Vector3<T> v, Vector3<T2> v2)
  * @return A reference to the first vector.
  */
 template<typename T, typename T2>
-Vector3<T> & operator*=(Vector3<T> & v, Vector3<T2> v2)
+Vector4<T> & operator*=(Vector4<T> & v, Vector4<T2> v2)
 {
 	return v.genericOperatorAssign(v2, Multiply<T, T2>());
 }
@@ -361,11 +399,11 @@ Vector3<T> & operator*=(Vector3<T> & v, Vector3<T2> v2)
  * @return A vector of the divided components.
  */
 template<typename T, typename T2>
-Vector3<T> operator/(Vector3<T> v, Vector3<T2> v2)
+Vector4<T> operator/(Vector4<T> v, Vector4<T2> v2)
 {
-	if (v2.x == 0 || v2.y == 0 || v2.z == 0)
+	if (v2.x == 0 || v2.y == 0 || v2.z == 0 || v2.w == 0)
 	{
-		return Vector3<T>::Invalid;
+		return Vector4<T>::Invalid;
 	}
 	return v.genericOperator(v2, Divide<T, T2>());
 }
@@ -380,11 +418,11 @@ Vector3<T> operator/(Vector3<T> v, Vector3<T2> v2)
  * @return A reference to the first vector.
  */
 template<typename T, typename T2>
-Vector3<T> & operator/=(Vector3<T> & v, Vector3<T2> v2)
+Vector4<T> & operator/=(Vector4<T> & v, Vector4<T2> v2)
 {
-	if (v2.x == 0 || v2.y == 0 || v2.z == 0)
+	if (v2.x == 0 || v2.y == 0 || v2.z == 0 || v2.w == 0)
 	{
-		return v = Vector3<T>::Invalid;
+		return v = Vector4<T>::Invalid;
 	}
 	return v.genericOperatorAssign(v2, Divide<T, T2>());
 }
@@ -398,9 +436,9 @@ Vector3<T> & operator/=(Vector3<T> & v, Vector3<T2> v2)
  * @return The result of the multiplication
  */
 template<typename T, typename T2>
-Vector3<T> operator*(Vector3<T> v, T2 s)
+Vector4<T> operator*(Vector4<T> v, T2 s)
 {
-	return Vector3<T>(v.x * s, v.y * s, v.z * s);
+	return Vector4<T>(v.x * s, v.y * s, v.z * s, v.w * s);
 }
 
 /**
@@ -412,7 +450,7 @@ Vector3<T> operator*(Vector3<T> v, T2 s)
  * @return A reference to the vector
  */
 template<typename T, typename T2>
-Vector3<T> & operator*=(Vector3<T> & v, T2 s)
+Vector4<T> & operator*=(Vector4<T> & v, T2 s)
 {
 	return v = v * s;
 }
@@ -427,13 +465,13 @@ Vector3<T> & operator*=(Vector3<T> & v, T2 s)
  * @return The result of the division
  */
 template<typename T, typename T2>
-Vector3<T> operator/(Vector3<T> v, T2 s)
+Vector4<T> operator/(Vector4<T> v, T2 s)
 {
 	if (s == 0)
 	{
-		return Vector3<T>::Invalid;
+		return Vector4<T>::Invalid;
 	}
-	return Vector3<T>(v.x / s, v.y / s, v.z / s);
+	return Vector4<T>(v.x / s, v.y / s, v.z / s, v.w / s);
 }
 
 /**
@@ -446,7 +484,7 @@ Vector3<T> operator/(Vector3<T> v, T2 s)
  * @return A reference to the vector
  */
 template<typename T, typename T2>
-Vector3<T> & operator/=(Vector3<T> & v, T2 s)
+Vector4<T> & operator/=(Vector4<T> & v, T2 s)
 {
 	return v = v / s;
 }
@@ -460,9 +498,9 @@ Vector3<T> & operator/=(Vector3<T> & v, T2 s)
  * @return The result of the multiplication
  */
 template<typename T, typename T2>
-Vector3<T> operator*(T2 s, Vector3<T> v)
+Vector4<T> operator*(T2 s, Vector4<T> v)
 {
-	return Vector3<T>(s * v.x, s * v.y, s * v.z);
+	return Vector4<T>(s * v.x, s * v.y, s * v.z, s * v.w);
 }
 
 /**
@@ -475,21 +513,21 @@ Vector3<T> operator*(T2 s, Vector3<T> v)
  * @return The result of the division
  */
 template<typename T, typename T2>
-Vector3<T> operator/(T2 s, Vector3<T> v)
+Vector4<T> operator/(T2 s, Vector4<T> v)
 {
-	if (v.x == 0 || v.y == 0 || v.z == 0)
+	if (v.x == 0 || v.y == 0 || v.z == 0 || v.w == 0)
 	{
-		return Vector3<T>::Invalid;
+		return Vector4<T>::Invalid;
 	}
-	return Vector3<T>(s / v.x, s / v.y, s / v.z);
+	return Vector4<T>(s / v.x, s / v.y, s / v.z, s / v.w);
 }
 
 /**
  * Short-named type aliases for common vector component types.
  */
-typedef Vector3<int> Vector3i;
-typedef Vector3<unsigned int> Vector3u;
-typedef Vector3<float> Vector3f;
-typedef Vector3<double> Vector3d;
+typedef Vector4<int> Vector4i;
+typedef Vector4<unsigned int> Vector4u;
+typedef Vector4<float> Vector4f;
+typedef Vector4<double> Vector4d;
 
 #endif
