@@ -23,7 +23,7 @@ void CitiesDatabase::createCitiesTable(){
 void CitiesDatabase::insertOperation(){
     cout << "tsadkfjaInsertOperation";
     const char *sql = "INSERT INTO CITY (NAME,COUNTRYCODES,LATITUDE,LONGITUDE) "  \
-    "VALUES ('Berlin','EN',25.04992,25.04992); ";
+    "VALUES ('Berlin','DE',25.04992,25.04992); ";
     /* Create a transactional object. */
     work W(*this->dbConnection);
     
@@ -33,7 +33,7 @@ void CitiesDatabase::insertOperation(){
     cout << "Records created successfully" << endl;
 }
 
-void CitiesDatabase::getCity(){
+void CitiesDatabase::getAllCities(){
     cout << "createCitiesTable";
 
     /* Create SQL statement */
@@ -55,4 +55,36 @@ void CitiesDatabase::getCity(){
     }
     cout << "Operation done successfully" << endl;
 }
+void CitiesDatabase::getCity(std::string name, std::vector<City> *cities){
+    
+    cout << "getCity";
+    
+    /* Create SQL statement */
+    string sql = "SELECT * from CITY where NAME = '"+ name +"'";
+    
+    /* Create a non-transactional object. */
+    nontransaction N(*this->dbConnection);
+    cout << "getCity1";
 
+    /* Execute SQL query */
+    result R( N.exec( sql ));
+    cout << "getCity2";
+
+    /* List down all the records */
+    for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+        
+        City result;
+        result.name = c[1].as<string>();
+        result.countryCode = c[2].as<string>();
+        result.latitude = c[3].as<float>();
+        result.longitude = c[4].as<float>();
+        
+        cities->push_back(result);
+        cout << "Name = " << c[1].as<string>() << endl;
+        cout << "COUNTRYCODES = " << c[2].as<string>() << endl;
+        cout << "LATITUDE = " << c[3].as<float>() << endl;
+        cout << "LONGITUDE = " << c[4].as<float>() << endl;
+    }
+    cout << "Operation done successfully, getCity" << endl;
+
+}

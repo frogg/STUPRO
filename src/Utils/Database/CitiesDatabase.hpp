@@ -1,5 +1,8 @@
 #include <pqxx/pqxx>
 #include <Utils/Database/PostgresDB.hpp>
+#include "Utils/City.hpp"
+#include <vector>
+#include <string>
 
 using namespace std;
 using namespace pqxx;
@@ -11,8 +14,9 @@ public:
     };
     void createCitiesTable();
     void insertOperation();
-    void getCity();
-   // void selectOperation();
+    void getAllCities();
+    void getCity(std::string name, std::vector<City> *cities);
+  
 };
 
 

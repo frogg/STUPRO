@@ -6,6 +6,7 @@
 
 class ConfigurationValue {
 public:
+    
     /**
      * Constant to be used if the value's type is undefined.
      */

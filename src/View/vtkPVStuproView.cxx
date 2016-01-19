@@ -17,6 +17,8 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 #include <cmath>
+#include <Utils/City.hpp>
+#include <vector>
 
 vtkStandardNewMacro(vtkPVStuproView);
 
@@ -33,7 +35,13 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	db.openDatabase();
     db.createCitiesTable();
     db.insertOperation();
-    db.getCity();
+   // db.getAllCities();
+    std::vector<City> cities;
+    db.getCity("Berlin", &cities);
+    cout << "Marker";
+   cout << cities.at(0).name;
+    
+    
 }
 
 void vtkPVStuproView::initParameters()
