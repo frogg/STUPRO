@@ -43,7 +43,8 @@ for index, entry in enumerate(weatherData):
 		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'precipitationType':entry["precipType"],'timestamp':entry["time"]}
 		precipitationData.append(precipitationEntry)
 	elif type == False and intens == True:
-		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'timestamp':entry["time"]}
+		#precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'timestamp':entry["time"]}
+		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'precipitationType':"NoData",'timestamp':entry["time"]}		
 		precipitationData.append(precipitationEntry)
 
 # adds a header to each DataArray	
