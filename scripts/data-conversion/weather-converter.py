@@ -17,18 +17,18 @@ for index, entry in enumerate(weatherData):
 	# not every entry has every key included. so every key is checked first
 	keyTemperature = "temperature"
 	if keyTemperature in entry:
-		temperatureEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'temperature':entry["temperature"],'timestamp':entry["time"]}
+		temperatureEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'temperature':entry["temperature"],'timestamp':entry["time"],"children": []}
 		temperatureData.append(temperatureEntry)
 	
 	keyWindSpeed = "windSpeed"
 	keyWindBearing = "windBearing"
 	if keyWindSpeed and keyWindBearing in entry:
-		windEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'speed':entry["windSpeed"],'direction':entry["windBearing"],'timestamp':entry["time"]}
+		windEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'speed':entry["windSpeed"],'direction':entry["windBearing"],'timestamp':entry["time"],"children": []}
 		windData.append(windEntry)
 	
 	keyCloudCover = "cloudCover"
 	if keyCloudCover in entry:
-		cloudCoverEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'cloudCover':entry["cloudCover"],'timestamp':entry["time"]}
+		cloudCoverEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'cloudCover':entry["cloudCover"],'timestamp':entry["time"],"children": []}
 	cloudCoverData.append(cloudCoverEntry)
 	
 	keyPrecipitationType = "precipType"
@@ -40,17 +40,18 @@ for index, entry in enumerate(weatherData):
 	if keyPrecipitationIntensity in entry:
 		intens = True
 	if type == True and intens == True:
-		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'precipitationType':entry["precipType"],'timestamp':entry["time"]}
+		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'precipitationType':entry["precipType"],'timestamp':entry["time"],"children": []}
 		precipitationData.append(precipitationEntry)
 	elif type == False and intens == True:
-		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'timestamp':entry["time"]}
+		#precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'timestamp':entry["time"]}
+		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'precipitationType':"NoData",'timestamp':entry["time"],"children": []}		
 		precipitationData.append(precipitationEntry)
 
 # adds a header to each DataArray	
-temperatureDict = {'meta': {'dataType': 'temperature', 'temporal': "true"}, 'data': temperatureData}
-windDict = {'meta': {'dataType': 'wind', 'temporal': "true"}, 'data': windData}
-cloudCoverDict = {'meta': {'dataType': 'cloudCover', 'temporal': "true"}, 'data': cloudCoverData}
-precipitationDict = {'meta': {'dataType': 'precipitation', 'temporal': "true"}, 'data': precipitationData}
+temperatureDict = {'meta': {'dataType': 'temperature', 'temporal': True}, 'root':{"children":temperatureData}}
+windDict = {'meta': {'dataType': 'wind', 'temporal': True}, 'root':{"children":windData}}
+cloudCoverDict = {'meta': {'dataType': 'cloudCover', 'temporal': True}, 'root':{"children":cloudCoverData}}
+precipitationDict = {'meta': {'dataType': 'precipitation', 'temporal': True}, 'root':{"children":precipitationData}}
 
 # writes the different kJson-files for the different weatherSources	
 d.write_json_file(temperatureDict, 'temperature-data.kJson', True)
