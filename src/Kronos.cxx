@@ -31,9 +31,8 @@ Kronos::Kronos(QObject* parent) : QObject(parent) {
 
 Kronos::~Kronos() {
     delete this->citiesDatabase;
-    this->citiecitiesDatabase = 0;
+    this->citiesDatabase = 0;
 }
-
 
 
 void Kronos::onStartup() {
@@ -58,14 +57,18 @@ void Kronos::onShutdown() {
     std::cout << "### ON SHUTDOWN ###" << std::endl;
 }
 
-CitiesDatabase* getCitiesDatabase() {
+CitiesDatabase* Kronos::getCitiesDatabase() {
     this->ensureReady();
 
     return this->citiesDatabase;
 }
 
+bool Kronos::isInitialized() {
+    return this->initialized;
+}
+
 void Kronos::ensureReady() {
-    if (!this->initialized) {
+    if (!this->isInitialized()) {
         throw new InvalidStateException("Kronos is not yet fully initialized");
     }
 }

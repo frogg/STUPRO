@@ -26,6 +26,7 @@ private:
     bool initialized;
     CitiesDatabase* citiesDatabase;
 
+    bool isInitialized();
     void ensureReady();
 };
 
