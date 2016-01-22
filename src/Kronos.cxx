@@ -37,6 +37,8 @@ void Kronos::onStartup() {
 
 void Kronos::onShutdown() {
     std::cout << "### ON SHUTDOWN ###" << std::endl;
+
+    this->initialized = false;
 }
 
 bool Kronos::isInitialized() {
@@ -52,9 +54,8 @@ void Kronos::registerView(vtkPVStuproView* view) {
         }
     }
     if (alreadyRegistered) {
-        std::cout << "VIEW ALREADY REGISTERED" << std::endl;
+        throw new InvalidStateException("The view you are trying to register already is registered");
     } else {
-        std::cout << "VIEW NOT YET REGISTERED" << std::endl;
         this->views.push_back(view);
     }
 }
@@ -62,13 +63,13 @@ void Kronos::registerView(vtkPVStuproView* view) {
 void Kronos::unregisterView(vtkPVStuproView* view) {
     for (auto it = this->views.begin(); it < this->views.end();) {
         if (*it == view) {
-            std::cout << "VIEW UNREGISTERED" << std::endl;
             this->views.erase(it);
-            break;
+            return;
         } else {
             ++it;
         }
     }
+    throw new InvalidStateException("The view you are trying to unregister never was registered");
 }
 
 std::vector<vtkPVStuproView*> Kronos::getViews() {
