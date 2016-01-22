@@ -30,7 +30,7 @@ vtkMySpecialRepresentation::vtkMySpecialRepresentation()
 
   //this->Mapper = vtkMySpecialPolyDataMapper::New();
   
-  vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter =
+  /*vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter =
     vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
   // pointSetToLabelHierarchyFilter->SetInputConnection(pointSource->GetOutputPort());
   pointSetToLabelHierarchyFilter->SetLabelArrayName("names");
@@ -41,10 +41,10 @@ vtkMySpecialRepresentation::vtkMySpecialRepresentation()
   vtkSmartPointer<vtkLabelPlacementMapper> labelMapper =
     vtkSmartPointer<vtkLabelPlacementMapper>::New();
   labelMapper->SetInputConnection(
-    pointSetToLabelHierarchyFilter->GetOutputPort());
+    pointSetToLabelHierarchyFilter->GetOutputPort());*/
   
   this->LODMapper = vtkMySpecialPolyDataMapper::New();
-  this->Mapper = labelMapper;
+  this->Mapper = vtkMySpecialPolyDataMapper::New();
 
   // Since we replaced the mappers, we need to call SetupDefaults() to ensure
   // the pipelines are setup correctly.
