@@ -1,5 +1,7 @@
 #include <View/Widgets/PlaceSearchWidget.h>
 
+#include <Kronos.h>
+
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
@@ -33,9 +35,20 @@ PlaceSearchWidget::PlaceSearchWidget(QWidget * parent, Qt::WindowFlags flags)
 }
 
 void PlaceSearchWidget::startSearch() {
-    // TODO: search for the entered location (this->searchBar->text())
+    CitiesDatabase* db = Kronos::getInstance()->getCitiesDatabase();
+    std::vector<City> result;
+    db->getCity(this->searchBar->text().toStdString(), &result);
+
+    std::cout << "[startSearch] Place search for " << this->searchBar->text().toStdString() << " yielded ";
+    if (result.size() > 0) {
+        std::cout << result.size() << " results:" << std::endl;
+        for (int i = 0; i < result.size(); i++) {
+            std::cout << "[startSearch]\t" << result[i].name << std::endl;
+        }
+    } else {
+        std::cout << "no results";
+    }
+
     // TODO: somehow make the camera forcus on the looked up coordinates
     // TODO: decide what to do when the location couldn't be found
-
-    std::cout << this->searchBar->text().toStdString() << std::endl;
 }
