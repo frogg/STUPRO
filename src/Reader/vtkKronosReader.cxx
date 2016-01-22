@@ -52,7 +52,8 @@ vtkStandardNewMacro(vtkKronosReader);
 
 vtkKronosReader::vtkKronosReader() : cameraPos(),globeRadius(0.0),distanceToFocalPoint(0.0),fileName(""),zoomLevel(0)
 {
-
+    this->SetNumberOfInputPorts(0);
+    this->SetNumberOfOutputPorts(1);
     if(Configuration::getInstance().hasKey("globe.radius")){
         globeRadius = Configuration::getInstance().getDouble("globe.radius");
     }
@@ -120,17 +121,13 @@ int vtkKronosReader::RequestData(
   vtkInformationVector* outputVector)
 {
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
-    vtkPolyData *output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+    vtkSmartPointer<vtkPolyData> output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
     
     cout << "ZOOMLEVEL " << zoomLevel << endl;
     
     if(this->jsonReader!=nullptr){
         vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(this->zoomLevel);
-        
-        
-        output->SetPoints(polyData->GetPoints());
-        
-        output->SetVerts(polyData->GetVerts());
+        output->DeepCopy(polyData);
     }
     
 
