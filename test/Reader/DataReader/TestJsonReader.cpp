@@ -163,7 +163,7 @@ TEST(TestJsonReader, WriteCitiesToVtkPolyData) {
 	
 	EXPECT_EQ(
 		4,
-		priorityArray->GetNumberOfComponents()
+		priorityArray->GetNumberOfTuples()
 	);
 	
 	EXPECT_EQ(
@@ -298,7 +298,7 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 	
 	EXPECT_EQ(
 		3,
-		priorityArray->GetNumberOfComponents()
+		priorityArray->GetNumberOfTuples()
 	);
 	
 	EXPECT_EQ(

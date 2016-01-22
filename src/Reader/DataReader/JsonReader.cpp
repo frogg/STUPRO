@@ -239,7 +239,7 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             Configuration::getInstance().getInteger("dataReader.maximumPriority")
             - (*iterator)->getPriority()
         );*/
-        int priority[1] = {
+        double priority[1] = {
             Configuration::getInstance().getInteger("dataReader.maximumPriority")
             - (*iterator)->getPriority()
         };
