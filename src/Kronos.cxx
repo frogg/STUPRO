@@ -57,14 +57,46 @@ void Kronos::onShutdown() {
     std::cout << "### ON SHUTDOWN ###" << std::endl;
 }
 
+bool Kronos::isInitialized() {
+    return this->initialized;
+}
+
 CitiesDatabase* Kronos::getCitiesDatabase() {
     this->ensureReady();
 
     return this->citiesDatabase;
 }
 
-bool Kronos::isInitialized() {
-    return this->initialized;
+void Kronos::registerView(vtkPVStuproView* view) {
+    // check if the view is already registered
+    bool alreadyRegistered = false;
+    for (auto it = this->views.begin(); it < this->views.end(); ++it) {
+        if (*it == view) {
+            alreadyRegistered = true;
+        }
+    }
+    if (alreadyRegistered) {
+        std::cout << "VIEW ALREADY REGISTERED" << std::endl;
+    } else {
+        std::cout << "VIEW NOT YET REGISTERED" << std::endl;
+        this->views.push_back(view);
+    }
+}
+
+void Kronos::unregisterView(vtkPVStuproView* view) {
+    for (auto it = this->views.begin(); it < this->views.end();) {
+        if (*it == view) {
+            std::cout << "VIEW UNREGISTERED" << std::endl;
+            this->views.erase(it);
+            break;
+        } else {
+            ++it;
+        }
+    }
+}
+
+std::vector<vtkPVStuproView*> Kronos::getViews() {
+    return this->views;
 }
 
 void Kronos::ensureReady() {

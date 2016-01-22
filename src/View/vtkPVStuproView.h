@@ -27,7 +27,7 @@ public:
 	{
 		DisplayGlobe, DisplayMap
 	};
-	
+
 	/**
 	 * A static new-method needed for any vtk-related initialization
 	 * used by vtkSmartPointers. Gonna be implemented in the .cxx
@@ -41,7 +41,7 @@ public:
 	 * Needed for some vtk-inheritance-stuff.
 	 */
 	vtkTypeMacro(vtkPVStuproView, vtkPVRenderView)
-	
+
 	/**
 	 * This method gets called any time the view is going
 	 * to be initialized. Basically, this is the constructor of
@@ -56,17 +56,17 @@ public:
 	 * basically by inverting this->displayMode.
 	 */
 	void switchCurrentDisplayMode();
-	
+
 	// TODO: Make a global config file.
 	float getGlobeRadius() const;
-	
+
 	/**
 	 * Returns the current display mode.
 	 *
 	 * @return the current display mode
 	 */
 	DisplayMode getDisplayMode() const;
-	
+
 	Globe * getGlobe() const;
 
 protected:
@@ -75,13 +75,9 @@ protected:
 	 * called outside of this class. Therefore it can only be
 	 * instantiated by a vtkSmartPointer.
 	 */
-	vtkPVStuproView()
-	{
-	};
+	vtkPVStuproView();
 
-	~vtkPVStuproView()
-	{
-	};
+	~vtkPVStuproView();
 
 private:
 	/**
@@ -89,7 +85,7 @@ private:
 	 * This will remove the copy-constructor.
 	 */
 	vtkPVStuproView(const vtkPVStuproView&);
-	
+
 	/**
 	* This method is not implemented due to vtks architecture.
 	* This will remove the =-assignment (and copying).
@@ -100,13 +96,13 @@ private:
 	 * TODO: Maybe remove this method using the global config?
 	 */
 	void initParameters();
-	
+
 	/**
 	 * Initializes all render-relevant objects, i.e. the interactor
 	 * and its style.
 	 */
 	void initRenderer();
-	
+
 	/**
 	 * Registers all callback functions used later during runtime.
 	 * FIXME: Doesn't work in PV as of 18-11-2015.
