@@ -2,8 +2,11 @@
 #define KRONOS_PLACE_SEARCH_WIDGET_HPP
 
 #include <Utils/Database/CitiesDatabase.hpp>
+#include <View/Widgets/CityListModel.hpp>
 
 #include <QLineEdit>
+#include <QListView>
+#include <QStringListModel>
 #include <QWidget>
 
 class PlaceSearchWidget : public QWidget {
@@ -15,6 +18,8 @@ public:
 
 private:
     QLineEdit* searchBar;
+    QListView* resultList;
+    CityListModel* resultListModel;
     CitiesDatabase* citiesDatabase;
 
 public slots:

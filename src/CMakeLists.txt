@@ -9,6 +9,7 @@ endif()
 
 # files to be moced for the plugin part
 set(PLUGIN_MOC_SRCS
+	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/CityListModel.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/PlaceSearchDockWidget.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/PlaceSearchWidget.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Kronos.h"
