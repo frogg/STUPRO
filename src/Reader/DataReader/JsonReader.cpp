@@ -70,34 +70,29 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
                     jsonValue[i]["content"].GetString()
                 );
                 break;                
-			case DataType::PRECIPITATION:
-				{int precipitationType = PrecipitationDataPoint::NOPRECIPITATION;
-				if (jsonValue[i]["precipitationType"].GetString() == "rain") {
+			case DataType::PRECIPITATION: {
+				int precipitationType = PrecipitationDataPoint::NOPRECIPITATION;
+                
+				if (QString(jsonValue[i]["precipitationType"].GetString()) == "rain") {
 					precipitationType = PrecipitationDataPoint::RAIN;
-				}
-				else if (jsonValue[i]["precipitationType"].GetString() == "snow") {
+				} else if (QString(jsonValue[i]["precipitationType"].GetString()) == "snow") {
 					precipitationType = PrecipitationDataPoint::SNOW;
-				}
-				else if (jsonValue[i]["precipitationType"].GetString() == "sleet") {
+				} else if (QString(jsonValue[i]["precipitationType"].GetString()) == "sleet") {
 					precipitationType = PrecipitationDataPoint::SLEET;
-				}
-				else if (jsonValue[i]["precipitationType"].GetString() == "hail") {
+				} else if (QString(jsonValue[i]["precipitationType"].GetString()) == "hail") {
 					precipitationType = PrecipitationDataPoint::HAIL;
-				}
-				else if (jsonValue[i]["precipitationType"].GetString() == "NoData") {
-					precipitationType = PrecipitationDataPoint::NOPRECIPITATION;
 				}
 
 				dataPoint = new PrecipitationDataPoint(
 					Coordinate(
-					jsonValue[i]["latitude"].GetDouble(),
-					jsonValue[i]["longitude"].GetDouble()
+    					jsonValue[i]["latitude"].GetDouble(),
+    					jsonValue[i]["longitude"].GetDouble()
 					),
 					depth,
 					jsonValue[i]["timestamp"].GetInt(),
-					(float)jsonValue[i]["precipitationRate"].GetDouble(),
+					(float) jsonValue[i]["precipitationRate"].GetDouble(),
 					precipitationType
-					);
+				);
 				break; }
             case DataType::TEMPERATURE:
                 dataPoint = new TemperatureDataPoint(
