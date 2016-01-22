@@ -19,20 +19,6 @@
   </ProxyGroup>
   
   <ProxyGroup name="representations">
-  <RepresentationProxy name="MySpecialRepresentation"
-	class="vtkMySpecialRepresentation"
-	processes="client|renderserver|dataserver"
-	base_proxygroup="representations"
-	base_proxyname="SurfaceRepresentation">
-	<Documentation>
-	  This is the new representation type we are adding. This is identical to
-	  the SurfaceRepresentation except that we are overriding the mapper with
-	  our mapper.
-	</Documentation>
-	
-  <!-- End of MySpecialRepresentation -->
-  </RepresentationProxy>
-
   <Extension name="GeometryRepresentation">
 	<Documentation>
 	  Extends standard GeometryRepresentation by adding
