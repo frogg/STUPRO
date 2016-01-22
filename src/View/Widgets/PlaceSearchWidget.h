@@ -8,7 +8,6 @@ class PlaceSearchWidget : public QWidget {
     Q_OBJECT
 
 public:
-    // PlaceSearchWidget(const QString & title, QWidget * parent = 0, Qt::WindowFlags flags = 0);
     PlaceSearchWidget(QWidget * parent = 0, Qt::WindowFlags flags = 0);
     ~PlaceSearchWidget() {}
 
