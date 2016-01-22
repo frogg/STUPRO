@@ -1,6 +1,6 @@
 #!/bin/sh
-USERNAME="stuproTest"
-PASSWORD="quappi"
+USERNAME="stuproUser"
+PASSWORD="weloveparaview"
 DB_NAME="kronos"
 
 # create a user with the privilege to create databases and without superuser privileges
@@ -11,3 +11,5 @@ echo "alter role \"$USERNAME\" with password '$PASSWORD';" | psql -U $USERNAME t
 
 # create a database belonging to the user
 echo "create database \"$DB_NAME\" with owner \"$USERNAME\" encoding 'UTF8' template template0;" | psql -U $USERNAME template1
+
+python ./DBCity.py

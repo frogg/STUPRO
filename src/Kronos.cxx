@@ -44,11 +44,23 @@ void Kronos::onStartup() {
     db->openDatabase();
     db->createCitiesTable();
     db->insertOperation();
-    // // db.getAllCities();
+    //db->getAllCities();
     // std::vector<City> cities;
     // db.getCity("Berlin", &cities);
     // cout << "Marker";
     // cout << cities.at(0).name;
+    
+    /*
+     CitiesDatabase db ("testdb","stuproTest","quappi","127.0.0.1","5432");
+     db.openDatabase();
+     db.createCitiesTable();
+     //  db.insertOperation();
+     db.getAllCities();
+     std::vector<City> cities;
+     db.getCity("Berlin", &cities);
+     cout << "Marker";
+     cout << cities.at(0).name;
+     */
 
     this->initialized = true;
 }
@@ -57,10 +69,13 @@ void Kronos::onShutdown() {
     std::cout << "### ON SHUTDOWN ###" << std::endl;
 }
 
+<<<<<<< HEAD
 bool Kronos::isInitialized() {
     return this->initialized;
 }
 
+=======
+>>>>>>> 0f1320fd6061bc2263db117ae1e17e79d78c04ec
 CitiesDatabase* Kronos::getCitiesDatabase() {
     this->ensureReady();
 
