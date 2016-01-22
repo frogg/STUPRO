@@ -19,6 +19,12 @@ extern const char* GlobeShader_vsh;
 
 GlobeTile::Location GlobeTile::Location::getClampedLocation() const
 {
+	return Location(zoomLevel, std::max<int>(0, std::min<int>(longitude, (1 << zoomLevel) * 2)),
+			std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel))));
+}
+
+GlobeTile::Location GlobeTile::Location::getWrappedLocation() const
+{
 	return Location(zoomLevel, absoluteModulo<int>(longitude, (1 << zoomLevel) * 2),
 	        absoluteModulo<int>(latitude, (1 << zoomLevel)));
 }
@@ -37,7 +43,7 @@ Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const
 
 	// Converts a lat/long flat position into a x/y/z globe position.
 	lon = (lon + 90.f) * 2.f * KRONOS_PI / 360.f;
-	lat = lat * 0.5f * KRONOS_PI / 180.f;
+	lat = lat * KRONOS_PI / 180.f;
 
 	float cosLat = cos(lat);
 	float sinLat = sin(lat);

@@ -20,9 +20,10 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkSphereSource.h>
+#include <cassert>
+#include <array>
 #include <cmath>
 #include <cstddef>
-#include <iostream>
 
 Globe::Globe(vtkRenderer & renderer) :
 		myRenderer(renderer),
@@ -84,14 +85,19 @@ unsigned int Globe::getZoomLevel() const
 
 GlobeTile & Globe::getTileAt(int lon, int lat) const
 {
-	return *myTiles[getTileIndex(lon, lat)];
+	unsigned int index = getTileIndex(lon, lat);
+	
+	assert(index < myTiles.size());
+	
+	return *myTiles[index];
 }
 
 unsigned int Globe::getTileIndex(int lon, int lat) const
 {
-	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getClampedLocation();
+	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getWrappedLocation();
 
-	return (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
+	unsigned int index = (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
+	return index;
 }
 
 void Globe::createOBBTrees()
@@ -171,68 +177,112 @@ bool Globe::checkIfRepaintIsNeeded()
 
 void Globe::updateGlobeTileVisibility()
 {
-	// TODO: Update globe tile visibility based on camera position!
+	// Get current camera for transformation matrix.
 	vtkCamera * camera = getRenderer().GetActiveCamera();
 
+	// Get normalized viewer direction: in screenspace, the camera points in the -Z direction.
 	Vector3f cameraDirection = Vector3f(0.f, 0.f, -1.f);
 
+	// Create a matrix for the normal vector transformation.
 	vtkSmartPointer<vtkMatrix4x4> normalTransform = vtkMatrix4x4::New();
+	
+	// Copy the eye coordinate transformation matrix from the active camera.
 	normalTransform->DeepCopy(camera->GetModelViewTransformMatrix());
+	
+	// Invert & transpose to allow correctly transforming globe tile surface normals.
 	normalTransform->Invert();
 	normalTransform->Transpose();
 
+	// Assign clipping planes in screenspace (consistency with X/Y coordinate limits).
 	double clipNear = -1.f, clipFar = 1.f;
 
-	// Get Model-View-Projection transformation matrix.
+	// Get Model-View-Projection transformation matrix for globe tile position transformation.
 	vtkMatrix4x4 * fullTransform = camera->GetCompositeProjectionTransformMatrix(
 	        (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
 	        clipFar);
 
+	// Get number of tiles (vertically and horizontally).
 	unsigned int height = 1 << myZoomLevel;
 	unsigned int width = height * 2;
 
+	// Iterate over all tiles.
 	for (unsigned int lat = 0; lat < height; ++lat)
 	{
 		for (unsigned int lon = 0; lon < width; ++lon)
 		{
-			std::size_t index = getTileIndex(lon, lat);
+			// Begin by making all tiles invisible.
+			getTileAt(lon, lat).setVisibility(false);
+		}
+	}
 
-			if (index >= myTiles.size())
-			{
-				continue;
-			}
+	// Iterate again over all tiles.
+	for (unsigned int lat = 0; lat < height; ++lat)
+	{
+		for (unsigned int lon = 0; lon < width; ++lon)
+		{
+			// Get reference to current tile.
+			GlobeTile & tile = getTileAt(lon, lat);
+			
+			// Get location of current tile.
+			GlobeTile::Location loc = tile.getLocation();
 
-			GlobeTile & tile = *myTiles[index];
+			// Create array containing all locations of tiles neighboring this tile's top left corner.
+			std::array<GlobeTile::Location, 4> neighbors { GlobeTile::Location(loc.zoomLevel,
+			        loc.longitude, loc.latitude), GlobeTile::Location(loc.zoomLevel,
+			        loc.longitude - 1, loc.latitude), GlobeTile::Location(loc.zoomLevel,
+			        loc.longitude, loc.latitude - 1), GlobeTile::Location(loc.zoomLevel,
+			        loc.longitude - 1, loc.latitude - 1) };
 
+			// Assume that the current corner is visible.
 			bool visible = true;
 
-			Vector4f tileNormal(tile.getLocation().getNormalVector(), 0.f);
+			// Calculate the surface normal of the current tile's top-left corner.
+			Vector4f tileNormal(loc.getNormalVector(Vector2f(0.f, 1.f)), 0.f);
+			
+			// Calculate the position of the current tile's top-left corner.
 			Vector4f tilePosition(tileNormal.xyz() * GLOBE_RADIUS, 1.f);
 
+			// Transform the surface normal by the normal transformation matrix calculated earlier.
 			normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
 
+			// Check if normal points in the same direction as the camera.
 			if (tileNormal.xyz().dot(cameraDirection) > 0.f)
 			{
+				// Same direction? Tile is facing away from viewer, perform backface culling.
 				visible = false;
 			}
 			else
 			{
+				// Transform tile position to screenspace.
 				fullTransform->MultiplyPoint(tilePosition.array(), tilePosition.array());
 
+				// Check X, Y and Z coordinates of transformed position.
 				for (std::size_t i = 0; i < 3; ++i)
 				{
+					// Homogenize coordinate by dividing by fourth vector component.
 					float & coord = tilePosition.array()[i];
 					coord /= tilePosition.w;
 
+					// Check if coordinate is within screenspace bounds.
 					if (coord < -1.f || coord > 1.f)
 					{
+						// Coordinate out of bounds? Tile is visibly out of the viewport, perform
+						// frustum culling.
 						visible = false;
 						break;
 					}
 				}
 			}
 
-			tile.setVisibility(visible);
+			// Was corner not found to be invisible?
+			if (visible)
+			{
+				// Make all neighbors of the current corner visible.
+				for (const GlobeTile::Location & neighbor : neighbors)
+				{
+					getTileAt(neighbor.longitude, neighbor.latitude).setVisibility(true);
+				}
+			}
 		}
 	}
 }

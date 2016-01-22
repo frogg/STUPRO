@@ -60,6 +60,11 @@ public:
 		Location getClampedLocation() const;
 
 		/**
+		 * Normalizes the location by wrapping the tiles around [0;(zoomLevel+1)*2] and [0;zoomLevel+1].
+		 */
+		Location getWrappedLocation() const;
+
+		/**
 		 * Returns the starting/ending longitude/latitude of the tile this location describes.
 		 */
 		RectF getBounds() const;
