@@ -10,13 +10,13 @@ void CitiesDatabase::printAllCities(){
 
     /* Create SQL statement */
     const char* sql = "SELECT * from CITY";
-    
+
     /* Create a non-transactional object. */
     nontransaction N(*this->dbConnection);
-    
+
     /* Execute SQL query */
     result R( N.exec( sql ));
-    
+
     /* List down all the records */
     for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
         cout << "ID = " << c[0].as<int>() << endl;
@@ -28,10 +28,10 @@ void CitiesDatabase::printAllCities(){
 }
 
 void CitiesDatabase::getCity(std::string name, std::vector<City> *cities){
-    
+
     /* Create SQL statement */
-    string sql = "SELECT * from CITY where NAME = '"+ name +"'";
-    
+    string sql = "SELECT * from CITY where NAME like '%"+ name +"%'";
+
     /* Create a non-transactional object. */
     nontransaction N(*this->dbConnection);
 
