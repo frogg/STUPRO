@@ -1,7 +1,6 @@
 #ifndef KRONOS_KRONOS_MAIN_H
 #define KRONOS_KRONOS_MAIN_H
 
-#include <Utils/Database/CitiesDatabase.hpp>
 #include <View/vtkPVStuproView.h>
 
 #include <QObject>
