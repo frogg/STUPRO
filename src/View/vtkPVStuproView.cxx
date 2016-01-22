@@ -30,18 +30,6 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	initRenderer();
 	registerTimerCallback();
 	initGlobe();
-
-	CitiesDatabase db ("testdb","stuproTest","quappi","127.0.0.1","5432");
-	db.openDatabase();
-    db.createCitiesTable();
-    db.insertOperation();
-   // db.getAllCities();
-    std::vector<City> cities;
-    db.getCity("Berlin", &cities);
-    cout << "Marker";
-   cout << cities.at(0).name;
-    
-    
 }
 
 void vtkPVStuproView::initParameters()
