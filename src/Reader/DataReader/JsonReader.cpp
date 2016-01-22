@@ -190,14 +190,20 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     // An integer array containing the priority of each data point. This is added as a convenience
     // measure for potentially using it later on with `vtkPointSetToLabelHierarchy`.
     vtkSmartPointer<vtkTypeInt32Array> priorities = vtkSmartPointer<vtkTypeInt32Array>::New();
-    priorities->SetNumberOfComponents(relevantDataPoints.size());
+    // priorities->SetNumberOfComponents(relevantDataPoints.size());
     priorities->SetName("priorities");
+    vtkIdType numberOfTuples[1];
+    numberOfTuples[0] = relevantDataPoints.size();
+    priorities->SetNumberOfComponents(1);
+    priorities->SetNumberOfTuples(*numberOfTuples);
     
     // An integer array containing the timestamp of each data point. 32-bit integers are sufficient
     // since UNIX timestamps are being used.
     vtkSmartPointer<vtkTypeInt32Array> timestamps = vtkSmartPointer<vtkTypeInt32Array>::New();
     timestamps->SetNumberOfComponents(relevantDataPoints.size());
     timestamps->SetName("timestamps");
+    
+    int tupleNumber = 0;
     
     // Iterate through all relevant data points, add their coordinates as new points and fill the
     // array of priority values.
@@ -216,10 +222,16 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
         // Invert the priority before adding it since with `vtkPointSetToLabelHierarchy`,
         // higher priority values are more visible, which is the other way around than
         // the definition in these `DataReader` classes.
-        priorities->InsertNextValue(
+        /*priorities->InsertNextValue(
             Configuration::getInstance().getInteger("dataReader.maximumPriority")
             - (*iterator)->getPriority()
-        );
+        );*/
+        int priority[1] = {
+            Configuration::getInstance().getInteger("dataReader.maximumPriority")
+            - (*iterator)->getPriority()
+        };
+        priorities->SetTuple(tupleNumber, priority);
+        tupleNumber++;
         
         // Add timestamps if they exist
         if (this->hasTemporalData()) {
