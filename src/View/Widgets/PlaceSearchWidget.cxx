@@ -58,6 +58,6 @@ void PlaceSearchWidget::startSearch() {
         std::cout << "no results" << std::endl;
     }
 
-    // TODO: somehow make the camera forcus on the looked up coordinates
+    // TODO: somehow make the camera focus on the looked up coordinates
     // TODO: decide what to do when the location couldn't be found
 }
