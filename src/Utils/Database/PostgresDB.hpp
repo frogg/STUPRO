@@ -1,3 +1,6 @@
+#ifndef KRONOS_UTILS_DATABASE_POSTGRESDB_HPP
+#define KRONOS_UTILS_DATABASE_POSTGRESDB_HPP
+
 #include <pqxx/pqxx>
 
 using namespace std;
@@ -12,3 +15,5 @@ public:
 protected:
     connection* dbConnection;
 };
+
+#endif
