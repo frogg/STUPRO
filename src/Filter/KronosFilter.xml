@@ -1,9 +1,9 @@
 <ServerManagerConfiguration>
     <ProxyGroup name="filters">
-          <SourceProxy name="SpericalToCartesianFilter" class="SpericalToCartesianFilter" label="Kronos Spherical to Cartesian">
+        <SourceProxy name="SphericalToCartesianFilter" class="SphericalToCartesianFilter" label="Kronos Spherical to Cartesian">
             <Documentation
-                long_help="nopevation vector."
-                short_help="Create a point array representing elevation.">
+                long_help="This filter can convert GPS data (longitude/latitude/height) to cartesian coordinates in order to 'wrap' the data around a globe."
+                short_help="Convert GPS-Data to cartesian coordinates">
             </Documentation>
             <InputProperty
                 name="Input"
@@ -14,6 +14,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    <DataType value="vtkImageData"/>
+		    <DataType value="vtkRectilinearGrid"/>
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>

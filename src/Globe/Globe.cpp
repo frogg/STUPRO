@@ -17,6 +17,7 @@
 #include <View/vtkPVStuproView.h>
 #include <Globe/GlobeTile.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
+#include <Utils/Misc/Macros.hpp>
 #include <Eigen-v3.2.6/Dense>
 #include <cmath>
 
@@ -343,8 +344,8 @@ vtkSmartPointer<vtkOBBTree> Globe::getOBBTree()
 
 Coordinate Globe::getCoordinatesFromGlobePoint(Vector3d point)
 {
-	return Coordinate(asin(point.z / GLOBE_RADIUS) * 180 / M_PI,
-	        atan2(point.x, point.y) * 180 / M_PI);
+	return Coordinate(asin(point.z / GLOBE_RADIUS) * 180 / KRONOS_PI,
+	        atan2(point.x, point.y) * 180 / KRONOS_PI);
 }
 
 Coordinate Globe::getCoordinatesFromPlanePoint(Vector2d point)
