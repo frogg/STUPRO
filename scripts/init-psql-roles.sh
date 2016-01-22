@@ -1,6 +1,6 @@
 #!/bin/sh
-USERNAME="stuproTest"
-PASSWORD="quappi"
+USERNAME="stuproUser"
+PASSWORD="weloveparaview"
 DB_NAME="kronos"
 
 # create a user with the privilege to create databases and without superuser privileges

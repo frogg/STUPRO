@@ -2,7 +2,7 @@ from xml.dom import minidom
 import psycopg2
 
 try:
-    connectToDatabaseString = "dbname='testdb' user='stuproTest' host='localhost' password='quappi'"
+    connectToDatabaseString = "dbname='kronos' user='stuproUser' host='localhost' password='weloveparaview'"
     connection = psycopg2.connect(connectToDatabaseString)
     cursor = connection.cursor()
 except:
