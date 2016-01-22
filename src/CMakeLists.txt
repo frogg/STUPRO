@@ -39,6 +39,12 @@ else()
 	include(${QT_USE_FILE})
 endif()
 
+# find and include PostgreSQL libraries
+find_library(PQXX_LIB NAMES pqxx libpqxx DOC "PostgreSQL libpqxx library")
+find_library(PQ_LIB NAMES pq libpq DOC "PostgreSQL libpq library")
+find_path(PQXX_HEADERS pqxx DOC "PostgreSQL header files")
+include_directories(${PQXX_HEADERS})
+
 # wrap classes inheriting from QObject
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
 	QT5_WRAP_CPP(PLUGIN_MOC_FILES ${PLUGIN_MOC_SRCS})
@@ -151,6 +157,9 @@ add_paraview_plugin(
 		${PLUGIN_MOC_FILES}
 		${Kronos_Main_Interfaces_SRCS}
 )
+
+# link against PostgreSQL libraries
+target_link_libraries(KronosPlugin PRIVATE ${PQXX_LIB} ${PQ_LIB})
 
 # link against Qt libraries
 if("${KRONOS_QT_VERSION}" STREQUAL "5")

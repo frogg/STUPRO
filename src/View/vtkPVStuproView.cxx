@@ -3,6 +3,8 @@
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Utils/Config/Configuration.hpp>
 
+#include <Utils/Database/CitiesDatabase.hpp>
+
 #include <vtkCallbackCommand.h>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -15,6 +17,8 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 #include <cmath>
+#include <Utils/City.hpp>
+#include <vector>
 
 vtkStandardNewMacro(vtkPVStuproView);
 
@@ -26,6 +30,18 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	initRenderer();
 	registerTimerCallback();
 	initGlobe();
+
+	CitiesDatabase db ("testdb","stuproTest","quappi","127.0.0.1","5432");
+	db.openDatabase();
+    db.createCitiesTable();
+    db.insertOperation();
+   // db.getAllCities();
+    std::vector<City> cities;
+    db.getCity("Berlin", &cities);
+    cout << "Marker";
+   cout << cities.at(0).name;
+    
+    
 }
 
 void vtkPVStuproView::initParameters()
