@@ -54,9 +54,6 @@ public:
 	 */
 	void switchCurrentDisplayMode();
 	
-	// TODO: Make a global config file.
-	float getGlobeRadius() const;
-	
 	/**
 	 * Returns the current display mode.
 	 *
@@ -118,10 +115,7 @@ private:
 
 	DisplayMode displayMode;
 	std::unique_ptr<Globe> globe;
-	float globeRadius;
-	float planeSize;
 	float displayModeInterpolation;
-	float heightFactor;
 	vtkSmartPointer<vtkCallbackCommand> clipCallback;
 	vtkSmartPointer<vtkCallbackCommand> activeCameraCallback;
 	vtkSmartPointer<vtkCallbackCommand> cameraModifiedCallback;

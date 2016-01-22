@@ -21,18 +21,22 @@
 #include <cassert>
 #include <cstddef>
 
-Globe::Globe(vtkRenderer & renderer) :
+Globe::Globe(vtkRenderer & renderer, GlobeConfig globeConfig) :
 		myRenderer(renderer),
 		myDownloader([=](ImageTile tile)
 		{	onTileLoad(tile);}),
 		myZoomLevel(3),
 		myDisplayModeInterpolation(0)
 {
+	setGlobeConfig(globeConfig);
+	
 	myPlaneSource = vtkPlaneSource::New();
 
-	myPlaneSource->SetOrigin(PLANE_SIZE / 2.f, -PLANE_SIZE / 2.f, 0.f);
-	myPlaneSource->SetPoint1(-PLANE_SIZE / 2.f, -PLANE_SIZE / 2.f, 0.f);
-	myPlaneSource->SetPoint2(PLANE_SIZE / 2.f, PLANE_SIZE / 2.f, 0.f);
+	float planeSize = getGlobeConfig().internalPlaneSize;
+	
+	myPlaneSource->SetOrigin(planeSize / 2.f, -planeSize / 2.f, 0.f);
+	myPlaneSource->SetPoint1(-planeSize / 2.f, -planeSize / 2.f, 0.f);
+	myPlaneSource->SetPoint2(planeSize / 2.f, planeSize / 2.f, 0.f);
 	
 	myPlaneMapper = vtkPolyDataMapper::New();
 	myPlaneMapper->SetInputConnection(myPlaneSource->GetOutputPort());
@@ -207,7 +211,7 @@ void Globe::updateGlobeTileVisibility()
 			Vector4f tileNormal(loc.getNormalVector(Vector2f(0.f, 0.f)), 0.f);
 			
 			// Calculate the position of the current tile's top-left corner.
-			Vector4f tilePosition(tileNormal.xyz() * GLOBE_RADIUS, 1.f);
+			Vector4f tilePosition(tileNormal.xyz() * getGlobeConfig().globeRadius, 1.f);
 
 			// Transform the surface normal by the normal transformation matrix calculated earlier.
 			normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
@@ -254,6 +258,16 @@ void Globe::updateGlobeTileVisibility()
 	}
 }
 
+void Globe::setGlobeConfig(GlobeConfig globeConfig)
+{
+	myGlobeConfig = globeConfig;
+}
+
+const GlobeConfig& Globe::getGlobeConfig() const
+{
+	return myGlobeConfig;
+}
+
 void Globe::onTileLoad(ImageTile tile)
 {
 	if (myZoomLevel != tile.getZoomLevel())
@@ -261,7 +275,7 @@ void Globe::onTileLoad(ImageTile tile)
 		return;
 	}
 
-	GlobeTile & globeTile = *myTiles[getTileIndex(tile.getTileX(), tile.getTileY())];
+	GlobeTile & globeTile = getTileAt(tile.getTileX(), tile.getTileY());
 
 	auto rgbIterator = tile.getLayers().find("satelliteImagery");
 	auto heightmapIterator = tile.getLayers().find("heightmap");

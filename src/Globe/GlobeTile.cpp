@@ -145,10 +145,10 @@ void GlobeTile::initShaders()
 
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
-	float globeRadius = GLOBE_RADIUS;
-	float planeSize = PLANE_SIZE;
+	float globeRadius = myGlobe.getGlobeConfig().globeRadius;
+	float planeSize = myGlobe.getGlobeConfig().internalPlaneSize;
 	float displayModeInterpolation = 0.f;
-	float heightFactor = 10.f;
+	float heightFactor = myGlobe.getGlobeConfig().heightFactor;
 
 	RectF bounds = myLocation.getBounds();
 	Vector2f startBounds = bounds.x1y1();
@@ -188,7 +188,7 @@ void GlobeTile::loadTexture(const QImage & rgb, const QImage & height)
 void GlobeTile::updateUniforms()
 {
 	float displayModeInterpolation = myGlobe.getDisplayModeInterpolation();
-	float earthRadius = 6367444.7f;
+	float earthRadius = myGlobe.getGlobeConfig().earthRadius;
 	float minHeight = myLowerHeight / earthRadius;
 	float maxHeight = myUpperHeight / earthRadius;
 	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1, &displayModeInterpolation);

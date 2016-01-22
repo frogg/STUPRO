@@ -26,9 +26,6 @@ void vtkPVStuproView::initParameters()
 {
 	// Initialize parameters.
 	this->displayMode = DisplayGlobe;
-	this->globeRadius = Configuration::getInstance().getFloat("globe.radius");
-	this->planeSize = Configuration::getInstance().getFloat("globe.planeSize");
-	this->heightFactor = Configuration::getInstance().getFloat("globe.heightFactor");
 }
 
 void vtkPVStuproView::initRenderer()
@@ -65,9 +62,20 @@ void vtkPVStuproView::registerTimerCallback()
 
 void vtkPVStuproView::initGlobe()
 {
+	const Configuration & config = Configuration::getInstance();
+	
+	GlobeConfig globeConfig;
+	
+	globeConfig.globeRadius = config.getFloat("globe.globeRadius");
+	globeConfig.flatMapSize.x = config.getFloat("globe.flatMapSize.width");
+	globeConfig.flatMapSize.y = config.getFloat("globe.flatMapSize.height");
+	globeConfig.internalPlaneSize = config.getFloat("globe.internalPlaneSize");
+	globeConfig.earthRadius = config.getFloat("globe.earthRadius");
+	globeConfig.heightFactor = config.getFloat("globe.heightFactor");
+	
 	// Initialize a unique pointer with a new instance of the Globe
 	// using the current renderer.
-	this->globe = makeUnique<Globe>(*this->GetRenderer());
+	this->globe = makeUnique<Globe>(*this->GetRenderer(), globeConfig);
 }
 
 void vtkPVStuproView::switchCurrentDisplayMode()
@@ -82,11 +90,6 @@ void vtkPVStuproView::switchCurrentDisplayMode()
 
 	// Render the view again.
 	GetRenderWindow()->Render();
-}
-
-float vtkPVStuproView::getGlobeRadius() const
-{
-	return this->globeRadius;
 }
 
 vtkPVStuproView::DisplayMode vtkPVStuproView::getDisplayMode() const

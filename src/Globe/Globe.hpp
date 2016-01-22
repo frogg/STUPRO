@@ -1,6 +1,7 @@
 #ifndef STUPRO_GLOBE_HPP
 #define STUPRO_GLOBE_HPP
 
+#include <Globe/GlobeConfig.hpp>
 #include <Utils/Math/Vector2.hpp>
 #include <Utils/TileDownload/ImageDownloader.hpp>
 #include <vtkPlaneSource.h>
@@ -9,12 +10,6 @@
 #include <atomic>
 #include <memory>
 #include <vector>
-
-//TODO Configuration file
-#define GLOBE_RADIUS 0.5
-#define PLANE_WIDTH 4
-#define PLANE_HEIGHT 2
-#define PLANE_SIZE 1
 
 class GlobeTile;
 
@@ -26,14 +21,26 @@ class Globe
 public:
 
 	/**
-	 * Creates the globe using the specified renderer.
+	 * Creates the globe using the specified renderer and configuration.
 	 */
-	Globe(vtkRenderer & renderer);
+	Globe(vtkRenderer & renderer, GlobeConfig globeConfig);
 
 	/**
 	 * Virtual destructor.
 	 */
 	virtual ~Globe();
+	
+	/**
+	 * Assigns the globe configuration data for this globe.
+	 * 
+	 * @param globeConfig The configuration data to assign to this globe
+	 */
+	void setGlobeConfig(GlobeConfig globeConfig);
+	
+	/**
+	 * @return the globe configuration data for this globe.
+	 */
+	const GlobeConfig & getGlobeConfig() const;
 
 	/**
 	 * Changes the globe's vertex/heightmap resolution per tile.
@@ -126,6 +133,8 @@ private:
 	void onTileLoad(ImageTile tile);
 
 	vtkRenderer & myRenderer;
+	
+	GlobeConfig myGlobeConfig;
 
 	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
 	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;

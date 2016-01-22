@@ -1,8 +1,13 @@
 {
   "globe": {
-    "radius": 0.5,
-    "planeSize": 1.0,
-    "heightFactor": 0.05,
+    "globeRadius": 0.5,
+    "flatMapSize" : {
+      "width": 4.0,
+      "height": 2.0
+    },
+    "earthRadius": 6367444.7,
+    "internalPlaneSize": 1.0,
+    "heightFactor": 10.0,
     "transitionEffectSpeed": 2.0
   }
 }
