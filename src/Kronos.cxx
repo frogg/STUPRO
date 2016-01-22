@@ -41,8 +41,9 @@ void Kronos::onStartup() {
 
     CitiesDatabase* db = new CitiesDatabase("kronos","stuproUser","weloveparaview","127.0.0.1","5432");
     this->citiesDatabase = db;
-    db->openDatabase();
-    db->getAllCities();
+    db->printAllCities();
+    //db->openDatabase();
+    //db->getAllCities();
 
 
     this->initialized = true;

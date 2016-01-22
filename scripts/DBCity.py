@@ -35,7 +35,7 @@ def loadCityDataFromXML(tableName):
         #print(s.attributes['latitude'].value.encode('utf-8'))
         #print(s.attributes['longitude'].value.encode('utf-8'))
         query =  "INSERT INTO " + tableName +" (NAME,COUNTRYCODES,LATITUDE,LONGITUDE) VALUES (%s, %s, %s,%s);"
-        data = (s.attributes['name'].value.encode('utf-8') ,'DE', s.attributes['latitude'].value.encode('utf-8'), s.attributes['longitude'].value.encode('utf-8'))
+        data = (s.attributes['name'].value.encode('utf-8') ,s.attributes['country_code'].value.encode('utf-8'), s.attributes['latitude'].value.encode('utf-8'), s.attributes['longitude'].value.encode('utf-8'))
         cursor.execute(query, data)
         connection.commit()
 
