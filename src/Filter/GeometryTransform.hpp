@@ -90,6 +90,10 @@ public:
     ~GeometryTransform() {
 	}
 
+    void setTransform(bool transform = true) {
+        this->transform = transform;
+    }
+
     void Inverse() override {
         this->transformForward = !this->transformForward;
 		this->Modified();

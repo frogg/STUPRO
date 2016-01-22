@@ -16,10 +16,6 @@ public:
 	static SphericalToCartesianFilter *New();
 	void PrintSelf(ostream &os, vtkIndent indent) override;
 
-	int RequestData(vtkInformation *info,
-					vtkInformationVector **inputVector,
-					vtkInformationVector *outputVector) override;
-
 	/**
 	 * Documentation see vtkAlgorithm
 	 */
@@ -30,12 +26,11 @@ public:
 	 */
 	int FillInputPortInformation(int, vtkInformation *info) override;
 
+    void setTransform(bool value);
+
 private:
 	SphericalToCartesianFilter();
-	~SphericalToCartesianFilter();
-
-	vtkAbstractTransform *transformGlobe = NULL;
-	vtkAbstractTransform *transformPassthrough = NULL;
+    ~SphericalToCartesianFilter();
 
 	SphericalToCartesianFilter(const SphericalToCartesianFilter &); // Not implemented.
     void operator=(const SphericalToCartesianFilter &); // Not implemented.

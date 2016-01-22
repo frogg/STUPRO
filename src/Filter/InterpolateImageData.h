@@ -2,10 +2,11 @@
 #define INTERPOLATEUNIFORMGRID_H
 
 #include <vtkImageAlgorithm.h>
+#include <vtkSmartPointer.h>
 
 class InterpolateImageData : public vtkImageAlgorithm {
 public:
-    vtkTypeMacro(InterpolateImageData, vtkAlgorithm)
+    vtkTypeMacro(InterpolateImageData, vtkImageAlgorithm)
     static InterpolateImageData *New();
     void PrintSelf(ostream &os, vtkIndent indent) override;
 
@@ -26,6 +27,8 @@ public:
 private:
     InterpolateImageData();
     ~InterpolateImageData();
+
+    vtkSmartPointer<vtkImageData> createInterpolationStructure(vtkDataSet *data);
 
     InterpolateImageData(const InterpolateImageData &); // Not implemented.
     void operator=(const InterpolateImageData &); // Not implemented.
