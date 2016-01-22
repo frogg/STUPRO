@@ -32,12 +32,21 @@ PlaceSearchWidget::PlaceSearchWidget(QWidget * parent, Qt::WindowFlags flags)
     this->connect(searchButton, SIGNAL(clicked()), SLOT(startSearch()));
     // add the search button to the widget
     layout->addWidget(searchButton);
+
+    // open a database connection
+    this->citiesDatabase = new CitiesDatabase("kronos","stuproUser","weloveparaview","127.0.0.1","5432");
+    this->citiesDatabase->openDatabase();
+}
+
+PlaceSearchWidget::~PlaceSearchWidget() {
+    this->citiesDatabase->closeDatabase();
+    delete this->citiesDatabase;
+    this->citiesDatabase = 0;
 }
 
 void PlaceSearchWidget::startSearch() {
-    CitiesDatabase* db = Kronos::getInstance()->getCitiesDatabase();
     std::vector<City> result;
-    db->getCity(this->searchBar->text().toStdString(), &result);
+    this->citiesDatabase->getCity(this->searchBar->text().toStdString(), &result);
 
     std::cout << "[startSearch] Place search for " << this->searchBar->text().toStdString() << " yielded ";
     if (result.size() > 0) {

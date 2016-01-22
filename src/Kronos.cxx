@@ -25,42 +25,22 @@ Kronos::Kronos(QObject* parent) : QObject(parent) {
     }
     Kronos::instance = this;
 
-    this->citiesDatabase = 0;
     this->initialized = false;
-}
-
-Kronos::~Kronos() {
-    delete this->citiesDatabase;
-    this->citiesDatabase = 0;
 }
 
 
 void Kronos::onStartup() {
     std::cout << "### ON STARTUP ###" << std::endl;
 
-    CitiesDatabase* db = new CitiesDatabase("kronos","stuproUser","weloveparaview","127.0.0.1","5432");
-    this->citiesDatabase = db;
-    db->openDatabase();
-    db->getAllCities();
-
-
     this->initialized = true;
 }
 
 void Kronos::onShutdown() {
-    delete this->citiesDatabase;
-    this->citiesDatabase = 0;
     std::cout << "### ON SHUTDOWN ###" << std::endl;
 }
 
 bool Kronos::isInitialized() {
     return this->initialized;
-}
-
-CitiesDatabase* Kronos::getCitiesDatabase() {
-    this->ensureReady();
-
-    return this->citiesDatabase;
 }
 
 void Kronos::registerView(vtkPVStuproView* view) {

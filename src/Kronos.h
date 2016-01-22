@@ -13,7 +13,7 @@ public:
     static Kronos* getInstance();
 
     Kronos(QObject* parent = 0);
-    ~Kronos();
+    ~Kronos() {}
 
 
     /* listeners for paraview events */
@@ -24,8 +24,6 @@ public:
     bool isInitialized();
 
     /* getters/setters for globally accessible objects */
-    CitiesDatabase* getCitiesDatabase();
-
     void registerView(vtkPVStuproView* view);
     void unregisterView(vtkPVStuproView* view);
     std::vector<vtkPVStuproView*> getViews();
@@ -34,7 +32,6 @@ private:
     static Kronos* instance;
 
     bool initialized;
-    CitiesDatabase* citiesDatabase;
     std::vector<vtkPVStuproView*> views;
 
     void ensureReady();
