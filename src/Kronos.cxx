@@ -53,13 +53,10 @@ void Kronos::onShutdown() {
     std::cout << "### ON SHUTDOWN ###" << std::endl;
 }
 
-<<<<<<< HEAD
 bool Kronos::isInitialized() {
     return this->initialized;
 }
 
-=======
->>>>>>> 0f1320fd6061bc2263db117ae1e17e79d78c04ec
 CitiesDatabase* Kronos::getCitiesDatabase() {
     this->ensureReady();
 
