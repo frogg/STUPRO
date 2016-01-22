@@ -55,7 +55,7 @@ void PlaceSearchWidget::startSearch() {
             std::cout << "[startSearch]\t" << result[i].name << std::endl;
         }
     } else {
-        std::cout << "no results";
+        std::cout << "no results" << std::endl;
     }
 
     // TODO: somehow make the camera forcus on the looked up coordinates
