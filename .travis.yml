@@ -13,7 +13,8 @@ before_install:
   - ./scripts/download-and-install-astyle.sh
 
 script:
-  - ./scripts/formatter-check.sh
+  # skip formatter check for the moment
+  #- ./scripts/formatter-check.sh
   - ./scripts/build.sh
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
