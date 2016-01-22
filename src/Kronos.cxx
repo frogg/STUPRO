@@ -39,34 +39,18 @@ Kronos::~Kronos() {
 void Kronos::onStartup() {
     std::cout << "### ON STARTUP ###" << std::endl;
 
-    CitiesDatabase* db = new CitiesDatabase("kronos","stuproTest","quappi","127.0.0.1","5432");
+    CitiesDatabase* db = new CitiesDatabase("kronos","stuproUser","weloveparaview","127.0.0.1","5432");
     this->citiesDatabase = db;
-
     db->openDatabase();
-    db->createCitiesTable();
-    db->insertOperation();
-    //db->getAllCities();
-    // std::vector<City> cities;
-    // db.getCity("Berlin", &cities);
-    // cout << "Marker";
-    // cout << cities.at(0).name;
-    
-    /*
-     CitiesDatabase db ("testdb","stuproTest","quappi","127.0.0.1","5432");
-     db.openDatabase();
-     db.createCitiesTable();
-     //  db.insertOperation();
-     db.getAllCities();
-     std::vector<City> cities;
-     db.getCity("Berlin", &cities);
-     cout << "Marker";
-     cout << cities.at(0).name;
-     */
+    db->getAllCities();
+
 
     this->initialized = true;
 }
 
 void Kronos::onShutdown() {
+    delete this->citiesDatabase;
+    this->citiesDatabase = 0;
     std::cout << "### ON SHUTDOWN ###" << std::endl;
 }
 
