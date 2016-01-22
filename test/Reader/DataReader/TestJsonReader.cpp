@@ -9,6 +9,7 @@
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 
 #include <Utils/Config/Configuration.hpp>
 
@@ -330,6 +331,19 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	EXPECT_FLOAT_EQ(
 		24.0,
 		precipitationRateArray->GetValue(0)
+	);
+	
+	// Test the associated array of precipitation types
+	vtkSmartPointer<vtkDataArray> abstractPrecipitationTypeArray = polyData->GetPointData()
+		->GetArray("precipitationTypes");
+	vtkSmartPointer<vtkTypeInt32Array> precipitationTypeArray = vtkTypeInt32Array::SafeDownCast(
+		abstractPrecipitationTypeArray
+	);
+	ASSERT_TRUE(precipitationTypeArray);
+	
+	EXPECT_FLOAT_EQ(
+		PrecipitationDataPoint::SNOW,
+		precipitationTypeArray->GetValue(0)
 	);
 	
 	// Test the associated array of timestamps
