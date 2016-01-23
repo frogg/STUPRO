@@ -215,6 +215,7 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
     timestamps->SetNumberOfComponents(1);
     timestamps->SetNumberOfTuples(*numberOfTuples);
     
+    // The current tuple index in the iteration
     int tupleNumber = 0;
     
     // Iterate through all relevant data points, add their coordinates as new points and fill the
@@ -253,6 +254,7 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
         tupleNumber++;
     }
 
+    // Assign points and vertices to the output data set
     dataSet->SetPoints(points);
     dataSet->SetVerts(verts);
     
