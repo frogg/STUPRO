@@ -279,7 +279,7 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 	
 	EXPECT_EQ(
 		3,
-		timestampArray->GetNumberOfComponents()
+		timestampArray->GetNumberOfTuples()
 	);
 	
 	EXPECT_EQ(
@@ -357,7 +357,7 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	
 	EXPECT_EQ(
 		1,
-		timestampArray->GetNumberOfComponents()
+		timestampArray->GetNumberOfTuples()
 	);
 	
 	EXPECT_EQ(
@@ -422,7 +422,7 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 	
 	EXPECT_EQ(
 		1,
-		timestampArray->GetNumberOfComponents()
+		timestampArray->GetNumberOfTuples()
 	);
 	
 	EXPECT_EQ(
@@ -506,7 +506,7 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 	
 	EXPECT_EQ(
 		1,
-		timestampArray->GetNumberOfComponents()
+		timestampArray->GetNumberOfTuples()
 	);
 	
 	EXPECT_EQ(
@@ -571,7 +571,7 @@ TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
 	
 	EXPECT_EQ(
 		1,
-		timestampArray->GetNumberOfComponents()
+		timestampArray->GetNumberOfTuples()
 	);
 	
 	EXPECT_EQ(

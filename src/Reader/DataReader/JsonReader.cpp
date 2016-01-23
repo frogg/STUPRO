@@ -9,7 +9,7 @@
 #include <vtkTypeFloat32Array.h>
 #include <vtkDoubleArray.h>
 #include <vtkPoints.h>
-#include "vtkCellArray.h"
+#include <vtkCellArray.h>
 
 #include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
@@ -21,6 +21,8 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverDataPoint.hpp>
 
 #include <Utils/Config/Configuration.hpp>
+
+#include <stdint.h>
 
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal) : 
         dataType(dataType), temporal(temporal) {
@@ -190,31 +192,28 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
         }
     }
     
-    // Add 
-    
-    verts->Allocate(verts->EstimateSize(1,relevantDataPoints.size()));
-
+    // Add a cell containing all points
+    verts->Allocate(verts->EstimateSize(1, relevantDataPoints.size()));
     verts->InsertNextCell(relevantDataPoints.size());
-    
     
     // Create some data arrays all temporal data sets have in common. The timestamp array will not
     // be used if the data set is non-temporal.
+    vtkIdType numberOfTuples[1];
+    numberOfTuples[0] = relevantDataPoints.size();
     
     // An integer array containing the priority of each data point. This is added as a convenience
     // measure for potentially using it later on with `vtkPointSetToLabelHierarchy`.
     vtkSmartPointer<vtkTypeInt32Array> priorities = vtkSmartPointer<vtkTypeInt32Array>::New();
-    // priorities->SetNumberOfComponents(relevantDataPoints.size());
     priorities->SetName("priorities");
-    vtkIdType numberOfTuples[1];
-    numberOfTuples[0] = relevantDataPoints.size();
     priorities->SetNumberOfComponents(1);
     priorities->SetNumberOfTuples(*numberOfTuples);
     
     // An integer array containing the timestamp of each data point. 32-bit integers are sufficient
     // since UNIX timestamps are being used.
     vtkSmartPointer<vtkTypeInt32Array> timestamps = vtkSmartPointer<vtkTypeInt32Array>::New();
-    timestamps->SetNumberOfComponents(relevantDataPoints.size());
     timestamps->SetName("timestamps");
+    timestamps->SetNumberOfComponents(1);
+    timestamps->SetNumberOfTuples(*numberOfTuples);
     
     int tupleNumber = 0;
     
@@ -230,21 +229,14 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             0
         ));
         
-        
-        
         // Invert the priority before adding it since with `vtkPointSetToLabelHierarchy`,
         // higher priority values are more visible, which is the other way around than
         // the definition in these `DataReader` classes.
-        /*priorities->InsertNextValue(
-            Configuration::getInstance().getInteger("dataReader.maximumPriority")
-            - (*iterator)->getPriority()
-        );*/
         double priority[1] = {
-            Configuration::getInstance().getInteger("dataReader.maximumPriority")
+            (double) Configuration::getInstance().getInteger("dataReader.maximumPriority")
             - (*iterator)->getPriority()
         };
         priorities->SetTuple(tupleNumber, priority);
-        tupleNumber++;
         
         // Add timestamps if they exist
         if (this->hasTemporalData()) {
@@ -252,12 +244,16 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
                 (*iterator)
             );
             
-            timestamps->InsertNextValue(temporalDataPoint->getTimestamp());
+            double timestamp[1] = {
+                (double) temporalDataPoint->getTimestamp()
+            };
+            timestamps->SetTuple(tupleNumber, timestamp);
         }
+        
+        tupleNumber++;
     }
 
     dataSet->SetPoints(points);
-    
     dataSet->SetVerts(verts);
     
     // Add relevant data arrays depending on the data type
