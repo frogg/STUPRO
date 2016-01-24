@@ -44,7 +44,7 @@ vtkMySpecialRepresentation::vtkMySpecialRepresentation()
     pointSetToLabelHierarchyFilter->GetOutputPort());
   
   this->LODMapper = vtkMySpecialPolyDataMapper::New();
-  this->Mapper = labelMapper;
+    //this->Mapper = labelMapper;
 
   // Since we replaced the mappers, we need to call SetupDefaults() to ensure
   // the pipelines are setup correctly.

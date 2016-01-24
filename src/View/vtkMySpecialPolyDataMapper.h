@@ -31,7 +31,7 @@ public:
   static vtkMySpecialPolyDataMapper* New();
   vtkTypeMacro(vtkMySpecialPolyDataMapper, vtkCompositePolyDataMapper2);
   void PrintSelf(ostream& os, vtkIndent indent);
-
+  void Render(vtkRenderer* ren, vtkActor* act);
 //BTX
 protected:
   vtkMySpecialPolyDataMapper();
