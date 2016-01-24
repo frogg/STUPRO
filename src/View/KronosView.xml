@@ -17,28 +17,4 @@
 			command="switchCurrentDisplayMode" />
     </RenderViewProxy>
   </ProxyGroup>
-  
-  <ProxyGroup name="representations">
-  <Extension name="GeometryRepresentation">
-	<Documentation>
-	  Extends standard GeometryRepresentation by adding
-	  MySpecialRepresentation as a new type of representation.
-	</Documentation>
-
-	<!-- this adds to what is already defined in PVRepresentationBase -->
-	<RepresentationType subproxy="MySpecialRepresentation"
-	  text="Special Mapper" subtype="Surface" />
-
-	<SubProxy>
-	  <Proxy name="MySpecialRepresentation"
-		proxygroup="representations" proxyname="MySpecialRepresentation">
-	  </Proxy>
-	  <ShareProperties subproxy="SurfaceRepresentation">
-		<Exception name="Input" />
-		<Exception name="Visibility" />
-		<Exception name="Representation" />
-	  </ShareProperties>
-	</SubProxy>
-  </Extension>
-</ProxyGroup>
 </ServerManagerConfiguration>
