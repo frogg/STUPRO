@@ -185,7 +185,7 @@ void JsonReader::clearCache() {
 }
 
 vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
-    return this->getVtkDataSet(zoomLevel, 0.0f);
+    return this->getVtkDataSet(zoomLevel, -1.0f);
 }
 
 vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, float time) {
@@ -196,7 +196,7 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, float time
     
     vtkSmartPointer<vtkPolyData> dataSet;
     
-    if (this->hasTemporalData()) {
+    if (this->hasTemporalData() && time >= 0.0f && time <= 1.0f) {
         // Calculate the current time step, as given by the time parameter
         int currentTimeDelta = (int) ((this->endTime - this->startTime) * time);
         int currentTimestep = (int) (currentTimeDelta / this->timeResolution);
