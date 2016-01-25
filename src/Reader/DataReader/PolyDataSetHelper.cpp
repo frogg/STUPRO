@@ -316,15 +316,23 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 		case DataType::TEMPERATURE: {
 			vtkSmartPointer<vtkTypeFloat32Array> temperatures
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
-			temperatures->SetNumberOfComponents(relevantDataPoints.size());
+            temperatures->SetNumberOfComponents(1);
+        	temperatures->SetNumberOfTuples(relevantDataPoints.size());
 			temperatures->SetName("temperatures");
 			
+            int tupleNumber = 0;
 			for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
 					iterator != relevantDataPoints.end(); ++iterator) {
 				const TemperatureDataPoint* dataPoint
 					= dynamic_cast<const TemperatureDataPoint*>((*iterator));
 				
-				temperatures->InsertNextValue(dataPoint->getTemperature());
+				// temperatures->InsertNextValue(dataPoint->getTemperature());
+                double temperature[1] = {
+    				(double) dataPoint->getTemperature()
+    			};
+    			temperatures->SetTuple(tupleNumber, temperature);
+                
+                tupleNumber++;
 			}
 
 			dataSet->GetPointData()->AddArray(temperatures);
