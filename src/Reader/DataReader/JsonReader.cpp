@@ -163,6 +163,10 @@ bool JsonReader::hasTemporalData() const {
     return temporal;
 }
 
+float JsonReader::getTimeStepSize() const {
+    return (this->endTime - this->startTime) / (this->timeResolution * 1.0f);
+}
+
 void JsonReader::setCachingEnabled(bool cachingEnabled) {
     this->cachingEnabled = cachingEnabled;
 }
@@ -178,8 +182,7 @@ void JsonReader::cacheAllData() {
             i++) {
         if (this->hasTemporalData()) {
             for (float currentTime = 0.0f; currentTime <= 1.0f;
-                    currentTime += ((this->endTime - this->startTime)
-                    / (this->timeResolution * 1.0f))) {
+                    currentTime += this->getTimeStepSize()) {
                 this->getVtkDataSet(i, currentTime);
             }
         } else {

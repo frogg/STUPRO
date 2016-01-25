@@ -35,6 +35,12 @@ public:
      * @return True if each data point has time information, false otherwise
      */
     bool hasTemporalData() const;
+    
+    /**
+     * Get the size of each time step.
+     * @return The size of each time step
+     */
+    float getTimeStepSize() const;
 
     /**
      * Get all data stored in the file this reader uses, pruned by a specified zoom level.
