@@ -21,10 +21,8 @@ public:
 protected:
 	vtkKronosReader();
 	~vtkKronosReader();
-	int RequestData(
-		vtkInformation*,
-		vtkInformationVector**,
-		vtkInformationVector*) override;
+	int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
+    int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 private:
 	vtkKronosReader(const vtkKronosReader&); // Not implemented
 	void operator=(const vtkKronosReader&);   // Not implemented

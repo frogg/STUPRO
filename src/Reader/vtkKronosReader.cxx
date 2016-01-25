@@ -118,22 +118,51 @@ void vtkKronosReader::calcLOD(){
     this->zoomLevel=int(LOD);
 }
 
-int vtkKronosReader::RequestData(
-  vtkInformation*,
-  vtkInformationVector**,
-  vtkInformationVector* outputVector)
-{
+int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationVector **inputVector,
+        vtkInformationVector *outputVector) {
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
-    vtkSmartPointer<vtkPolyData> output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+    // Add information to the output vector if the data contains time information
+    if (this->jsonReader->hasTemporalData()) {
+        double timeStepValue = this->jsonReader->getTimeStepSize();
+        outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(), &timeStepValue, 1);
+        
+        double timeRange[2];
+        timeRange[0] = 0;
+        timeRange[1] = 1;
+        outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_RANGE(), timeRange, 2);
+    }
+
+    return 1;
+}
+
+int vtkKronosReader::RequestData(vtkInformation*, vtkInformationVector**,
+        vtkInformationVector* outputVector) {    
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    vtkSmartPointer<vtkPolyData> output = vtkPolyData::SafeDownCast(
+        outInfo->Get(vtkDataObject::DATA_OBJECT())
+    );
     
-    // cout << "ZOOMLEVEL " << zoomLevel << endl;
-    
-    if(this->jsonReader!=nullptr){
-        vtkSmartPointer<vtkPolyData> polyData = jsonReader->getVtkDataSet(this->zoomLevel);
-        output->DeepCopy(polyData);
+    if (this->jsonReader != nullptr) {
+        if (outInfo->Has(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP()) &&
+                this->jsonReader->hasTemporalData()) {
+            double requestedTimeValue = outInfo->Get(
+                vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP()
+            );
+            
+            vtkSmartPointer<vtkPolyData> polyData = this->jsonReader->getVtkDataSet(
+                this->zoomLevel,
+                requestedTimeValue
+            );
+            
+            output->DeepCopy(polyData);
+        } else {
+            vtkSmartPointer<vtkPolyData> polyData = this->jsonReader->getVtkDataSet(
+                this->zoomLevel
+            );
+            output->DeepCopy(polyData);
+        }
     }
     
-
-
-  return 1;
+    return 1;
 }
