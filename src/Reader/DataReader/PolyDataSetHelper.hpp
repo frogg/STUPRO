@@ -32,7 +32,8 @@ public:
      * @param zoomLevel The current zoom level
      * @param dataType The type of data points in the list
      * @param timeResolution Amount of seconds a single time step contains
-     * @param timeStep The current time step
+     * @param timeStep The current time step, which is the amount of time spans from the start time
+     * with the length of one such time span specified by the time resolution
      * @param startTime Timestamp of the earliest data point in the list
      * @return A vtkPolyData object containing all relevant data points
      */
