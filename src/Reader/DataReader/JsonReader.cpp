@@ -176,12 +176,21 @@ void JsonReader::cacheAllData() {
     
     for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
             i++) {
-        this->getVtkDataSet(i);
+        if (this->hasTemporalData()) {
+            for (float currentTime = 0.0f; currentTime <= 1.0f;
+                    currentTime += ((this->endTime - this->startTime)
+                    / (this->timeResolution * 1.0f))) {
+                this->getVtkDataSet(i, currentTime);
+            }
+        } else {
+            this->getVtkDataSet(i);
+        }
     }
 }
 
 void JsonReader::clearCache() {
-    this->cache.clear();
+    this->nonTemporalCache.clear();
+    this->temporalCache.clear();
 }
 
 vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
@@ -189,24 +198,39 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
 }
 
 vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, float time) {
+    bool verifiedTemporal = this->hasTemporalData() && time >= 0.0f && time <= 1.0f;
+    int currentTimeStep;
+    
+    if (verifiedTemporal) {
+        // Calculate the current time step, as given by the time parameter
+        int currentTimeDelta = (int) ((this->endTime - this->startTime) * time);
+        currentTimeStep = (int) (currentTimeDelta / this->timeResolution);
+    }
+    
     // If possible, retrieve the data set from the cache
-    if (this->cachingEnabled && this->cache.contains(zoomLevel)) {
-        return this->cache.value(zoomLevel);
+    if (this->cachingEnabled) {
+        if (verifiedTemporal) {
+            if (this->temporalCache.contains(zoomLevel)) {
+                if (this->temporalCache.value(zoomLevel).contains(currentTimeStep)) {
+                    return this->temporalCache.value(zoomLevel).value(currentTimeStep);
+                }
+            }
+        } else {
+            if (this->nonTemporalCache.contains(zoomLevel)) {
+                return this->nonTemporalCache.value(zoomLevel);
+            }
+        }
     }
     
     vtkSmartPointer<vtkPolyData> dataSet;
     
-    if (this->hasTemporalData() && time >= 0.0f && time <= 1.0f) {
-        // Calculate the current time step, as given by the time parameter
-        int currentTimeDelta = (int) ((this->endTime - this->startTime) * time);
-        int currentTimestep = (int) (currentTimeDelta / this->timeResolution);
-
+    if (verifiedTemporal) {
         dataSet = PolyDataSetHelper::getPolyDataFromDataPoints(
             this->pointDataSet,
             zoomLevel,
             this->dataType,
             this->timeResolution,
-            currentTimestep,
+            currentTimeStep,
             this->startTime
         );
     } else {
@@ -217,9 +241,18 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, float time
         );
     }
     
-    // Save the data set to the cached if desired
+    // Save the data set to the cache if desired
     if (this->cachingEnabled) {
-        this->cache.insert(zoomLevel, dataSet);
+        if (verifiedTemporal) {
+            if (!this->temporalCache.contains(zoomLevel)) {
+                QMap<int, vtkSmartPointer<vtkPolyData>> zoomLevelCache;
+                this->temporalCache[zoomLevel] = zoomLevelCache;
+            }
+            
+            this->temporalCache[zoomLevel][currentTimeStep] = dataSet;
+        } else {
+            this->nonTemporalCache[zoomLevel] = dataSet;
+        }
     }
     
     return dataSet;

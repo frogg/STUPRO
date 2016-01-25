@@ -114,9 +114,15 @@ private:
     PointDataSet pointDataSet;
     
     /**
-     * A map with cached vtkPolyData for specified zoom levels
+     * A map with cached non-temporal vtkPolyData for specified zoom levels
      */
-    QMap<int, vtkSmartPointer<vtkPolyData>> cache;
+    QMap<int, vtkSmartPointer<vtkPolyData>> nonTemporalCache;
+    
+    /**
+     * A map with cached temporal vtkPolyData for specified zoom levels and time steps for each
+     * zoom level
+     */
+    QMap<int, QMap<int, vtkSmartPointer<vtkPolyData>>> temporalCache;
     
     /**
      * Boolean flag denoting whether a cache should be used
