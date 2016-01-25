@@ -291,21 +291,33 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 		case DataType::PRECIPITATION: {
 			vtkSmartPointer<vtkTypeFloat32Array> precipitationRates
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
-			precipitationRates->SetNumberOfComponents(relevantDataPoints.size());
+            precipitationRates->SetNumberOfComponents(1);
+        	precipitationRates->SetNumberOfTuples(relevantDataPoints.size());
 			precipitationRates->SetName("precipitationRates");
 
 			vtkSmartPointer<vtkTypeInt32Array> precipitationTypes
 				= vtkSmartPointer<vtkTypeInt32Array>::New();
-			precipitationTypes->SetNumberOfComponents(relevantDataPoints.size());
+            precipitationTypes->SetNumberOfComponents(1);
+        	precipitationTypes->SetNumberOfTuples(relevantDataPoints.size());
 			precipitationTypes->SetName("precipitationTypes");
 			
+            int tupleNumber = 0;
 			for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
 					iterator != relevantDataPoints.end(); ++iterator) {
 				const PrecipitationDataPoint* dataPoint
 					= dynamic_cast<const PrecipitationDataPoint*>((*iterator));
 				
-				precipitationRates->InsertNextValue(dataPoint->getPrecipitationRate());
-				precipitationTypes->InsertNextValue(dataPoint->getPrecipitationType());
+                double precipitationRate[1] = {
+    				(double) dataPoint->getPrecipitationRate()
+    			};
+    			precipitationRates->SetTuple(tupleNumber, precipitationRate);
+                
+                double precipitationType[1] = {
+    				(double) dataPoint->getPrecipitationType()
+    			};
+    			precipitationTypes->SetTuple(tupleNumber, precipitationType);
+                
+                tupleNumber++;
 			}
 
 			dataSet->GetPointData()->AddArray(precipitationRates);
@@ -326,7 +338,6 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 				const TemperatureDataPoint* dataPoint
 					= dynamic_cast<const TemperatureDataPoint*>((*iterator));
 				
-				// temperatures->InsertNextValue(dataPoint->getTemperature());
                 double temperature[1] = {
     				(double) dataPoint->getTemperature()
     			};
