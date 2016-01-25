@@ -48,7 +48,7 @@ for index, entry in enumerate(weatherData):
 		precipitationData.append(precipitationEntry)
 
 # adds a header to each DataArray	
-timeResolution = 2 * 60
+timeResolution = 1 * 60 * 60
 
 temperatureDict = {'meta': {'dataType': 'temperature', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":temperatureData}}
 windDict = {'meta': {'dataType': 'wind', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":windData}}
