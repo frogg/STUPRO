@@ -390,15 +390,22 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 		case DataType::CLOUDCOVER: {
 			vtkSmartPointer<vtkTypeFloat32Array> coverageValues
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
-			coverageValues->SetNumberOfComponents(relevantDataPoints.size());
+            coverageValues->SetNumberOfComponents(1);
+        	coverageValues->SetNumberOfTuples(relevantDataPoints.size());
 			coverageValues->SetName("cloudCovers");
 			
+            int tupleNumber = 0;
 			for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
 					iterator != relevantDataPoints.end(); ++iterator) {
 				const CloudCoverDataPoint* dataPoint
 					= dynamic_cast<const CloudCoverDataPoint*>((*iterator));
 				
-				coverageValues->InsertNextValue(dataPoint->getCloudCover());
+                double coverage[1] = {
+    				(double) dataPoint->getCloudCover()
+    			};
+    			coverageValues->SetTuple(tupleNumber, coverage);
+                
+                tupleNumber++;
 			}
 
 			dataSet->GetPointData()->AddArray(coverageValues);
