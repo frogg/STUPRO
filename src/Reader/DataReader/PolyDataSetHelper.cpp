@@ -353,21 +353,33 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 		case DataType::WIND: {
 			vtkSmartPointer<vtkTypeFloat32Array> speeds
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
-			speeds->SetNumberOfComponents(relevantDataPoints.size());
+            speeds->SetNumberOfComponents(1);
+        	speeds->SetNumberOfTuples(relevantDataPoints.size());
 			speeds->SetName("speeds");
 			
 			vtkSmartPointer<vtkTypeFloat32Array> directions
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
-			directions->SetNumberOfComponents(relevantDataPoints.size());
+            directions->SetNumberOfComponents(1);
+        	directions->SetNumberOfTuples(relevantDataPoints.size());
 			directions->SetName("directions");
 			
+            int tupleNumber = 0;
 			for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
 					iterator != relevantDataPoints.end(); ++iterator) {
 				const WindDataPoint* dataPoint
 					= dynamic_cast<const WindDataPoint*>((*iterator));
 				
-				speeds->InsertNextValue(dataPoint->getSpeed());
-				directions->InsertNextValue(dataPoint->getDirection());
+                double speed[1] = {
+    				(double) dataPoint->getSpeed()
+    			};
+    			speeds->SetTuple(tupleNumber, speed);
+                
+                double direction[1] = {
+    				(double) dataPoint->getDirection()
+    			};
+    			directions->SetTuple(tupleNumber, direction);
+                
+                tupleNumber++;
 			}
 
 			dataSet->GetPointData()->AddArray(speeds);
