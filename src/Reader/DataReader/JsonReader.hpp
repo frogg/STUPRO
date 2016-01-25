@@ -20,7 +20,7 @@ public:
      * Create a new AbstractJsonReader from a map of data from a JSON file
      * @param data A potentially nested map of data from the JSON file
      */
-    JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal);
+    JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal, int timeResolution);
     
     virtual ~JsonReader() { }
 
@@ -81,6 +81,11 @@ private:
      * DataType.hpp file
      */
     int dataType;
+    
+    /**
+     * Amount of seconds in each time step, only used if this object reads temporal data
+     */
+    int timeResolution;
 
     /**
      * A set of all points and their stored information read by this reader
