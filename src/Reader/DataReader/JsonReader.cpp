@@ -17,6 +17,34 @@ JsonReader::JsonReader(rapidjson::Value& jsonDocument, int dataType, bool tempor
     this->cachingEnabled = true;
     this->pointDataSet = PointDataSet();
     this->indexDataPoints(jsonDocument["children"], 0);
+    
+    // Get timestamps of the earliest and latest data point if the data is time-sensitive
+    if (this->hasTemporalData()) {
+        // Initialize minimum and maximum values as smallest and biggest possible UNIX timestamps
+        // respectively
+        int earliestTimestamp = 2147483647;
+        int latestTimestamp = 0;
+        
+        QList<DataPoint*>::iterator i;
+        QList<DataPoint*> points = this->pointDataSet.getDataPoints();
+        for (i = points.begin(); i != points.end(); ++i) {
+            const TemporalDataPoint* dataPoint
+                = dynamic_cast<const TemporalDataPoint*>((*i));
+            
+            int timestamp = dataPoint->getTimestamp();
+            
+            if (timestamp < earliestTimestamp) {
+                earliestTimestamp = timestamp;
+            }
+            if (timestamp > latestTimestamp) {
+                latestTimestamp = timestamp;
+            }
+        }
+        
+        // Save the time extent of the data points
+        this->startTime = earliestTimestamp;
+        this->endTime = latestTimestamp;
+    }
 }
 
 void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
@@ -157,6 +185,10 @@ void JsonReader::clearCache() {
 }
 
 vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
+    return this->getVtkDataSet(zoomLevel, 0.0f);
+}
+
+vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, float time) {
     // If possible, retrieve the data set from the cache
     if (this->cachingEnabled && this->cache.contains(zoomLevel)) {
         return this->cache.value(zoomLevel);
@@ -170,9 +202,9 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel) {
             this->pointDataSet,
             zoomLevel,
             this->dataType,
-            0,
-            0,
-            0
+            this->timeResolution,
+            0, // TODO: timeStep
+            this->startTime
         );
     } else {
         dataSet = PolyDataSetHelper::getPolyDataFromDataPoints(
