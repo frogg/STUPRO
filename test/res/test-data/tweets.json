@@ -1,7 +1,8 @@
 {
   "meta": {
     "dataType": "tweets",
-    "temporal": true
+    "temporal": true,
+    "timeResolution": 100
   },
   "root": {
     "children": [
