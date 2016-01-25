@@ -100,13 +100,11 @@ private:
      * Create a vtkPolyData object from a set of points.
      * @param points A list of data points to be put into the data set
      * @param dataType The type of data points in the list
-     * @param temporal True if the data points are time-sensitive, false otherwise
      * @return A vtkPolyData object containing all points from the list
      */
     static vtkSmartPointer<vtkPolyData> createPolyDataSet(
         QList<DataPoint*> relevantDataPoints,
-        int dataType,
-        bool temporal
+        int dataType
     );
     
     /**

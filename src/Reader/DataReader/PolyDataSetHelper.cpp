@@ -84,7 +84,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::getPolyDataFromDataPoints(
 	}
 	
 	return PolyDataSetHelper::createPolyDataSet(
-		relevantDataPoints, dataType, temporal
+		relevantDataPoints, dataType
 	);
 }
 
@@ -137,12 +137,14 @@ QList<DataPoint*> PolyDataSetHelper::extractRelevantDataPoints(
 
 vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
     QList<DataPoint*> relevantDataPoints,
-	int dataType,
-    bool temporal
+	int dataType
 ) {
 	// Create an empty data set and a point array the data set will contain
     vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+	
+	// Check whether the data type is time-sensitive
+	bool temporal = DataType::isTemporal(dataType);
     
     // Create an empty vert data set
     vtkCellArray *verts = vtkCellArray::New();
