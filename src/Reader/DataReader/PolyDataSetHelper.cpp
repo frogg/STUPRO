@@ -111,8 +111,28 @@ QList<DataPoint*> PolyDataSetHelper::extractRelevantDataPoints(
     int timeStep,
     int startTime
 ) {
-	// TODO: Handle time extraction
-	return PolyDataSetHelper::extractRelevantDataPoints(points, zoomLevel);
+	QList<DataPoint*> relevantDataPoints = QList<DataPoint*>();
+	
+	int timeSpanStart = startTime + (timeStep * timeResolution);
+	int timeSpanEnd = timeSpanStart + timeResolution;
+        
+    for (int i = 0; i < points.getDataPoints().size(); i++) {
+        DataPoint* point = points.getDataPoints().at(i);
+		
+        if (point->getPriority() <= zoomLevel) {
+			const TemporalDataPoint* dataPoint
+				= dynamic_cast<const TemporalDataPoint*>(point);
+			
+			if (
+				dataPoint->getTimestamp() >= timeSpanStart &&
+				dataPoint->getTimestamp() <= timeSpanEnd
+			) {
+            	relevantDataPoints.append(point);
+			}
+        }
+    }
+	
+	return relevantDataPoints;
 }
 
 vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
