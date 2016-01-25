@@ -31,6 +31,13 @@ public:
 	* Constant to be used if the data represents a set of cloudCover data points.
 	*/
 	const static int CLOUDCOVER = 6;
+    
+    /**
+     * Check whether a data type contains time information.
+     * @param dataType Data type to be checked
+     * @return True if the data type contains time information, false otherwise
+     */
+    static bool isTemporal(const int dataType);
 };
 
 #endif
