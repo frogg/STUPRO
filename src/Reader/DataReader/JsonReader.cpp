@@ -197,13 +197,16 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, float time
     vtkSmartPointer<vtkPolyData> dataSet;
     
     if (this->hasTemporalData()) {
-        // TODO: Enable temporal data points
+        // Calculate the current time step, as given by the time parameter
+        int currentTimeDelta = (int) ((this->endTime - this->startTime) * time);
+        int currentTimestep = (int) (currentTimeDelta / this->timeResolution);
+
         dataSet = PolyDataSetHelper::getPolyDataFromDataPoints(
             this->pointDataSet,
             zoomLevel,
             this->dataType,
             this->timeResolution,
-            0, // TODO: timeStep
+            currentTimestep,
             this->startTime
         );
     } else {
