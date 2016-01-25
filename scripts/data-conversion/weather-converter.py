@@ -48,13 +48,15 @@ for index, entry in enumerate(weatherData):
 		precipitationData.append(precipitationEntry)
 
 # adds a header to each DataArray	
-temperatureDict = {'meta': {'dataType': 'temperature', 'temporal': True}, 'root':{"children":temperatureData}}
-windDict = {'meta': {'dataType': 'wind', 'temporal': True}, 'root':{"children":windData}}
-cloudCoverDict = {'meta': {'dataType': 'cloudCover', 'temporal': True}, 'root':{"children":cloudCoverData}}
-precipitationDict = {'meta': {'dataType': 'precipitation', 'temporal': True}, 'root':{"children":precipitationData}}
+timeResolution = 2 * 60
+
+temperatureDict = {'meta': {'dataType': 'temperature', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":temperatureData}}
+windDict = {'meta': {'dataType': 'wind', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":windData}}
+cloudCoverDict = {'meta': {'dataType': 'cloudCover', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":cloudCoverData}}
+precipitationDict = {'meta': {'dataType': 'precipitation', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":precipitationData}}
 
 # writes the different kJson-files for the different weatherSources	
-d.write_json_file(temperatureDict, 'temperature-data.kJson', True)
-d.write_json_file(windDict, 'wind-data.kJson', True)
-d.write_json_file(cloudCoverDict, 'cloudCover-data.kJson', True)
-d.write_json_file(precipitationDict, 'precipitation-data.kJson', True)
+d.write_json_file(temperatureDict, 'test-data/temperature-data.kJson', True)
+d.write_json_file(windDict, 'test-data/wind-data.kJson', True)
+d.write_json_file(cloudCoverDict, 'test-data/cloudCover-data.kJson', True)
+d.write_json_file(precipitationDict, 'test-data/precipitation-data.kJson', True)
