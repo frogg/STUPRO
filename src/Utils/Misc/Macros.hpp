@@ -3,17 +3,17 @@
 
 /**
  * Operating system macros.
- * 
+ *
  * Can be used to conditionally compile platform-specific code.
  */
 #if defined(_WIN32)
-#	define KRONOS_WINDOWS
+	#define KRONOS_WINDOWS
 #elif defined(__APPLE__)
-#	define KRONOS_MACOS
+	#define KRONOS_MACOS
 #elif defined(__linux__)
-#	define KRONOS_LINUX
+	#define KRONOS_LINUX
 #else
-#	error Unrecognized Operating System!
+	#	error Unrecognized Operating System!
 #endif
 
 /**
@@ -23,15 +23,15 @@
 
 /**
  * KRONOS_NOTHROW Macro.
- * 
+ *
  * Usable at the end of a function declaration to guarantee that it will never throw exceptions.
  */
 #if defined(KRONOS_WINDOWS)
 	// Visual Studio 2013 doesn't support noexcept, so use a regular empty throw specifier instead.
-#	define KRONOS_NOTHROW throw()
+	#define KRONOS_NOTHROW throw()
 #else
 	// G++ and Clang support noexcept, so use it instead of the deprecated throw() notation.
-#	define KRONOS_NOTHROW noexcept
+	#define KRONOS_NOTHROW noexcept
 #endif
 
 /**
