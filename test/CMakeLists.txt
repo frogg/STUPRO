@@ -10,7 +10,6 @@ set(CMAKE_AUTOMOC TRUE)
 
 # find ParaView headers and libraries
 find_package(ParaView REQUIRED)
-message(STATUS ${PARAVIEW_USE_FILE})
 include(${PARAVIEW_USE_FILE})
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -26,12 +25,11 @@ else()
     include(${QT_USE_FILE})
 endif()
 
-# find CppUnit headers and libraries
-find_package(CppUnit REQUIRED)
+# find GTest headers and libraries
+find_package(GoogleTest REQUIRED)
 
 # test sources
-file(GLOB_RECURSE Test_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.cpp)
-file(GLOB_RECURSE Test_HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./**/Test*.hpp)
+file(GLOB_RECURSE Test_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/**/Test*.cpp)
 
 # include main library headers
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -39,19 +37,19 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # include external library headers
 include_directories(${CMAKE_SOURCE_DIR}/libs)
 
-# include CppUnit headers
-include_directories(${CPPUNIT_INCLUDE_DIR})
+# include GTest headers
+include_directories(${GTEST_INCLUDE_DIRS})
 
 # create an executable for the test runner
-add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES} ${Test_HEADERS})
+add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES})
 
 # set C++ standard to C++11
 set_property(TARGET UnitTester PROPERTY CXX_STANDARD 11)
 
-# link against kronos and CppUnit libraries
+# link against kronos and GTest libraries
 target_link_libraries(UnitTester
   KronosPlugin
-  cppunit
+  ${GTEST_BOTH_LIBRARIES}
 )
 
 # link against Qt libraries
@@ -65,5 +63,18 @@ else()
     )
 endif()
 
-# copy over test resource folder
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# change binary output paths
+set_target_properties(UnitTester
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${TEST_BIN_DIR}"
+    LIBRARY_OUTPUT_DIRECTORY "${TEST_BIN_DIR}"
+    RUNTIME_OUTPUT_DIRECTORY "${TEST_BIN_DIR}"
+)
+
+# make sure not to copy or delete the resource folder if we are doing an in-source build
+if(NOT ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${TEST_BIN_DIR}"))
+    # copy over test resource folder
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${TEST_BIN_DIR})
+    # delete the resource folder when executing make clean
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${TEST_BIN_DIR}/res")
+endif()

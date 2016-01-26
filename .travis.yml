@@ -1,24 +1,33 @@
+language: cpp
 sudo: required
 dist: trusty
 before_install:
   - sudo apt-get update > /dev/null
-  - sudo apt-get -q -y install libcppunit-dev
   - sudo apt-get -q -y install cmake
+  - sudo apt-get -q -y install ccache
   - sudo apt-get -q -y install openmpi-common openmpi-bin libopenmpi-dev
   - sudo apt-get -q -y install libqt4-dev qt4-dev-tools libqt4-xmlpatterns
   # - sudo apt-get -qq install qtbase5-dev
 
+  # run build preparation script
+  - ./scripts/pre-build.sh
+  # build paraview using custom parameters
   - ./scripts/build-paraview.sh
   # build astyle because the astyle version in the official repos is outdated
   - ./scripts/download-and-install-astyle.sh
+  # build GTest libraries
+  - ./scripts/build-gtest.sh
 
 script:
-  # disabled until the styling on the repository is OK
-  # - ./scripts/formatter-check.sh
+  # skip formatter check for the moment
+  #- ./scripts/formatter-check.sh
   - ./scripts/build.sh
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b
 cache:
+  apt: true
+  ccache: true
   directories:
     - bin/astyle
+    - bin/gtest
     - bin/paraview

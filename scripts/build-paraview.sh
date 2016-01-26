@@ -5,15 +5,12 @@ PV_CMAKE_FLAGS="\
  -D CMAKE_BUILD_TYPE=Release\
  -D BUILD_TESTING=OFF\
  -D BUILD_DOCUMENTATION=OFF\
- -D Module_vtkGeovisCore=ON\
- -D Module_vtkIOGeoJSON=ON\
- -D Module_vtkViewsGeovis=ON\
  -D PARAVIEW_USE_MPI=ON"
 
 PV_GIT_URL="https://github.com/Kitware/ParaView.git"
 PV_GIT_TAG="v4.3.1"
 
-NUM_WORKERS=4
+NUM_WORKERS=$(nproc)
 
 # store current working directory for later references
 ROOT_DIR=$PWD
@@ -25,7 +22,7 @@ mkdir -p $ABS_PV_SRC_DIR
 cd $ABS_PV_SRC_DIR
 
 CURRENT_PV_GIT_TAG=$(git describe --tag)
-if [ $CURRENT_PV_GIT_TAG = $PV_GIT_TAG ]; then
+if [ "$CURRENT_PV_GIT_TAG" = "$PV_GIT_TAG" ]; then
   echo "Paraview already seems to be on the correct tag, skipping clone"
 else
   echo "Cloning ParaView Git repository..."

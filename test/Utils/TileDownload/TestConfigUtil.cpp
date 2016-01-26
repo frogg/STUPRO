@@ -1,75 +1,73 @@
-#include "TestConfigUtil.hpp"
-
-#include <cppunit/TestAssert.h>
+#include <gtest/gtest.h>
 #include <qmap.h>
 #include <qstring.h>
 #include <Utils/TileDownload/ConfigUtil.hpp>
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
 #include <string>
 
-void TestConfigUtil::testLoadConfig() {
+TEST(TestConfigUtil, LoadConfig) {
 	QMap<QString, ImageLayerDescription> layers;
 
 	try {
 		layers = ConfigUtil::loadConfigFile("./res/layers.json");
 	} catch (FileOpenException e) {
-		CPPUNIT_FAIL(e.what());
+		FAIL() << e.what();
 	}
 
-	CPPUNIT_ASSERT_EQUAL(2, layers.size());
+	EXPECT_EQ(2, layers.size());
 
 	ImageLayerDescription satelliteImagery = layers.value("satelliteImagery");
-	CPPUNIT_ASSERT_EQUAL(
+	EXPECT_EQ(
 		std::string("http://worldwind25.arc.nasa.gov/wms?service=WMS&"
 								"request=GetMap&version=1.3.0&crs=CRS:84&styles=&transparent=FALSE"),
 		satelliteImagery.getBaseUrl().toStdString()
 	);
-	CPPUNIT_ASSERT_EQUAL(std::string("image/jpeg"), satelliteImagery.getMimeType().toStdString());
-	CPPUNIT_ASSERT_EQUAL(512, satelliteImagery.getTileSize());
+	EXPECT_EQ(std::string("image/jpeg"), satelliteImagery.getMimeType().toStdString());
+	EXPECT_EQ(512, satelliteImagery.getTileSize());
 
 	ImageLayerDescription heightmap = layers.value("heightmap");
-	CPPUNIT_ASSERT_EQUAL(
+	EXPECT_EQ(
 		std::string("http://worldwind26.arc.nasa.gov/wms?service=WMS&"
 								"request=GetMap&version=1.3.0&crs=CRS:84&styles=&transparent=FALSE"),
 		heightmap.getBaseUrl().toStdString()
 	);
-	CPPUNIT_ASSERT_EQUAL(std::string("application/bil16"), heightmap.getMimeType().toStdString());
-	CPPUNIT_ASSERT_EQUAL(512, heightmap.getTileSize());
-}
+	EXPECT_EQ(std::string("application/bil16"), heightmap.getMimeType().toStdString());
+	EXPECT_EQ(512, heightmap.getTileSize());
+};
 
-void TestConfigUtil::testLayerSteps() {
+TEST(TestConfigUtil, LayerSteps) {
 	QMap<QString, ImageLayerDescription> layers;
 
 	try {
 		layers = ConfigUtil::loadConfigFile("./res/layers.json");
 	} catch (FileOpenException e) {
-		CPPUNIT_FAIL(e.what());
+		FAIL() << e.what();
 	}
 
 	ImageLayerDescription satelliteImagery = layers.value("satelliteImagery");
 
-	CPPUNIT_ASSERT_EQUAL(2, satelliteImagery.getLayerSteps().size());
-	CPPUNIT_ASSERT_EQUAL(0, satelliteImagery.getLayerSteps().at(0).minZoomLevel);
-	CPPUNIT_ASSERT_EQUAL(
+	EXPECT_EQ(2, satelliteImagery.getLayerSteps().size());
+	EXPECT_EQ(0, satelliteImagery.getLayerSteps().at(0).minZoomLevel);
+	EXPECT_EQ(
 		std::string("BlueMarble-200405"),
 		satelliteImagery.getLayerSteps().at(0).layers.toStdString()
 	);
-	CPPUNIT_ASSERT_EQUAL(8, satelliteImagery.getLayerSteps().at(1).minZoomLevel);
-	CPPUNIT_ASSERT_EQUAL(
+	EXPECT_EQ(8, satelliteImagery.getLayerSteps().at(1).minZoomLevel);
+	EXPECT_EQ(
 		std::string("BlueMarble-200405,esat"),
 		satelliteImagery.getLayerSteps().at(1).layers.toStdString()
 	);
 
 	ImageLayerDescription heightmap = layers.value("heightmap");
 
-	CPPUNIT_ASSERT_EQUAL(3, heightmap.getLayerSteps().size());
-	CPPUNIT_ASSERT_EQUAL(0, heightmap.getLayerSteps().at(0).minZoomLevel);
-	CPPUNIT_ASSERT_EQUAL(
+	EXPECT_EQ(3, heightmap.getLayerSteps().size());
+	EXPECT_EQ(0, heightmap.getLayerSteps().at(0).minZoomLevel);
+	EXPECT_EQ(
 		std::string("NASA_SRTM30_900m_Tiled"),
 		heightmap.getLayerSteps().at(0).layers.toStdString()
 	);
-	CPPUNIT_ASSERT_EQUAL(8, heightmap.getLayerSteps().at(2).minZoomLevel);
-	CPPUNIT_ASSERT_EQUAL(
+	EXPECT_EQ(8, heightmap.getLayerSteps().at(2).minZoomLevel);
+	EXPECT_EQ(
 		std::string("NASA_SRTM30_900m_Tiled,aster_v2,USGS-NED"),
 		heightmap.getLayerSteps().at(2).layers.toStdString()
 	);
