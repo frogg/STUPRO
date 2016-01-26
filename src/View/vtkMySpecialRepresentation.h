@@ -41,8 +41,8 @@ public:
   vtkTypeMacro(vtkMySpecialRepresentation, vtkGeometryRepresentationWithFaces);
     
   void PrintSelf(ostream& os, vtkIndent indent);
+  void SetVisibility(bool val);
   
-
 //BTX
 protected:
     vtkMySpecialRepresentation();
@@ -53,17 +53,17 @@ protected:
     virtual bool AddToView(vtkView* view);
     virtual bool RemoveFromView(vtkView* view);
     int FillInputPortInformation(int, vtkInformation *info) override;
-    vtkSmartPointer<vtkPolyDataMapper> pointMapper;
-    vtkSmartPointer<vtkActor> pointActor;
-    vtkSmartPointer<vtkPointSource> dummyPointSource;
-    vtkSmartPointer<vtkLabelPlacementMapper> labelMapper;
-    vtkSmartPointer<vtkActor2D> labelActor;
-    vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter;
     
 private:
+    
     vtkMySpecialRepresentation(const vtkMySpecialRepresentation&); // Not implemented
     void operator=(const vtkMySpecialRepresentation&); // Not implemented
     // Create a dummy point set.
+    vtkSmartPointer<vtkPolyDataMapper> pointMapper;
+    vtkSmartPointer<vtkActor> pointActor;
+    vtkSmartPointer<vtkLabelPlacementMapper> labelMapper;
+    vtkSmartPointer<vtkActor2D> labelActor;
+    vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter;
 
 
 //ETX
