@@ -25,6 +25,7 @@ protected:
 		vtkInformation*,
 		vtkInformationVector**,
 		vtkInformationVector*) override;
+
 private:
 	vtkKronosReader(const vtkKronosReader&); // Not implemented
 	void operator=(const vtkKronosReader&);   // Not implemented

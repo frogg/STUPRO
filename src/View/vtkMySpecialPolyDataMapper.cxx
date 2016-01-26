@@ -32,15 +32,16 @@ vtkStandardNewMacro(vtkMySpecialPolyDataMapper);
 //----------------------------------------------------------------------------
 vtkMySpecialPolyDataMapper::vtkMySpecialPolyDataMapper()
 {
+    /*
     // Generate the label hierarchy.
     vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter =
     vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
     pointSetToLabelHierarchyFilter->SetInputConnection(
-    pointSource->GetOutputPort());
+   // pointSource->GetOutputPort());
     pointSetToLabelHierarchyFilter->SetLabelArrayName("labels");
     pointSetToLabelHierarchyFilter->SetPriorityArrayName("sizes");
     pointSetToLabelHierarchyFilter->Update();
-    
+    */
 }
 
 //----------------------------------------------------------------------------
@@ -56,6 +57,7 @@ void vtkMySpecialPolyDataMapper::PrintSelf(ostream& os, vtkIndent indent)
 //----------------------------------------------------------------------------
 void vtkMySpecialPolyDataMapper::Render(vtkRenderer* ren, vtkActor* act)
 {
+    /*
     // Create a mapper and actor for the labels.
     vtkSmartPointer<vtkLabelPlacementMapper> labelMapper =
     vtkSmartPointer<vtkLabelPlacementMapper>::New();
@@ -65,7 +67,9 @@ void vtkMySpecialPolyDataMapper::Render(vtkRenderer* ren, vtkActor* act)
     vtkSmartPointer<vtkActor2D>::New();
     labelActor->SetMapper(labelMapper);
     ren->AddActor(labelActor);
+    */
 }
+                                                       
 
 
 
