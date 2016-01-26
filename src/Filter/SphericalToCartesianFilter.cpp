@@ -36,28 +36,28 @@ SphericalToCartesianFilter::~SphericalToCartesianFilter() {
 
 vtkStandardNewMacro(SphericalToCartesianFilter)
 
-int SphericalToCartesianFilter::RequestData(vtkInformation *info,
-		vtkInformationVector **inputVector,
-		vtkInformationVector *outputVector) {
+int SphericalToCartesianFilter::RequestData(vtkInformation* info,
+        vtkInformationVector** inputVector,
+        vtkInformationVector* outputVector) {
 
 	this->Transform = this->transformGlobe;
 
 	return this->Superclass::RequestData(info, inputVector, outputVector);
 
-    // TODO: Generate correct surface normals here or correct transformation
+	// TODO: Generate correct surface normals here or correct transformation
 }
 
-void SphericalToCartesianFilter::PrintSelf(ostream &os, vtkIndent indent) {
+void SphericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
 	os << indent << "Spherical to cartesian coordinate conversion, Kronos Project" << endl;
 }
 
-int SphericalToCartesianFilter::FillOutputPortInformation(int, vtkInformation *info) {
+int SphericalToCartesianFilter::FillOutputPortInformation(int, vtkInformation* info) {
 	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPointSet");
 	return 1;
 }
 
-int SphericalToCartesianFilter::FillInputPortInformation(int, vtkInformation *info) {
+int SphericalToCartesianFilter::FillInputPortInformation(int, vtkInformation* info) {
 	info->Remove(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");

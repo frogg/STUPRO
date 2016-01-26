@@ -18,7 +18,7 @@ struct ConfigurationException : public std::exception {
 
 	ConfigurationException(QString reason) : reason(reason.toStdString()) { }
 
-	const char *what() const KRONOS_NOTHROW override{
+	const char* what() const KRONOS_NOTHROW override {
 		return reason.c_str();
 	}
 };
@@ -28,10 +28,10 @@ struct ConfigurationException : public std::exception {
  */
 struct ConfigFileOpenException : public ConfigurationException {
 	ConfigFileOpenException(QString path, QString errorDescription)
-			: ConfigurationException(
-				QString("The configuration file at '%1' could not be opened: %2")
-				.arg(path).arg(errorDescription)
-			) { }
+		: ConfigurationException(
+		      QString("The configuration file at '%1' could not be opened: %2")
+		      .arg(path).arg(errorDescription)
+		  ) { }
 };
 
 /**
@@ -40,10 +40,10 @@ struct ConfigFileOpenException : public ConfigurationException {
  */
 struct JsonParseException : public ConfigurationException {
 	JsonParseException(QString path, QString errorDescription)
-			: ConfigurationException(
-				QString("The configuration file at '%1' could not be parsed: %2")
-				.arg(path).arg(errorDescription)
-			) { }
+		: ConfigurationException(
+		      QString("The configuration file at '%1' could not be parsed: %2")
+		      .arg(path).arg(errorDescription)
+		  ) { }
 };
 
 /**
@@ -52,10 +52,10 @@ struct JsonParseException : public ConfigurationException {
  */
 struct InvalidKeyException : public ConfigurationException {
 	InvalidKeyException(QString key)
-			: ConfigurationException(
-				QString("The requested key '%1' could not be found in the configuration file.")
-				.arg(key)
-			) { }
+		: ConfigurationException(
+		      QString("The requested key '%1' could not be found in the configuration file.")
+		      .arg(key)
+		  ) { }
 };
 
 /**
@@ -63,11 +63,11 @@ struct InvalidKeyException : public ConfigurationException {
  */
 struct InvalidValueException : public ConfigurationException {
 	InvalidValueException(QString key, QString expectedValue, QString actualValue)
-			: ConfigurationException(
-				QString("A value of type %1 was requested, but the value of the "
-                "requested key '%2' was of type %3.")
-				.arg(expectedValue).arg(key).arg(actualValue)
-			) { }
+		: ConfigurationException(
+		      QString("A value of type %1 was requested, but the value of the "
+		              "requested key '%2' was of type %3.")
+		      .arg(expectedValue).arg(key).arg(actualValue)
+		  ) { }
 };
 
 /**
@@ -75,9 +75,9 @@ struct InvalidValueException : public ConfigurationException {
  */
 struct UnsupportedValueException : public ConfigurationException {
 	UnsupportedValueException(QString key) : ConfigurationException(
-				QString("A value with key %1 in the configuration file is not supported.")
-				.arg(key)
-			) { }
+		    QString("A value with key %1 in the configuration file is not supported.")
+		    .arg(key)
+		) { }
 };
 
 class Configuration {

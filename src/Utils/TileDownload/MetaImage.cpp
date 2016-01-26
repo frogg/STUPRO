@@ -1,19 +1,19 @@
 #include <Utils/TileDownload/MetaImage.hpp>
 
-MetaImage::MetaImage(const QImage &image, short minimumHeight, short maximumHeight)
-		: image(image), minimumHeight(minimumHeight), maximumHeight(maximumHeight),
-		metaDataAttached(true) { }
+MetaImage::MetaImage(const QImage& image, short minimumHeight, short maximumHeight)
+	: image(image), minimumHeight(minimumHeight), maximumHeight(maximumHeight),
+	  metaDataAttached(true) { }
 
-MetaImage::MetaImage(const QImage &image)
-		: image(image), minimumHeight(0), maximumHeight(0), metaDataAttached(false) { }
+MetaImage::MetaImage(const QImage& image)
+	: image(image), minimumHeight(0), maximumHeight(0), metaDataAttached(false) { }
 
 MetaImage::MetaImage() { }
 
-const QImage &MetaImage::getImage() {
+const QImage& MetaImage::getImage() {
 	return this->image;
 }
 
-void MetaImage::setImage(const QImage &image) {
+void MetaImage::setImage(const QImage& image) {
 	this->image = image;
 }
 
