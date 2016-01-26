@@ -14,21 +14,18 @@
 extern const char* GlobeShader_fsh;
 extern const char* GlobeShader_vsh;
 
-GlobeTile::Location GlobeTile::Location::getNormalized() const
-{
+GlobeTile::Location GlobeTile::Location::getNormalized() const {
 	return Location(zoomLevel, absoluteModulo<int>(longitude, (1 << zoomLevel) * 2),
-			absoluteModulo<int>(latitude, (1 << zoomLevel)));
+	                absoluteModulo<int>(latitude, (1 << zoomLevel)));
 }
 
-RectF GlobeTile::Location::getBounds() const
-{
+RectF GlobeTile::Location::getBounds() const {
 	float size = 180.f / (1 << zoomLevel);
 	return RectF(longitude * size - 180.f, 90.f - latitude * size - size, size, size);
 }
 
-GlobeTile::GlobeTile(const Globe & globe, Location location) :
-		myGlobe(globe), myLocation(location), myIsVisible(false)
-{
+GlobeTile::GlobeTile(const Globe& globe, Location location) :
+	myGlobe(globe), myLocation(location), myIsVisible(false) {
 	// Initialize members.
 	myLowerHeight = 0.f;
 	myUpperHeight = 1.f;
@@ -43,58 +40,47 @@ GlobeTile::GlobeTile(const Globe & globe, Location location) :
 	initShaders();
 }
 
-GlobeTile::~GlobeTile()
-{
+GlobeTile::~GlobeTile() {
 	myGlobe.getRenderer().RemoveActor(myActor);
 }
 
-GlobeTile::Location GlobeTile::getLocation() const
-{
+GlobeTile::Location GlobeTile::getLocation() const {
 	return myLocation;
 }
 
-RectF GlobeTile::getBounds() const
-{
+RectF GlobeTile::getBounds() const {
 	return myLocation.getBounds();
 }
 
-void GlobeTile::setTexture(vtkSmartPointer<vtkTexture> texture)
-{
+void GlobeTile::setTexture(vtkSmartPointer<vtkTexture> texture) {
 	myActor->SetTexture(texture);
 }
 
-vtkSmartPointer<vtkTexture> GlobeTile::getTexture() const
-{
+vtkSmartPointer<vtkTexture> GlobeTile::getTexture() const {
 	return myActor->GetTexture();
 }
 
-void GlobeTile::setLowerHeight(float lower)
-{
+void GlobeTile::setLowerHeight(float lower) {
 	myLowerHeight = lower;
 }
 
-float GlobeTile::getLowerHeight() const
-{
+float GlobeTile::getLowerHeight() const {
 	return myLowerHeight;
 }
 
-void GlobeTile::setUpperHeight(float upper)
-{
+void GlobeTile::setUpperHeight(float upper) {
 	myUpperHeight = upper;
 }
 
-float GlobeTile::getUpperHeight() const
-{
+float GlobeTile::getUpperHeight() const {
 	return myLowerHeight;
 }
 
-vtkSmartPointer<vtkActor> GlobeTile::getActor() const
-{
+vtkSmartPointer<vtkActor> GlobeTile::getActor() const {
 	return myActor;
 }
 
-void GlobeTile::initShaders()
-{
+void GlobeTile::initShaders() {
 	// Create shader program.
 	vtkSmartPointer<vtkShaderProgram2> shaderProgram = vtkShaderProgram2::New();
 	shaderProgram->SetContext(&myGlobe.getRenderWindow());
@@ -114,7 +100,7 @@ void GlobeTile::initShaders()
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
 	float globeRadius = GLOBE_RADIUS;
-    float planeSize = PLANE_SIZE;
+	float planeSize = PLANE_SIZE;
 	float displayModeInterpolation = 0.f;
 	float heightFactor = 100.f;
 
@@ -143,18 +129,16 @@ void GlobeTile::initShaders()
 
 	// Add shader to globe tile actor.
 	vtkSmartPointer<vtkOpenGLProperty> openGLproperty =
-	        static_cast<vtkOpenGLProperty*>(myActor->GetProperty());
+	    static_cast<vtkOpenGLProperty*>(myActor->GetProperty());
 	openGLproperty->SetPropProgram(shaderProgram);
 	openGLproperty->ShadingOn();
 }
 
-void GlobeTile::loadTexture(const QImage & rgb, const QImage & height)
-{
+void GlobeTile::loadTexture(const QImage& rgb, const QImage& height) {
 	setTexture(loadAlphaTexture(rgb, height));
 }
 
-void GlobeTile::updateUniforms()
-{
+void GlobeTile::updateUniforms() {
 	float displayModeInterpolation = myGlobe.getDisplayModeInterpolation();
 	float earthRadius = 6367444.7f;
 	float minHeight = myLowerHeight / earthRadius;
@@ -164,14 +148,12 @@ void GlobeTile::updateUniforms()
 	myVertexShader->GetUniformVariables()->SetUniformf("maxHeight", 1, &maxHeight);
 }
 
-void GlobeTile::setVisibility(bool visible)
-{
+void GlobeTile::setVisibility(bool visible) {
 	myIsVisible = visible;
-	
+
 	myActor->SetVisibility(visible);
 }
 
-bool GlobeTile::isVisible() const
-{
+bool GlobeTile::isVisible() const {
 	return myIsVisible;
 }
