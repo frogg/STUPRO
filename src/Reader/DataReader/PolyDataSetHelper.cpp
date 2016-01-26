@@ -389,7 +389,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
     			directions->SetTuple(tupleNumber, direction);
                 
                 // Calculate each point's velocity for use in flow visualisation
-                float windBearingRadian = dataPoint->getDirection() * (float) (M_PI / 180);
+				float windBearingRadian = dataPoint->getDirection() * (float)(KRONOS_PI / 180);
                 
                 double velocity[3] = {
     				(double) dataPoint->getSpeed() * sin(windBearingRadian),
