@@ -8,6 +8,7 @@
 #include <vtkPVStuproView.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
 #include <vtkMatrix4x4.h>
 
 vtkStandardNewMacro(vtkPVStuproView);
@@ -30,6 +31,7 @@ void vtkPVStuproView::initParameters()
 
 void vtkPVStuproView::initRenderer()
 {
+	/*
 	this->activeCameraCallback = vtkCallbackCommand::New();
 
 	this->activeCameraCallback->SetCallback(
@@ -43,7 +45,7 @@ void vtkPVStuproView::initRenderer()
 				        [](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
 				        {
 					        vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
-					        view->getGlobe()->updateGlobeTileVisibility();
+					        view->getGlobe()->onCameraChanged();
 				        });
 		        view->cameraModifiedCallback->SetClientData(clientdata);
 
@@ -54,6 +56,21 @@ void vtkPVStuproView::initRenderer()
 	this->activeCameraCallback->SetClientData(this);
 
 	this->GetRenderer()->AddObserver(vtkCommand::ActiveCameraEvent, this->activeCameraCallback);
+	*/
+	
+	this->cameraModifiedCallback = vtkCallbackCommand::New();
+	
+    this->cameraModifiedCallback->SetCallback(
+		[](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
+		{
+			vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
+			view->getGlobe()->onCameraChanged();
+		});
+    
+    this->cameraModifiedCallback->SetClientData(this);
+	
+	this->GetRenderer()->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::InteractionEvent,
+		this->cameraModifiedCallback);
 }
 
 void vtkPVStuproView::registerTimerCallback()

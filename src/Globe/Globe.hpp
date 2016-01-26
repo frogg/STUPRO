@@ -120,7 +120,7 @@ public:
 	/**
 	 * Checks which globe tiles are invisible and need to be culled.
 	 */
-	void updateGlobeTileVisibility();
+	void onCameraChanged();
 
 private:
 	/**
@@ -129,6 +129,9 @@ private:
 	unsigned int getTileIndex(int lon, int lat) const;
 
 	void createTiles();
+	
+	void updateZoomLevel();
+	void updateTileVisibility();
 
 	void onTileLoad(ImageTile tile);
 

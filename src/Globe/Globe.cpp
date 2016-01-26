@@ -146,7 +146,63 @@ bool Globe::checkIfRepaintIsNeeded()
 	return !myIsClean.test_and_set();
 }
 
-void Globe::updateGlobeTileVisibility()
+void Globe::onCameraChanged()
+{
+	updateZoomLevel();
+	updateTileVisibility();
+}
+
+void Globe::setGlobeConfig(GlobeConfig globeConfig)
+{
+	myGlobeConfig = globeConfig;
+}
+
+const GlobeConfig& Globe::getGlobeConfig() const
+{
+	return myGlobeConfig;
+}
+
+void Globe::onTileLoad(ImageTile tile)
+{
+	if (myZoomLevel != tile.getZoomLevel())
+	{
+		return;
+	}
+
+	GlobeTile & globeTile = getTileAt(tile.getTileX(), tile.getTileY());
+
+	auto rgbIterator = tile.getLayers().find("satelliteImagery");
+	auto heightmapIterator = tile.getLayers().find("heightmap");
+
+	if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end())
+	{
+		return;
+	}
+
+	const QImage & rgb = rgbIterator->getImage();
+	const QImage & heightmap = heightmapIterator->getImage();
+
+	globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
+	globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
+
+	globeTile.loadTexture(rgb, heightmap);
+	globeTile.updateUniforms();
+
+	myIsClean.clear();
+}
+
+void Globe::updateZoomLevel()
+{
+	// Get current camera for transformation matrix.
+	vtkCamera * camera = getRenderer().GetActiveCamera();
+	
+	Vector3d cameraPosition;
+	camera->GetPosition(cameraPosition.array());
+	
+	std::cout << "Distance from center: " << cameraPosition.length() << std::endl;
+}
+
+void Globe::updateTileVisibility()
 {
 	// Get current camera for transformation matrix.
 	vtkCamera * camera = getRenderer().GetActiveCamera();
@@ -256,43 +312,4 @@ void Globe::updateGlobeTileVisibility()
 			}
 		}
 	}
-}
-
-void Globe::setGlobeConfig(GlobeConfig globeConfig)
-{
-	myGlobeConfig = globeConfig;
-}
-
-const GlobeConfig& Globe::getGlobeConfig() const
-{
-	return myGlobeConfig;
-}
-
-void Globe::onTileLoad(ImageTile tile)
-{
-	if (myZoomLevel != tile.getZoomLevel())
-	{
-		return;
-	}
-
-	GlobeTile & globeTile = getTileAt(tile.getTileX(), tile.getTileY());
-
-	auto rgbIterator = tile.getLayers().find("satelliteImagery");
-	auto heightmapIterator = tile.getLayers().find("heightmap");
-
-	if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end())
-	{
-		return;
-	}
-
-	const QImage & rgb = rgbIterator->getImage();
-	const QImage & heightmap = heightmapIterator->getImage();
-
-	globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
-	globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
-
-	globeTile.loadTexture(rgb, heightmap);
-	globeTile.updateUniforms();
-
-	myIsClean.clear();
 }
