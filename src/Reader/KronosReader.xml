@@ -1,9 +1,9 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="sources">
-      <SourceProxy name="MyPNGReader" class="vtkCityReader" label="CSVReader">
+      <SourceProxy name="KronosReader" class="vtkKronosReader" label="KronosReader">
           <Documentation
-              long_help="Read a  myCSV file."
-              short_help="Read a myCSV file.">
+              long_help="Reads a kJson file with the Kronos Reader."
+              short_help="Read a kJson file.">
           </Documentation>
           <StringVectorProperty
               name="FileName"
@@ -12,14 +12,25 @@
               number_of_elements="1">
               <FileListDomain name="files"/>
               <Documentation>
-                  This property specifies the file name for the PNG reader.
+                  This Property defines the path to the data source.
               </Documentation>
           </StringVectorProperty>
+          
 
+          <DoubleVectorProperty
+                        name="cameraPos"
+                        command="SetCameraPos"
+                        number_of_elements="3"
+                        immediate_update="1"
+                        default_values="0.0 0.0 0.0"
+                        panel_visibility="never">
+          </DoubleVectorProperty>
+          
           <Hints>
-              <ReaderFactory extensions="meinCSV"
-              file_description="MEINEIGENESCSVORMAT" />
+              <ReaderFactory extensions="kJson"
+              file_description="Kronos Json" />
           </Hints>
+          
       </SourceProxy>
   </ProxyGroup>
 </ServerManagerConfiguration>

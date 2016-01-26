@@ -2,8 +2,14 @@
 bin
 build
 
+*.pyc
+
 # QtCreator files
 *.user
 
 # mac madness
 *.DS_Store
+
+# my keys
+scripts/data-conversion/tweet_config.py
+scripts/data-conversion/*.config
