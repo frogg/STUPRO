@@ -3,27 +3,27 @@
 #include <climits>
 
 ImageLayerDescription::ImageLayerDescription(QString baseUrl, QString mimeType, int tileSize,
-    QList<LayerStep> layerSteps)
-    : baseUrl(baseUrl), mimeType(mimeType), tileSize(tileSize), layerSteps(layerSteps) { }
+        QList<LayerStep> layerSteps)
+	: baseUrl(baseUrl), mimeType(mimeType), tileSize(tileSize), layerSteps(layerSteps) { }
 
 QString ImageLayerDescription::buildTileUrl(int zoomLevel, int tileX, int tileY) const {
-    // find the best fitting layer step
-    LayerStep step = { INT_MIN, "" };
-    for (int i = 0; i < this->layerSteps.size(); i++) {
-        if (this->layerSteps[i].minZoomLevel > step.minZoomLevel) {
-            if (this->layerSteps[i].minZoomLevel <= zoomLevel) {
-                step = this->layerSteps[i];
-            }
-        }
-    }
+	// find the best fitting layer step
+	LayerStep step = { INT_MIN, "" };
+	for (int i = 0; i < this->layerSteps.size(); i++) {
+		if (this->layerSteps[i].minZoomLevel > step.minZoomLevel) {
+			if (this->layerSteps[i].minZoomLevel <= zoomLevel) {
+				step = this->layerSteps[i];
+			}
+		}
+	}
 
-    // build the URL for the API request
-    return this->getBaseUrl()
-        + "&layers=" + step.layers
-        + "&format=" + this->getMimeType()
-        + "&width=" + QString::number(this->getTileSize())
-        + "&height=" + QString::number(this->getTileSize())
-        + "&bbox=" + this->getBoundingBoxString(zoomLevel, tileX, tileY);
+	// build the URL for the API request
+	return this->getBaseUrl()
+	       + "&layers=" + step.layers
+	       + "&format=" + this->getMimeType()
+	       + "&width=" + QString::number(this->getTileSize())
+	       + "&height=" + QString::number(this->getTileSize())
+	       + "&bbox=" + this->getBoundingBoxString(zoomLevel, tileX, tileY);
 }
 
 QString ImageLayerDescription::getBoundingBoxString(int zoomLevel, int tileX, int tileY) {
@@ -42,13 +42,14 @@ QString ImageLayerDescription::getBoundingBoxString(int zoomLevel, int tileX, in
 	return boundingBoxString;
 }
 
-void ImageLayerDescription::getTilePositionFromCoordinates(double latitude, double longitude, int zoomLevel,
-        int &tileX, int &tileY) {
-    double tileWidth = getTileWidthAtZoomLevel(zoomLevel);
-    double tileHeight = getTileHeightAtZoomLevel(zoomLevel);
+void ImageLayerDescription::getTilePositionFromCoordinates(double latitude, double longitude,
+        int zoomLevel,
+        int& tileX, int& tileY) {
+	double tileWidth = getTileWidthAtZoomLevel(zoomLevel);
+	double tileHeight = getTileHeightAtZoomLevel(zoomLevel);
 
-    tileX = (int)((180.0 + longitude) / tileWidth);
-    tileY = (int)((90.0 - latitude) / tileHeight);
+	tileX = (int)((180.0 + longitude) / tileWidth);
+	tileY = (int)((90.0 - latitude) / tileHeight);
 }
 
 
@@ -67,33 +68,33 @@ void ImageLayerDescription::validateTileLocation(int zoomLevel, int tileX, int t
 }
 
 QString ImageLayerDescription::getBaseUrl() const {
-    return this->baseUrl;
+	return this->baseUrl;
 }
 
 QString ImageLayerDescription::getMimeType() const {
-    return this->mimeType;
+	return this->mimeType;
 }
 
 int ImageLayerDescription::getTileSize() const {
-    return this->tileSize;
+	return this->tileSize;
 }
 
 QList<LayerStep> ImageLayerDescription::getLayerSteps() const {
-    return this->layerSteps;
+	return this->layerSteps;
 }
 
 int ImageLayerDescription::getHorizontalTilesAtZoomLevel(int zoomLevel) {
-    return WIDTH_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL);
+	return WIDTH_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL);
 }
 
 int ImageLayerDescription::getVerticalTilesAtZoomLevel(int zoomLevel) {
-    return HEIGHT_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL);
+	return HEIGHT_AT_MIN_ZOOM << (zoomLevel - MIN_ZOOM_LEVEL);
 }
 
 double ImageLayerDescription::getTileWidthAtZoomLevel(int zoomLevel) {
-    return 360.0 / (double)getHorizontalTilesAtZoomLevel(zoomLevel);
+	return 360.0 / (double)getHorizontalTilesAtZoomLevel(zoomLevel);
 }
 
 double ImageLayerDescription::getTileHeightAtZoomLevel(int zoomLevel) {
-    return 180.0 / (double)getVerticalTilesAtZoomLevel(zoomLevel);
+	return 180.0 / (double)getVerticalTilesAtZoomLevel(zoomLevel);
 }

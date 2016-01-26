@@ -87,7 +87,7 @@ private:
 	/**
 	 * Threadpool used to fetch individual tiles in an asynchronous manner.
 	 */
-    QThreadPool fetchThreadPool;
+	QThreadPool fetchThreadPool;
 
 	/**
 	 * Callback function to be called when a requested tile was downloaded or fetched from the file

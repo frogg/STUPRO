@@ -9,18 +9,17 @@
 
 class vtkPVStuproView;
 
-class StuproInteractor : public vtkInteractorStyleTerrain
-{
+class StuproInteractor : public vtkInteractorStyleTerrain {
 public:
 	StuproInteractor();
 
-	static StuproInteractor *New();
+	static StuproInteractor* New();
 	/**
 	* Constructor needed for keeping track of the globe-radius.
 	*
 	* @param vtkPVStuproView
 	*/
-	static StuproInteractor *New(vtkPVStuproView *application);
+	static StuproInteractor* New(vtkPVStuproView* application);
 
 	vtkTypeMacro(StuproInteractor, vtkInteractorStyleTerrain)
 
@@ -28,8 +27,7 @@ public:
 	* Overrides the inner unnecessary OnTimer Event
 	* needed for our vtkCommand::TimerEvent in vtkPVStuproView.cxx
 	*/
-	void OnTimer() override
-	{
+	void OnTimer() override {
 		// Empty on purpose.
 	}
 
@@ -75,10 +73,10 @@ private:
 	/**
 	* sets the Rotationspeed, depending on Camera-Distance
 	*
-	* @return a vector with the horizontal and vertical deltas 
+	* @return a vector with the horizontal and vertical deltas
 	*/
 	Vector2d calculateRotationParameters();
-	
+
 	/**
 	* sets the ViewingAngle
 	*
@@ -86,7 +84,7 @@ private:
 	* @return a Vector with the azimuth and elevation
 	*/
 	Vector2d calculateCameraRotators(Vector2d rotationParameters);
-	
+
 	float zoomFactor;
 };
 

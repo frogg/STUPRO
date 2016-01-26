@@ -6,9 +6,9 @@
 #include <QRegExp>
 
 ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageWidth,
-		int imageHeight)
-		: layerName(layerName), url(url), imageWidth(imageWidth), imageHeight(imageHeight),
-		reply(NULL) {
+        int imageHeight)
+	: layerName(layerName), url(url), imageWidth(imageWidth), imageHeight(imageHeight),
+	  reply(NULL) {
 	this->startDownload();
 }
 
@@ -41,7 +41,7 @@ void ImageDownloadWorker::startDownload() {
 	}).detach();
 }
 
-MetaImage ImageDownloadWorker::decodeBil16(const QByteArray &rawData, int width, int height) {
+MetaImage ImageDownloadWorker::decodeBil16(const QByteArray& rawData, int width, int height) {
 	// ensure the raw data contains two bytes of data for every pixel of the image
 	if (rawData.size() != width * height * 2) {
 		QString errorMessage("Expected raw data length of %1b, but %2b were given");
@@ -111,7 +111,7 @@ void ImageDownloadWorker::downloadCompleted() {
 			QByteArray rawData = this->reply->readAll();
 
 			MetaImage metaImage = ImageDownloadWorker::decodeBil16(rawData, this->imageWidth,
-								  this->imageHeight);
+			                      this->imageHeight);
 			this->imageDownloadedPromise.set_value(metaImage);
 		} else {
 			throw UnknownContentTypeException(contentType, this->url);

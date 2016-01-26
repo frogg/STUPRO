@@ -8,14 +8,12 @@
 
 #include "ui_StuproWindow.h"
 
-class StuproWindow::pqInternals : public Ui::pqClientMainWindow
-{
+class StuproWindow::pqInternals : public Ui::pqClientMainWindow {
 
 };
 
 //-----------------------------------------------------------------------------
-StuproWindow::StuproWindow()
-{
+StuproWindow::StuproWindow() {
 	this->Internals = new pqInternals();
 	this->Internals->setupUi(this);
 
@@ -29,7 +27,7 @@ StuproWindow::StuproWindow()
 	this->Internals->statisticsDock->hide();
 	this->Internals->comparativePanelDock->hide();
 	this->tabifyDockWidget(this->Internals->animationViewDock,
-		this->Internals->statisticsDock);
+	                       this->Internals->statisticsDock);
 
 	// Enable help for from the object inspector.
 	/*QObject::connect(this->Internals->proxyTabWidget,
@@ -51,7 +49,7 @@ StuproWindow::StuproWindow()
 
 	// setup the context menu for the pipeline browser.
 	pqParaViewMenuBuilders::buildPipelineBrowserContextMenu(
-		*this->Internals->pipelineBrowser);
+	    *this->Internals->pipelineBrowser);
 
 	pqParaViewMenuBuilders::buildToolbars(*this);
 
@@ -73,15 +71,13 @@ StuproWindow::StuproWindow()
 }
 
 //-----------------------------------------------------------------------------
-StuproWindow::~StuproWindow()
-{
+StuproWindow::~StuproWindow() {
 	delete this->Internals;
 }
 
 
 //-----------------------------------------------------------------------------
-void StuproWindow::showHelpForProxy(const QString& proxyname)
-{
+void StuproWindow::showHelpForProxy(const QString& proxyname) {
 	pqHelpReaction::showHelp(
-		QString("qthelp://paraview.org/paraview/%1.html").arg(proxyname));
+	    QString("qthelp://paraview.org/paraview/%1.html").arg(proxyname));
 }
