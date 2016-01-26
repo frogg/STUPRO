@@ -20,6 +20,9 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverDataPoint.hpp>
 
+#include <math.h>
+#include <iostream>
+
 #include <Utils/Config/Configuration.hpp>
 
 vtkSmartPointer<vtkPolyData> PolyDataSetHelper::getPolyDataFromDataPoints(
@@ -362,6 +365,12 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
             directions->SetNumberOfComponents(1);
         	directions->SetNumberOfTuples(relevantDataPoints.size());
 			directions->SetName("directions");
+            
+            vtkSmartPointer<vtkTypeFloat32Array> velocities
+				= vtkSmartPointer<vtkTypeFloat32Array>::New();
+            velocities->SetNumberOfComponents(3);
+        	velocities->SetNumberOfTuples(relevantDataPoints.size());
+			velocities->SetName("velocity");
 			
             int tupleNumber = 0;
 			for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
@@ -379,11 +388,22 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
     			};
     			directions->SetTuple(tupleNumber, direction);
                 
+                // Calculate each point's velocity for use in flow visualisation
+                float windBearingRadian = dataPoint->getDirection() * (float) (M_PI / 180);
+                
+                double velocity[3] = {
+    				(double) dataPoint->getSpeed() * sin(windBearingRadian),
+                    (double) dataPoint->getSpeed() * cos(windBearingRadian),
+                    0.0
+    			};
+    			velocities->SetTuple(tupleNumber, velocity);
+                
                 tupleNumber++;
 			}
 
 			dataSet->GetPointData()->AddArray(speeds);
 			dataSet->GetPointData()->AddArray(directions);
+            dataSet->GetPointData()->AddArray(velocities);
 			break;
 		}
 			
