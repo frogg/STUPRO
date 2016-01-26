@@ -25,14 +25,13 @@ class GlobeTile;
 /**
  * A class for rendering a dynamically textured globe to a vtkRenderer.
  */
-class Globe
-{
+class Globe {
 public:
 
 	/**
 	 * Creates the globe using the specified renderer.
 	 */
-	Globe(vtkRenderer & renderer);
+	Globe(vtkRenderer& renderer);
 
 	/**
 	 * Virtual destructor.
@@ -41,7 +40,7 @@ public:
 
 	/**
 	 * Changes the globe's vertex/heightmap resolution per tile.
-	 * 
+	 *
 	 * @param resolution The globe's resolution in grid units.
 	 */
 	void setResolution(Vector2u resolution);
@@ -59,22 +58,22 @@ public:
 	/**
 	 * @return the render window associated with this globe
 	 */
-	vtkRenderWindow & getRenderWindow() const;
+	vtkRenderWindow& getRenderWindow() const;
 
 	/**
 	 * @return the renderer associated with this globe
 	 */
-	vtkRenderer & getRenderer() const;
+	vtkRenderer& getRenderer() const;
 
 	/**
 	 * Changes the zoom level of the globe tiles, determining the tile count and size.
-	 * 
+	 *
 	 * zoomLevel 0:  2x1 tiles
 	 * zoomLevel 1:  4x2 tiles
 	 * zoomLevel 2:  8x4 tiles
 	 * zoomLevel 3: 16x8 tiles
 	 * ...
-	 * 
+	 *
 	 * @param zoomLevel the globe's vertical tile cont in powers of two
 	 */
 	void setZoomLevel(unsigned int zoomLevel);
@@ -87,19 +86,19 @@ public:
 	/**
 	 * Returns a specific tile from the globe. The lon/lat pair is given in tile indices starting
 	 * from 0 and is normalized/wrapped around the world before selecting the tile.
-	 * 
+	 *
 	 * @param lon The integer longitude to get the tile at
 	 * @param lat The integer latitiude to get the tile at
-	 * 
+	 *
 	 * @return the globe tile at the specified longitude/latitude index
 	 */
-	GlobeTile & getTileAt(int lon, int lat) const;
+	GlobeTile& getTileAt(int lon, int lat) const;
 
 	/**
 	 * Changes the display mode interpolation between globe view and map view. A value of 0.0 means
 	 * globe, a value of 1.0 means map, and any values in-between result in a smooth animation
 	 * between the two display modes.
-	 * 
+	 *
 	 * @param displayMode The interpolation between globe and map
 	 */
 	void setDisplayModeInterpolation(float displayMode);
@@ -113,7 +112,7 @@ public:
 	 * Returns true if a texture was loaded and a renderer re-paint is needed and resets the flag.
 	 */
 	bool checkIfRepaintIsNeeded();
-	
+
 	/**
 	 * Checks which globe tiles are invisible and need to be culled.
 	 */
@@ -121,7 +120,7 @@ public:
 
 	/**
 	 * Returns the Coordinates (lat, long) from multipe worldPoints of the Globe.
-	 * 
+	 *
 	 * @param world points are the points in world coordinates (that is: 3D-Space) that should be converted to Coordinates
 	 * @return Coordinates (lat, long)
 	 */
@@ -160,7 +159,7 @@ private:
 	 * @return returns the cut point in world coodinates
 	 */
 	Vector3d getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4],
-	        Vector3d cameraPosition);
+	                              Vector3d cameraPosition);
 	/**
 	 * calculate intersection point of three planes
 	 * @param 3 planes of the view frustum that should be cut (intersection point)
@@ -193,7 +192,7 @@ private:
 
 	void onTileLoad(ImageTile tile);
 
-	vtkRenderer & myRenderer;
+	vtkRenderer& myRenderer;
 
 	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
 	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;

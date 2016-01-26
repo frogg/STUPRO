@@ -5,7 +5,7 @@
 #include <QCoreApplication>
 #include <QTimer>
 
-KronosTestRunner::KronosTestRunner(int argc, char **argv) : argc(argc), argv(argv) { }
+KronosTestRunner::KronosTestRunner(int argc, char** argv) : argc(argc), argv(argv) { }
 
 int KronosTestRunner::run() {
 	// initialize and run a QApplication which is needed for some QT functionality
@@ -17,13 +17,13 @@ int KronosTestRunner::run() {
 }
 
 void KronosTestRunner::runTests() {
-	std::thread([this](){
+	std::thread([this]() {
 		testing::InitGoogleTest(&argc, argv);
 		QCoreApplication::exit(RUN_ALL_TESTS());
 	}).detach();
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	KronosTestRunner runner(argc, argv);
 	return runner.run();
 }
