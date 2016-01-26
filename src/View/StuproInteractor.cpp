@@ -93,7 +93,7 @@ void StuproInteractor::zoomWithFactor(float factor)
 	
 	if (this->myVtkPVStuproView->getGlobe())
 	{
-		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
+		this->myVtkPVStuproView->getGlobe()->onCameraChanged();
 	}
 	renderWindowInteractor->Render();
 
@@ -213,7 +213,7 @@ void StuproInteractor::Rotate()
 
 	if (this->myVtkPVStuproView->getGlobe())
 	{
-		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
+		this->myVtkPVStuproView->getGlobe()->onCameraChanged();
 	}
 	
 	this->Interactor->Render();
