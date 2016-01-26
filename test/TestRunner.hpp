@@ -7,14 +7,14 @@ class KronosTestRunner : public QObject {
 	Q_OBJECT
 
 public:
-	KronosTestRunner(int argc, char **argv);
+	KronosTestRunner(int argc, char** argv);
 	~KronosTestRunner() { };
 
 	int run();
 
 private:
 	int argc;
-	char **argv;
+	char** argv;
 
 private slots:
 	void runTests();
