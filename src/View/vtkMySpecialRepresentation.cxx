@@ -29,12 +29,10 @@ vtkStandardNewMacro(vtkMySpecialRepresentation);
 vtkMySpecialRepresentation::vtkMySpecialRepresentation()
 {
     // Create a mapper and actor for the points.
-    vtkSmartPointer<vtkPolyDataMapper> pointMapper =
-    vtkSmartPointer<vtkPolyDataMapper>::New();
+    pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 
     // Create a dummy DataSet.
-    this->dummyPointSource =
-    vtkSmartPointer<vtkPointSource>::New();
+    this->dummyPointSource = vtkSmartPointer<vtkPointSource>::New();
     this->dummyPointSource->SetNumberOfPoints(6);
     this->dummyPointSource->Update();
     // Add label array.
@@ -48,6 +46,18 @@ vtkMySpecialRepresentation::vtkMySpecialRepresentation()
     labels->SetValue(3, "Priority 4");
     labels->SetValue(4, "Priority 4");
     labels->SetValue(5, "Priority 4");
+    // Add priority array.
+    vtkSmartPointer<vtkIntArray> sizes =
+    vtkSmartPointer<vtkIntArray>::New();
+    sizes->SetNumberOfValues(6);
+    sizes->SetName("sizes");
+    sizes->SetValue(0, 10);
+    sizes->SetValue(1, 7);
+    sizes->SetValue(2, 6);
+    sizes->SetValue(3, 4);
+    sizes->SetValue(4, 4);
+    sizes->SetValue(5, 4);
+    this->dummyPointSource->GetOutput()->GetPointData()->AddArray(sizes);
     this->dummyPointSource->GetOutput()->GetPointData()->AddArray(labels);
     
     // Create a mapper and actor for the points.
@@ -58,44 +68,44 @@ vtkMySpecialRepresentation::vtkMySpecialRepresentation()
     this->pointActor->SetMapper(this->pointMapper);
     
     // Generate the label hierarchy.
-    vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter =
-    vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
-    pointSetToLabelHierarchyFilter->SetInputConnection(
-                                                       this->dummyPointSource->GetOutputPort());
+    pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
+    pointSetToLabelHierarchyFilter->SetInputConnection(this->dummyPointSource->GetOutputPort());
     pointSetToLabelHierarchyFilter->SetLabelArrayName("labels");
     pointSetToLabelHierarchyFilter->SetPriorityArrayName("sizes");
     pointSetToLabelHierarchyFilter->Update();
     
-    
+
     // Create a mapper and actor for the labels.
     labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
     this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
-    
     this->labelActor = vtkSmartPointer<vtkActor2D>::New();
     this->labelActor->SetMapper(labelMapper);
-    
+    this->labelActor->SetDragable(true);
+
     this->SetupDefaults();
 }
 
 //----------------------------------------------------------------------------
 vtkMySpecialRepresentation::~vtkMySpecialRepresentation()
 {
+    this->labelActor->Delete();
+    this->pointActor->Delete();
+    this->dummyPointSource->Delete();
 }
 
 int vtkMySpecialRepresentation::RequestData(vtkInformation* request,
                                             vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
+    vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+    vtkPolyData *input = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
     
-    if (inputVector[1]->GetNumberOfInformationObjects()==1)
-    {
-        this->pointMapper->SetInputConnection(1, this->GetInternalOutputPort(1));
-
-    }
-    else
-    {
-        this->pointMapper->SetInputConnection(1, this->dummyPointSource->GetOutputPort());
-    }
-    
+    this->pointMapper->SetInputData(input);
+    pointSetToLabelHierarchyFilter->SetInputData(input);
+    pointSetToLabelHierarchyFilter->SetLabelArrayName("names");
+    pointSetToLabelHierarchyFilter->SetPriorityArrayName("prioritys");
+    pointSetToLabelHierarchyFilter->Update();
+    this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
+    this->labelActor->SetMapper(labelMapper);
     cout << "=================RD==================" << endl;
     return 1;
 }
@@ -110,6 +120,21 @@ bool vtkMySpecialRepresentation::AddToView(vtkView* view)
         rview->GetRenderer()->AddActor(this->labelActor);
     }
     return this->Superclass::AddToView(view);
+}
+bool vtkMySpecialRepresentation::RemoveFromView(vtkView* view)
+{
+    vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
+    if (rview)
+    {
+        rview->GetRenderer()->RemoveActor(this->pointActor);
+        rview->GetRenderer()->RemoveActor(this->labelActor);
+    }
+    return this->Superclass::RemoveFromView(view);
+}
+//----------------------------------------------------------------------------
+int vtkMySpecialRepresentation::FillInputPortInformation(int, vtkInformation *info) {
+    info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
+    return 1;
 }
 //----------------------------------------------------------------------------
 void vtkMySpecialRepresentation::PrintSelf(ostream& os, vtkIndent indent)

@@ -24,7 +24,6 @@
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkGeometryRepresentation.h"
-#include "vtkPointSetToLabelHierarchy.h"
 #include "vtkLabelPlacementMapper.h"
 #include "vtkSmartPointer.h"
 #include "vtkActor.h"
@@ -33,6 +32,7 @@
 #include "vtkLabelPlacementMapper.h"
 #include "vtkActor2D.h"
 #include "vtkLabelPlacementMapper.h"
+#include "vtkPointSetToLabelHierarchy.h"
 class VTK_EXPORT vtkMySpecialRepresentation : public vtkGeometryRepresentationWithFaces
 {
 public:
@@ -49,19 +49,22 @@ protected:
     ~vtkMySpecialRepresentation();
     virtual int RequestData(vtkInformation*,
                             vtkInformationVector**, vtkInformationVector*);
+    
+    virtual bool AddToView(vtkView* view);
+    virtual bool RemoveFromView(vtkView* view);
+    int FillInputPortInformation(int, vtkInformation *info) override;
     vtkSmartPointer<vtkPolyDataMapper> pointMapper;
     vtkSmartPointer<vtkActor> pointActor;
-    virtual bool AddToView(vtkView* view);
-    
+    vtkSmartPointer<vtkPointSource> dummyPointSource;
+    vtkSmartPointer<vtkLabelPlacementMapper> labelMapper;
+    vtkSmartPointer<vtkActor2D> labelActor;
     vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter;
     
 private:
     vtkMySpecialRepresentation(const vtkMySpecialRepresentation&); // Not implemented
     void operator=(const vtkMySpecialRepresentation&); // Not implemented
     // Create a dummy point set.
-    vtkSmartPointer<vtkPointSource> dummyPointSource;
-    vtkSmartPointer<vtkLabelPlacementMapper> labelMapper;
-    vtkSmartPointer<vtkActor2D> labelActor;
+
 
 //ETX
 };
