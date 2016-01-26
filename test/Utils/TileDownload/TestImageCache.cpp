@@ -12,14 +12,14 @@
 
 class TestImageCache : public ::testing::Test {
 public:
-	static bool removeDir(const QString &dirName) {
+	static bool removeDir(const QString& dirName) {
 		bool result = true;
 		QDir dir(dirName);
 
 		if (dir.exists(dirName)) {
 			Q_FOREACH (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot
-					   | QDir::System | QDir::Hidden  | QDir::AllDirs
-					   | QDir::Files, QDir::DirsFirst)) {
+			           | QDir::System | QDir::Hidden  | QDir::AllDirs
+			           | QDir::Files, QDir::DirsFirst)) {
 				if (info.isDir()) {
 					result = removeDir(info.absoluteFilePath());
 				} else {
@@ -71,7 +71,7 @@ TEST_F(TestImageCache, CacheImage) {
 	}
 
 	ImageCache::getInstance().cacheImage(MetaImage(image, 1, 42),
-										 QString("test-layer"), 2, 1, 3);
+	                                     QString("test-layer"), 2, 1, 3);
 
 	QImageReader reader("cache/test-layer/tile_2_3_1.png");
 	reader.setFormat("png");
@@ -95,19 +95,19 @@ TEST_F(TestImageCache, CacheRetrieval) {
 
 	QImage image(512, 512, QImage::Format_RGB32);
 	ImageCache::getInstance().cacheImage(MetaImage(image, 1, 42),
-										 QString("test-layer"), 8, 3, 7);
+	                                     QString("test-layer"), 8, 3, 7);
 
 	EXPECT_TRUE(ImageCache::getInstance().isImageCached(
-					   QString("test-layer"), 8, 3, 7
-				   ));
+	                QString("test-layer"), 8, 3, 7
+	            ));
 
 	/* Test the actual retrieval method */
 	EXPECT_THROW(ImageCache::getInstance()
-						 .getCachedImage(QString("non-existent-layer"), 8, 3, 7),
-						 ImageNotCachedException);
+	             .getCachedImage(QString("non-existent-layer"), 8, 3, 7),
+	             ImageNotCachedException);
 
 	MetaImage retrievedImage = ImageCache::getInstance()
-							   .getCachedImage(QString("test-layer"), 8, 3, 7);
+	                           .getCachedImage(QString("test-layer"), 8, 3, 7);
 
 	EXPECT_TRUE(retrievedImage.hasMetaData());
 	EXPECT_EQ((short) 1, retrievedImage.getMinimumHeight());
@@ -119,7 +119,7 @@ TEST_F(TestImageCache, CacheRetrieval) {
 TEST_F(TestImageCache, ClearCache) {
 	QImage image(512, 512, QImage::Format_RGB32);
 	ImageCache::getInstance().cacheImage(MetaImage(image, 1, 42),
-										 QString("layer-to-clear"), 2, 1, 3);
+	                                     QString("layer-to-clear"), 2, 1, 3);
 	EXPECT_TRUE(QDir("cache/layer-to-clear").exists());
 
 	ImageCache::getInstance().clearCache("layer-to-clear");

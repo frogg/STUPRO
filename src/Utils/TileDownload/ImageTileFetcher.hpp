@@ -31,7 +31,7 @@ struct InvalidLayerException : public std::exception {
 		this->reason = message.toStdString();
 	}
 
-	const char * what() const KRONOS_NOTHROW override{
+	const char* what() const KRONOS_NOTHROW override {
 		return reason.c_str();
 	}
 };
@@ -50,8 +50,8 @@ public:
 	 * @param onTileFetched function to call when the tile is loaded
 	 */
 	ImageTileFetcher(QMap<QString, ImageLayerDescription> availableLayers,
-			QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY,
-			ImageDownloader::OnTileFetched onTileFetched);
+	                 QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY,
+	                 ImageDownloader::OnTileFetched onTileFetched);
 
 	/**
 	 * Function executed by the thread pool when ready.
@@ -81,7 +81,7 @@ private:
 	 * @param layers a list containing layer names
 	 */
 	static void validateLayersAvailable(const QList<QString> availableLayers,
-			const QList<QString> requestedLayers);
+	                                    const QList<QString> requestedLayers);
 };
 
 #endif

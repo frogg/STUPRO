@@ -15,25 +15,22 @@ class Globe;
 /**
  * Represents a "square" tile as part of the earth globe/map.
  */
-class GlobeTile
-{
+class GlobeTile {
 public:
-	
+
 	/**
 	 * Holds the position and zoom level of a tile.
 	 */
-	struct Location
-	{
+	struct Location {
 		Location(unsigned int zoomLevel, int longitude, int latitude) :
-				zoomLevel(zoomLevel),
-				longitude(longitude),
-				latitude(latitude)
-		{
+			zoomLevel(zoomLevel),
+			longitude(longitude),
+			latitude(latitude) {
 		}
-		
+
 		/**
 		 * Determines the tile size in terms of earth subdivisions.
-		 * 
+		 *
 		 * zoomLevel 0 =  2x 1 tiles
 		 * zoomLevel 1 =  4x 2 tiles
 		 * zoomLevel 2 =  8x 4 tiles
@@ -81,11 +78,11 @@ public:
 
 	/**
 	 * Creates a globe tile belonging to a specific globe at the specified location.
-	 * 
+	 *
 	 * Adds the actor to the globe's renderer.
 	 */
-	GlobeTile(const Globe & manager, Location location);
-	
+	GlobeTile(const Globe& manager, Location location);
+
 	/**
 	 * Destroys the globe tile and cleans up the actor.
 	 */
@@ -100,16 +97,16 @@ public:
 	 * Returns the longitude/latitude/width/height of this tile.
 	 */
 	RectF getBounds() const;
-	
+
 	/**
 	 * Loads the combined color/heightmap texture from the file corresponding to this tile's
 	 * location.
 	 */
-	void loadTexture(const QImage & rgb, const QImage & height);
+	void loadTexture(const QImage& rgb, const QImage& height);
 
 	/**
 	 * Assigns a combined color/heightmap texture to this tile.
-	 * 
+	 *
 	 * The RGB channels are interpreted as color information, the alpha channel is interpreted as
 	 * height information.
 	 */
@@ -148,30 +145,30 @@ public:
 	 * Returns the Actor corresponding to this globe tile.
 	 */
 	vtkSmartPointer<vtkActor> getActor() const;
-	
+
 	/**
 	 * Updates the uniform variables of this globe tile's shader.
 	 */
 	void updateUniforms();
-	
+
 	/**
 	 * Sets the visibility of the globe tile.
 	 */
 	void setVisibility(bool visible);
-	
+
 	/**
 	 * Returns the visibility of the globe tile.
 	 */
 	bool isVisible() const;
 
 private:
-	
+
 	/**
 	 * Initializes the globe tile's shaders.
 	 */
 	void initShaders();
-	
-	const Globe & myGlobe;
+
+	const Globe& myGlobe;
 
 	Location myLocation;
 
@@ -181,9 +178,9 @@ private:
 	vtkSmartPointer<vtkActor> myActor;
 	vtkSmartPointer<vtkShader2> myVertexShader;
 	vtkSmartPointer<vtkShader2> myFragmentShader;
-	
+
 	bool myIsVisible;
-	
+
 };
 
 #endif

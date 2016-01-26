@@ -11,19 +11,24 @@
 #include <memory>
 #include <vector>
 
+//TODO Configuration file
+#define GLOBE_RADIUS 0.5
+#define PLANE_WIDTH 4
+#define PLANE_HEIGHT 2
+#define PLANE_SIZE 1
+
 class GlobeTile;
 
 /**
  * A class for rendering a dynamically textured globe to a vtkRenderer.
  */
-class Globe
-{
+class Globe {
 public:
 
 	/**
 	 * Creates the globe using the specified renderer and configuration.
 	 */
-	Globe(vtkRenderer & renderer, GlobeConfig globeConfig);
+	Globe(vtkRenderer& renderer, GlobeConfig globeConfig);
 
 	/**
 	 * Virtual destructor.
@@ -32,7 +37,7 @@ public:
 	
 	/**
 	 * Assigns the globe configuration data for this globe.
-	 * 
+	 *
 	 * @param globeConfig The configuration data to assign to this globe
 	 */
 	void setGlobeConfig(GlobeConfig globeConfig);
@@ -44,7 +49,7 @@ public:
 
 	/**
 	 * Changes the globe's vertex/heightmap resolution per tile.
-	 * 
+	 *
 	 * @param resolution The globe's resolution in grid units.
 	 */
 	void setResolution(Vector2u resolution);
@@ -62,22 +67,22 @@ public:
 	/**
 	 * @return the render window associated with this globe
 	 */
-	vtkRenderWindow & getRenderWindow() const;
+	vtkRenderWindow& getRenderWindow() const;
 
 	/**
 	 * @return the renderer associated with this globe
 	 */
-	vtkRenderer & getRenderer() const;
+	vtkRenderer& getRenderer() const;
 
 	/**
 	 * Changes the zoom level of the globe tiles, determining the tile count and size.
-	 * 
+	 *
 	 * zoomLevel 0:  2x1 tiles
 	 * zoomLevel 1:  4x2 tiles
 	 * zoomLevel 2:  8x4 tiles
 	 * zoomLevel 3: 16x8 tiles
 	 * ...
-	 * 
+	 *
 	 * @param zoomLevel the globe's vertical tile cont in powers of two
 	 */
 	void setZoomLevel(unsigned int zoomLevel);
@@ -90,19 +95,19 @@ public:
 	/**
 	 * Returns a specific tile from the globe. The lon/lat pair is given in tile indices starting
 	 * from 0 and is normalized/wrapped around the world before selecting the tile.
-	 * 
+	 *
 	 * @param lon The integer longitude to get the tile at
 	 * @param lat The integer latitiude to get the tile at
-	 * 
+	 *
 	 * @return the globe tile at the specified longitude/latitude index
 	 */
-	GlobeTile & getTileAt(int lon, int lat) const;
+	GlobeTile& getTileAt(int lon, int lat) const;
 
 	/**
 	 * Changes the display mode interpolation between globe view and map view. A value of 0.0 means
 	 * globe, a value of 1.0 means map, and any values in-between result in a smooth animation
 	 * between the two display modes.
-	 * 
+	 *
 	 * @param displayMode The interpolation between globe and map
 	 */
 	void setDisplayModeInterpolation(float displayMode);
@@ -116,7 +121,7 @@ public:
 	 * Returns true if a texture was loaded and a renderer re-paint is needed and resets the flag.
 	 */
 	bool checkIfRepaintIsNeeded();
-	
+
 	/**
 	 * Checks which globe tiles are invisible and need to be culled.
 	 */
@@ -135,7 +140,7 @@ private:
 
 	void onTileLoad(ImageTile tile);
 
-	vtkRenderer & myRenderer;
+	vtkRenderer& myRenderer;
 	
 	GlobeConfig myGlobeConfig;
 
