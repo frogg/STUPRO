@@ -8,6 +8,7 @@
 #include <Globe/Globe.hpp>
 #include <Globe/GlobeTile.hpp>
 #include <qmap.h>
+#include <Utils/Config/Configuration.hpp>
 #include <Utils/Math/Vector3.hpp>
 #include <Utils/Math/Vector4.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
@@ -17,9 +18,14 @@
 #include <vtkMatrix4x4.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
+#include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstdbool>
 #include <cstddef>
+#include <iostream>
+
+class QImage;
 
 Globe::Globe(vtkRenderer & renderer, GlobeConfig globeConfig) :
 		myRenderer(renderer),
@@ -79,7 +85,11 @@ vtkRenderer& Globe::getRenderer() const
 
 void Globe::setZoomLevel(unsigned int zoomLevel)
 {
-	myZoomLevel = zoomLevel;
+	if (myZoomLevel != zoomLevel)
+	{		
+		myZoomLevel = zoomLevel;
+		createTiles();
+	}
 }
 
 unsigned int Globe::getZoomLevel() const
@@ -193,13 +203,55 @@ void Globe::onTileLoad(ImageTile tile)
 
 void Globe::updateZoomLevel()
 {
-	// Get current camera for transformation matrix.
+	// Get current camera for distance calculations.
 	vtkCamera * camera = getRenderer().GetActiveCamera();
 	
+	// Get the camera's eye position.
 	Vector3d cameraPosition;
 	camera->GetPosition(cameraPosition.array());
 	
-	std::cout << "Distance from center: " << cameraPosition.length() << std::endl;
+	// The distance between the camera and the globe's center in globe radius units.
+	float cameraDistance = cameraPosition.length() / getGlobeConfig().globeRadius;
+	
+	// Get the near and far distance limits from the configuration file.
+	float nearDistance = Configuration::getInstance().getFloat("globe.zoom.nearDistance");
+	float farDistance = Configuration::getInstance().getFloat("globe.zoom.farDistance");
+	
+	// Get the near and far zoom values from the configuration file.
+	unsigned int nearZoom = Configuration::getInstance().getInteger("globe.zoom.nearZoom");
+	unsigned int farZoom = Configuration::getInstance().getInteger("globe.zoom.farZoom");
+	
+	// Normalize the distance between 0.0 and 1.0 for the far and near distances, respectively.
+	float normalizedDistance = 1.f - (cameraDistance - nearDistance) / (farDistance - nearDistance);
+	
+	// Create variable for resulting zoom level.
+	unsigned int zoomResult = 0;
+	
+	// Check minimum/maximum cases.
+	if (normalizedDistance > 1.f)
+	{
+		zoomResult = nearZoom;
+	}
+	else if (normalizedDistance < 0.f)
+	{
+		zoomResult = farZoom;
+	}
+	else
+	{
+		// Get the exponential scaling factor.
+		float expScale = Configuration::getInstance().getFloat("globe.zoom.expScale");
+		
+		// Calculate the exponential normalized distance.
+		float exponentialDistance = (std::pow(expScale, normalizedDistance) - 1.f) / (expScale - 1.f);
+		
+		// Interpolate the integer zoom levels based on the exponential normalized distance.
+		zoomResult = exponentialDistance * nearZoom + (1.f - exponentialDistance) * farZoom;
+		
+		std::cout << "Distance from center: " << cameraPosition.length() << " ; ZoomLevel: " << zoomResult << std::endl;
+	}
+	
+	// Assign the zoom level.
+	this->setZoomLevel(zoomResult);
 }
 
 void Globe::updateTileVisibility()

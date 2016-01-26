@@ -26,7 +26,7 @@ GlobeTile::Location GlobeTile::Location::getClampedLocation() const
 GlobeTile::Location GlobeTile::Location::getWrappedLocation() const
 {
 	return Location(zoomLevel, absoluteModulo<int>(longitude, (1 << zoomLevel) * 2),
-	        absoluteModulo<int>(latitude, (1 << zoomLevel)));
+			std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel))));
 }
 
 RectF GlobeTile::Location::getBounds() const
