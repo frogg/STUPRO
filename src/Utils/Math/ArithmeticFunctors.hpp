@@ -9,10 +9,8 @@
  * This functor adds two numbers of any type and returns the result.
  */
 template <typename T, typename T2>
-struct Add
-{
-	T operator()(T a, T2 b) const
-	{
+struct Add {
+	T operator()(T a, T2 b) const {
 		return a + b;
 	}
 };
@@ -21,10 +19,8 @@ struct Add
  * This functor subtracts two numbers of any type and returns the result.
  */
 template <typename T, typename T2>
-struct Subtract
-{
-	T operator()(T a, T2 b) const
-	{
+struct Subtract {
+	T operator()(T a, T2 b) const {
 		return a - b;
 	}
 };
@@ -33,10 +29,8 @@ struct Subtract
  * This functor multiplies two numbers of any type and returns the result.
  */
 template <typename T, typename T2>
-struct Multiply
-{
-	T operator()(T a, T2 b) const
-	{
+struct Multiply {
+	T operator()(T a, T2 b) const {
 		return a * b;
 	}
 };
@@ -45,10 +39,8 @@ struct Multiply
  * This functor divides two numbers of any type and returns the result.
  */
 template <typename T, typename T2>
-struct Divide
-{
-	T operator()(T a, T2 b) const
-	{
+struct Divide {
+	T operator()(T a, T2 b) const {
 		return a / b;
 	}
 };
