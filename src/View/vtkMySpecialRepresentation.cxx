@@ -62,7 +62,7 @@ vtkMySpecialRepresentation::~vtkMySpecialRepresentation()
     this->pointSetToLabelHierarchyFilter->Delete();
     this->labelMapper->Delete();
     this->labelActor->Delete();
-    cout << "Ende"<<endl;
+ 
 }
 //----------------------------------------------------------------------------
 int vtkMySpecialRepresentation::RequestData(vtkInformation* request,
@@ -119,7 +119,8 @@ bool vtkMySpecialRepresentation::RemoveFromView(vtkView* view)
 }
 //----------------------------------------------------------------------------
 int vtkMySpecialRepresentation::FillInputPortInformation(int, vtkInformation *info) {
-    info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
+    info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
+    info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
     return 1;
 }
 //----------------------------------------------------------------------------
