@@ -1,7 +1,9 @@
 #!/bin/sh
-FORMATTER_CHECK=$(./scripts/formatter-check.sh)
+FORMATTER_CHECK=$(./scripts/formatter-check.sh --only-own --no-blame --no-dir-headers)
+
 if [ $? != 0 ]; then
-    echo "Found formatting errors in source files, aborting commit"
-    exit 1
+  echo -e "\e[31mFound formatting errors that seem to be introduced by YOU \e[33m😒\e[39m"
+  exit 1
+else
+  echo -e "\e[32mFormatting seems fine on your side \e[33m✨\e[39m"
 fi
-echo "Formatting seems fine"
