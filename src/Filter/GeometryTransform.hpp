@@ -4,6 +4,7 @@
 #include <vtkAbstractTransform.h>
 
 #include "Utils/Math/Vector3.hpp"
+#include "Utils/Misc/Macros.hpp"
 
 class GeometryTransform : public vtkAbstractTransform {
 private:
@@ -12,8 +13,8 @@ private:
     double baseAltitude;
 
     template<typename T> void gpsToNormalWorldCoordinates(const Vector3<T> gps, Vector3<T> &normal){
-        const double lon = gps.x * M_PI / 180;
-        const double lat = gps.y * M_PI / 180;
+        const double lon = gps.x * KRONOS_PI / 180;
+        const double lat = gps.y * KRONOS_PI / 180;
 
         normal.z = cos(lat) * cos(lon);
         normal.x = cos(lat) * sin(lon);
@@ -33,8 +34,8 @@ private:
     template<typename T> void gpsToWorldAndDerivatives(const Vector3<T> gps, Vector3<T> &world, Vector3<Vector3<T>> &derivatives) {
         gpsToNormalWorldCoordinates(gps, world);
 
-        const double lon = gps.x * M_PI / 180;
-        const double lat = gps.y * M_PI / 180;
+        const double lon = gps.x * KRONOS_PI / 180;
+        const double lat = gps.y * KRONOS_PI / 180;
         const double radius = baseAltitude + gps.z;
 
         derivatives.x.z = world.x;
@@ -43,13 +44,13 @@ private:
 
         world *= radius;
 
-        derivatives.x.x = world.x * M_PI / 180;
+        derivatives.x.x = world.x * KRONOS_PI / 180;
         derivatives.y.x = 0;
-        derivatives.z.x = world.z * M_PI / 180;
+        derivatives.z.x = world.z * KRONOS_PI / 180;
 
-        derivatives.x.y = -sin(lat)*sin(lon)*radius* M_PI / 180;
-        derivatives.y.y = cos(lat)*radius* M_PI / 180;
-        derivatives.z.y = -sin(lat)*cos(lon)*radius* M_PI / 180;
+        derivatives.x.y = -sin(lat)*sin(lon)*radius* KRONOS_PI / 180;
+        derivatives.y.y = cos(lat)*radius* KRONOS_PI / 180;
+        derivatives.z.y = -sin(lat)*cos(lon)*radius* KRONOS_PI / 180;
     }
 
     template<typename T> void worldToGPSCoordinates(const Vector3<T> world, Vector3<T> &gps) {
