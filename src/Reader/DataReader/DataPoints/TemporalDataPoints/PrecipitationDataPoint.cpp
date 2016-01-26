@@ -12,9 +12,3 @@ float PrecipitationDataPoint::getPrecipitationRate() const {
 int PrecipitationDataPoint::getPrecipitationType() const {
 	return this->precipitationType;
 }
-
-const int PrecipitationDataPoint::RAIN;
-const int PrecipitationDataPoint::SNOW;
-const int PrecipitationDataPoint::SLEET;
-const int PrecipitationDataPoint::HAIL;
-const int PrecipitationDataPoint::NOPRECIPITATION;
