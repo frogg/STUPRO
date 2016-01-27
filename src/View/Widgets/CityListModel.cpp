@@ -16,10 +16,10 @@ QVariant CityListModel::data(const QModelIndex& index, int role) const {
     if (role == Qt::DisplayRole) {
         City city = this->cities.at(index.row());
         return QVariant(
-            QString::fromStdString(city.name)
+            QString::fromUtf8(city.name.c_str())
             + " [" + QString::fromStdString(city.countryCode) + "] "
-            + QString::number(city.latitude) + "°N "
-            + QString::number(city.longitude) + "°E"
+            + QString::number(city.latitude) + QString::fromUtf8("\u00b0 N ")
+            + QString::number(city.longitude) + QString::fromUtf8("\u00b0 E")
         );
     } else {
         return QVariant();
