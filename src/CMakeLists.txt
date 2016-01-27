@@ -6,7 +6,6 @@ else()
 	cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
 endif()
 
-
 # files to be moced for the plugin part
 set(PLUGIN_MOC_SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/CityListModel.hpp"
@@ -20,6 +19,7 @@ set(PARAVIEW_MOC_SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp"
 )
 
+set(PRINT_CLANG_COMPLETE NO CACHE BOOL "Generate output to be pasted into a .clang_complete file")
 
 # find pthread (C++11 threading) library and headers
 find_package(Threads REQUIRED)
@@ -207,4 +207,16 @@ if(NOT ("${CMAKE_SOURCE_DIR}" STREQUAL "${KRONOS_BIN_DIR}"))
 	)
 	# delete the resource folder when executing make clean
 	set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${KRONOS_BIN_DIR}/res")
+endif()
+
+if(${PRINT_CLANG_COMPLETE})
+	message(STATUS ".clang_complete include parameters")
+
+	# get all include directories and print them
+	get_directory_property(INCLUDE_DIRECTORIES INCLUDE_DIRECTORIES)
+	list(REMOVE_DUPLICATES INCLUDE_DIRECTORIES)
+	list(SORT INCLUDE_DIRECTORIES)
+	foreach(ITEM ${INCLUDE_DIRECTORIES})
+		message(STATUS "-I${ITEM}")
+	endforeach()
 endif()
