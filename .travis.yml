@@ -20,8 +20,7 @@ before_install:
   - ./scripts/build-gtest.sh
 
 script:
-  # disabled until the styling on the repository is OK
-  # - ./scripts/formatter-check.sh
+  - ./scripts/formatter-check.sh
   - ./scripts/build.sh
 notifications:
   slack: kronosus:1qazkyb5u4Kx7Rtqlk8IB83b

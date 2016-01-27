@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-Configuration &Configuration::getInstance() {
+Configuration& Configuration::getInstance() {
 	static Configuration instance;
 	instance.loadConfigurationFile();
 	return instance;
@@ -23,28 +23,28 @@ Configuration::Configuration() : CONFIGURATION_FILE_PATH(QString("./res/configur
 void Configuration::loadConfigurationFile() {
 	// Open the configuration file while checking for potential errors
 	QFile configFile(this->CONFIGURATION_FILE_PATH);
-  QFileInfo configFileInfo(this->CONFIGURATION_FILE_PATH);
+	QFileInfo configFileInfo(this->CONFIGURATION_FILE_PATH);
 
-  if (!configFile.open(QIODevice::ReadOnly)) {
-    throw ConfigFileOpenException(configFileInfo.absoluteFilePath(), configFile.errorString());
-  }
+	if (!configFile.open(QIODevice::ReadOnly)) {
+		throw ConfigFileOpenException(configFileInfo.absoluteFilePath(), configFile.errorString());
+	}
 
 	// Read from the opened stream and save the file's contents in a string
-  QTextStream in(&configFile);
-  QString configText = in.readAll();
-  configFile.close();
+	QTextStream in(&configFile);
+	QString configText = in.readAll();
+	configFile.close();
 
 	// Parse the file's content and construct a representation inside the memory
 	// using a `rapidjson::Document`
 	rapidjson::Document configurationDocument;
-  configurationDocument.Parse(configText.toStdString().c_str());
+	configurationDocument.Parse(configText.toStdString().c_str());
 
-  if (configurationDocument.HasParseError()) {
-    throw JsonParseException(
-      configFileInfo.absoluteFilePath(),
-      rapidjson::GetParseError_En(configurationDocument.GetParseError())
-    );
-  }
+	if (configurationDocument.HasParseError()) {
+		throw JsonParseException(
+		    configFileInfo.absoluteFilePath(),
+		    rapidjson::GetParseError_En(configurationDocument.GetParseError())
+		);
+	}
 
 	// Start recursively iterating the JSON tree and save all primitive values to the map.
 	// The actual JSON document can go out of scope afterwards.
@@ -54,7 +54,7 @@ void Configuration::loadConfigurationFile() {
 void Configuration::indexValues(rapidjson::Value& jsonValue, QString path) {
 	// Iterate through each direct descendant of the JSON object `jsonValue`
 	for (rapidjson::Value::ConstMemberIterator iterator = jsonValue.MemberBegin();
-				iterator != jsonValue.MemberEnd(); ++iterator) {
+	        iterator != jsonValue.MemberEnd(); ++iterator) {
 		if (iterator->value.GetType() == 3) {
 			// The descendant is of type 3 which is RapidJSON's way of marking it as
 			// a complex nested object
@@ -99,7 +99,7 @@ void Configuration::indexValues(rapidjson::Value& jsonValue, QString path) {
 }
 
 bool Configuration::hasKey(QString key) const {
-  return this->values.contains(key);
+	return this->values.contains(key);
 }
 
 ConfigurationValue Configuration::getConfigurationValue(QString key, int type) const {
@@ -111,7 +111,7 @@ ConfigurationValue Configuration::getConfigurationValue(QString key, int type) c
 			return foundValue;
 		} else {
 			throw InvalidValueException(
-				key, ConfigurationValue::getTypeNameFromInteger(type), foundValue.getTypeName()
+			    key, ConfigurationValue::getTypeNameFromInteger(type), foundValue.getTypeName()
 			);
 		}
 	}
@@ -135,5 +135,5 @@ double Configuration::getDouble(QString key) const {
 
 float Configuration::getFloat(QString key) const {
 	return (float) this->getConfigurationValue(key, ConfigurationValue::TYPE_DOUBLE)
-			.getDoubleValue();
+	       .getDoubleValue();
 }

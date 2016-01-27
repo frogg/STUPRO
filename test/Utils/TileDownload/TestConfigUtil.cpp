@@ -18,18 +18,18 @@ TEST(TestConfigUtil, LoadConfig) {
 
 	ImageLayerDescription satelliteImagery = layers.value("satelliteImagery");
 	EXPECT_EQ(
-		std::string("http://worldwind25.arc.nasa.gov/wms?service=WMS&"
-								"request=GetMap&version=1.3.0&crs=CRS:84&styles=&transparent=FALSE"),
-		satelliteImagery.getBaseUrl().toStdString()
+	    std::string("http://worldwind25.arc.nasa.gov/wms?service=WMS&"
+	                "request=GetMap&version=1.3.0&crs=CRS:84&styles=&transparent=FALSE"),
+	    satelliteImagery.getBaseUrl().toStdString()
 	);
 	EXPECT_EQ(std::string("image/jpeg"), satelliteImagery.getMimeType().toStdString());
 	EXPECT_EQ(512, satelliteImagery.getTileSize());
 
 	ImageLayerDescription heightmap = layers.value("heightmap");
 	EXPECT_EQ(
-		std::string("http://worldwind26.arc.nasa.gov/wms?service=WMS&"
-								"request=GetMap&version=1.3.0&crs=CRS:84&styles=&transparent=FALSE"),
-		heightmap.getBaseUrl().toStdString()
+	    std::string("http://worldwind26.arc.nasa.gov/wms?service=WMS&"
+	                "request=GetMap&version=1.3.0&crs=CRS:84&styles=&transparent=FALSE"),
+	    heightmap.getBaseUrl().toStdString()
 	);
 	EXPECT_EQ(std::string("application/bil16"), heightmap.getMimeType().toStdString());
 	EXPECT_EQ(512, heightmap.getTileSize());
@@ -49,13 +49,13 @@ TEST(TestConfigUtil, LayerSteps) {
 	EXPECT_EQ(2, satelliteImagery.getLayerSteps().size());
 	EXPECT_EQ(0, satelliteImagery.getLayerSteps().at(0).minZoomLevel);
 	EXPECT_EQ(
-		std::string("BlueMarble-200405"),
-		satelliteImagery.getLayerSteps().at(0).layers.toStdString()
+	    std::string("BlueMarble-200405"),
+	    satelliteImagery.getLayerSteps().at(0).layers.toStdString()
 	);
 	EXPECT_EQ(8, satelliteImagery.getLayerSteps().at(1).minZoomLevel);
 	EXPECT_EQ(
-		std::string("BlueMarble-200405,esat"),
-		satelliteImagery.getLayerSteps().at(1).layers.toStdString()
+	    std::string("BlueMarble-200405,esat"),
+	    satelliteImagery.getLayerSteps().at(1).layers.toStdString()
 	);
 
 	ImageLayerDescription heightmap = layers.value("heightmap");
@@ -63,12 +63,12 @@ TEST(TestConfigUtil, LayerSteps) {
 	EXPECT_EQ(3, heightmap.getLayerSteps().size());
 	EXPECT_EQ(0, heightmap.getLayerSteps().at(0).minZoomLevel);
 	EXPECT_EQ(
-		std::string("NASA_SRTM30_900m_Tiled"),
-		heightmap.getLayerSteps().at(0).layers.toStdString()
+	    std::string("NASA_SRTM30_900m_Tiled"),
+	    heightmap.getLayerSteps().at(0).layers.toStdString()
 	);
 	EXPECT_EQ(8, heightmap.getLayerSteps().at(2).minZoomLevel);
 	EXPECT_EQ(
-		std::string("NASA_SRTM30_900m_Tiled,aster_v2,USGS-NED"),
-		heightmap.getLayerSteps().at(2).layers.toStdString()
+	    std::string("NASA_SRTM30_900m_Tiled,aster_v2,USGS-NED"),
+	    heightmap.getLayerSteps().at(2).layers.toStdString()
 	);
 }
