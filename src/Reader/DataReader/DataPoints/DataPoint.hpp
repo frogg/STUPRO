@@ -2,6 +2,7 @@
 #define KRONOS_DATAPOINT_HPP
 
 #include <Globe/Coordinate.hpp>
+#include <Reader/DataReader/Data.hpp>
 
 /**
  * Holds a coordinate along with the type of data this point contains
@@ -15,14 +16,14 @@ public:
       * @param coordinate The point's coordinates
       * @param priority The point's zoom level priority
       */
-    DataPoint(int dataType, Coordinate coordinate, int priority);
+    DataPoint(Data::Type dataType, Coordinate coordinate, int priority);
     virtual ~DataPoint() { }
     
     /**
      * Get the data type of this data point, referring to the constants defined in DataType.hpp.
      * @return The data type of this data point
      */
-    int getDataType() const;
+    Data::Type getDataType() const;
     
     /**
      * Get the minimum zoom level this data point should be displayed at.
@@ -38,7 +39,7 @@ public:
     
 private:
     Coordinate coordinate;
-    int dataType;
+    Data::Type dataType;
     int priority;
 
 };

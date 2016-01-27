@@ -1,9 +1,9 @@
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
 
-DataPoint::DataPoint(int dataType, Coordinate coordinate, int priority)
+DataPoint::DataPoint(Data::Type dataType, Coordinate coordinate, int priority)
         : dataType(dataType), coordinate(coordinate), priority(priority) { }
 
-int DataPoint::getDataType() const {
+Data::Type DataPoint::getDataType() const {
     return this->dataType;
 }
 

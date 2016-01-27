@@ -5,7 +5,6 @@
 
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
-#include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>

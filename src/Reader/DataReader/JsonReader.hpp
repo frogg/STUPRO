@@ -9,6 +9,7 @@
 #include <rapidjson/document.h>
 #include <vtkPolyData.h>
 #include <Reader/DataReader/PointDataSet.hpp>
+#include <Reader/DataReader/Data.hpp>
 
 class JsonReader {
     
@@ -20,7 +21,8 @@ public:
      * Create a new AbstractJsonReader from a map of data from a JSON file
      * @param data A potentially nested map of data from the JSON file
      */
-    JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal, int timeResolution);
+    JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, bool temporal,
+            int timeResolution);
     
     virtual ~JsonReader() { }
 
@@ -28,7 +30,7 @@ public:
      * Get the type of data read by this reader
      * @return The type of data read by this reader
      */
-    int getDataType() const;
+    Data::Type getDataType() const;
 
     /**
      * Check whether the data read by this reader is of temporal nature
@@ -94,10 +96,9 @@ private:
     bool temporal;
 
     /**
-     * Integer denoting the type of data read by this reader, using constants defined in the
-     * DataType.hpp file
+     * Enum denoting the type of data read by this reader, as defined in the `Data.hpp` file
      */
-    int dataType;
+    Data::Type dataType;
     
     /**
      * Amount of seconds in each time step, only used if this reader reads temporal data

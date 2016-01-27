@@ -1,18 +1,17 @@
 #include <Reader/DataReader/JsonReader.hpp>
 
-#include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/FlightDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TemperatureDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverageDataPoint.hpp>
 
 #include <Reader/DataReader/PolyDataSetHelper.hpp>
 #include <Utils/Config/Configuration.hpp>
 
-JsonReader::JsonReader(rapidjson::Value& jsonDocument, int dataType, bool temporal,
+JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, bool temporal,
     int timeResolution) : dataType(dataType), temporal(temporal), timeResolution(timeResolution) {
     this->cachingEnabled = true;
     this->pointDataSet = PointDataSet();
@@ -53,7 +52,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
         
         // Initialize the new data point depending on the data type
         switch (this->dataType) {
-            case DataType::CITIES:
+            case Data::CITIES:
                 dataPoint = new CityDataPoint(
                     Coordinate(
                         jsonValue[i]["latitude"].GetDouble(),
@@ -63,7 +62,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
                     jsonValue[i]["name"].GetString()
                 );
                 break;
-            case DataType::FLIGHTS:
+            case Data::FLIGHTS:
                 dataPoint = new FlightDataPoint(
                     Coordinate(
                         jsonValue[i]["startPosition"]["latitude"].GetDouble(),
@@ -76,7 +75,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
                     )
                 );
                 break;                
-            case DataType::TWEETS:
+            case Data::TWEETS:
                 dataPoint = new TweetDataPoint(
                     Coordinate(
                         jsonValue[i]["latitude"].GetDouble(),
@@ -88,7 +87,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
                     jsonValue[i]["content"].GetString()
                 );
                 break;                
-			case DataType::PRECIPITATION: {
+			case Data::PRECIPITATION: {
 				int precipitationType = PrecipitationDataPoint::NOPRECIPITATION;
                 
 				if (QString(jsonValue[i]["precipitationType"].GetString()) == "rain") {
@@ -112,7 +111,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 					precipitationType
 				);
 				break; }
-            case DataType::TEMPERATURE:
+            case Data::TEMPERATURE:
                 dataPoint = new TemperatureDataPoint(
                     Coordinate(
                         jsonValue[i]["latitude"].GetDouble(),
@@ -123,7 +122,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
                     (float) jsonValue[i]["temperature"].GetDouble()
                 );
                 break;                
-            case DataType::WIND:
+            case Data::WIND:
                 dataPoint = new WindDataPoint(
                     Coordinate(
                         jsonValue[i]["latitude"].GetDouble(),
@@ -135,8 +134,8 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
                     (float) jsonValue[i]["speed"].GetDouble()
                 );
                 break;
-			case DataType::CLOUDCOVER:
-				dataPoint = new CloudCoverDataPoint(
+			case Data::CLOUD_COVERAGE:
+				dataPoint = new CloudCoverageDataPoint(
 					Coordinate(
 					    jsonValue[i]["latitude"].GetDouble(),
 					    jsonValue[i]["longitude"].GetDouble()
@@ -155,7 +154,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 	}
 }
 
-int JsonReader::getDataType() const {
+Data::Type JsonReader::getDataType() const {
     return this->dataType;
 }
 

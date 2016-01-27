@@ -11,14 +11,13 @@
 #include <vtkPoints.h>
 #include <vtkCellArray.h>
 
-#include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/FlightDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TemperatureDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverageDataPoint.hpp>
 
 #include <math.h>
 #include <iostream>
@@ -28,7 +27,7 @@
 vtkSmartPointer<vtkPolyData> PolyDataSetHelper::getPolyDataFromDataPoints(
     PointDataSet dataPoints,
     int zoomLevel,
-	int dataType
+	Data::Type dataType
 ) {
 	return PolyDataSetHelper::getPolyDataFromDataPoints(
 		dataPoints,
@@ -44,7 +43,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::getPolyDataFromDataPoints(
 vtkSmartPointer<vtkPolyData> PolyDataSetHelper::getPolyDataFromDataPoints(
     PointDataSet dataPoints,
     int zoomLevel,
-	int dataType,
+	Data::Type dataType,
     int timeResolution,
     int timeStep,
     int startTime
@@ -63,7 +62,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::getPolyDataFromDataPoints(
 vtkSmartPointer<vtkPolyData> PolyDataSetHelper::getPolyDataFromDataPoints(
     PointDataSet dataPoints,
     int zoomLevel,
-	int dataType,
+	Data::Type dataType,
     int timeResolution,
     int timeStep,
     int startTime,
@@ -140,14 +139,14 @@ QList<DataPoint*> PolyDataSetHelper::extractRelevantDataPoints(
 
 vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
     QList<DataPoint*> relevantDataPoints,
-	int dataType
+	Data::Type dataType
 ) {
 	// Create an empty data set and a point array the data set will contain
     vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	
 	// Check whether the data type is time-sensitive
-	bool temporal = DataType::isTemporal(dataType);
+	bool temporal = Data::isTemporal(dataType);
     
     // Create an empty vert data set
     vtkCellArray *verts = vtkCellArray::New();
@@ -220,7 +219,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	
 	// Add relevant data arrays depending on the data type
 	switch (dataType) {
-		case DataType::CITIES: {
+		case Data::CITIES: {
 			vtkSmartPointer<vtkStringArray> cityNames = vtkSmartPointer<vtkStringArray>::New();
 			cityNames->SetNumberOfComponents(relevantDataPoints.size());
 			cityNames->SetName("names");
@@ -238,7 +237,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			break;
 		}
 			
-		case DataType::FLIGHTS: {
+		case Data::FLIGHTS: {
 			vtkSmartPointer<vtkDoubleArray> destinations = vtkSmartPointer<vtkDoubleArray>::New();
 			vtkIdType numberOfTuples[1];
 			numberOfTuples[0] = relevantDataPoints.size();
@@ -267,7 +266,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			break;
 		}
 			
-		case DataType::TWEETS: {
+		case Data::TWEETS: {
 			vtkSmartPointer<vtkStringArray> authors = vtkSmartPointer<vtkStringArray>::New();
 			authors->SetNumberOfComponents(relevantDataPoints.size());
 			authors->SetName("authors");
@@ -291,7 +290,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			break;
 		}
 			
-		case DataType::PRECIPITATION: {
+		case Data::PRECIPITATION: {
 			vtkSmartPointer<vtkTypeFloat32Array> precipitationRates
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
             precipitationRates->SetNumberOfComponents(1);
@@ -328,7 +327,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			break;
 		}
 			
-		case DataType::TEMPERATURE: {
+		case Data::TEMPERATURE: {
 			vtkSmartPointer<vtkTypeFloat32Array> temperatures
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
             temperatures->SetNumberOfComponents(1);
@@ -353,7 +352,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			break;
 		}
 			
-		case DataType::WIND: {
+		case Data::WIND: {
 			vtkSmartPointer<vtkTypeFloat32Array> speeds
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
             speeds->SetNumberOfComponents(1);
@@ -407,7 +406,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			break;
 		}
 			
-		case DataType::CLOUDCOVER: {
+		case Data::CLOUD_COVERAGE: {
 			vtkSmartPointer<vtkTypeFloat32Array> coverageValues
 				= vtkSmartPointer<vtkTypeFloat32Array>::New();
             coverageValues->SetNumberOfComponents(1);
@@ -417,11 +416,11 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
             int tupleNumber = 0;
 			for(QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
 					iterator != relevantDataPoints.end(); ++iterator) {
-				const CloudCoverDataPoint* dataPoint
-					= dynamic_cast<const CloudCoverDataPoint*>((*iterator));
+				const CloudCoverageDataPoint* dataPoint
+					= dynamic_cast<const CloudCoverageDataPoint*>((*iterator));
 				
                 double coverage[1] = {
-    				(double) dataPoint->getCloudCover()
+    				(double) dataPoint->getCloudCoverage()
     			};
     			coverageValues->SetTuple(tupleNumber, coverage);
                 

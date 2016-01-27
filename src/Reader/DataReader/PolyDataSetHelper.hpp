@@ -4,6 +4,7 @@
 #include <QList>
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
 #include <Reader/DataReader/PointDataSet.hpp>
+#include <Reader/DataReader/Data.hpp>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
@@ -23,7 +24,7 @@ public:
 	static vtkSmartPointer<vtkPolyData> getPolyDataFromDataPoints(
         PointDataSet dataPoints,
         int zoomLevel,
-        int dataType
+        Data::Type dataType
     );
     
     /**
@@ -40,7 +41,7 @@ public:
     static vtkSmartPointer<vtkPolyData> getPolyDataFromDataPoints(
         PointDataSet dataPoints,
         int zoomLevel,
-        int dataType,
+        Data::Type dataType,
         int timeResolution,
         int timeStep,
         int startTime
@@ -61,7 +62,7 @@ private:
     static vtkSmartPointer<vtkPolyData> getPolyDataFromDataPoints(
         PointDataSet dataPoints,
         int zoomLevel,
-        int dataType,
+        Data::Type dataType,
         int timeResolution,
         int timeStep,
         int startTime,
@@ -104,7 +105,7 @@ private:
      */
     static vtkSmartPointer<vtkPolyData> createPolyDataSet(
         QList<DataPoint*> relevantDataPoints,
-        int dataType
+        Data::Type dataType
     );
     
     /**
