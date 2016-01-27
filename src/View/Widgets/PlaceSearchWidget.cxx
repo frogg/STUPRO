@@ -9,10 +9,18 @@
 #include <QIcon>
 #include <QSize>
 
+#include <vtkCamera.h>
+#include <vtkRenderWindow.h>
+#include <vtkSMRenderViewProxy.h>
+
+#include <pqActiveObjects.h>
+#include <pqRenderView.h>
+
 #include <iostream>
 
 PlaceSearchWidget::PlaceSearchWidget(QWidget * parent, Qt::WindowFlags flags)
-        : QWidget(parent, flags) {
+        : QWidget(parent, flags)
+{
     // lay out the top level children vertically
     QVBoxLayout* vLayout = new QVBoxLayout(this);
     vLayout->setMargin(2);
@@ -73,17 +81,23 @@ void PlaceSearchWidget::startSearch() {
     std::vector<City> result;
     this->citiesDatabase->getCity(this->searchBar->text().toStdString(), &result);
 
-    std::cout << "[startSearch] Place search for " << this->searchBar->text().toStdString() << " yielded ";
     if (result.size() > 0) {
-        std::cout << result.size() << " results:" << std::endl;
         for (int i = 0; i < result.size(); i++) {
-            std::cout << "[startSearch]\t" << result[i].name
-                    << " [" << result[i].countryCode << "]"
-                    << " " << result[i].latitude << "°N " << result[i].longitude << "°E" << std::endl;
             this->resultListModel->add(result[i]);
         }
+
+        pqView* view = pqActiveObjects::instance().activeView();
+        pqRenderView* rView = qobject_cast<pqRenderView*>(view);
+        if (rView) {
+            vtkCamera* camera = rView->getRenderViewProxy()->GetActiveCamera();
+            camera->SetPosition(0, 0, 2.3f);
+            camera->SetFocalPoint(0, 0, 0);
+            rView->render();
+        } else {
+            // the active view is no render view
+        }
     } else {
-        std::cout << "no results" << std::endl;
+        // no results were found
     }
 
     // TODO: somehow make the camera focus on the looked up coordinates
