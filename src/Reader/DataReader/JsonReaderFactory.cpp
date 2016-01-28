@@ -51,12 +51,6 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 		);
 	}
 
-	// Extract meta data and create a new JSON reader
-	rapidjson::Value& metaData = jsonDocument["meta"];
-	bool temporal = metaData["temporal"].GetBool();
-
-	std::unique_ptr<JsonReader> jsonReader;
-
     if (jsonDocument.HasParseError()) {
         throw JsonReaderParseException(
             jsonFileInfo.absoluteFilePath(),
@@ -92,7 +86,6 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
     bool temporal = metaData["temporal"].GetBool();
     
     std::unique_ptr<JsonReader> jsonReader;
-    
     
     if (temporal) {
         jsonReader = makeUnique<JsonReader>(
