@@ -54,7 +54,7 @@ void StuproInteractor::OnMouseWheelForward() {
 void StuproInteractor::OnMouseWheelBackward() {
 	setCurrentRendererViaPosition();
 	float maxDistance = 8.0f;
-	vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
+	vtkCamera* camera = this->CurrentRenderer->GetActiveCamera();
 	//if (camera->GetDistance() <= myVtkPVStuproView->getGlobeRadius() * maxDistance)
 	{
 		zoomWithFactor(-(zoomFactor));

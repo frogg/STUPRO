@@ -65,10 +65,10 @@ public:
 		 * Returns the starting/ending longitude/latitude of the tile this location describes.
 		 */
 		RectF getBounds() const;
-		
+
 		/**
 		 * Returns the normal vector of this tile when displayed in globe mode.
-		 * 
+		 *
 		 * @param interpolation
 		 *        Bilinear interpolation coefficient for the position within the rectangle:
 		 *        0 => left/top, 0.5 => center, 1 => right/bottom

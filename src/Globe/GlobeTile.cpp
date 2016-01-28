@@ -19,12 +19,12 @@ extern const char* GlobeShader_vsh;
 
 GlobeTile::Location GlobeTile::Location::getClampedLocation() const {
 	return Location(zoomLevel, std::max<int>(0, std::min<int>(longitude, (1 << zoomLevel) * 2)),
-			std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel))));
+	                std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel))));
 }
 
 GlobeTile::Location GlobeTile::Location::getWrappedLocation() const {
 	return Location(zoomLevel, absoluteModulo<int>(longitude, (1 << zoomLevel) * 2),
-			std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel))));
+	                std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel))));
 }
 
 RectF GlobeTile::Location::getBounds() const {
@@ -32,8 +32,7 @@ RectF GlobeTile::Location::getBounds() const {
 	return RectF(longitude * size - 180.f, 90.f - latitude * size - size, size, size);
 }
 
-Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const
-{
+Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const {
 	RectF bounds = getBounds();
 	float lon = interpolateLinear(bounds.x, bounds.x2(), interpolation.x);
 	float lat = interpolateLinear(bounds.y, bounds.y2(), interpolation.y);
@@ -53,9 +52,8 @@ Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const
 	return Vector3f(x, y, z);
 }
 
-GlobeTile::GlobeTile(const Globe & globe, Location location) :
-		myGlobe(globe), myLocation(location), myIsVisible(false)
-{
+GlobeTile::GlobeTile(const Globe& globe, Location location) :
+	myGlobe(globe), myLocation(location), myIsVisible(false) {
 	// Initialize members.
 	myLowerHeight = 0.f;
 	myUpperHeight = 1.f;

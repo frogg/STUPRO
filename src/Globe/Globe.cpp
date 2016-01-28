@@ -28,24 +28,24 @@
 #include <cstddef>
 #include <iostream>
 
-Globe::Globe(vtkRenderer& renderer) :
+Globe::Globe(vtkRenderer& renderer, GlobeConfig globeConfig) :
 	myRenderer(renderer), myDownloader([ = ](ImageTile tile) {
 	onTileLoad(tile);
-}), myZoomLevel(1), myDisplayModeInterpolation(0) {
+}), myZoomLevel(3), myDisplayModeInterpolation(0) {
 
 	setGlobeConfig(globeConfig);
-	
+
 	myPlaneSource = vtkPlaneSource::New();
 
 	float planeSize = getGlobeConfig().internalPlaneSize;
-	
+
 	myPlaneSource->SetOrigin(planeSize / 2.f, -planeSize / 2.f, 0.f);
 	myPlaneSource->SetPoint1(-planeSize / 2.f, -planeSize / 2.f, 0.f);
 	myPlaneSource->SetPoint2(planeSize / 2.f, planeSize / 2.f, 0.f);
-	
+
 	myPlaneMapper = vtkPolyDataMapper::New();
 	myPlaneMapper->SetInputConnection(myPlaneSource->GetOutputPort());
-	
+
 	setResolution(Vector2u(16, 16));
 
 	createTiles();
@@ -77,7 +77,7 @@ vtkRenderer& Globe::getRenderer() const {
 }
 
 void Globe::setZoomLevel(unsigned int zoomLevel) {
-	if (myZoomLevel != zoomLevel) {		
+	if (myZoomLevel != zoomLevel) {
 		myZoomLevel = zoomLevel;
 		createTiles();
 	}
@@ -89,16 +89,17 @@ unsigned int Globe::getZoomLevel() const {
 
 GlobeTile& Globe::getTileAt(int lon, int lat) const {
 	unsigned int index = getTileIndex(lon, lat);
-	
+
 	assert(index < myTiles.size());
-	
+
 	return *myTiles[index];
 }
 
 unsigned int Globe::getTileIndex(int lon, int lat) const {
-	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getNormalized();
+	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getWrappedLocation();
 
-	return (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
+	unsigned int index = (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
+	return index;
 }
 
 void Globe::createTiles() {
@@ -153,18 +154,17 @@ void Globe::onTileLoad(ImageTile tile) {
 		return;
 	}
 
-	GlobeTile & globeTile = getTileAt(tile.getTileX(), tile.getTileY());
+	GlobeTile& globeTile = getTileAt(tile.getTileX(), tile.getTileY());
 
 	auto rgbIterator = tile.getLayers().find("satelliteImagery");
 	auto heightmapIterator = tile.getLayers().find("heightmap");
 
-	if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end())
-	{
+	if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end()) {
 		return;
 	}
 
-	const QImage & rgb = rgbIterator->getImage();
-	const QImage & heightmap = heightmapIterator->getImage();
+	const QImage& rgb = rgbIterator->getImage();
+	const QImage& heightmap = heightmapIterator->getImage();
 
 	globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
 	globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
@@ -177,29 +177,29 @@ void Globe::onTileLoad(ImageTile tile) {
 
 void Globe::updateZoomLevel() {
 	// Get current camera for distance calculations.
-	vtkCamera * camera = getRenderer().GetActiveCamera();
-	
+	vtkCamera* camera = getRenderer().GetActiveCamera();
+
 	// Get the camera's eye position.
 	Vector3d cameraPosition;
 	camera->GetPosition(cameraPosition.array());
-	
+
 	// The distance between the camera and the globe's center in globe radius units.
 	float cameraDistance = cameraPosition.length() / getGlobeConfig().globeRadius;
-	
+
 	// Get the near and far distance limits from the configuration file.
 	float nearDistance = Configuration::getInstance().getFloat("globe.zoom.nearDistance");
 	float farDistance = Configuration::getInstance().getFloat("globe.zoom.farDistance");
-	
+
 	// Get the near and far zoom values from the configuration file.
 	unsigned int nearZoom = Configuration::getInstance().getInteger("globe.zoom.nearZoom");
 	unsigned int farZoom = Configuration::getInstance().getInteger("globe.zoom.farZoom");
-	
+
 	// Normalize the distance between 0.0 and 1.0 for the far and near distances, respectively.
 	float normalizedDistance = 1.f - (cameraDistance - nearDistance) / (farDistance - nearDistance);
-	
+
 	// Create variable for resulting zoom level.
 	unsigned int zoomResult = 0;
-	
+
 	// Check minimum/maximum cases.
 	if (normalizedDistance > 1.f) {
 		zoomResult = nearZoom;
@@ -208,33 +208,34 @@ void Globe::updateZoomLevel() {
 	} else {
 		// Get the exponential scaling factor.
 		float expScale = Configuration::getInstance().getFloat("globe.zoom.expScale");
-		
+
 		// Calculate the exponential normalized distance.
 		float exponentialDistance = (std::pow(expScale, normalizedDistance) - 1.f) / (expScale - 1.f);
-		
+
 		// Interpolate the integer zoom levels based on the exponential normalized distance.
 		zoomResult = exponentialDistance * nearZoom + (1.f - exponentialDistance) * farZoom;
-		
-		std::cout << "Distance from center: " << cameraPosition.length() << " ; ZoomLevel: " << zoomResult << std::endl;
+
+		std::cout << "Distance from center: " << cameraPosition.length() << " ; ZoomLevel: " << zoomResult
+		          << std::endl;
 	}
-	
+
 	// Assign the zoom level.
 	this->setZoomLevel(zoomResult);
 }
 
 void Globe::updateTileVisibility() {
 	// Get current camera for transformation matrix.
-	vtkCamera * camera = getRenderer().GetActiveCamera();
+	vtkCamera* camera = getRenderer().GetActiveCamera();
 
 	// Get normalized viewer direction: in screenspace, the camera points in the -Z direction.
 	Vector3f cameraDirection = Vector3f(0.f, 0.f, -1.f);
 
 	// Create a matrix for the normal vector transformation.
 	vtkSmartPointer<vtkMatrix4x4> normalTransform = vtkMatrix4x4::New();
-	
+
 	// Copy the eye coordinate transformation matrix from the active camera.
 	normalTransform->DeepCopy(camera->GetModelViewTransformMatrix());
-	
+
 	// Invert & transpose to allow correctly transforming globe tile surface normals.
 	normalTransform->Invert();
 	normalTransform->Transpose();
@@ -243,9 +244,9 @@ void Globe::updateTileVisibility() {
 	double clipNear = -1.f, clipFar = 1.f;
 
 	// Get Model-View-Projection transformation matrix for globe tile position transformation.
-	vtkMatrix4x4 * fullTransform = camera->GetCompositeProjectionTransformMatrix(
-	        (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
-	        clipFar);
+	vtkMatrix4x4* fullTransform = camera->GetCompositeProjectionTransformMatrix(
+	                                  (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
+	                                  clipFar);
 
 	// Get number of tiles (vertically and horizontally).
 	unsigned int height = 1 << myZoomLevel;
@@ -254,7 +255,7 @@ void Globe::updateTileVisibility() {
 	// Iterate over all tiles.
 	for (unsigned int lat = 0; lat < height; ++lat) {
 		for (unsigned int lon = 0; lon < width; ++lon) {
-			planeArray[i][j] = planes[4 * i + j];
+			getTileAt(lon, lat).setVisibility(false);
 		}
 	}
 
@@ -262,24 +263,24 @@ void Globe::updateTileVisibility() {
 	for (unsigned int lat = 0; lat < height; ++lat) {
 		for (unsigned int lon = 0; lon < width; ++lon) {
 			// Get reference to current tile.
-			GlobeTile & tile = getTileAt(lon, lat);
-			
+			GlobeTile& tile = getTileAt(lon, lat);
+
 			// Get location of current tile.
 			GlobeTile::Location loc = tile.getLocation();
 
 			// Create array containing all locations of tiles neighboring this tile's top left corner.
 			std::array<GlobeTile::Location, 4> neighbors { GlobeTile::Location(loc.zoomLevel,
 			        loc.longitude, loc.latitude), GlobeTile::Location(loc.zoomLevel,
-			        loc.longitude - 1, loc.latitude), GlobeTile::Location(loc.zoomLevel,
-			        loc.longitude, loc.latitude + 1), GlobeTile::Location(loc.zoomLevel,
-			        loc.longitude - 1, loc.latitude + 1) };
+			                loc.longitude - 1, loc.latitude), GlobeTile::Location(loc.zoomLevel,
+			                        loc.longitude, loc.latitude + 1), GlobeTile::Location(loc.zoomLevel,
+			                                loc.longitude - 1, loc.latitude + 1) };
 
 			// Assume that the current corner is visible.
 			bool visible = true;
 
 			// Calculate the surface normal of the current tile's top-left corner.
 			Vector4f tileNormal(loc.getNormalVector(Vector2f(0.f, 0.f)), 0.f);
-			
+
 			// Calculate the position of the current tile's top-left corner.
 			Vector4f tilePosition(tileNormal.xyz() * getGlobeConfig().globeRadius, 1.f);
 
@@ -297,7 +298,7 @@ void Globe::updateTileVisibility() {
 				// Check X, Y and Z coordinates of transformed position.
 				for (std::size_t i = 0; i < 3; ++i) {
 					// Homogenize coordinate by dividing by fourth vector component.
-					float & coord = tilePosition.array()[i];
+					float& coord = tilePosition.array()[i];
 					coord /= tilePosition.w;
 
 					// Check if coordinate is within screenspace bounds.
@@ -313,7 +314,7 @@ void Globe::updateTileVisibility() {
 			// Was corner not found to be invisible?
 			if (visible) {
 				// Make all neighbors of the current corner visible.
-				for (const GlobeTile::Location & neighbor : neighbors) {
+				for (const GlobeTile::Location& neighbor : neighbors) {
 					getTileAt(neighbor.longitude, neighbor.latitude).setVisibility(true);
 				}
 			}

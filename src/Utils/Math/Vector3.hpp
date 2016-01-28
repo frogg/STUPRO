@@ -53,12 +53,12 @@ public:
 
 	/**
 	 * Constructs a 3D vector from a 2D vector and a z-coordinate.
-	 * 
+	 *
 	 * @param xy The x and y coordinates for the vector
 	 * @param z The z-coordinate for the vector
 	 */
 	Vector3(Vector2<T> xy, T z) :
-			x(xy.x), y(xy.y), z(z) {
+		x(xy.x), y(xy.y), z(z) {
 	}
 
 	/**
@@ -94,12 +94,11 @@ public:
 	const T* array() const {
 		return &x;
 	}
-	
+
 	/**
 	 * @return A 2D vector with the x and y components of this vector.
 	 */
-	Vector2<T> xy() const
-	{
+	Vector2<T> xy() const {
 		return Vector2<T>(x, y);
 	}
 

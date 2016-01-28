@@ -16,14 +16,13 @@ T absoluteModulo(T a, T b) {
 
 /**
  * Linearly interpolates two values with an interpolation factor.
- * 
+ *
  * @param a The number to mix for the interpolation value approaching 0.
  * @param b The number to mix for the interpolation value approaching 1.
  * @param interpolation The number to interpolate a and b with.
  */
 template<typename T>
-T interpolateLinear(T a, T b, T interpolation)
-{
+T interpolateLinear(T a, T b, T interpolation) {
 	return interpolation * b + (1.f - interpolation) * a;
 }
 

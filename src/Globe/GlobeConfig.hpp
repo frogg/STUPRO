@@ -13,8 +13,7 @@
 /**
  * Holds various configuration values for the globe renderer.
  */
-struct GlobeConfig
-{
+struct GlobeConfig {
 	/**
 	 * Defines the radius of the visually rendered 3D globe in ParaView world coordinates.
 	 */

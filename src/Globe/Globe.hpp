@@ -34,18 +34,18 @@ public:
 	 * Virtual destructor.
 	 */
 	virtual ~Globe();
-	
+
 	/**
 	 * Assigns the globe configuration data for this globe.
 	 *
 	 * @param globeConfig The configuration data to assign to this globe
 	 */
 	void setGlobeConfig(GlobeConfig globeConfig);
-	
+
 	/**
 	 * @return the globe configuration data for this globe.
 	 */
-	const GlobeConfig & getGlobeConfig() const;
+	const GlobeConfig& getGlobeConfig() const;
 
 	/**
 	 * Changes the globe's vertex/heightmap resolution per tile.
@@ -134,14 +134,14 @@ private:
 	unsigned int getTileIndex(int lon, int lat) const;
 
 	void createTiles();
-	
+
 	void updateZoomLevel();
 	void updateTileVisibility();
 
 	void onTileLoad(ImageTile tile);
 
 	vtkRenderer& myRenderer;
-	
+
 	GlobeConfig myGlobeConfig;
 
 	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
