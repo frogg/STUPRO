@@ -9,42 +9,42 @@
 
 TEST(TestJsonReaderFactory, ReadValidFiles) {
 	// Test reading some city data
-	std::unique_ptr<JsonReader> cityReader = 
-			JsonReaderFactory::createReader("res/test-data/cities.json");
+	std::unique_ptr<JsonReader> cityReader =
+	    JsonReaderFactory::createReader("res/test-data/cities.json");
 
 	EXPECT_EQ(
-		cityReader->getDataType(),
-		Data::CITIES
+	    cityReader->getDataType(),
+	    Data::CITIES
 	);
-	
+
 	EXPECT_EQ(
-		cityReader->hasTemporalData(),
-		false
+	    cityReader->hasTemporalData(),
+	    false
 	);
-	
+
 	// Test reading some tweets
-	std::unique_ptr<JsonReader> tweetReader = 
-			JsonReaderFactory::createReader("res/test-data/tweets.json");
+	std::unique_ptr<JsonReader> tweetReader =
+	    JsonReaderFactory::createReader("res/test-data/tweets.json");
 
 	EXPECT_EQ(
-		tweetReader->getDataType(),
-		Data::TWEETS
+	    tweetReader->getDataType(),
+	    Data::TWEETS
 	);
-	
+
 	EXPECT_EQ(
-		tweetReader->hasTemporalData(),
-		true
+	    tweetReader->hasTemporalData(),
+	    true
 	);
 }
 
 TEST(TestJsonReaderFactory, ReadInvalidFiles) {
 	EXPECT_THROW(
-		JsonReaderFactory::createReader("res/test-data/non-existant.json"),
-		JsonReaderFileOpenException
+	    JsonReaderFactory::createReader("res/test-data/non-existant.json"),
+	    JsonReaderFileOpenException
 	);
-	
+
 	EXPECT_THROW(
-		JsonReaderFactory::createReader("res/test-data/invalid.json"),
-		JsonReaderParseException
+	    JsonReaderFactory::createReader("res/test-data/invalid.json"),
+	    JsonReaderParseException
 	);
 }

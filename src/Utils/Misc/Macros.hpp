@@ -40,6 +40,6 @@
  * Usable within a class definition to allow testing of private methods.
  */
 #define KRONOS_FRIEND_TEST(TestCaseName, TestName) \
-friend class TestCaseName##_##TestName##_Test
+	friend class TestCaseName##_##TestName##_Test
 
 #endif

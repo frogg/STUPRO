@@ -2,8 +2,8 @@
 #include <Reader/DataReader/Data.hpp>
 
 FlightDataPoint::FlightDataPoint(Coordinate coordinate, int priority, Coordinate destination)
-        : NonTemporalDataPoint(Data::FLIGHTS, coordinate, priority), destination(destination) { }
+	: NonTemporalDataPoint(Data::FLIGHTS, coordinate, priority), destination(destination) { }
 
 Coordinate FlightDataPoint::getDestination() const {
-    return this->destination;
+	return this->destination;
 }

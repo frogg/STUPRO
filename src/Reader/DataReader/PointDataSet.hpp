@@ -14,7 +14,7 @@ public:
 	 * Create a new PointDataSet which will store a set of points.
 	 */
 	PointDataSet();
-	
+
 	/**
 	 * Add a new point of data to this set.
 	 * @param dataPoint A pointer to the data point to be added
