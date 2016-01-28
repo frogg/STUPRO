@@ -17,8 +17,8 @@ public:
 	 * @param precipitation The point's precipitation data
 	 */
 	PrecipitationDataPoint(Coordinate coordinate, int priority, int timestamp,
-		float precipitationRate);
-	
+	                       float precipitationRate);
+
 	/**
 	* Get the precipitation rate of this data point.
 	* @return The precipitation rate of this data point

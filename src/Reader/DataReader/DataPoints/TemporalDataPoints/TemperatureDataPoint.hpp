@@ -17,7 +17,7 @@ public:
 	 * @param temperature The point's temperature data
 	 */
 	TemperatureDataPoint(Coordinate coordinate, int priority, int timestamp, float temperature);
-	
+
 	/**
 	 * Get the temperature of this data point.
 	 * @return The temperature of this data point

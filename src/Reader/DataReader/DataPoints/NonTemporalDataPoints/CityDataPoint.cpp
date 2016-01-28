@@ -2,8 +2,8 @@
 #include <Reader/DataReader/DataType.hpp>
 
 CityDataPoint::CityDataPoint(Coordinate coordinate, int priority, QString name)
-        : NonTemporalDataPoint(DataType::CITIES, coordinate, priority), name(name) { }
+	: NonTemporalDataPoint(DataType::CITIES, coordinate, priority), name(name) { }
 
 QString CityDataPoint::getName() const {
-    return this->name;
+	return this->name;
 }

@@ -12,13 +12,13 @@
 class NonTemporalDataPoint : public DataPoint {
 
 public:
-    /**
-     * Create a new NonTemporalDataPoint.
-     * @param dataType The point's data type
-     * @param coordinate The point's coordinates
-     * @param priority The point's zoom level priority
-     */
-    NonTemporalDataPoint(int dataType, Coordinate coordinate, int priority);
+	/**
+	 * Create a new NonTemporalDataPoint.
+	 * @param dataType The point's data type
+	 * @param coordinate The point's coordinates
+	 * @param priority The point's zoom level priority
+	 */
+	NonTemporalDataPoint(int dataType, Coordinate coordinate, int priority);
 
 };
 

@@ -19,14 +19,14 @@ public:
 	 * @param content The tweet's content
 	 */
 	TweetDataPoint(Coordinate coordinate, int priority, int timestamp, QString author,
-		QString content);
-	
+	               QString content);
+
 	/**
-     * Get the author of the Twitter message of this data point.
-     * @return The author of this point's tweet
-     */
+	 * Get the author of the Twitter message of this data point.
+	 * @return The author of this point's tweet
+	 */
 	QString getAuthor() const;
-	
+
 	/**
 	 * Get the content of the Twitter message of this data point.
 	 * @return The content of this point's tweet
