@@ -6,11 +6,11 @@
 
 class City {
 public:
-    City();
-    std::string name;
-    std::string countryCode;
-    float latitude;
-    float longitude;
+	City();
+	std::string name;
+	std::string countryCode;
+	float latitude;
+	float longitude;
 };
 
 #endif
