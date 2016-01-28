@@ -1,7 +1,13 @@
 #include "KronosGenerateGeodesics.h"
+#include<vtkObjectFactory.h>
 
-KronosGenerateGeodesics::KronosGenerateGeodesics()
-{
+vtkStandardNewMacro(KronosGenerateGeodesics)
+
+void KronosGenerateGeodesics::PrintSelf(std::ostream& os, vtkIndent indent) {
+
+}
+
+KronosGenerateGeodesics::KronosGenerateGeodesics() {
 
 }
 

@@ -2,6 +2,7 @@
 #define KRONOS_TEMPORALDATAPOINT_HPP
 
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
+#include <Reader/DataReader/Data.hpp>
 #include <Globe/Coordinate.hpp>
 
 /**
@@ -17,8 +18,8 @@ public:
 	 * @param coordinate The point's coordinates
 	 * @param priority The point's zoom level priority
 	 */
-	TemporalDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp);
-	
+	TemporalDataPoint(Data::Type dataType, Coordinate coordinate, int priority, int timestamp);
+
 	/**
 	* Get the timestamp of the data in this point.
 	* @return This point's timestamp in UNIX GMT format

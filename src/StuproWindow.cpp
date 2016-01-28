@@ -66,7 +66,7 @@ StuproWindow::StuproWindow() {
 	// Final step, define application behaviors. Since we want all ParaView
 	// behaviors, we use this convenience method.
 	new pqParaViewBehaviors(this, this);
-    
+
 
 }
 

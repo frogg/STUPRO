@@ -24,11 +24,11 @@ public:
 	 * @return This point's wind direction in degrees.
 	 */
 	float getDirection() const;
-	
+
 	/**
-     * Get the wind speed in this data point.
-     * @return This point's wind speed in metres per second.
-     */
+	 * Get the wind speed in this data point.
+	 * @return This point's wind speed in metres per second.
+	 */
 	float getSpeed() const;
 
 private:

@@ -1,6 +1,8 @@
 from DataUtility import DataUtility
 from collections import OrderedDict
-
+"""
+load city data from xml and create json file
+"""
 count = [0]
 
 def reformat_dictionary(d):
