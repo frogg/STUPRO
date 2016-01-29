@@ -214,6 +214,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	}
 
 	// Assign points and vertices to the output data set
+    dataSet->GetPoints();
 	dataSet->SetPoints(points);
 	dataSet->SetVerts(verts);
 
@@ -232,6 +233,8 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 
 			cityNames->InsertNextValue(dataPoint->getName().toStdString());
 		}
+
+
 
 		dataSet->GetPointData()->AddArray(cityNames);
 		break;
@@ -271,9 +274,9 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 		authors->SetNumberOfComponents(relevantDataPoints.size());
 		authors->SetName("authors");
 
-		vtkSmartPointer<vtkStringArray> contents = vtkSmartPointer<vtkStringArray>::New();
-		contents->SetNumberOfComponents(relevantDataPoints.size());
-		contents->SetName("contents");
+		vtkSmartPointer<vtkStringArray> content = vtkSmartPointer<vtkStringArray>::New();
+		content->SetNumberOfComponents(relevantDataPoints.size());
+		content->SetName("contents");
 
 		for (QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
 		        iterator != relevantDataPoints.end(); ++iterator) {
@@ -282,11 +285,11 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			                                  );
 
 			authors->InsertNextValue(dataPoint->getAuthor().toStdString());
-			contents->InsertNextValue(dataPoint->getContent().toStdString());
+			content->InsertNextValue(dataPoint->getContent().toStdString());
 		}
 
 		dataSet->GetPointData()->AddArray(authors);
-		dataSet->GetPointData()->AddArray(contents);
+		dataSet->GetPointData()->AddArray(content);
 		break;
 	}
 
