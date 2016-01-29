@@ -91,6 +91,7 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
         jsonReader = makeUnique<JsonReader>(
             jsonDocument["root"],
             JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
+			jsonFileInfo.absoluteFilePath(),
             true,
             metaData["timeResolution"].GetInt()
         );
@@ -98,6 +99,7 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
         jsonReader = makeUnique<JsonReader>(
             jsonDocument["root"],
             JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
+			jsonFileInfo.absoluteFilePath(),
             false,
             0
         );
