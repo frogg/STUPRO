@@ -9,6 +9,7 @@
 #include <Globe/GlobeTile.hpp>
 #include <qmap.h>
 #include <Utils/Config/Configuration.hpp>
+#include <Utils/Graphics/TextureLoad.hpp>
 #include <Utils/Math/Vector3.hpp>
 #include <Utils/Math/Vector4.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
@@ -46,7 +47,9 @@ Globe::Globe(vtkRenderer& renderer, GlobeConfig globeConfig) :
 	myPlaneMapper = vtkPolyDataMapper::New();
 	myPlaneMapper->SetInputConnection(myPlaneSource->GetOutputPort());
 
-	setResolution(Vector2u(16, 16));
+	myLoadingTexture = loadTextureFromFile("./res/tiles/TileLoading.png");
+	
+	setResolution(Vector2u(64, 64));
 
 	createTiles();
 }
@@ -112,7 +115,8 @@ void Globe::createTiles() {
 		for (unsigned int lon = 0; lon < width; ++lon) {
 			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this,
 			                                  GlobeTile::Location(myZoomLevel, lon, lat));
-
+			getTileAt(lon, lat).setTexture(myLoadingTexture);
+			
 			myDownloader.fetchTile(myZoomLevel, lon, lat);
 		}
 	}

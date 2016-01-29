@@ -19,12 +19,12 @@ extern const char* GlobeShader_vsh;
 
 GlobeTile::Location GlobeTile::Location::getClampedLocation() const {
 	return Location(zoomLevel, std::max<int>(0, std::min<int>(longitude, (1 << zoomLevel) * 2)),
-	                std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel))));
+	                std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel) - 1)));
 }
 
 GlobeTile::Location GlobeTile::Location::getWrappedLocation() const {
 	return Location(zoomLevel, absoluteModulo<int>(longitude, (1 << zoomLevel) * 2),
-	                std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel))));
+	                std::max<int>(0, std::min<int>(latitude, (1 << zoomLevel) - 1)));
 }
 
 RectF GlobeTile::Location::getBounds() const {

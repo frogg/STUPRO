@@ -4,18 +4,13 @@
 #include <Globe/GlobeConfig.hpp>
 #include <Utils/Math/Vector2.hpp>
 #include <Utils/TileDownload/ImageDownloader.hpp>
+#include <vtkOpenGLTexture.h>
 #include <vtkPlaneSource.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
 #include <atomic>
 #include <memory>
 #include <vector>
-
-//TODO Configuration file
-#define GLOBE_RADIUS 0.5
-#define PLANE_WIDTH 4
-#define PLANE_HEIGHT 2
-#define PLANE_SIZE 1
 
 class GlobeTile;
 
@@ -133,9 +128,19 @@ private:
 	 */
 	unsigned int getTileIndex(int lon, int lat) const;
 
+	/**
+	 * Creates all tiles for the current zoom level of the globe.
+	 */
 	void createTiles();
 
+	/**
+	 * Checks which level of detail is required for globe tiles and reloads them with that LOD.
+	 */
 	void updateZoomLevel();
+
+	/**
+	 * Checks which globe tiles are invisible and need to be culled.
+	 */
 	void updateTileVisibility();
 
 	void onTileLoad(ImageTile tile);
@@ -146,6 +151,8 @@ private:
 
 	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
 	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;
+	
+	vtkSmartPointer<vtkOpenGLTexture> myLoadingTexture;
 
 	ImageDownloader myDownloader;
 
