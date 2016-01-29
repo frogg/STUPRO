@@ -49,6 +49,9 @@ JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QStr
 
 void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 	for (rapidjson::SizeType i = 0; i < jsonValue.Size(); i++) {
+        // Validate the data point's content before using it
+        JsonValidator::validateChildElement(jsonValue[i], this->dataType, this->filePath);
+        
 		DataPoint* dataPoint;
 
 		// Initialize the new data point depending on the data type
