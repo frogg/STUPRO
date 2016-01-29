@@ -4,7 +4,7 @@
 class Data {
 public:
 	/**
-	 * Enum that denotes a data type
+	 * Enum that denotes a data type. Do not assign values to these.
 	 */
 	enum Type {
 		CITIES, FLIGHTS, TWEETS, PRECIPITATION, TEMPERATURE, WIND, CLOUD_COVERAGE
