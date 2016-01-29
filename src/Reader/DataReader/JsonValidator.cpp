@@ -160,6 +160,8 @@ void JsonValidator::validateChildElement(rapidjson::Value& childDocument, Data::
         }
     }
     
+    JsonValidator::checkChildTag(childDocument, "children", 3, path);
+    
     switch (dataType) {
         case Data::CITIES: {
             JsonValidator::checkChildTag(childDocument, "name", 4, path);
