@@ -52,6 +52,31 @@ public:
 	virtual void Initialize(unsigned int id) override;
 
 	/**
+	 * Moves the camera so that it is focused on the given coordinates while keeping the current
+	 * zoom level.
+	 *
+	 * @param latitude  the latitude to focus on
+	 * @param longitude the longitude to focus on
+	 */
+	void moveCamera(float latitude, float longitude);
+
+	/**
+	 * Moves the camera so that it is focused on the given coordinates.
+	 *
+	 * @param latitude  the latitude to focus on
+	 * @param longitude the longitude to focus on
+	 * @param distance  the desired distance to the focus point
+	 */
+	void moveCamera(float latitude, float longitude, float distance);
+
+	/**
+	 * Returns the current distance of the camera from the center of the world.
+	 *
+	 * @returns the current distance of the camera from the center of the world
+	 */
+	float getCameraDistance();
+
+	/**
 	 * Upon call, switches the currently used display mode to the opposite,
 	 * basically by inverting this->displayMode.
 	 */
