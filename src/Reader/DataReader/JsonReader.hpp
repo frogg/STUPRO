@@ -18,10 +18,14 @@ class JsonReader {
 
 public:
 	/**
-	 * Create a new AbstractJsonReader from a map of data from a JSON file
-	 * @param data A potentially nested map of data from the JSON file
+	 * Create a new JsonReader.
+	 * @param jsonDocument The data in JSON format
+	 * @param dataType The type of data this reader should expect
+	 * @param path The absolute file path of the file read to be used with error messages
+	 * @param temporal True if the data is time-sensitive, false otherwise
+	 * @param timeResolution The amount of seconds in a time step
 	 */
-	JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, bool temporal,
+	JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path, bool temporal,
 	           int timeResolution);
 
 	virtual ~JsonReader() { }
@@ -90,6 +94,11 @@ public:
 	void clearCache();
 
 private:
+	/**
+	 * The absolute path of the file reader, used for error messages
+	 */
+	QString filePath;
+	
 	/**
 	 * Boolean flag denoting whether the data read by this reader contains time information
 	 */

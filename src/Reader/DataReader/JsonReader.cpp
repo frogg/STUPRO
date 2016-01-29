@@ -7,12 +7,13 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverageDataPoint.hpp>
+#include <Reader/DataReader/JsonValidator.hpp>
 
 #include <Reader/DataReader/PolyDataSetHelper.hpp>
 #include <Utils/Config/Configuration.hpp>
 
-JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, bool temporal,
-                       int timeResolution) : dataType(dataType), temporal(temporal), timeResolution(timeResolution) {
+JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path, bool temporal,
+                       int timeResolution) : dataType(dataType), filePath(path), temporal(temporal), timeResolution(timeResolution) {
 	this->cachingEnabled = true;
 	this->pointDataSet = PointDataSet();
 	this->indexDataPoints(jsonDocument["children"], 0);
