@@ -7,3 +7,6 @@ build
 
 # mac madness
 *.DS_Store
+
+# Clang files
+.clang_complete
