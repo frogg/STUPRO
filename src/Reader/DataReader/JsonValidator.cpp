@@ -100,17 +100,32 @@ void JsonValidator::checkChildTag(rapidjson::Value& jsonValue, QString memberNam
         );
     }
     
-    if (JsonValidator::getType(jsonValue[memberName.toStdString().c_str()]) != dataType) {
+    int actualDataType = JsonValidator::getType(jsonValue[memberName.toStdString().c_str()]);
+    bool expectedEqualsActual = false;
+    
+    if (dataType == 6) {
+        // If the expected data type is Double, the actual data type can be Integer or Double since
+        // Integers are automatically converted to Doubles
+        if (actualDataType == 5 || actualDataType == 6) {
+            expectedEqualsActual = true;
+        }
+    } else {
+        if (actualDataType == dataType) {
+            expectedEqualsActual = true;
+        }
+    }
+    
+    if (!expectedEqualsActual) {
         throw JsonReaderParseException(
             path,
             QString("Error in a data element: The tag \"%1\" should be of type %2 but is of type "
                     "%3.")
                     .arg(
                         memberName,
+                        JsonValidator::TYPE_NAMES.value(dataType),
                         JsonValidator::TYPE_NAMES.value(
                             JsonValidator::getType(jsonValue[memberName.toStdString().c_str()])
-                        ),
-                        JsonValidator::TYPE_NAMES.value(dataType)
+                        )
                     )
         );
     }
