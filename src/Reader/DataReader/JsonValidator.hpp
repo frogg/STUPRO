@@ -39,6 +39,16 @@ private:
      */
     static int getType(rapidjson::Value& jsonValue);
     
+    /**
+     * Check a tag of a child element for existence and JSON data type.
+     * @param jsonValue The child element to be checked
+     * @param memberName The name of the tag to be checked for
+     * @param The JSON data type the member should be of, refer to `JsonValidator::TYPE_NAMES`
+     * @param path The file path so it can be included in the exception description
+     */
+    static void checkChildTag(rapidjson::Value& jsonValue, QString memberName, int dataType,
+            QString path);
+    
 	/**
 	 * This QMap maps the internal integer notation of JSON attribute types to human-readable
      * strings.

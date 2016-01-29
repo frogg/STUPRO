@@ -89,3 +89,113 @@ void JsonValidator::validateMetaData(rapidjson::Value& metaDocument, QString pat
         }
     }
 }
+
+void JsonValidator::checkChildTag(rapidjson::Value& jsonValue, QString memberName, int dataType,
+        QString path) {
+    if (!jsonValue.HasMember(memberName.toStdString().c_str())) {
+        throw JsonReaderParseException(
+            path,
+            QString("Error in a data element: The data point is missing its \"%1\" tag.")
+                    .arg(memberName)
+        );
+    }
+    
+    if (JsonValidator::getType(jsonValue[memberName.toStdString().c_str()]) != dataType) {
+        throw JsonReaderParseException(
+            path,
+            QString("Error in a data element: The tag \"%1\" should be of type %2 but is of type "
+                    "%3.")
+                    .arg(
+                        memberName,
+                        JsonValidator::TYPE_NAMES.value(
+                            JsonValidator::getType(jsonValue[memberName.toStdString().c_str()])
+                        ),
+                        JsonValidator::TYPE_NAMES.value(dataType)
+                    )
+        );
+    }
+}
+
+void JsonValidator::validateChildElement(rapidjson::Value& childDocument, Data::Type dataType,
+        QString path) {
+    if (Data::isTemporal(dataType)) {
+        if (!childDocument.HasMember("timestamp")) {
+            throw JsonReaderParseException(
+                path,
+                QString("Error in a data element: The data point is temporal but does not contain "
+                        "a \"timestamp\" tag.")
+            );
+        }
+        
+        if (JsonValidator::getType(childDocument["timestamp"]) != 5) {
+            throw JsonReaderParseException(
+                path,
+                QString("Error in a data element: The tag \"timestamp\" should be of type "
+                        "Integer but is of type %1.")
+                        .arg(
+                            JsonValidator::TYPE_NAMES.value(
+                                JsonValidator::getType(childDocument["timestamp"])
+                            )
+                        )
+            );
+        }
+    }
+    
+    if (dataType != Data::FLIGHTS) {
+        if (!childDocument.HasMember("longitude") || !childDocument.HasMember("latitude")) {
+            throw JsonReaderParseException(
+                path,
+                QString("Error in a data element: The data point is missing its \"longitude\" or "
+                        "\"latitude\" tag.")
+            );
+        }
+        
+        if (JsonValidator::getType(childDocument["longitude"]) != 6 ||
+                JsonValidator::getType(childDocument["latitude"]) != 6) {
+            throw JsonReaderParseException(
+                path,
+                QString("Error in a data element: The tags \"longitude\" and \"latitude\" should "
+                        "be of type Double.")
+            );
+        }
+    }
+    
+    switch (dataType) {
+        case Data::CITIES: {
+            JsonValidator::checkChildTag(childDocument, "name", 4, path);
+            break;
+        }
+        case Data::FLIGHTS: {
+            JsonValidator::checkChildTag(childDocument, "startPosition", 2, path);
+            JsonValidator::checkChildTag(childDocument, "endPosition", 2, path);
+            JsonValidator::checkChildTag(childDocument["startPosition"], "latitude", 6, path);
+            JsonValidator::checkChildTag(childDocument["startPosition"], "longitude", 6, path);
+            JsonValidator::checkChildTag(childDocument["endPosition"], "latitude", 6, path);
+            JsonValidator::checkChildTag(childDocument["endPosition"], "longitude", 6, path);
+            break;
+        }
+        case Data::TWEETS: {
+            JsonValidator::checkChildTag(childDocument, "author", 4, path);
+            JsonValidator::checkChildTag(childDocument, "content", 4, path);
+            break;
+        }
+        case Data::PRECIPITATION: {
+            JsonValidator::checkChildTag(childDocument, "precipitationType", 4, path);
+            JsonValidator::checkChildTag(childDocument, "precipitationRate", 6, path);
+            break;
+        }
+        case Data::TEMPERATURE: {
+            JsonValidator::checkChildTag(childDocument, "temperature", 6, path);
+            break;
+        }
+        case Data::WIND: {
+            JsonValidator::checkChildTag(childDocument, "direction", 6, path);
+            JsonValidator::checkChildTag(childDocument, "speed", 6, path);
+            break;
+        }
+        case Data::CLOUD_COVERAGE: {
+            JsonValidator::checkChildTag(childDocument, "cloudCover", 6, path);
+            break;
+        }
+    }
+}
