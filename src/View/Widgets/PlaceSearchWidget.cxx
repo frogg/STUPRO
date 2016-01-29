@@ -1,6 +1,8 @@
 #include <View/Widgets/PlaceSearchWidget.h>
 
 #include <Kronos.h>
+#include <Utils/KronosLogger.hpp>
+#include <View/vtkSMStuproViewProxy.h>
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -93,10 +95,15 @@ void PlaceSearchWidget::startSearch() {
         pqView* view = pqActiveObjects::instance().activeView();
         pqRenderView* rView = qobject_cast<pqRenderView*>(view);
         if (rView) {
-            vtkCamera* camera = rView->getRenderViewProxy()->GetActiveCamera();
-            camera->SetPosition(0, 0, 2.3f);
-            camera->SetFocalPoint(0, 0, 0);
-            rView->render();
+            vtkSMRenderViewProxy* renderViewProxy = rView->getRenderViewProxy();
+            vtkSMStuproViewProxy* stuproViewProxy = dynamic_cast<vtkSMStuproViewProxy*>(renderViewProxy);
+            if (stuproViewProxy) {
+                City city = result[0];
+                // stuproViewProxy->moveCamera(0, 90, 5);
+                stuproViewProxy->moveCamera(city.latitude, city.longitude);
+            } else {
+                KRONOS_LOG_ERROR("The selected RenderView is probably not a StuproView");
+            }
         } else {
             // the active view is no render view
         }
