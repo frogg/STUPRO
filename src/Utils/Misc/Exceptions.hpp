@@ -5,11 +5,11 @@
 #include <Utils/Misc/Macros.hpp>
 
 struct InvalidStateException : public std::exception {
-    std::string reason;
+	std::string reason;
 
 	InvalidStateException(QString reason) : reason(reason.toStdString()) { }
 
-	const char *what() const KRONOS_NOTHROW override{
+	const char* what() const KRONOS_NOTHROW override {
 		return reason.c_str();
 	}
 };
