@@ -17,6 +17,7 @@ public:
     void beginAdd(int count);
     void add(City city);
     void endAdd();
+    const std::vector<City> getAll() const;
 
 private:
     std::vector<City> cities;

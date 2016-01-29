@@ -43,3 +43,7 @@ void CityListModel::endAdd() {
 void CityListModel::add(City city) {
     this->cities.push_back(city);
 }
+
+const std::vector<City> CityListModel::getAll() const {
+    return this->cities;
+}
