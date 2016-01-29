@@ -1,8 +1,0 @@
-{
-  "globe": {
-    "radius": 0.5,
-    "planeSize": 1.0,
-    "heightFactor": 0.05,
-    "transitionEffectSpeed": 2.0
-  }
-}
