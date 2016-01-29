@@ -61,6 +61,10 @@ PlaceSearchWidget::PlaceSearchWidget(QWidget * parent, Qt::WindowFlags flags)
     // initialize the model that will later hold the search results
     this->resultListModel = new CityListModel(this);
     this->resultList->setModel(this->resultListModel);
+    QObject::connect(
+        this->resultList->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
+        this, SLOT(listSelectionChanged(QItemSelection, QItemSelection))
+    );
     // add the result list to the widget
     vLayout->addWidget(this->resultList);
 
@@ -76,6 +80,7 @@ PlaceSearchWidget::~PlaceSearchWidget() {
 }
 
 void PlaceSearchWidget::startSearch() {
+    this->resultList->selectionModel()->clearSelection();
     this->resultListModel->clear();
 
     if (this->searchBar->text().length() == 0) {
@@ -92,27 +97,23 @@ void PlaceSearchWidget::startSearch() {
         }
         this->resultListModel->endAdd();
 
-        pqView* view = pqActiveObjects::instance().activeView();
-        pqRenderView* rView = qobject_cast<pqRenderView*>(view);
+        QModelIndex index = this->resultListModel->index(0);
+        this->resultList->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);
+        this->resultList->setFocus();
+    }
+}
+
+void PlaceSearchWidget::listSelectionChanged(const QItemSelection& selection, const QItemSelection& previous) {
+    if (selection.indexes().size() == 1 && selection[0].height() == 1) {
+        pqRenderView* rView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
         if (rView) {
             vtkSMRenderViewProxy* renderViewProxy = rView->getRenderViewProxy();
             vtkSMStuproViewProxy* stuproViewProxy = dynamic_cast<vtkSMStuproViewProxy*>(renderViewProxy);
             if (stuproViewProxy) {
-                City city = result[0];
-                // stuproViewProxy->moveCamera(0, 90, 5);
+                // get the selected city
+                City city = this->resultListModel->getAll()[selection[0].top()];
                 stuproViewProxy->moveCamera(city.latitude, city.longitude);
-            } else {
-                KRONOS_LOG_ERROR("The selected RenderView is probably not a StuproView");
             }
-        } else {
-            // the active view is no render view
         }
-    } else {
-        // no results were found
     }
-
-    // TODO: somehow make the camera focus on the looked up coordinates
-    // TODO: if there was only one result. focus the camera on that location
-    // TODO: if there are more than one result, wait until the user selects an item from the listview (double click or return)
-    // TODO: decide what to do when the location couldn't be found
 }

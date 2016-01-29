@@ -4,6 +4,7 @@
 #include <Utils/Database/CitiesDatabase.hpp>
 #include <View/Widgets/CityListModel.hpp>
 
+#include <QItemSelection>
 #include <QLineEdit>
 #include <QListView>
 #include <QStringListModel>
@@ -22,8 +23,9 @@ private:
     CityListModel* resultListModel;
     CitiesDatabase* citiesDatabase;
 
-public slots:
+private slots:
     void startSearch();
+    void listSelectionChanged(const QItemSelection& selection, const QItemSelection& previous);
 };
 
 #endif
