@@ -13,11 +13,11 @@ public:
 	int rowCount(const QModelIndex& parent = QModelIndex()) const;
 	QVariant data(const QModelIndex& index, int role) const;
 
-    void clear();
-    void beginAdd(int count);
-    void add(City city);
-    void endAdd();
-    const std::vector<City> getAll() const;
+	void clear();
+	void beginAdd(int count);
+	void add(City city);
+	void endAdd();
+	const std::vector<City> getAll() const;
 
 private:
 	std::vector<City> cities;

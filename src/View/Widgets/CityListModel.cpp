@@ -33,17 +33,17 @@ void CityListModel::clear() {
 }
 
 void CityListModel::beginAdd(int count) {
-    this->beginInsertRows(QModelIndex(), this->cities.size(), this->cities.size() + count);
+	this->beginInsertRows(QModelIndex(), this->cities.size(), this->cities.size() + count);
 }
 
 void CityListModel::endAdd() {
-    this->endInsertRows();
+	this->endInsertRows();
 }
 
 void CityListModel::add(City city) {
-    this->cities.push_back(city);
+	this->cities.push_back(city);
 }
 
 const std::vector<City> CityListModel::getAll() const {
-    return this->cities;
+	return this->cities;
 }
