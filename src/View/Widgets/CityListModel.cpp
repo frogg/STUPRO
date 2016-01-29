@@ -32,8 +32,14 @@ void CityListModel::clear() {
     this->endRemoveRows();
 }
 
-void CityListModel::add(City city) {
-    this->beginInsertRows(QModelIndex(), this->cities.size(), this->cities.size());
-    this->cities.push_back(city);
+void CityListModel::beginAdd(int count) {
+    this->beginInsertRows(QModelIndex(), this->cities.size(), this->cities.size() + count);
+}
+
+void CityListModel::endAdd() {
     this->endInsertRows();
+}
+
+void CityListModel::add(City city) {
+    this->cities.push_back(city);
 }

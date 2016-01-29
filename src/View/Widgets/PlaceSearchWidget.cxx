@@ -14,7 +14,9 @@
 #include <vtkSMRenderViewProxy.h>
 
 #include <pqActiveObjects.h>
+#include <pqApplicationCore.h>
 #include <pqRenderView.h>
+#include <pqServerManagerModel.h>
 
 #include <iostream>
 
@@ -82,9 +84,11 @@ void PlaceSearchWidget::startSearch() {
     this->citiesDatabase->getCity(this->searchBar->text().toStdString(), &result);
 
     if (result.size() > 0) {
+        this->resultListModel->beginAdd(result.size());
         for (int i = 0; i < result.size(); i++) {
             this->resultListModel->add(result[i]);
         }
+        this->resultListModel->endAdd();
 
         pqView* view = pqActiveObjects::instance().activeView();
         pqRenderView* rView = qobject_cast<pqRenderView*>(view);

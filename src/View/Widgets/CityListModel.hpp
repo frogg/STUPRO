@@ -14,7 +14,9 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
 
     void clear();
+    void beginAdd(int count);
     void add(City city);
+    void endAdd();
 
 private:
     std::vector<City> cities;
