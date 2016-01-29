@@ -97,10 +97,6 @@ void vtkPVStuproView::initGlobe()
 
 void vtkPVStuproView::switchCurrentDisplayMode()
 {
-	// TODO: Change this, for now resets the camera.
-	GetActiveCamera()->SetPosition(0, 0, 2.8);
-	GetActiveCamera()->SetFocalPoint(0, 0, 0);
-
 	// Invert the display mode and set the interpolation using a static cast.
 	this->displayMode = this->displayMode == DisplayGlobe ? DisplayMap : DisplayGlobe;
 	this->globe->setDisplayModeInterpolation(static_cast<float>(this->displayMode));

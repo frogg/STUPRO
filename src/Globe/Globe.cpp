@@ -227,6 +227,46 @@ void Globe::updateZoomLevel() {
 	this->setZoomLevel(zoomResult);
 }
 
+namespace priv
+{
+/**
+ * Returns the bounding box of the specified vectors.
+ */
+template <typename T, int arraySize>
+Rect<T> getBoundingBox(const std::array<Vector4<T>, arraySize> & vectors)
+{
+	float left, right, top, bottom;
+	
+	for (std::size_t i = 0; i < arraySize; ++i)
+	{
+		Vector2f pos = vectors[i].xy();
+		
+		if (i == 0 || pos.x < left)
+		{
+			left = pos.x;
+		}
+		
+		if (i == 0 || pos.x > right)
+		{
+			right = pos.x;
+		}
+		
+		if (i == 0 || pos.y < top)
+		{
+			top = pos.y;
+		}
+		
+		if (i == 0 || pos.y > bottom)
+		{
+			bottom = pos.y;
+		}
+	}
+	
+	return RectF(left, top, right - left, bottom - top);
+}
+
+}
+
 void Globe::updateTileVisibility() {
 	// Get current camera for transformation matrix.
 	vtkCamera* camera = getRenderer().GetActiveCamera();
@@ -246,6 +286,9 @@ void Globe::updateTileVisibility() {
 
 	// Assign clipping planes in screenspace (consistency with X/Y coordinate limits).
 	double clipNear = -1.f, clipFar = 1.f;
+	
+	// Define viewport rectangle in screenspace coordinates.
+	RectF screenRect(-1.f, -1.f, 2.f, 2.f);
 
 	// Get Model-View-Projection transformation matrix for globe tile position transformation.
 	vtkMatrix4x4* fullTransform = camera->GetCompositeProjectionTransformMatrix(
@@ -259,69 +302,73 @@ void Globe::updateTileVisibility() {
 	// Iterate over all tiles.
 	for (unsigned int lat = 0; lat < height; ++lat) {
 		for (unsigned int lon = 0; lon < width; ++lon) {
-			getTileAt(lon, lat).setVisibility(false);
-		}
-	}
-
-	// Iterate again over all tiles.
-	for (unsigned int lat = 0; lat < height; ++lat) {
-		for (unsigned int lon = 0; lon < width; ++lon) {
+			
 			// Get reference to current tile.
 			GlobeTile& tile = getTileAt(lon, lat);
+
+			// TODO: Implement culling for flat map!
+			if (getDisplayModeInterpolation() > 0.5f) {
+				// On flat map, simply display all tiles.
+				tile.setVisibility(true);
+				continue;
+			}
 
 			// Get location of current tile.
 			GlobeTile::Location loc = tile.getLocation();
 
-			// Create array containing all locations of tiles neighboring this tile's top left corner.
-			std::array<GlobeTile::Location, 4> neighbors { GlobeTile::Location(loc.zoomLevel,
-			        loc.longitude, loc.latitude), GlobeTile::Location(loc.zoomLevel,
-			                loc.longitude - 1, loc.latitude), GlobeTile::Location(loc.zoomLevel,
-			                        loc.longitude, loc.latitude + 1), GlobeTile::Location(loc.zoomLevel,
-			                                loc.longitude - 1, loc.latitude + 1) };
+			// Assume that the current tile is not visible.
+			bool visible = false;
+			
+			// Calculate surface normals of the current tile's corners.
+			std::array<Vector4f, 4> tileCornerNormals;
+			tileCornerNormals[0] = Vector4f(loc.getNormalVector(Vector2f(0.f, 0.f)), 0.f);
+			tileCornerNormals[1] = Vector4f(loc.getNormalVector(Vector2f(0.f, 1.f)), 0.f);
+			tileCornerNormals[2] = Vector4f(loc.getNormalVector(Vector2f(1.f, 0.f)), 0.f);
+			tileCornerNormals[3] = Vector4f(loc.getNormalVector(Vector2f(1.f, 1.f)), 0.f);
+			
+			// Copy array in case it is needed for position calculations later.
+			std::array<Vector4f, 4> tileCornerPositions = tileCornerNormals;
 
-			// Assume that the current corner is visible.
-			bool visible = true;
+			for (auto & tileNormal : tileCornerNormals) {
+				// Transform the surface normal by the normal transformation matrix calculated earlier.
+				normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
 
-			// Calculate the surface normal of the current tile's top-left corner.
-			Vector4f tileNormal(loc.getNormalVector(Vector2f(0.f, 0.f)), 0.f);
-
-			// Calculate the position of the current tile's top-left corner.
-			Vector4f tilePosition(tileNormal.xyz() * getGlobeConfig().globeRadius, 1.f);
-
-			// Transform the surface normal by the normal transformation matrix calculated earlier.
-			normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
-
-			// Check if normal points in the same direction as the camera.
-			if (tileNormal.xyz().dot(cameraDirection) > 0.f) {
-				// Same direction? Tile is facing away from viewer, perform backface culling.
-				visible = false;
-			} else {
-				// Transform tile position to screenspace.
-				fullTransform->MultiplyPoint(tilePosition.array(), tilePosition.array());
-
-				// Check X, Y and Z coordinates of transformed position.
-				for (std::size_t i = 0; i < 3; ++i) {
-					// Homogenize coordinate by dividing by fourth vector component.
-					float& coord = tilePosition.array()[i];
-					coord /= tilePosition.w;
-
-					// Check if coordinate is within screenspace bounds.
-					if (coord < -1.f || coord > 1.f) {
-						// Coordinate out of bounds? Tile is visibly out of the viewport, perform
-						// frustum culling.
-						visible = false;
-						break;
-					}
+				// Check if normal points away from the camera.
+				if (tileNormal.xyz().dot(cameraDirection) < 0.f) {
+					// Other direction? Tile is facing towards viewer, disallow backface culling.
+					visible = true;
+					break;
 				}
 			}
-
-			// Was corner not found to be invisible?
+			
+			// If the normal check did not remove this tile, try the view frustum check.
 			if (visible) {
-				// Make all neighbors of the current corner visible.
-				for (const GlobeTile::Location& neighbor : neighbors) {
-					getTileAt(neighbor.longitude, neighbor.latitude).setVisibility(true);
+				
+				// Transform tile position to screenspace.
+				for (auto & tilePosition : tileCornerPositions) {
+					
+					// Convert normal to position by multiplication with radius.
+					tilePosition *= getGlobeConfig().globeRadius;
+					
+					// Set homogeneous component to 1 for correct projection calculation.
+					tilePosition.w = 1.f;
+					
+					// Transform point by view-projection matrix.
+					fullTransform->MultiplyPoint(tilePosition.array(), tilePosition.array());
+					
+					// Divide by homogeneous component to complete transformation.
+					tilePosition /= tilePosition.w;
 				}
+				
+				// Calculate the bounding box of the tile's corners.
+				RectF boundingBox = priv::getBoundingBox<float, 4>(tileCornerPositions);
+
+				// Intersect the bounding box with the screenspace boundaries.
+				visible = boundingBox.intersects(screenRect);
 			}
+
+			// Assign tile visibility.
+			tile.setVisibility(visible);
 		}
 	}
 }
