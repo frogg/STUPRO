@@ -4,7 +4,8 @@
 class Data {
 public:
 	/**
-	 * Enum that denotes a data type. Do not assign values to these.
+	 * Enum that denotes a data type. Do not assign values to these. Adding a new data type here
+	 * requires changes to the `JsonValidator` class.
 	 */
 	enum Type {
 		CITIES, FLIGHTS, TWEETS, PRECIPITATION, TEMPERATURE, WIND, CLOUD_COVERAGE
