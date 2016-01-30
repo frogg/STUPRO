@@ -7,6 +7,8 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkCommand.h>
+#include <vtkObjectFactory.h>
 
 #include <math.h>
 #include <algorithm>
