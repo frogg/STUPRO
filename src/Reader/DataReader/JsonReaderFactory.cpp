@@ -44,13 +44,6 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 	rapidjson::Document jsonDocument;
 	jsonDocument.Parse(configText.toStdString().c_str());
 
-	if (jsonDocument.HasParseError()) {
-		throw JsonReaderParseException(
-		    jsonFileInfo.absoluteFilePath(),
-		    rapidjson::GetParseError_En(jsonDocument.GetParseError())
-		);
-	}
-
     if (jsonDocument.HasParseError()) {
         throw JsonReaderParseException(
             jsonFileInfo.absoluteFilePath(),
