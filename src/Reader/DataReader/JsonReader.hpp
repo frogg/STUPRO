@@ -97,7 +97,7 @@ private:
 	 * The absolute path of the file reader, used for error messages
 	 */
 	QString filePath;
-	
+
 	/**
 	 * Boolean flag denoting whether the data read by this reader contains time information
 	 */

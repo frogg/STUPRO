@@ -12,8 +12,10 @@
 #include <Reader/DataReader/PolyDataSetHelper.hpp>
 #include <Utils/Config/Configuration.hpp>
 
-JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path, bool temporal,
-                       int timeResolution) : dataType(dataType), filePath(path), temporal(temporal), timeResolution(timeResolution) {
+JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
+                       bool temporal,
+                       int timeResolution) : dataType(dataType), filePath(path), temporal(temporal),
+	timeResolution(timeResolution) {
 	this->cachingEnabled = true;
 	this->pointDataSet = PointDataSet();
 	this->indexDataPoints(jsonDocument["children"], 0);
@@ -48,14 +50,14 @@ JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QStr
 }
 
 JsonReader::~JsonReader() {
-    this->clearCache();
+	this->clearCache();
 }
 
 void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 	for (rapidjson::SizeType i = 0; i < jsonValue.Size(); i++) {
-        // Validate the data point's content before using it
-        JsonValidator::validateChildElement(jsonValue[i], this->dataType, this->filePath);
-        
+		// Validate the data point's content before using it
+		JsonValidator::validateChildElement(jsonValue[i], this->dataType, this->filePath);
+
 		DataPoint* dataPoint;
 
 		// Initialize the new data point depending on the data type
