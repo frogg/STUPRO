@@ -47,6 +47,10 @@ JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QStr
 	}
 }
 
+JsonReader::~JsonReader() {
+    this->clearCache();
+}
+
 void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 	for (rapidjson::SizeType i = 0; i < jsonValue.Size(); i++) {
         // Validate the data point's content before using it

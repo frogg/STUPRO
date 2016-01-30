@@ -27,8 +27,7 @@ public:
 	 */
 	JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path, bool temporal,
 	           int timeResolution);
-
-	virtual ~JsonReader() { }
+	virtual ~JsonReader();
 
 	/**
 	 * Get the type of data read by this reader
