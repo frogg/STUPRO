@@ -28,6 +28,7 @@ private:
 	void operator=(const vtkKronosReader&);   // Not implemented
     void calcLOD();
 
+    bool error;
     Vector3d cameraPos;
     double globeRadius;
     double distanceToFocalPoint;

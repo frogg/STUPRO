@@ -52,14 +52,15 @@
 vtkStandardNewMacro(vtkKronosReader);
 
 
-vtkKronosReader::vtkKronosReader() : cameraPos(),globeRadius(0.0),distanceToFocalPoint(0.0),fileName(""),zoomLevel(0)
+vtkKronosReader::vtkKronosReader() : cameraPos(),globeRadius(0.0),distanceToFocalPoint(0.0),fileName(""),zoomLevel(0),error(false)
 {
     this->SetNumberOfInputPorts(0);
     this->SetNumberOfOutputPorts(1);
     if(Configuration::getInstance().hasKey("globe.radius")){
         globeRadius = Configuration::getInstance().getDouble("globe.radius");
+    } else {
+        this->error = true;
     }
-    
     this->SetNumberOfInputPorts(0);
     this->SetNumberOfOutputPorts(1);
 
@@ -75,7 +76,15 @@ vtkKronosReader::~vtkKronosReader()
 void vtkKronosReader::SetFileName(std::string name){
     //Set Filename
     this->fileName=QString::fromStdString(name);
-    this->jsonReader = JsonReaderFactory::createReader(this->fileName);
+    
+    try {
+        this->jsonReader = JsonReaderFactory::createReader(this->fileName);
+    } catch (const ReaderException& e) {
+        vtkErrorMacro(<< e.what());
+        this->error = true;
+        return;
+    }
+    
     std::thread cacheThread(&JsonReader::cacheAllData, this->jsonReader.get());
     cacheThread.detach();
 }
@@ -120,6 +129,10 @@ void vtkKronosReader::calcLOD(){
 
 int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationVector **inputVector,
         vtkInformationVector *outputVector) {
+    if (this->error) {
+        return 1;
+    }
+            
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
     // Add information to the output vector if the data contains time information
@@ -137,7 +150,11 @@ int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationV
 }
 
 int vtkKronosReader::RequestData(vtkInformation*, vtkInformationVector**,
-        vtkInformationVector* outputVector) {    
+        vtkInformationVector* outputVector) {
+    if (this->error) {
+        return 1;
+    }
+    
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
     vtkSmartPointer<vtkPolyData> output = vtkPolyData::SafeDownCast(
         outInfo->Get(vtkDataObject::DATA_OBJECT())
