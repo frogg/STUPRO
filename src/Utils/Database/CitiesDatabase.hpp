@@ -3,7 +3,7 @@
 
 #include <pqxx/pqxx>
 #include <Utils/Database/PostgresDB.hpp>
-#include "Utils/City.hpp"
+#include <Utils/Misc/City.hpp>
 #include <vector>
 #include <string>
 
