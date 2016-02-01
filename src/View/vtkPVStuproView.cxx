@@ -35,11 +35,10 @@ void vtkPVStuproView::Initialize(unsigned int id)
 {
     this->Superclass::Initialize(id);
 
-    initParameters();
-    initRenderer();
-    registerTimerCallback();
-    initGlobe();
-
+	initParameters();
+	initRenderer();
+	//registerTimerCallback();
+	initGlobe();
 }
 
 void vtkPVStuproView::initParameters()
@@ -53,23 +52,23 @@ void vtkPVStuproView::initParameters()
 
 void vtkPVStuproView::initRenderer()
 {
-    // Set fitting clipping range.
-    float r1 = this->globeRadius * 100.f;
-    float r2 = 0.001f;
-    this->GetRenderer()->ResetCameraClippingRange(r1, r2, r1, r2, r1, r2);
+	// Set fitting clipping range.
+	float r1 = this->globeRadius * 100.f;
+	float r2 = 0.001f;
+	this->GetRenderer()->ResetCameraClippingRange(r1, r2, r1, r2, r1, r2);
 
-    // Create interactor for render window.
-    vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-    interactor->SetRenderWindow(this->GetRenderWindow());
+	// Create interactor for render window.
+//	vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+//	interactor->SetRenderWindow(this->GetRenderWindow());
 
-    // Create interactor style for render window.
-    vtkSmartPointer<StuproInteractor> interactorStyle = StuproInteractor::New(this);
-    interactorStyle->SetAutoAdjustCameraClippingRange(false);
-    interactor->SetInteractorStyle(interactorStyle);
+	// Create interactor style for render window.
+//vtkSmartPointer<StuproInteractor> interactorStyle = StuproInteractor::New(this);
+//	interactorStyle->SetAutoAdjustCameraClippingRange(false);
+//	interactor->SetInteractorStyle(interactorStyle);
 
-    // Zoom out.
-    this->GetRenderWindow()->Render();
-    //interactorStyle->zoomWithFactor(-1800.f);
+	// Zoom out.
+	this->GetRenderWindow()->Render();
+	//interactorStyle->zoomWithFactor(-1800.f);
 }
 
 void vtkPVStuproView::registerTimerCallback()
