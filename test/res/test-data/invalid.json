@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "dataType": "tweets",
+    "temporal": true
+  },
+  "root": {
+    "children": [
+      {
+        "author": "BarackObama",
+        "content": "Progress #president",
+        "timestamp": 1439297110,
+        "longitude": 55.304718,
+        "latitude": 25.258171,
+        "children": []
+      
+    ]
+  }
+}
