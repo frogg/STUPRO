@@ -98,7 +98,8 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			);
 			break;
 		case Data::PRECIPITATION: {
-			int precipitationType = PrecipitationDataPoint::NOPRECIPITATION;
+			PrecipitationDataPoint::PrecipitationType precipitationType
+                    = PrecipitationDataPoint::NONE;
 
 			if (QString(jsonValue[i]["precipitationType"].GetString()) == "rain") {
 				precipitationType = PrecipitationDataPoint::RAIN;
