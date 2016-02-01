@@ -58,5 +58,5 @@ precipitationDict = {'meta': {'dataType': 'precipitation', 'temporal': True, 'ti
 # writes the different kJson-files for the different weatherSources	
 d.write_json_file(temperatureDict, 'test-data/temperature-data.kJson', True)
 d.write_json_file(windDict, 'test-data/wind-data.kJson', True)
-d.write_json_file(cloudCoverDict, 'test-data/cloudCover-data.kJson', True)
+d.write_json_file(cloudCoverDict, 'test-data/cloud-coverage-data.kJson', True)
 d.write_json_file(precipitationDict, 'test-data/precipitation-data.kJson', True)
