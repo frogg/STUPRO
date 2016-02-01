@@ -19,11 +19,29 @@
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>
+        <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Type Filter">
+            <Documentation
+                long_help="This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point."
+                short_help="Extract data based on the type of precipitation">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+        </SourceProxy>
     </ProxyGroup>
     
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
+            <Filter name="PrecipitationTypeFilter" />
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>
