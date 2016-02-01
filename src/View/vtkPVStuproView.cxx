@@ -1,7 +1,7 @@
 #include <Kronos.h>
 #include <Globe/Globe.hpp>
 #include <StuproInteractor.hpp>
-#include <Utils/KronosLogger.hpp>
+#include <Utils/Misc/KronosLogger.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Utils/Config/Configuration.hpp>
 

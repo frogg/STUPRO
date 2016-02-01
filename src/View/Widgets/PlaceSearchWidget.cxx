@@ -1,7 +1,7 @@
 #include <View/Widgets/PlaceSearchWidget.h>
 
 #include <Kronos.h>
-#include <Utils/KronosLogger.hpp>
+#include <Utils/Misc/KronosLogger.hpp>
 #include <View/vtkSMStuproViewProxy.h>
 
 #include <QHBoxLayout>

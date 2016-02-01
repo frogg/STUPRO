@@ -2,7 +2,7 @@
 #define KRONOS_VIEW_WIDGETS_CITY_LIST_MODEL_HPP
 
 #include <QAbstractListModel>
-#include <Utils/City.hpp>
+#include <Utils/Misc/City.hpp>
 
 class CityListModel : public QAbstractListModel {
 	Q_OBJECT

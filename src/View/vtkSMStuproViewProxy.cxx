@@ -1,7 +1,7 @@
 #include <View/vtkSMStuproViewProxy.h>
 
 #include <View/vtkPVStuproView.h>
-#include <Utils/KronosLogger.hpp>
+#include <Utils/Misc/KronosLogger.hpp>
 
 #include "vtkObjectFactory.h"
 #include "vtkClientServerStream.h"
