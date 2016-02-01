@@ -19,7 +19,7 @@ public:
 	enum PrecipitationType {
 		NONE = 0, RAIN = 1, SNOW = 2, SLEET = 3, HAIL = 4
 	};
-	
+
 	/**
 	 * Create a new PrecipitationDataPoint.
 	 * @param coordinate The point's coordinates
@@ -30,7 +30,7 @@ public:
 	 */
 	PrecipitationDataPoint(Coordinate coordinate, int priority, int timestamp,
 	                       float precipitationRate,
-						   PrecipitationDataPoint::PrecipitationType precipitationType);
+	                       PrecipitationDataPoint::PrecipitationType precipitationType);
 
 	/**
 	* Get the precipitation rate of this data point.
