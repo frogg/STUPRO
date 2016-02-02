@@ -29,11 +29,8 @@ def createCityTable(tableName):
 def loadCityDataFromXML(tableName):
     xmldoc = minidom.parse('./cities.xml')
     itemlist = xmldoc.getElementsByTagName('children')
-    #print(len(itemlist))
+    
     for s in itemlist:
-        #print(s.attributes['name'].value.encode('utf-8'))
-        #print(s.attributes['latitude'].value.encode('utf-8'))
-        #print(s.attributes['longitude'].value.encode('utf-8'))
         query =  "INSERT INTO " + tableName +" (NAME,COUNTRYCODES,LATITUDE,LONGITUDE) VALUES (%s, %s, %s,%s);"
         data = (s.attributes['name'].value.encode('utf-8') ,s.attributes['country_code'].value.encode('utf-8'), s.attributes['latitude'].value.encode('utf-8'), s.attributes['longitude'].value.encode('utf-8'))
         cursor.execute(query, data)
