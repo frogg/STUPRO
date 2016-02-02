@@ -4,6 +4,7 @@
 #include <vtkAbstractTransform.h>
 
 #include "Utils/Math/Vector3.hpp"
+#include "Utils/Math/SphericalCoordinateFunctions.h"
 #include "Utils/Misc/Macros.hpp"
 
 class GeometryTransform : public vtkAbstractTransform {
@@ -12,38 +13,21 @@ private:
 	bool transformForward;
 	double baseAltitude;
 
-	template<typename T> void gpsToNormalWorldCoordinates(const Vector3<T> gps, Vector3<T>& normal) {
-		const double lon = gps.x * KRONOS_PI / 180;
-		const double lat = gps.y * KRONOS_PI / 180;
-
-		normal.z = cos(lat) * cos(lon);
-		normal.x = cos(lat) * sin(lon);
-		normal.y = sin(lat);
+    template<typename T> void gpsToWorldCoordinates(const Vector3<T>& gps, Vector3<T>& world) {
+        world = sphericalToCartesian(gps);
 	}
 
-	template<typename T> void gpsToWorldCoordinates(const Vector3<T> gps, Vector3<T>& world) {
-		gpsToNormalWorldCoordinates(gps, world);
-
-		const double radius = baseAltitude + gps.z;
-
-		world.x *= radius;
-		world.y *= radius;
-		world.z *= radius;
-	}
-
-	template<typename T> void gpsToWorldAndDerivatives(const Vector3<T> gps, Vector3<T>& world,
+    template<typename T> void gpsToWorldAndDerivatives(const Vector3<T>& gps, Vector3<T>& world,
 	        Vector3<Vector3<T>>& derivatives) {
-		gpsToNormalWorldCoordinates(gps, world);
+        gpsToWorldCoordinates(gps, world);
 
 		const double lon = gps.x * KRONOS_PI / 180;
 		const double lat = gps.y * KRONOS_PI / 180;
 		const double radius = baseAltitude + gps.z;
 
-		derivatives.x.z = world.x;
-		derivatives.y.z = world.y;
-		derivatives.z.z = world.z;
-
-		world *= radius;
+        derivatives.x.z = world.x / radius;
+        derivatives.y.z = world.y / radius;
+        derivatives.z.z = world.z / radius;
 
 		derivatives.x.x = world.x * KRONOS_PI / 180;
 		derivatives.y.x = 0;
@@ -101,7 +85,7 @@ public:
 	void Inverse() override {
 		this->transformForward = !this->transformForward;
 		this->Modified();
-	}
+    }
 
 	void InternalTransformPoint(const float in[3], float out[3]) override {
 		if (!transform) {
