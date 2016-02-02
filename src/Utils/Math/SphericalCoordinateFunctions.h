@@ -3,8 +3,9 @@
 
 #include"Vector3.hpp"
 #include"Utils/Misc/Macros.hpp"
+#include "Utils/Config/Configuration.hpp"
 
-#define BASE_HEIGHT 100
+#define BASE_HEIGHT (Configuration::getInstance().getDouble("globe.radius"))
 
 /**
  * Convert the spherical (gps) to the cartesian representation
@@ -22,7 +23,7 @@ template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
     return retVal;
 }
 
-void sphericalToCartesianJacobian(const Vector3<T>& gps, T** jacobian) {
+template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T jacobian[3][3]) {
     const T lonInRadian = gps.x * KRONOS_PI / 180;
     const T latInRadian = gps.y * KRONOS_PI / 180;
     
@@ -82,6 +83,8 @@ template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Ve
     Vector3<T> cartesian2 = sphericalToCartesian(gps2) / 2;
     return scaleTo(cartesianToSpherical(cartesian1 + cartesian2), (abs(gps1) + abs(gps2)) / 2);
 }
+
+#undef BASE_HEIGHT
 
 #endif // SPHERICAL_COORDINATE_FUNCTIONS
 

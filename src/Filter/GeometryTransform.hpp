@@ -18,25 +18,10 @@ private:
 	}
 
     template<typename T> void gpsToWorldAndDerivatives(const Vector3<T>& gps, Vector3<T>& world,
-	        Vector3<Vector3<T>>& derivatives) {
+            T derivatives[3][3]) {
         
         gpsToWorldCoordinates(gps, world);
-
-		const double lon = gps.x * KRONOS_PI / 180;
-		const double lat = gps.y * KRONOS_PI / 180;
-		const double radius = baseAltitude + gps.z;
-    
-        derivatives.x.z = world.x / radius;
-        derivatives.y.z = world.y / radius;
-        derivatives.z.z = world.z / radius;
-
-        derivatives.x.x = world.z * KRONOS_PI / 180;
-		derivatives.y.x = 0;
-        derivatives.z.x = -world.x * KRONOS_PI / 180;
-
-        derivatives.x.y = -sin(lat) * sin(lon) * radius * KRONOS_PI / 180;
-        derivatives.y.y = cos(lat) * radius * KRONOS_PI / 180;
-		derivatives.z.y = -sin(lat) * cos(lon) * radius * KRONOS_PI / 180;
+        sphericalToCartesianJacobian(gps, derivatives);
 	}
 
 	template<typename T> void worldToGPSCoordinates(const Vector3<T> world, Vector3<T>& gps) {
@@ -44,7 +29,7 @@ private:
 	}
 
 	template<typename T> void worldToGPSAndDerivatives(const Vector3<T> in, Vector3<T>& out,
-	        Vector3<Vector3<T>>& derivatives) {
+            T derivatives[3][3]) {
 		// TODO
 	}
 
