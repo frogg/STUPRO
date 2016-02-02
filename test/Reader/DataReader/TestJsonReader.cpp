@@ -342,7 +342,7 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 
 	EXPECT_FLOAT_EQ(
 	    PrecipitationDataPoint::SNOW,
-	    precipitationTypeArray->GetValue(0)
+	    precipitationTypeArray->GetValue(0) - 1
 	);
 
 	// Test the associated array of timestamps
