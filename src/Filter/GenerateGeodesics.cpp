@@ -61,8 +61,9 @@ int GenerateGeodesics::FillInputPortInformation(int, vtkInformation* info) {
 
 GenerateGeodesics::GenerateGeodesics() {
 }
-int GenerateGeodesics::addFlightPoints(Vector3<double>& start, Vector3<double>& end,
-                                       float maxLineLenght) {
+
+int GenerateGeodesics::calculateFlightPoints(const Vector3<double>& start, const Vector3<double>& end,
+                                       const float maxLineLenght, vtkPoints *const dataSet) {
     // TODO
 }
 
