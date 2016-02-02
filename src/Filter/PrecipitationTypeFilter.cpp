@@ -89,7 +89,7 @@ void PrecipitationTypeFilter::enableHail(int enabled) {
 	this->displayPrecipitationType(PrecipitationDataPoint::HAIL, enabled);
 }
 
-vtkStandardNewMacro(PrecipitationTypeFilter)
+vtkStandardNewMacro(PrecipitationTypeFilter);
 
 int PrecipitationTypeFilter::RequestData(vtkInformation* info,
         vtkInformationVector** inputVector,
