@@ -9,6 +9,9 @@
 #include <vtkTable.h>
 #include <vtkGraph.h>
 #include <vtkInformation.h>
+#include <vtkInformationVector.h>
+
+vtkStandardNewMacro(PrecipitationTypeFilter);
 
 PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	// Initialize the selection
@@ -44,8 +47,6 @@ PrecipitationTypeFilter::PrecipitationTypeFilter() {
 }
 
 PrecipitationTypeFilter::~PrecipitationTypeFilter() { }
-
-vtkStandardNewMacro(PrecipitationTypeFilter);
 
 void PrecipitationTypeFilter::displayPrecipitationType(PrecipitationDataPoint::PrecipitationType
         type, bool display) {
