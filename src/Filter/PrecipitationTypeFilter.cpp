@@ -11,8 +11,6 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 
-vtkStandardNewMacro(PrecipitationTypeFilter)
-
 PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	// Initialize the selection
 	this->selection = vtkSmartPointer<vtkSelection>::New();
@@ -90,6 +88,8 @@ void PrecipitationTypeFilter::enableSleet(int enabled) {
 void PrecipitationTypeFilter::enableHail(int enabled) {
 	this->displayPrecipitationType(PrecipitationDataPoint::HAIL, enabled);
 }
+
+vtkStandardNewMacro(PrecipitationTypeFilter)
 
 int PrecipitationTypeFilter::RequestData(vtkInformation* info,
         vtkInformationVector** inputVector,
