@@ -8,6 +8,7 @@
 #include <vtkHierarchicalBoxDataIterator.h>
 #include <vtkTable.h>
 #include <vtkGraph.h>
+#include <vtkInformation.h>
 
 PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	// Initialize the selection
@@ -44,7 +45,7 @@ PrecipitationTypeFilter::PrecipitationTypeFilter() {
 
 PrecipitationTypeFilter::~PrecipitationTypeFilter() { }
 
-vtkStandardNewMacro(PrecipitationTypeFilter)
+vtkStandardNewMacro(PrecipitationTypeFilter);
 
 void PrecipitationTypeFilter::displayPrecipitationType(PrecipitationDataPoint::PrecipitationType
         type, bool display) {
