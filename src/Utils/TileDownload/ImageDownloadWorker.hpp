@@ -30,13 +30,23 @@ struct DownloadFailedException : public std::exception {
 };
 
 /**
+ * Exception thrown when the download was cancelled before it finished.
+ */
+struct DownloadAbortedException : public DownloadFailedException {
+	DownloadAbortedException(QUrl url)
+		: DownloadFailedException(
+			QString("The download was aborted. Url: '%1'").arg(url.toString())
+		) { }
+};
+
+/**
  * Exception thrown when there was a connection error while attempting a download.
  */
 struct ConnectionFailedException : public DownloadFailedException {
 	ConnectionFailedException(QUrl url, QNetworkReply::NetworkError error)
 		: DownloadFailedException(
 		      QString("An error occurred during the network request. Url: '%1', Error code: %2. (See http://doc.qt.io/qt-4.8/qnetworkreply.html#NetworkError-enum)")
-		      .arg(url.toString(), error)
+		      .arg(url.toString(), QString::number(error))
 		  ) { }
 };
 
@@ -103,6 +113,11 @@ public:
 	ImageDownloadWorker(const ImageDownloadWorker&) = delete;
 
 	/**
+	 * Aborts the currently running download.
+	 */
+	void abortDownload();
+
+	/**
 	 * @returns the layer name provided in the constructor
 	 */
 	QString getLayerName() const;
@@ -120,6 +135,7 @@ private:
 	int imageWidth;
 	int imageHeight;
 
+	bool abortRequested;
 	QNetworkReply* reply;
 	std::thread downloadThread;
 

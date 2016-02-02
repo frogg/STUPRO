@@ -12,6 +12,13 @@ ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageW
 	this->startDownload();
 }
 
+void ImageDownloadWorker::abortDownload() {
+	this->abortRequested = true;
+	if (this->reply && this->reply->isRunning()) {
+		this->reply->abort();
+	}
+}
+
 QString ImageDownloadWorker::getLayerName() const {
 	return this->layerName;
 }
@@ -87,6 +94,9 @@ MetaImage ImageDownloadWorker::decodeBil16(const QByteArray& rawData, int width,
 
 void ImageDownloadWorker::downloadCompleted() {
 	try {
+		if (this->abortRequested) {
+			throw DownloadAbortedException(this->url);
+		}
 		if (reply->error()) {
 			throw ConnectionFailedException(this->url, this->reply->error());
 		}
