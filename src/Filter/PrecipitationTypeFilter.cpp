@@ -14,30 +14,31 @@ PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	this->selection = vtkSmartPointer<vtkSelection>::New();
 	this->selectionNode = vtkSmartPointer<vtkSelectionNode>::New();
 	this->selection->AddNode(selectionNode);
-	
+
 	// Make the only selection node filter points by value
 	this->selectionNode->Initialize();
-	this->selectionNode->GetProperties()->Set(vtkSelectionNode::CONTENT_TYPE(), vtkSelectionNode::VALUES);
+	this->selectionNode->GetProperties()->Set(vtkSelectionNode::CONTENT_TYPE(),
+	        vtkSelectionNode::VALUES);
 	this->selectionNode->GetProperties()->Set(vtkSelectionNode::FIELD_TYPE(), vtkSelectionNode::POINT);
-	
+
 	// Create a list that will store all precipitation types that should be kept
 	vtkSmartPointer<vtkIntArray> precipitationTypes = vtkSmartPointer<vtkIntArray>::New();
 	precipitationTypes->SetName("precipitationTypes");
 	precipitationTypes->SetNumberOfComponents(1);
 	precipitationTypes->SetNumberOfTuples(5);
-	
+
 	// Display all precipitation types by default
 	for (int i = 0; i < 5; i++) {
 		precipitationTypes->SetTuple1(i, i + 1);
 	}
-	
+
 	// Create the map that will store the precipitation type's visibilities
 	this->precipitationTypeVisibilities.insert(PrecipitationDataPoint::NONE, true);
 	this->precipitationTypeVisibilities.insert(PrecipitationDataPoint::RAIN, true);
 	this->precipitationTypeVisibilities.insert(PrecipitationDataPoint::SNOW, true);
 	this->precipitationTypeVisibilities.insert(PrecipitationDataPoint::SLEET, true);
 	this->precipitationTypeVisibilities.insert(PrecipitationDataPoint::HAIL, true);
-	
+
 	this->selectionNode->SetSelectionList(precipitationTypes);
 }
 
@@ -45,24 +46,26 @@ PrecipitationTypeFilter::~PrecipitationTypeFilter() { }
 
 vtkStandardNewMacro(PrecipitationTypeFilter)
 
-void PrecipitationTypeFilter::displayPrecipitationType(PrecipitationDataPoint::PrecipitationType type, bool display) {
+void PrecipitationTypeFilter::displayPrecipitationType(PrecipitationDataPoint::PrecipitationType
+        type, bool display) {
 	this->precipitationTypeVisibilities[type] = display;
-	
+
 	// Create the updated selection list this filter uses
 	vtkSmartPointer<vtkIntArray> precipitationTypes = vtkSmartPointer<vtkIntArray>::New();
 	precipitationTypes->SetName("precipitationTypes");
 	precipitationTypes->SetNumberOfComponents(1);
 	precipitationTypes->SetNumberOfTuples(5);
-	
+
 	// Refresh the selection list with the updated visibility values
 	for (int i = PrecipitationDataPoint::NONE; i <= PrecipitationDataPoint::HAIL; i++) {
-		if (this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>(i)]) {
+		if (this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
+		                                        (i)]) {
 			precipitationTypes->SetTuple1(i, i + 1);
 		}
 	}
-	
+
 	this->selectionNode->SetSelectionList(precipitationTypes);
-	
+
 	this->Modified();
 }
 
@@ -90,34 +93,34 @@ int PrecipitationTypeFilter::RequestData(vtkInformation* info,
         vtkInformationVector** inputVector,
         vtkInformationVector* outputVector) {
 	// Get input and output information from the request vectors
-	vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-	vtkInformation *outInfo = outputVector->GetInformationObject(0);
+	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
 	// Get the actual objects from the obtained information
-	vtkDataObject *input = vtkDataObject::GetData(inInfo);
-	vtkDataObject *output = vtkDataObject::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkDataObject* input = vtkDataObject::GetData(inInfo);
+	vtkDataObject* output = vtkDataObject::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
 	// Check the input for compatibility
 	if (!input) {
-		vtkErrorMacro(<< "No input specified.");
+		vtkErrorMacro( << "No input specified.");
 		return 0;
 	}
 
 	if (vtkGraph::SafeDownCast(input)) {
-		vtkErrorMacro(<< "The input should not be a graph.");
+		vtkErrorMacro( << "The input should not be a graph.");
 		return 0;
 	}
-	
+
 	// Actually perform the extraction
 	if (input->IsA("vtkCompositeDataSet")) {
-		vtkErrorMacro(<< "The input should not be a composite data set.");
+		vtkErrorMacro( << "The input should not be a composite data set.");
 		return 0;
 	} else {
 		vtkSmartPointer<vtkSelectionNode> node = vtkSmartPointer<vtkSelectionNode>::New();
 		if (this->selection->GetNumberOfNodes() > 0) {
 			node = this->selection->GetNode(0);
 		}
-		
+
 		vtkSmartPointer<vtkDataObject> extractedOutput = this->RequestDataFromBlock(input, node, outInfo);
 		if (extractedOutput) {
 			output->ShallowCopy(extractedOutput);
@@ -129,7 +132,8 @@ int PrecipitationTypeFilter::RequestData(vtkInformation* info,
 
 void PrecipitationTypeFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
-	os << indent << "Precipitation data point extraction based on precipitation type, Kronos Project" << endl;
+	os << indent << "Precipitation data point extraction based on precipitation type, Kronos Project" <<
+	   endl;
 }
 
 int PrecipitationTypeFilter::FillOutputPortInformation(int port, vtkInformation* info) {
@@ -144,6 +148,6 @@ int PrecipitationTypeFilter::FillInputPortInformation(int port, vtkInformation* 
 	} else {
 		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
 	}
-	
+
 	return 1;
 }
