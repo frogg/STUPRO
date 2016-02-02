@@ -7,12 +7,15 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverageDataPoint.hpp>
+#include <Reader/DataReader/JsonValidator.hpp>
 
 #include <Reader/DataReader/PolyDataSetHelper.hpp>
 #include <Utils/Config/Configuration.hpp>
 
-JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, bool temporal,
-                       int timeResolution) : dataType(dataType), temporal(temporal), timeResolution(timeResolution) {
+JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
+                       bool temporal,
+                       int timeResolution) : dataType(dataType), filePath(path), temporal(temporal),
+	timeResolution(timeResolution) {
 	this->cachingEnabled = true;
 	this->pointDataSet = PointDataSet();
 	this->indexDataPoints(jsonDocument["children"], 0);
@@ -46,8 +49,15 @@ JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, bool
 	}
 }
 
+JsonReader::~JsonReader() {
+	this->clearCache();
+}
+
 void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 	for (rapidjson::SizeType i = 0; i < jsonValue.Size(); i++) {
+		// Validate the data point's content before using it
+		JsonValidator::validateChildElement(jsonValue[i], this->dataType, this->filePath);
+
 		DataPoint* dataPoint;
 
 		// Initialize the new data point depending on the data type
@@ -88,7 +98,8 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			);
 			break;
 		case Data::PRECIPITATION: {
-			int precipitationType = PrecipitationDataPoint::NOPRECIPITATION;
+			PrecipitationDataPoint::PrecipitationType precipitationType
+			    = PrecipitationDataPoint::NONE;
 
 			if (QString(jsonValue[i]["precipitationType"].GetString()) == "rain") {
 				precipitationType = PrecipitationDataPoint::RAIN;

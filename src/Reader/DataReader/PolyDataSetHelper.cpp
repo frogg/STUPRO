@@ -214,6 +214,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	}
 
 	// Assign points and vertices to the output data set
+	dataSet->GetPoints();
 	dataSet->SetPoints(points);
 	dataSet->SetVerts(verts);
 
@@ -232,6 +233,8 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 
 			cityNames->InsertNextValue(dataPoint->getName().toStdString());
 		}
+
+
 
 		dataSet->GetPointData()->AddArray(cityNames);
 		break;

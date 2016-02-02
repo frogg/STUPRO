@@ -5,6 +5,7 @@
 #include <QTextStream>
 #include <QPair>
 #include <Utils/Misc/MakeUnique.hpp>
+#include <Reader/DataReader/JsonValidator.hpp>
 #include <rapidjson/error/en.h>
 
 // Workaround to make static initialization possible in the IDE we all love -- Visual Studio.
@@ -46,12 +47,35 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 	if (jsonDocument.HasParseError()) {
 		throw JsonReaderParseException(
 		    jsonFileInfo.absoluteFilePath(),
-		    rapidjson::GetParseError_En(jsonDocument.GetParseError())
+		    QString("The file's JSON content is invalid. At position %1: %2")
+		    .arg(
+		        QString::number(jsonDocument.GetErrorOffset()),
+		        QString(rapidjson::GetParseError_En(jsonDocument.GetParseError()))
+		    )
+		);
+	}
+
+	// Check if there is a root
+	if (!jsonDocument.HasMember("root")) {
+		throw JsonReaderParseException(
+		    jsonFileInfo.absoluteFilePath(),
+		    "The file does not contain a root data tag."
 		);
 	}
 
 	// Extract meta data and create a new JSON reader
+	if (!jsonDocument.HasMember("meta")) {
+		throw JsonReaderParseException(
+		    jsonFileInfo.absoluteFilePath(),
+		    "The file does not contain meta information."
+		);
+	}
+
 	rapidjson::Value& metaData = jsonDocument["meta"];
+
+	// Now that we know it exists, check the meta tag for validity
+	JsonValidator::validateMetaData(metaData, jsonFileInfo.absoluteFilePath());
+
 	bool temporal = metaData["temporal"].GetBool();
 
 	std::unique_ptr<JsonReader> jsonReader;
@@ -60,6 +84,7 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 		jsonReader = makeUnique<JsonReader>(
 		                 jsonDocument["root"],
 		                 JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
+		                 jsonFileInfo.absoluteFilePath(),
 		                 true,
 		                 metaData["timeResolution"].GetInt()
 		             );
@@ -67,6 +92,7 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 		jsonReader = makeUnique<JsonReader>(
 		                 jsonDocument["root"],
 		                 JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
+		                 jsonFileInfo.absoluteFilePath(),
 		                 false,
 		                 0
 		             );

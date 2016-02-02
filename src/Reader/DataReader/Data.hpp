@@ -4,34 +4,9 @@
 class Data {
 public:
 	/**
-	 * Constant to be used if the data represents a set of cities.
+	 * Enum that denotes a data type. Do not assign values to these. Adding a new data type here
+	 * requires changes to the `JsonValidator` class.
 	 */
-	// const static int CITIES = 0;
-	/**
-	 * Constant to be used if the data represents a set of flights.
-	 */
-	// const static int FLIGHTS = 1;
-	/**
-	 * Constant to be used if the data represents a set of tweets.
-	 */
-	// const static int TWEETS = 2;
-	/**
-	 * Constant to be used if the data represents a set of precipitation data points.
-	 */
-	// const static int PRECIPITATION = 3;
-	/**
-	 * Constant to be used if the data represents a set of temperature data points.
-	 */
-	// const static int TEMPERATURE = 4;
-	/**
-	 * Constant to be used if the data represents a set of wind data points.
-	 */
-	// const static int WIND = 5;
-	/**
-	* Constant to be used if the data represents a set of cloudCover data points.
-	*/
-	// const static int CLOUDCOVER = 6;
-
 	enum Type {
 		CITIES, FLIGHTS, TWEETS, PRECIPITATION, TEMPERATURE, WIND, CLOUD_COVERAGE
 	};

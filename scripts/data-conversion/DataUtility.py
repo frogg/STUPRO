@@ -2,9 +2,6 @@ import csv
 import xmltodict
 import json
 
-"""
-Helper class to load data from xml, csv or json files and write a json_file
-"""
 class DataUtility:
     def read_csv_file(self, filename):
         """
