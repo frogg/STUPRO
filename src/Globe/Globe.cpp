@@ -116,8 +116,6 @@ void Globe::createTiles() {
 			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this,
 			                                  GlobeTile::Location(myZoomLevel, lon, lat));
 			getTileAt(lon, lat).setTexture(myLoadingTexture);
-			
-			myDownloader.fetchTile(myZoomLevel, lon, lat);
 		}
 	}
 }
@@ -170,10 +168,12 @@ void Globe::onTileLoad(ImageTile tile) {
 	const QImage& rgb = rgbIterator->getImage();
 	const QImage& heightmap = heightmapIterator->getImage();
 
+	globeTile.loadTexture(rgb, heightmap);
+	globeTile.setTextureLoadState(GlobeTile::TEXTURE_LOADED);
+
 	globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
 	globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
 
-	globeTile.loadTexture(rgb, heightmap);
 	globeTile.updateUniforms();
 
 	myIsClean.clear();
@@ -218,9 +218,6 @@ void Globe::updateZoomLevel() {
 
 		// Interpolate the integer zoom levels based on the exponential normalized distance.
 		zoomResult = exponentialDistance * nearZoom + (1.f - exponentialDistance) * farZoom;
-
-		std::cout << "Distance from center: " << cameraPosition.length() << " ; ZoomLevel: " << zoomResult
-		          << std::endl;
 	}
 
 	// Assign the zoom level.
@@ -309,7 +306,7 @@ void Globe::updateTileVisibility() {
 			// TODO: Implement culling for flat map!
 			if (getDisplayModeInterpolation() > 0.5f) {
 				// On flat map, simply display all tiles.
-				tile.setVisibility(true);
+				tile.setVisibile(true);
 				continue;
 			}
 
@@ -368,7 +365,13 @@ void Globe::updateTileVisibility() {
 			}
 
 			// Assign tile visibility.
-			tile.setVisibility(visible);
+			tile.setVisibile(visible);
+
+			// Load tile texture if necessary.
+			if (visible && tile.getTextureLoadState() == GlobeTile::TEXTURE_UNLOADED) {
+				tile.setTextureLoadState(GlobeTile::TEXTURE_LOADING);
+				myDownloader.fetchTile(myZoomLevel, lon, lat);			
+			}
 		}
 	}
 }

@@ -103,6 +103,25 @@ public:
 	 * location.
 	 */
 	void loadTexture(const QImage& rgb, const QImage& height);
+	
+	/**
+	 * Possible states for the globe tile's texture.
+	 */
+	enum TextureLoadState {
+		TEXTURE_UNLOADED,
+		TEXTURE_LOADING,
+		TEXTURE_LOADED
+	};
+	
+	/**
+	 * Sets the texture loading state for this globe tile.
+	 */
+	void setTextureLoadState(TextureLoadState textureLoadState);
+	
+	/**
+	 * Returns the texture loading state for this globe tile.
+	 */
+	TextureLoadState getTextureLoadState() const;
 
 	/**
 	 * Assigns a combined color/heightmap texture to this tile.
@@ -154,7 +173,7 @@ public:
 	/**
 	 * Sets the visibility of the globe tile.
 	 */
-	void setVisibility(bool visible);
+	void setVisibile(bool visible);
 
 	/**
 	 * Returns the visibility of the globe tile.
@@ -178,6 +197,8 @@ private:
 	vtkSmartPointer<vtkActor> myActor;
 	vtkSmartPointer<vtkShader2> myVertexShader;
 	vtkSmartPointer<vtkShader2> myFragmentShader;
+	
+	TextureLoadState myTextureLoadState;
 
 	bool myIsVisible;
 
