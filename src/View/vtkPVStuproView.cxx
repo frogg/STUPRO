@@ -23,12 +23,10 @@ vtkStandardNewMacro(vtkPVStuproView);
 
 vtkPVStuproView::vtkPVStuproView()
 {
-	Kronos::getInstance()->registerView(this);
 }
 
 vtkPVStuproView::~vtkPVStuproView()
 {
-	Kronos::getInstance()->unregisterView(this);
 }
 
 void vtkPVStuproView::Initialize(unsigned int id)

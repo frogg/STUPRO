@@ -22,18 +22,10 @@ public:
     /* getters/setters for class related properties */
     bool isInitialized();
 
-    /* getters/setters for globally accessible objects */
-    void registerView(vtkPVStuproView* view);
-    void unregisterView(vtkPVStuproView* view);
-    std::vector<vtkPVStuproView*> getViews();
-
 private:
     static Kronos* instance;
 
     bool initialized;
-    std::vector<vtkPVStuproView*> views;
-
-    void ensureReady();
 };
 
 #endif
