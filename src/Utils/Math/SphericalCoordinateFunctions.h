@@ -22,6 +22,27 @@ template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
     return retVal;
 }
 
+void sphericalToCartesianJacobian(const Vector3<T>& gps, T** jacobian) {
+    const T lonInRadian = gps.x * KRONOS_PI / 180;
+    const T latInRadian = gps.y * KRONOS_PI / 180;
+    
+    //calculate first row of jacobian
+    jacobian[0][0] = (BASE_HEIGHT + gps.z) * cos(latInRadian)* cos(lonInRadian)* KRONOS_PI / 180;
+    jacobian[0][1] = (BASE_HEIGHT + gps.z) * sin(lonInRadian)* (-1) * sin(latInRadian)* KRONOS_PI / 180;
+    jacobian[0][2] = 1 * cos(latInRadian)* sin(lonInRadian);
+    
+    jacobian[1][0] = 0;
+    jacobian[1][1] = (BASE_HEIGHT + gps.z) * cos(latInRadian) * KRONOS_PI / 180;
+    jacobian[1][2] = sin(latInRadian);
+    
+    jacobian[2][0] = (BASE_HEIGHT + gps.z) * cos(latInRadian) * (-1)* sin(lonInRadian) * KRONOS_PI / 180;
+    jacobian[2][1] = (BASE_HEIGHT + gps.z) * (-1)* sin(latInRadian) * KRONOS_PI / 180 * cos(lonInRadian);
+    jacobian[2][2] = 1* cos(latInRadian) * cos(lonInRadian);
+    
+}
+
+
+
 /**
  * Convert the cartesian to the spherical (gps) representation
  * @param point the cartesian position
