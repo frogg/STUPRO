@@ -24,8 +24,6 @@ public:
 	int FillOutputPortInformation(int port, vtkInformation *info) override;
 	int FillInputPortInformation(int port, vtkInformation *info) override;
 	
-	void displayPrecipitationType(PrecipitationDataPoint::PrecipitationType type, bool display);
-	
 	void enableUndefined(int enabled);
 	void enableRain(int enabled);
 	void enableSnow(int enabled);
@@ -38,6 +36,8 @@ private:
 
 	PrecipitationTypeFilter(const PrecipitationTypeFilter &); // Not implemented.
     void operator=(const PrecipitationTypeFilter &); // Not implemented.
+    
+    void displayPrecipitationType(PrecipitationDataPoint::PrecipitationType type, bool display);
 	
 	vtkSmartPointer<vtkSelection> selection;
 	vtkSmartPointer<vtkSelectionNode> selectionNode;
