@@ -10,6 +10,7 @@
 #include <vtkGraph.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
+#include <vtkObjectFactory.h>
 
 PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	// Initialize the selection
