@@ -22,7 +22,7 @@ template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
     return retVal;
 }
 
-void sphericalToCartesianJacobian(const Vector3<T>& gps, T** jacobian) {
+template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T** jacobian) {
     const T lonInRadian = gps.x * KRONOS_PI / 180;
     const T latInRadian = gps.y * KRONOS_PI / 180;
     
