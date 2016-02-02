@@ -7,38 +7,62 @@
 #include "Utils/Math/SphericalCoordinateFunctions.h"
 #include "Utils/Misc/Macros.hpp"
 
+#include <exception>
+#include <QString>
+
+/**
+ * we do not support Backward transformation and throw an exception if someone wants it
+ */
+struct NoBackwardTransformationException : public std::exception {
+    std::string reason;
+    
+    NoBackwardTransformationException(QString reason) : reason(reason.toStdString()) { }
+    
+    const char* what() const KRONOS_NOTHROW override {
+        return reason.c_str();
+    }
+};
+
+
+/**
+ * transforms from gps to world coodinates
+ */
 class GeometryTransform : public vtkAbstractTransform {
 private:
+    //inidcates if transformation should be done.
 	bool transform;
+    //indictes direction in which we transform (normally forward and backward transformation are supported). We only support forward transformation.
 	bool transformForward;
+    
+    //globe radius
 	double baseAltitude;
 
-    template<typename T> void gpsToWorldCoordinates(const Vector3<T>& gps, Vector3<T>& world) {
-        world = sphericalToCartesian(gps);
+    /**
+     * transforms gps cooridinates (lat, long, height) to world/cartesian coodinate systen
+     */
+    template<typename T> void gpsToWorldCoordinates(const Vector3<T>& gps, Vector3<T>& cartesian) {
+        cartesian = sphericalToCartesian(gps);
 	}
 
-    template<typename T> void gpsToWorldAndDerivatives(const Vector3<T>& gps, Vector3<T>& world,
+    /**
+     * transforms gps cooridinates (lat, long, height) to world/cartesian coodinate systen, and also derivates
+     */
+    template<typename T> void gpsToWorldAndDerivatives(const Vector3<T>& gps, Vector3<T>& cartesian,
             T derivatives[3][3]) {
         
-        gpsToWorldCoordinates(gps, world);
+        gpsToWorldCoordinates(gps, cartesian);
         sphericalToCartesianJacobian(gps, derivatives);
 	}
 
-	template<typename T> void worldToGPSCoordinates(const Vector3<T> world, Vector3<T>& gps) {
-		// TODO
-	}
-
-	template<typename T> void worldToGPSAndDerivatives(const Vector3<T> in, Vector3<T>& out,
-            T derivatives[3][3]) {
-		// TODO
-	}
-
+    /**
+     * copies a vector to an array
+     */
 	template<typename T> void copyVectorToArray(const Vector3<T>& vector, T array[3]) {
 		array[0] = vector.x;
 		array[1] = vector.y;
 		array[2] = vector.z;
 	}
-
+/*
 	template<typename T> void copyVectorToArray(const Vector3<T>& v1,
 	        T a1[3],
 	        const Vector3<Vector3<T>>& v2,
@@ -48,31 +72,39 @@ private:
 		copyVectorToArray(v2.y, a2[1]);
 		copyVectorToArray(v2.z, a2[2]);
 	}
-
+*/
 public:
-	static GeometryTransform* New(bool transform = true, bool forward = true,
-	                              double baseAltitude = 100.0) {
-		return new GeometryTransform(transform, forward, baseAltitude);
+	static GeometryTransform* New(bool transform = true, bool forward = true) {
+		return new GeometryTransform(transform, forward);
 	}
 
-	GeometryTransform(bool transform = true, bool forward = true, double baseAltitude = 100.0) {
+	GeometryTransform(bool transform = true, bool forward = true) {
 		this->transform = transform;
 		this->transformForward = forward;
-		this->baseAltitude = baseAltitude;
+		this->baseAltitude = Configuration::getInstance().getDouble("globe.radius");
 	}
 
 	~GeometryTransform() {
 	}
 
+    /**
+     * transformation is active by default, can be (de)actived with this method
+     */
 	void setTransform(bool transform = true) {
 		this->transform = transform;
 	}
 
+    /**
+     * change from forward transformation to backward transformation or the other way round. We only support forward transformation.
+     */
 	void Inverse() override {
 		this->transformForward = !this->transformForward;
 		this->Modified();
     }
 
+    /**
+     * InternalTransformPoint for floats
+     */
 	void InternalTransformPoint(const float in[3], float out[3]) override {
 		if (!transform) {
 			return;
@@ -81,11 +113,14 @@ public:
 		if (this->transformForward) {
 			gpsToWorldCoordinates(Vector3f(in), outV);
 		} else {
-			worldToGPSCoordinates(Vector3f(in), outV);
+            throw NoBackwardTransformationException("no backward transformation supported");
 		}
 		copyVectorToArray(outV, out);
 	}
 
+    /**
+     * InternalTransformPoint for doubles
+     */
 	void InternalTransformPoint(const double in[3], double out[3]) override {
 		if (!transform) {
 			return;
@@ -94,11 +129,14 @@ public:
 		if (this->transformForward) {
 			gpsToWorldCoordinates(Vector3d(in), outV);
 		} else {
-			worldToGPSCoordinates(Vector3d(in), outV);
+            throw NoBackwardTransformationException("no backward transformation supported");
 		}
 		copyVectorToArray(outV, out);
 	}
 
+    /**
+     * InternalTransformDerivative for floats (transforms point AND deriactive)
+     */
 	void InternalTransformDerivative(const float in[3], float out[3], float derivative[3][3]) override {
 		if (!transform) {
 			return;
@@ -108,11 +146,14 @@ public:
 		if (this->transformForward) {
 			gpsToWorldAndDerivatives(Vector3f(in), outV, derivative);
 		} else {
-			worldToGPSAndDerivatives(Vector3f(in), outV, derivative);
+            throw NoBackwardTransformationException("no backward transformation supported");
 		}
 		copyVectorToArray<float>(outV, out);
 	}
 
+    /**
+     * InternalTransformDerivative for doubles (transforms point AND deriactive)
+     */
 	void InternalTransformDerivative(const double in[3], double out[3],
 	                                 double derivative[3][3]) override {
 		if (!transform) {
@@ -123,14 +164,13 @@ public:
 		if (this->transformForward) {
 			gpsToWorldAndDerivatives(Vector3d(in), outV, derivative);
 		} else {
-			worldToGPSAndDerivatives(Vector3d(in), outV, derivative);
+            throw NoBackwardTransformationException("no backward transformation supported");
 		}
 		copyVectorToArray(outV, out);
 	}
 
 	vtkAbstractTransform* MakeTransform() override {
-		GeometryTransform* geoTrans = GeometryTransform::New(this->transform, this->transformForward,
-		                              this->baseAltitude);
+		GeometryTransform* geoTrans = GeometryTransform::New(this->transform, this->transformForward);
 		return geoTrans;
 	}
 };

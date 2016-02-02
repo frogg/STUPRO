@@ -5,6 +5,8 @@
 #include"Utils/Misc/Macros.hpp"
 #include "Utils/Config/Configuration.hpp"
 
+
+//is the globe radius (gps.z is 0 at sea level)
 #define BASE_HEIGHT (Configuration::getInstance().getDouble("globe.radius"))
 
 /**
@@ -13,13 +15,17 @@
  * @return the cartesian position of gps
  */
 template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
-    const T lon = gps.x * KRONOS_PI / 180;
-    const T lat = gps.y * KRONOS_PI / 180;
+    
+    //Radian of longitude
+    const T lonInRadian = gps.x * KRONOS_PI / 180;
+    //Radian of latitude
+    const T latInRadian = gps.y * KRONOS_PI / 180;
 
     Vector3<T> retVal;
-    retVal.z = (BASE_HEIGHT + gps.z) * cos(lat) * cos(lon);
-    retVal.x = (BASE_HEIGHT + gps.z) * cos(lat) * sin(lon);
-    retVal.y = (BASE_HEIGHT + gps.z) * sin(lat);
+    //WATCH OUT: order of theses assignement, because of ParaView coordinate systems
+    retVal.z = (BASE_HEIGHT + gps.z) * cos(latInRadian) * cos(lonInRadian);
+    retVal.x = (BASE_HEIGHT + gps.z) * cos(latInRadian) * sin(lonInRadian);
+    retVal.y = (BASE_HEIGHT + gps.z) * sin(latInRadian);
     return retVal;
 }
 
@@ -32,10 +38,12 @@ template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T 
     jacobian[0][1] = (BASE_HEIGHT + gps.z) * sin(lonInRadian)* (-1) * sin(latInRadian)* KRONOS_PI / 180;
     jacobian[0][2] = 1 * cos(latInRadian)* sin(lonInRadian);
     
+    //calculate second row of jacobian
     jacobian[1][0] = 0;
     jacobian[1][1] = (BASE_HEIGHT + gps.z) * cos(latInRadian) * KRONOS_PI / 180;
     jacobian[1][2] = sin(latInRadian);
     
+    //calculate third row of jacobian
     jacobian[2][0] = (BASE_HEIGHT + gps.z) * cos(latInRadian) * (-1)* sin(lonInRadian) * KRONOS_PI / 180;
     jacobian[2][1] = (BASE_HEIGHT + gps.z) * (-1)* sin(latInRadian) * KRONOS_PI / 180 * cos(lonInRadian);
     jacobian[2][2] = 1* cos(latInRadian) * cos(lonInRadian);

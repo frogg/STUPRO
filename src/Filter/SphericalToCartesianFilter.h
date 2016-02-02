@@ -7,10 +7,11 @@
 
 /**
  * The SphericalToCartesianFilter class is a vtk filter which is able to convert the coordinate system of the data.
- * The input of a SphericalToCartesianFilter is a data set which uses gps data. These are converted to cartesian coordinates.
+ * The input of a SphericalToCartesianFilter is a data set which uses gps data (latitude, longitude, height). These are converted to cartesian coordinates.
  */
 class SphericalToCartesianFilter : public vtkTransformFilter {
 	KRONOS_FRIEND_TEST(TestSphericalToCartesianFilter, ValidCalls);
+
 public:
     vtkTypeMacro(SphericalToCartesianFilter, vtkTransformFilter)
 	static SphericalToCartesianFilter *New();
@@ -26,6 +27,9 @@ public:
 	 */
 	int FillInputPortInformation(int, vtkInformation *info) override;
 
+    /**
+     * to activate our filter (there is a checkbox in UI which is connected in the xml)
+     */
     void setTransform(bool value);
 
 private:
