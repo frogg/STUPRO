@@ -317,8 +317,11 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			};
 			precipitationRates->SetTuple(tupleNumber, precipitationRate);
 
+            // Increase the actual precipitation type by one since ParaView's selection extraction
+            // seems to have a bug with array values of zero. This makes precipitation values be
+            // in the range of 1 to 5.
 			double precipitationType[1] = {
-				(double) dataPoint->getPrecipitationType()
+				(double) dataPoint->getPrecipitationType() + 1
 			};
 			precipitationTypes->SetTuple(tupleNumber, precipitationType);
 
