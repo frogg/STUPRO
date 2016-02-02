@@ -29,12 +29,12 @@ private:
         derivatives.y.z = world.y / radius;
         derivatives.z.z = world.z / radius;
 
-		derivatives.x.x = world.x * KRONOS_PI / 180;
+        derivatives.x.x = world.z * KRONOS_PI / 180;
 		derivatives.y.x = 0;
-		derivatives.z.x = world.z * KRONOS_PI / 180;
+        derivatives.z.x = -world.x * KRONOS_PI / 180;
 
-		derivatives.x.y = -sin(lat) * sin(lon) * radius * KRONOS_PI / 180;
-		derivatives.y.y = cos(lat) * radius * KRONOS_PI / 180;
+        derivatives.x.y = -sin(lat) * sin(lon) * radius * KRONOS_PI / 180;
+        derivatives.y.y = cos(lat) * radius * KRONOS_PI / 180;
 		derivatives.z.y = -sin(lat) * cos(lon) * radius * KRONOS_PI / 180;
 	}
 
