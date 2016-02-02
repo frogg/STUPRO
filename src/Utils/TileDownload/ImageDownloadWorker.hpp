@@ -35,8 +35,8 @@ struct DownloadFailedException : public std::exception {
 struct DownloadAbortedException : public DownloadFailedException {
 	DownloadAbortedException(QUrl url)
 		: DownloadFailedException(
-			QString("The download was aborted. Url: '%1'").arg(url.toString())
-		) { }
+		      QString("The download was aborted. Url: '%1'").arg(url.toString())
+		  ) { }
 };
 
 /**
