@@ -11,7 +11,7 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 
-vtkStandardNewMacro(PrecipitationTypeFilter);
+vtkStandardNewMacro(PrecipitationTypeFilter)
 
 PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	// Initialize the selection
