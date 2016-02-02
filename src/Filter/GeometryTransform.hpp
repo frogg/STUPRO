@@ -19,12 +19,13 @@ private:
 
     template<typename T> void gpsToWorldAndDerivatives(const Vector3<T>& gps, Vector3<T>& world,
 	        Vector3<Vector3<T>>& derivatives) {
+        
         gpsToWorldCoordinates(gps, world);
 
 		const double lon = gps.x * KRONOS_PI / 180;
 		const double lat = gps.y * KRONOS_PI / 180;
 		const double radius = baseAltitude + gps.z;
-
+    
         derivatives.x.z = world.x / radius;
         derivatives.y.z = world.y / radius;
         derivatives.z.z = world.z / radius;
@@ -118,14 +119,13 @@ public:
 			return;
 		}
 		Vector3f outV = Vector3f(out);
-		Vector3<Vector3f> outDeriv = Vector3<Vector3f>(Vector3f(derivative[0]), Vector3f(derivative[1]),
-		                             Vector3f(derivative[2]));
+		
 		if (this->transformForward) {
-			gpsToWorldAndDerivatives(Vector3f(in), outV, outDeriv);
+			gpsToWorldAndDerivatives(Vector3f(in), outV, derivative);
 		} else {
-			worldToGPSAndDerivatives(Vector3f(in), outV, outDeriv);
+			worldToGPSAndDerivatives(Vector3f(in), outV, derivative);
 		}
-		copyVectorToArray<float>(outV, out, outDeriv, derivative);
+		copyVectorToArray<float>(outV, out);
 	}
 
 	void InternalTransformDerivative(const double in[3], double out[3],
@@ -134,14 +134,13 @@ public:
 			return;
 		}
 		Vector3d outV = Vector3d(out);
-		Vector3<Vector3d> outDeriv = Vector3<Vector3d>(Vector3d(derivative[0]), Vector3d(derivative[1]),
-		                             Vector3d(derivative[2]));
+
 		if (this->transformForward) {
-			gpsToWorldAndDerivatives(Vector3d(in), outV, outDeriv);
+			gpsToWorldAndDerivatives(Vector3d(in), outV, derivative);
 		} else {
-			worldToGPSAndDerivatives(Vector3d(in), outV, outDeriv);
+			worldToGPSAndDerivatives(Vector3d(in), outV, derivative);
 		}
-		copyVectorToArray(outV, out, outDeriv, derivative);
+		copyVectorToArray(outV, out);
 	}
 
 	vtkAbstractTransform* MakeTransform() override {
