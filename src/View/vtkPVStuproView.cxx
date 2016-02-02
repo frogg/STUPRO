@@ -19,7 +19,7 @@ void vtkPVStuproView::Initialize(unsigned int id)
 
 	initParameters();
 	initRenderer();
-	registerTimerCallback();
+	//registerTimerCallback();
 	initGlobe();
 }
 
@@ -31,33 +31,6 @@ void vtkPVStuproView::initParameters()
 
 void vtkPVStuproView::initRenderer()
 {
-	/*
-	this->activeCameraCallback = vtkCallbackCommand::New();
-
-	this->activeCameraCallback->SetCallback(
-	        [](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
-	        {
-		        vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
-
-		        view->cameraModifiedCallback = vtkCallbackCommand::New();
-
-		        view->cameraModifiedCallback->SetCallback(
-				        [](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
-				        {
-					        vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
-					        view->getGlobe()->onCameraChanged();
-				        });
-		        view->cameraModifiedCallback->SetClientData(clientdata);
-
-		        vtkRenderer * renderer = vtkRenderer::SafeDownCast(object);
-
-		        renderer->GetActiveCamera()->AddObserver(vtkCommand::ModifiedEvent, view->cameraModifiedCallback);
-	        });
-	this->activeCameraCallback->SetClientData(this);
-
-	this->GetRenderer()->AddObserver(vtkCommand::ActiveCameraEvent, this->activeCameraCallback);
-	*/
-	
 	this->cameraModifiedCallback = vtkCallbackCommand::New();
 	
     this->cameraModifiedCallback->SetCallback(

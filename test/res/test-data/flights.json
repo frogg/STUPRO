@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "dataType": "flights",
+    "temporal": false
+  },
+  "root": {
+    "children": [
+      {
+        "startPosition": {
+          "longitude": 55.304718,
+          "latitude": 25.258171
+        },
+        "endPosition": {
+          "longitude": -118.242775,
+          "latitude": 34.052223
+        },
+        "children": []
+      }
+    ]
+  }
+}
