@@ -6,12 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>970</width>
-    <height>700</height>
+    <width>1152</width>
+    <height>768</height>
    </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../Qt/Components/Resources/pqComponents.qrc">
+    <normaloff>:/pqWidgets/Icons/pvIcon512.png</normaloff>:/pqWidgets/Icons/pvIcon512.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -19,7 +26,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="pqViewManager" name="MultiViewManager" native="true"/>
+     <widget class="pqTabbedMultiViewWidget" name="MultiViewWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -28,7 +35,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>970</width>
+     <width>1152</width>
      <height>25</height>
     </rect>
    </property>
@@ -72,12 +79,18 @@
      <string>&amp;Macros</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu_Catalyst">
+    <property name="title">
+     <string>&amp;Catalyst</string>
+    </property>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_View"/>
    <addaction name="menuSources"/>
    <addaction name="menuFilters"/>
    <addaction name="menuTools"/>
+   <addaction name="menu_Catalyst"/>
    <addaction name="menu_Macros"/>
    <addaction name="menu_Help"/>
   </widget>
@@ -97,18 +110,6 @@
      <enum>Qt::ActionsContextMenu</enum>
     </property>
    </widget>
-  </widget>
-  <widget class="QDockWidget" name="proxyTabDock">
-   <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Properties</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="pqPropertiesPanel" name="proxyTabWidget"/>
   </widget>
   <widget class="QDockWidget" name="statisticsDock">
    <property name="allowedAreas">
@@ -132,6 +133,9 @@
    <widget class="pqPVAnimationWidget" name="animationView"/>
   </widget>
   <widget class="QDockWidget" name="comparativePanelDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
    <property name="windowTitle">
     <string>Comparative View Inspector</string>
    </property>
@@ -139,6 +143,176 @@
     <number>2</number>
    </attribute>
    <widget class="pqComparativeVisPanel" name="comparativeVisPanel"/>
+  </widget>
+  <widget class="QDockWidget" name="collaborationPanelDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Collaboration Panel</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="pqCollaborationPanel" name="collaborationPanel"/>
+  </widget>
+  <widget class="QDockWidget" name="informationDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Information</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="informationWidgetFrame">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QScrollArea" name="informationScrollArea">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="pqProxyInformationWidget" name="informationWidget">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>78</width>
+          <height>188</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="memoryInspectorDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Memory Inspector</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="pqMemoryInspectorPanel" name="dockWidgetContents"/>
+  </widget>
+  <widget class="QDockWidget" name="propertiesDock">
+   <property name="minimumSize">
+    <size>
+     <width>80</width>
+     <height>41</height>
+    </size>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="pqPropertiesPanel" name="propertiesPanel"/>
+  </widget>
+  <widget class="QDockWidget" name="multiBlockInspectorDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Multi-block Inspector</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="pqMultiBlockInspectorPanel" name="multiBlockInspectorPanel"/>
+  </widget>
+  <widget class="QDockWidget" name="colorMapEditorDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Color Map Editor</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="pqColorMapEditor" name="colorMapEditorPanel"/>
+  </widget>
+  <widget class="QDockWidget" name="selectionDisplayDock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Selection Display Inspector</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="pqFindDataSelectionDisplayFrame" name="selectionDisplayWidget">
+    <property name="useVerticalLayout" stdset="0">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="displayPropertiesDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Display</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="pqPropertiesPanel" name="displayPropertiesPanel">
+    <property name="panelMode" stdset="0">
+     <number>2</number>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="viewPropertiesDock">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>View</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="pqPropertiesPanel" name="viewPropertiesPanel">
+    <property name="panelMode" stdset="0">
+     <number>4</number>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="timeInspectorDock">
+   <property name="allowedAreas">
+    <set>Qt::AllDockWidgetAreas</set>
+   </property>
+   <property name="windowTitle">
+    <string>Time Inspector</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="pqTimeInspectorWidget" name="timeInspectorPanel"/>
   </widget>
  </widget>
  <customwidgets>
@@ -149,9 +323,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>pqViewManager</class>
+   <class>pqTabbedMultiViewWidget</class>
    <extends>QWidget</extends>
-   <header>pqViewManager.h</header>
+   <header>pqTabbedMultiViewWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -178,12 +352,56 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>pqCollaborationPanel</class>
+   <extends>QWidget</extends>
+   <header>pqCollaborationPanel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqProxyInformationWidget</class>
+   <extends>QWidget</extends>
+   <header>pqProxyInformationWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqMemoryInspectorPanel</class>
+   <extends>QWidget</extends>
+   <header>pqMemoryInspectorPanel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>pqPropertiesPanel</class>
    <extends>QWidget</extends>
    <header>pqPropertiesPanel.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>pqMultiBlockInspectorPanel</class>
+   <extends>QWidget</extends>
+   <header>pqMultiBlockInspectorPanel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqColorMapEditor</class>
+   <extends>QWidget</extends>
+   <header>pqColorMapEditor.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqFindDataSelectionDisplayFrame</class>
+   <extends>QWidget</extends>
+   <header>pqFindDataSelectionDisplayFrame.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqTimeInspectorWidget</class>
+   <extends>QWidget</extends>
+   <header>pqTimeInspectorWidget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../Qt/Components/Resources/pqComponents.qrc"/>
+ </resources>
  <connections/>
 </ui>

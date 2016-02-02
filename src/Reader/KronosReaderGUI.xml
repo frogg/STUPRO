@@ -1,7 +1,0 @@
-<ParaViewReaders>
-   <Reader
-       name=”CSVImageReader”
-       extensions=”csvimg”
-       file_description=”CSV image”>
-   </Reader>
-</ParaViewReaders>

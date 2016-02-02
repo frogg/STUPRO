@@ -51,4 +51,10 @@
 	    </Hints>
         </SourceProxy>
     </ProxyGroup>
+    
+    <ParaViewFilters>
+        <Category name="Kronos" menu_label="Kronos">
+            <Filter name="SphericalToCartesianFilter" />
+        </Category>
+    </ParaViewFilters>
 </ServerManagerConfiguration>
