@@ -15,14 +15,8 @@ public:
                     vtkInformationVector** inputVector,
                     vtkInformationVector* outputVector) override;
 
-    /*
-     * Documentation see vtkAlgorithm
-     */
     int FillOutputPortInformation(int, vtkInformation* info) override;
 
-    /*
-     * Documentation see vtkAlgorithm
-     */
     int FillInputPortInformation(int, vtkInformation* info) override;
 
 private:
