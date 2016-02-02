@@ -3,6 +3,11 @@
 
 #include <vtkExtractSelection.h>
 #include <vtkPoints.h>
+#include <vtkSmartPointer.h>
+
+#include <QMap>
+
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 
 /**
  * This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point.
@@ -16,9 +21,12 @@ public:
 	int RequestData(vtkInformation *info,
 					vtkInformationVector **inputVector,
 					vtkInformationVector *outputVector) override;
-	int FillOutputPortInformation(int, vtkInformation *info) override;
-	int FillInputPortInformation(int, vtkInformation *info) override;
+	int FillOutputPortInformation(int port, vtkInformation *info) override;
+	int FillInputPortInformation(int port, vtkInformation *info) override;
 	
+	void displayPrecipitationType(PrecipitationDataPoint::PrecipitationType type, bool display);
+	
+	void enableUndefined(int enabled);
 	void enableRain(int enabled);
 	void enableSnow(int enabled);
 	void enableSleet(int enabled);
@@ -30,6 +38,11 @@ private:
 
 	PrecipitationTypeFilter(const PrecipitationTypeFilter &); // Not implemented.
     void operator=(const PrecipitationTypeFilter &); // Not implemented.
+	
+	vtkSmartPointer<vtkSelection> selection;
+	vtkSmartPointer<vtkSelectionNode> selectionNode;
+	
+	QMap<PrecipitationDataPoint::PrecipitationType, bool> precipitationTypeVisibilities;
 };
 
 #endif
