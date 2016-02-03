@@ -31,8 +31,8 @@ PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	precipitationTypes->SetNumberOfTuples(5);
 
 	// Display all precipitation types by default
-	for (int i = 0; i < 5; i++) {
-		precipitationTypes->SetTuple1(i, i + 1);
+	for (int i = PrecipitationDataPoint::NONE; i <= PrecipitationDataPoint::HAIL; i++) {
+		precipitationTypes->SetTuple1(i - 1, i);
 	}
 
 	// Create the map that will store the precipitation type's visibilities
@@ -61,7 +61,7 @@ void PrecipitationTypeFilter::displayPrecipitationType(PrecipitationDataPoint::P
 	for (int i = PrecipitationDataPoint::NONE; i <= PrecipitationDataPoint::HAIL; i++) {
 		if (this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
 		                                        (i)]) {
-			precipitationTypes->SetTuple1(i, i + 1);
+			precipitationTypes->SetTuple1(i - 1, i);
 		}
 	}
 
