@@ -4,7 +4,7 @@
 #include"Vector3.hpp"
 #include"Utils/Misc/Macros.hpp"
 
-#define BASE_HEIGHT 100
+#define BASE_HEIGHT 0
 
 /**
  * Convert the spherical (gps) to the cartesian representation
@@ -31,8 +31,8 @@ template<typename T> Vector3<T> cartesianToSpherical(const Vector3<T>& point) {
     Vector3<T> retVal;
     retVal.z = point.length() - BASE_HEIGHT;
     retVal.x = atan2(point.x, point.z) * 180 / KRONOS_PI;
-    retVal.y = asin(point.y / point.length()) * 180 / KRONOS_PI;
-    return point;
+    retVal.y = asin(point.y / (point.length() - BASE_HEIGHT)) * 180 / KRONOS_PI;
+    return retVal;
 }
 
 /**
@@ -59,7 +59,7 @@ template<typename T> Vector3<T> scaleTo(const Vector3<T>& gps, const T targetLen
 template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Vector3<T>& gps2) {
     Vector3<T> cartesian1 = sphericalToCartesian(gps1) / 2;
     Vector3<T> cartesian2 = sphericalToCartesian(gps2) / 2;
-    return scaleTo(cartesianToSpherical(cartesian1 + cartesian2), (abs(gps1) + abs(gps2)) / 2);
+    return cartesianToSpherical(cartesian1 + cartesian2);
 }
 
 #endif // SPHERICAL_COORDINATE_FUNCTIONS

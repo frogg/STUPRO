@@ -24,6 +24,8 @@ private:
     GenerateGeodesics(const GenerateGeodesics&); // not implemented
     void operator =(const GenerateGeodesics&); // not implemented
 
+    double maxLenOfLineSegment = 0.9;
+
     /**
      * @brief calculateFlightPoints calculate the neccessary points between start and end airport and insert them into a data set
      * @param start the start airport
@@ -32,8 +34,7 @@ private:
      * @param dataSet the data set to insert the points
      * @return the number of points inserted
      */
-    int calculateFlightPoints(const Vector3<double>& start, const Vector3<double>& end,
-                              const float maxLineLenght, vtkPoints* const dataSet);
+    int calculateFlightPoints(const Vector3<double>& start, const Vector3<double>& end, vtkPoints* const dataSet);
 };
 
 #endif // KRONOSGENERATEGEODESICS_H
