@@ -23,7 +23,7 @@
 
 // write further tests with http://www.random-science-tools.com/maths/coordinate-converter.htm
 TEST(TestSphericalToCartesianFilter, ValidCalls) {
-	GeometryTransform* transform = new GeometryTransform(true, true, 200);
+	GeometryTransform* transform = new GeometryTransform(true, true);
 	vtkPoints* points = vtkPoints::New();
 	vtkPoints* transformed = vtkPoints::New();
 	vtkPoints* newPoints = vtkPoints::New();

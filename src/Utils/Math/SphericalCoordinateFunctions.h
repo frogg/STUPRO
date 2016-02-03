@@ -7,7 +7,7 @@
 
 
 //is the globe radius (gps.z is 0 at sea level)
-#define BASE_HEIGHT (Configuration::getInstance().getDouble("globe.radius"))
+const double BASE_HEIGHT = (Configuration::getInstance().getDouble("globe.radius"));
 
 /**
  * Convert the spherical (gps) to the cartesian representation
