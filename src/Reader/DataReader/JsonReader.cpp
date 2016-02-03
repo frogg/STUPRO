@@ -18,6 +18,14 @@ JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QStr
 	timeResolution(timeResolution) {
 	this->cachingEnabled = true;
 	this->pointDataSet = PointDataSet();
+
+	if (!jsonDocument.IsObject() || !jsonDocument.HasMember("children")) {
+		throw JsonReaderParseException(
+		    path,
+		    "The file is missing the children list that should be directly inside the root tag."
+		);
+	}
+
 	this->indexDataPoints(jsonDocument["children"], 0);
 
 	// Get timestamps of the earliest and latest data point if the data is time-sensitive
