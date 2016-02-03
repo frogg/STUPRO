@@ -26,7 +26,7 @@
 #include <cmath>
 
 SphericalToCartesianFilter::SphericalToCartesianFilter() {
-    //take this transformation, true -> it transforms per default
+	//take this transformation, true -> it transforms per default
 	this->Transform = GeometryTransform::New(true);
 }
 
@@ -47,7 +47,7 @@ int SphericalToCartesianFilter::FillOutputPortInformation(int, vtkInformation* i
 }
 
 int SphericalToCartesianFilter::FillInputPortInformation(int, vtkInformation* info) {
-    //make sure that we only accept vtkPointSet, vtkImageData and vtkRectilinearGrid as input
+	//make sure that we only accept vtkPointSet, vtkImageData and vtkRectilinearGrid as input
 	info->Remove(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
@@ -60,6 +60,6 @@ void SphericalToCartesianFilter::setTransform(bool value) {
 	if (trans) {
 		trans->setTransform(value);
 	}
-    //indicates that transformation should be done again
+	//indicates that transformation should be done again
 	this->Modified();
 }

@@ -48,7 +48,7 @@ private:
 	 * transforms gps cooridinates (lat, long, height) to world/cartesian coodinate systen, and also derivates
 	 */
 	template<typename T> void gpsToWorldAndDerivatives(const Vector3<T>& gps, Vector3<T>& cartesian,
-			T derivatives[3][3]) {
+	        T derivatives[3][3]) {
 
 		gpsToWorldCoordinates(gps, cartesian);
 		sphericalToCartesianJacobian(gps, derivatives);
