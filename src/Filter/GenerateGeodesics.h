@@ -7,34 +7,35 @@ template<typename T> class Vector3;
 
 class GenerateGeodesics : public vtkPolyDataAlgorithm {
 public:
-    vtkTypeMacro(GenerateGeodesics, vtkPolyDataAlgorithm)
-    static GenerateGeodesics* New();
-    void PrintSelf(ostream& os, vtkIndent indent) override;
+	vtkTypeMacro(GenerateGeodesics, vtkPolyDataAlgorithm)
+	static GenerateGeodesics* New();
+	void PrintSelf(ostream& os, vtkIndent indent) override;
 
-    int RequestData(vtkInformation* info,
-                    vtkInformationVector** inputVector,
-                    vtkInformationVector* outputVector) override;
+	int RequestData(vtkInformation* info,
+					vtkInformationVector** inputVector,
+					vtkInformationVector* outputVector) override;
 
-    int FillOutputPortInformation(int, vtkInformation* info) override;
+	int FillOutputPortInformation(int, vtkInformation* info) override;
 
-    int FillInputPortInformation(int, vtkInformation* info) override;
+	int FillInputPortInformation(int, vtkInformation* info) override;
 
 private:
-    GenerateGeodesics();
-    GenerateGeodesics(const GenerateGeodesics&); // not implemented
-    void operator =(const GenerateGeodesics&); // not implemented
+	GenerateGeodesics();
+	GenerateGeodesics(const GenerateGeodesics&); // not implemented
+	void operator =(const GenerateGeodesics&); // not implemented
 
-    double maxLenOfLineSegment = 0.9;
+	double maxLenOfLineSegment = 0.9;
 
-    /**
-     * @brief calculateFlightPoints calculate the neccessary points between start and end airport and insert them into a data set
-     * @param start the start airport
-     * @param end the destination airport
-     * @param maxLineLenght the max length for a straight line (defines how smooth the geodesic seems)
-     * @param dataSet the data set to insert the points
-     * @return the number of points inserted
-     */
-    int calculateFlightPoints(const Vector3<double>& start, const Vector3<double>& end, vtkPoints* const dataSet);
+	/**
+	 * @brief calculateFlightPoints calculate the neccessary points between start and end airport and insert them into a data set
+	 * @param start the start airport
+	 * @param end the destination airport
+	 * @param maxLineLenght the max length for a straight line (defines how smooth the geodesic seems)
+	 * @param dataSet the data set to insert the points
+	 * @return the number of points inserted
+	 */
+	int calculateFlightPoints(const Vector3<double>& start, const Vector3<double>& end,
+							  vtkPoints* const dataSet);
 };
 
 #endif // KRONOSGENERATEGEODESICS_H

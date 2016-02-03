@@ -59,7 +59,8 @@ template<typename T> Vector3<T> scaleTo(const Vector3<T>& gps, const T targetLen
 template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Vector3<T>& gps2) {
     Vector3<T> cartesian1 = sphericalToCartesian(gps1) / 2;
     Vector3<T> cartesian2 = sphericalToCartesian(gps2) / 2;
-    return cartesianToSpherical(cartesian1 + cartesian2);
+	Vector3<T> newPoint = cartesianToSpherical(cartesian1 + cartesian2);
+	return scaleTo(newPoint, (gps1.z + gps2.z) / 2);
 }
 
 #endif // SPHERICAL_COORDINATE_FUNCTIONS
