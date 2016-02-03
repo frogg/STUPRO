@@ -23,6 +23,8 @@ private:
     CityListModel* resultListModel;
     CitiesDatabase* citiesDatabase;
 
+    void connectionFailed();
+
 private slots:
     void startSearch();
     void listSelectionChanged(const QItemSelection& selection, const QItemSelection& previous);
