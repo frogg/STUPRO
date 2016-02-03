@@ -65,6 +65,13 @@ struct BadStatusCodeException : public DownloadFailedException {
 		  ) { }
 };
 
+struct InvalidReplyException : public DownloadFailedException {
+	InvalidReplyException()
+		: DownloadFailedException(
+		      QString("An invalid reply was received")
+		  ) { }
+};
+
 /**
  * Exception thrown when a network request returned a content type that the ImageDownloadWorker
  * doesn't recognize.
@@ -116,6 +123,16 @@ public:
 	 * Aborts the currently running download.
 	 */
 	void abortDownload();
+
+	/**
+	 * Returns true if the network request is currently running.
+	 */
+	bool isRunning();
+
+	/**
+	 * Returns true if the network request has finished.
+	 */
+	bool isFinished();
 
 	/**
 	 * @returns the layer name provided in the constructor

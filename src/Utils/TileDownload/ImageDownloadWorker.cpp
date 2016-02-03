@@ -8,15 +8,23 @@
 ImageDownloadWorker::ImageDownloadWorker(QString layerName, QUrl url, int imageWidth,
         int imageHeight)
 	: layerName(layerName), url(url), imageWidth(imageWidth), imageHeight(imageHeight),
-	  reply(NULL) {
+	  abortRequested(false), reply(0) {
 	this->startDownload();
 }
 
 void ImageDownloadWorker::abortDownload() {
 	this->abortRequested = true;
 	if (this->reply && this->reply->isRunning()) {
-		this->reply->abort();
+		this->reply->close();
 	}
+}
+
+bool ImageDownloadWorker::isRunning() {
+	return this->reply && this->reply->isRunning();
+}
+
+bool ImageDownloadWorker::isFinished() {
+	return this->reply && this->reply->isFinished();
 }
 
 QString ImageDownloadWorker::getLayerName() const {
@@ -31,20 +39,29 @@ void ImageDownloadWorker::startDownload() {
 	// create and detach a new thread that triggers the download of the image and waits until the
 	// download completed
 	std::thread([this]() {
-		// event loop needed for the network access manager and the synchronous request
-		QEventLoop replyLoop;
+		// the reason why the downloadCompleted() call is present on both sides of the if-statement
+		// (versus a single call after the if-else) is that for some reason, the call to
+		// reply->attribute(QNetworkRequest::HttpStatusCodeAttribute) in the downloadCompleted()
+		// method will throw a SIGSEGV otherwise.
 
-		// trigger the request
-		QNetworkAccessManager networkManager;
-		QNetworkRequest request(this->url);
-		this->reply = networkManager.get(request);
+		if (this->abortRequested) {
+			this->downloadCompleted();
+		} else {
+			// event loop needed for the network access manager and the synchronous request
+			QEventLoop replyLoop;
 
-		// wait for the download to complete
-		QObject::connect(this->reply, SIGNAL(finished()), &replyLoop, SLOT(quit()));
-		replyLoop.exec();
+			// trigger the request
+			QNetworkAccessManager networkManager;
+			QNetworkRequest request(this->url);
+			this->reply = networkManager.get(request);
 
-		// notify the ImageDownloadWorker of the completed download
-		this->downloadCompleted();
+			// wait for the download to complete
+			QObject::connect(this->reply, SIGNAL(finished()), &replyLoop, SLOT(quit()));
+			replyLoop.exec();
+
+			// notify the ImageDownloadWorker of the completed download
+			this->downloadCompleted();
+		}
 	}).detach();
 }
 
@@ -94,14 +111,24 @@ MetaImage ImageDownloadWorker::decodeBil16(const QByteArray& rawData, int width,
 
 void ImageDownloadWorker::downloadCompleted() {
 	try {
+		if (reply) {
+			if (reply->error()) {
+				if (reply->error() == QNetworkReply::OperationCanceledError) {
+					throw DownloadAbortedException(this->url);
+				}
+
+				throw ConnectionFailedException(this->url, this->reply->error());
+			}
+			QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+			if (!statusCode.isValid()) {
+				throw InvalidReplyException();
+			}
+			if (statusCode.toInt() != 200) {
+				throw BadStatusCodeException(this->reply);
+			}
+		}
 		if (this->abortRequested) {
 			throw DownloadAbortedException(this->url);
-		}
-		if (reply->error()) {
-			throw ConnectionFailedException(this->url, this->reply->error());
-		}
-		if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-			throw BadStatusCodeException(this->reply);
 		}
 
 		QString contentType = this->reply->header(QNetworkRequest::ContentTypeHeader).toString();
