@@ -19,6 +19,8 @@ struct DownloadFailedException : public KronosException {
  * Exception thrown when the download was cancelled before it finished.
  */
 struct DownloadAbortedException : public DownloadFailedException {
+	DownloadAbortedException() : DownloadFailedException("The download was aborted.") { }
+
 	DownloadAbortedException(QUrl url)
 		: DownloadFailedException(
 		      QString("The download was aborted. Url: '%1'").arg(url.toString())
