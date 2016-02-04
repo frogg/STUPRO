@@ -29,13 +29,13 @@ TEST(TestSphericalToCartesianFilter, ValidCalls) {
 	vtkPoints* newPoints = vtkPoints::New();
 	const double precision = 0.01;
 
-	points->InsertNextPoint(0, 0, 0);
+    points->InsertNextPoint(0, 0, 200);
 	newPoints->InsertNextPoint(0, 0, 200);
-	points->InsertNextPoint(90, 0, 0);
+    points->InsertNextPoint(90, 0, 200);
 	newPoints->InsertNextPoint(200, 0, 0);
 	points->InsertNextPoint(0, 90, 10);
-	newPoints->InsertNextPoint(0, 210, 0);
-	points->InsertNextPoint(-90, 0, 0);
+    newPoints->InsertNextPoint(0, 10, 0);
+    points->InsertNextPoint(-90, 0, 200);
 	newPoints->InsertNextPoint(-200, 0, 0);
 
 	transformed->Allocate(points->GetNumberOfPoints());
