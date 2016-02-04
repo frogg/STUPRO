@@ -7,35 +7,10 @@
 #include <qstring.h>
 #include <Utils/TileDownload/ImageDownloader.hpp>
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
-#include <exception>
+#include <Utils/TileDownload/DownloadExceptions.hpp>
 #include <string>
 
 class QUrl;
-
-
-/**
- * Exception thrown when a non-existing layer is requested.
- */
-struct InvalidLayerException : public std::exception {
-	std::string reason;
-
-	InvalidLayerException(QString givenLayer, QList<QString> availableLayers) {
-		QString message("The given layer wasn't recognized. Expected one of { ");
-		for (int i = 0; i < availableLayers.size(); i++) {
-			message += "'" + availableLayers[i] + "'";
-			if (i < availableLayers.size() - 1) {
-				message += ", ";
-			}
-		}
-		message += " }. Was given '" + givenLayer + "'.";
-		this->reason = message.toStdString();
-	}
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
-};
-
 
 class ImageTileFetcher : public QRunnable {
 public:
