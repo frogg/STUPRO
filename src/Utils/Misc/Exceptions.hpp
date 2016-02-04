@@ -4,14 +4,19 @@
 
 #include <Utils/Misc/Macros.hpp>
 
-struct InvalidStateException : public std::exception {
+struct KronosException : public std::exception {
 	std::string reason;
 
-	InvalidStateException(QString reason) : reason(reason.toStdString()) { }
+	KronosException() { }
+	KronosException(QString reason) : reason(reason.toStdString()) { }
 
 	const char* what() const KRONOS_NOTHROW override {
 		return reason.c_str();
 	}
+};
+
+struct InvalidStateException : public KronosException {
+	InvalidStateException(QString reason) : KronosException(reason) { }
 };
 
 #endif

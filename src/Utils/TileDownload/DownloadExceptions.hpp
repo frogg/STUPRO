@@ -1,7 +1,7 @@
 #ifndef KRONOS_UTILS_TILE_DOWNLOAD_DOWNLOAD_EXCEPTIONS_HPP
 #define KRONOS_UTILS_TILE_DOWNLOAD_DOWNLOAD_EXCEPTIONS_HPP
 
-#include <Utils/Misc/Macros.hpp>
+#include <Utils/Misc/Exceptions.hpp>
 
 #include <QString>
 #include <QUrl>
@@ -11,14 +11,8 @@
 /**
  * Base struct for all exceptions thrown whenever a download failed.
  */
-struct DownloadFailedException : public std::exception {
-	std::string reason;
-
-	DownloadFailedException(QString reason) : reason(reason.toStdString()) { }
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
+struct DownloadFailedException : public KronosException {
+	DownloadFailedException(QString reason) : KronosException(reason) { }
 };
 
 /**
@@ -99,9 +93,7 @@ struct Bil16DecodingFailedException : public DownloadFailedException {
 /**
  * Exception thrown when a non-existing layer is requested.
  */
-struct InvalidLayerException : public std::exception {
-	std::string reason;
-
+struct InvalidLayerException : public KronosException {
 	InvalidLayerException(QString givenLayer, QList<QString> availableLayers) {
 		QString message("The given layer wasn't recognized. Expected one of { ");
 		for (int i = 0; i < availableLayers.size(); i++) {
@@ -113,23 +105,13 @@ struct InvalidLayerException : public std::exception {
 		message += " }. Was given '" + givenLayer + "'.";
 		this->reason = message.toStdString();
 	}
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
 };
 
 /**
  * Exception thrown when a tile location parameter is out of range.
  */
-struct InvalidTileLocationException : public std::exception {
-	std::string reason;
-
-	InvalidTileLocationException(QString message) : reason(message.toStdString()) { }
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
+struct InvalidTileLocationException : public KronosException {
+	InvalidTileLocationException(QString message) : KronosException(message) { }
 };
 
 /**
