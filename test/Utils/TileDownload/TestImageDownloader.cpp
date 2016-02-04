@@ -39,6 +39,9 @@ TEST(TestImageDownloader, GetTile) {
 
 	ASSERT_NO_THROW(downloader.fetchTile(zoomLevel, tileX, tileY));
 
+	if (future.wait_for(std::chrono::seconds(20)) != std::future_status::ready) {
+		FAIL() << "Timeout while waiting for ImageDownloader::fetchTile";
+	}
 	ImageTile tile = future.get();
 
 	EXPECT_EQ(zoomLevel, tile.getZoomLevel());
