@@ -12,4 +12,5 @@ echo "alter role \"$USERNAME\" with password '$PASSWORD';" | psql -U $USERNAME t
 # create a database belonging to the user
 echo "create database \"$DB_NAME\" with owner \"$USERNAME\" encoding 'UTF8' template template0;" | psql -U $USERNAME template1
 
-python ./DBCity.py
+#python ./DBCity.py
+psql $DB_NAME < PostgresCityDump.txt
