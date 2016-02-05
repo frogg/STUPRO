@@ -5,25 +5,20 @@
 /**
  * Test resource that records all instance creations and destructions.
  */
-class DummyResource
-{
+class DummyResource {
 public:
 
-	struct Event
-	{
-		enum Type
-		{
+	struct Event {
+		enum Type {
 			CREATED, DESTROYED
 		};
 
 		Event(Type type, unsigned int id) :
-				type(type),
-				id(id)
-		{
+			type(type),
+			id(id) {
 		}
 
-		bool operator==(const Event & event) const
-		{
+		bool operator==(const Event& event) const {
 			return type == event.type && id == event.id;
 		}
 
@@ -31,19 +26,16 @@ public:
 		unsigned int id;
 	};
 
-	DummyResource()
-	{
+	DummyResource() {
 		id = counter++;
 		events.push_back(Event(Event::CREATED, id));
 	}
 
-	~DummyResource()
-	{
+	~DummyResource() {
 		events.push_back(Event(Event::DESTROYED, id));
 	}
 
-	static void reset()
-	{
+	static void reset() {
 		counter = 0;
 		events.clear();
 	}
@@ -57,8 +49,7 @@ public:
 unsigned int DummyResource::counter = 0;
 std::vector<DummyResource::Event> DummyResource::events = std::vector<DummyResource::Event>();
 
-TEST(TestResourcePool, CreateEmptyPool)
-{
+TEST(TestResourcePool, CreateEmptyPool) {
 	{
 		DummyResource::reset();
 		ResourcePool<DummyResource> pool;
@@ -68,8 +59,7 @@ TEST(TestResourcePool, CreateEmptyPool)
 	EXPECT_EQ(0, DummyResource::events.size());
 }
 
-TEST(TestResourcePool, CreateSingleResource)
-{
+TEST(TestResourcePool, CreateSingleResource) {
 	{
 		DummyResource::reset();
 		ResourcePool<DummyResource> pool;
@@ -87,41 +77,36 @@ TEST(TestResourcePool, CreateSingleResource)
 	EXPECT_EQ(DummyResource::Event(DummyResource::Event::DESTROYED, 0), DummyResource::events[1]);
 }
 
-TEST(TestResourcePool, PoolOverflow)
-{
+TEST(TestResourcePool, PoolOverflow) {
 	DummyResource::reset();
 	ResourcePool<DummyResource> pool;
 	pool.setPoolSize(5);
 
 	ResourcePool<DummyResource>::Handle handles[6];
 
-	for (std::size_t i = 0; i < 6; ++i)
-	{
+	for (std::size_t i = 0; i < 6; ++i) {
 		handles[i] = pool.acquire();
 	}
 
 	EXPECT_EQ(6, DummyResource::events.size());
 
-	for (std::size_t i = 0; i < 6; ++i)
-	{
+	for (std::size_t i = 0; i < 6; ++i) {
 		EXPECT_EQ(DummyResource::Event(DummyResource::Event::CREATED, i), DummyResource::events[i]);
 	}
 }
 
-TEST(TestResourcePool, HandleManualRelease)
-{
+TEST(TestResourcePool, HandleManualRelease) {
 	DummyResource::reset();
 	ResourcePool<DummyResource> pool;
 	pool.setPoolSize(5);
 
 	ResourcePool<DummyResource>::Handle handle = pool.acquire();
-	
+
 	handle.setActive(false);
 
 	ResourcePool<DummyResource>::Handle handles[5];
 
-	for (std::size_t i = 0; i < 5; ++i)
-	{
+	for (std::size_t i = 0; i < 5; ++i) {
 		handles[i] = pool.acquire();
 	}
 
@@ -129,8 +114,7 @@ TEST(TestResourcePool, HandleManualRelease)
 	EXPECT_TRUE(handle.isExpired());
 }
 
-TEST(TestResourcePool, HandleAutoRelease)
-{
+TEST(TestResourcePool, HandleAutoRelease) {
 	DummyResource::reset();
 	ResourcePool<DummyResource> pool;
 	pool.setPoolSize(5);
@@ -141,8 +125,7 @@ TEST(TestResourcePool, HandleAutoRelease)
 
 	ResourcePool<DummyResource>::Handle handles[5];
 
-	for (std::size_t i = 0; i < 5; ++i)
-	{
+	for (std::size_t i = 0; i < 5; ++i) {
 		handles[i] = pool.acquire();
 	}
 

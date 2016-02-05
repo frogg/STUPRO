@@ -88,7 +88,7 @@ public:
 	 * Destroys the globe tile and cleans up the actor.
 	 */
 	~GlobeTile();
-	
+
 	/**
 	 * Changes the location of this globe tile.
 	 */
@@ -109,7 +109,7 @@ public:
 	 * location.
 	 */
 	void loadTexture(const QImage& rgb, const QImage& height);
-	
+
 	/**
 	 * Possible states for the globe tile's texture.
 	 */
@@ -118,12 +118,12 @@ public:
 		TEXTURE_LOADING,
 		TEXTURE_LOADED
 	};
-	
+
 	/**
 	 * Sets the texture loading state for this globe tile.
 	 */
 	void setTextureLoadState(TextureLoadState textureLoadState);
-	
+
 	/**
 	 * Returns the texture loading state for this globe tile.
 	 */
@@ -203,7 +203,7 @@ private:
 	vtkSmartPointer<vtkActor> myActor;
 	vtkSmartPointer<vtkShader2> myVertexShader;
 	vtkSmartPointer<vtkShader2> myFragmentShader;
-	
+
 	TextureLoadState myTextureLoadState;
 
 	bool myIsVisible;

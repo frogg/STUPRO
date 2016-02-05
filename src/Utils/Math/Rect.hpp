@@ -170,16 +170,16 @@ public:
 	T area() const {
 		return w * h;
 	}
-	
+
 	/**
 	 * Checks if the rectangle intersects with another rectangle.
-	 * 
+	 *
 	 * @param rect
 	 *        The rectangle to intersect with
-	 * 
+	 *
 	 * @return True if there is an intersection, false otherwise
 	 */
-	bool intersects(const Rect<T> & rect) {
+	bool intersects(const Rect<T>& rect) {
 		return x2() > rect.x && rect.x2() > x &&
 		       y2() > rect.y && rect.y2() > y;
 	}

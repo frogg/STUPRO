@@ -112,13 +112,11 @@ vtkSmartPointer<vtkActor> GlobeTile::getActor() const {
 	return myActor;
 }
 
-void GlobeTile::setTextureLoadState(TextureLoadState textureLoadState)
-{
+void GlobeTile::setTextureLoadState(TextureLoadState textureLoadState) {
 	myTextureLoadState = textureLoadState;
 }
 
-GlobeTile::TextureLoadState GlobeTile::getTextureLoadState() const
-{
+GlobeTile::TextureLoadState GlobeTile::getTextureLoadState() const {
 	return myTextureLoadState;
 }
 
@@ -176,7 +174,7 @@ void GlobeTile::updateUniforms() {
 	float earthRadius = myGlobe.getGlobeConfig().earthRadius;
 	float minHeight = myLowerHeight / earthRadius;
 	float maxHeight = myUpperHeight / earthRadius;
-	
+
 	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1, &displayModeInterpolation);
 	myVertexShader->GetUniformVariables()->SetUniformf("minHeight", 1, &minHeight);
 	myVertexShader->GetUniformVariables()->SetUniformf("maxHeight", 1, &maxHeight);
@@ -184,7 +182,7 @@ void GlobeTile::updateUniforms() {
 	RectF bounds = myLocation.getBounds();
 	Vector2f startBounds = bounds.x1y1();
 	Vector2f endBounds = bounds.x2y2();
-	
+
 	myVertexShader->GetUniformVariables()->SetUniformf("longStart", 1, &startBounds.x);
 	myVertexShader->GetUniformVariables()->SetUniformf("longEnd", 1, &endBounds.x);
 	myVertexShader->GetUniformVariables()->SetUniformf("latStart", 1, &startBounds.y);

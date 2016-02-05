@@ -26,18 +26,15 @@
 #include <memory>
 
 Globe::Globe(vtkRenderer& renderer, GlobeConfig globeConfig) :
-		myRenderer(renderer),
-		myDownloader([ = ](ImageTile tile)
-		{
-			onTileLoad(tile);
-		}),
-		myTilePool([this]() -> std::unique_ptr<GlobeTile>
-		{
-			return makeUnique<GlobeTile>(*this);
-		}),
-		myZoomLevel(3),
-		myDisplayModeInterpolation(0)
-{
+	myRenderer(renderer),
+	myDownloader([ = ](ImageTile tile) {
+	onTileLoad(tile);
+}),
+myTilePool([this]() -> std::unique_ptr<GlobeTile> {
+	return makeUnique<GlobeTile>(*this);
+}),
+myZoomLevel(3),
+myDisplayModeInterpolation(0) {
 	// TODO: add config option for pool size.
 	myTilePool.setPoolSize(32);
 
@@ -61,59 +58,48 @@ Globe::Globe(vtkRenderer& renderer, GlobeConfig globeConfig) :
 	createTileHandles();
 }
 
-Globe::~Globe()
-{
+Globe::~Globe() {
 }
 
-void Globe::setResolution(Vector2u resolution)
-{
+void Globe::setResolution(Vector2u resolution) {
 	myPlaneSource->SetResolution(resolution.x, resolution.y);
 }
 
-Vector2u Globe::getResolution() const
-{
+Vector2u Globe::getResolution() const {
 	Vector2i ret;
 	myPlaneSource->GetResolution(ret.x, ret.y);
 	return Vector2u(ret);
 }
 
-vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper() const
-{
+vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper() const {
 	return myPlaneMapper;
 }
 
-vtkRenderWindow& Globe::getRenderWindow() const
-{
+vtkRenderWindow& Globe::getRenderWindow() const {
 	return *myRenderer.GetRenderWindow();
 }
 
-vtkRenderer& Globe::getRenderer() const
-{
+vtkRenderer& Globe::getRenderer() const {
 	return myRenderer;
 }
 
-void Globe::setZoomLevel(unsigned int zoomLevel)
-{
-	if (myZoomLevel != zoomLevel)
-	{
+void Globe::setZoomLevel(unsigned int zoomLevel) {
+	if (myZoomLevel != zoomLevel) {
 		eraseTileHandles();
 		myZoomLevel = zoomLevel;
 		createTileHandles();
 	}
 }
 
-unsigned int Globe::getZoomLevel() const
-{
+unsigned int Globe::getZoomLevel() const {
 	return myZoomLevel;
 }
 
-GlobeTile& Globe::getTileAt(int lon, int lat) const
-{
+GlobeTile& Globe::getTileAt(int lon, int lat) const {
 	return getTileHandleAt(lon, lat).getResource();
 }
 
-ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat) const
-{
+ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat) const {
 	unsigned int index = getTileIndex(lon, lat);
 
 	assert(index < myTileHandles.size());
@@ -121,8 +107,7 @@ ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat) const
 	return myTileHandles[index];
 }
 
-void Globe::setTileHandleAt(int lon, int lat, ResourcePool<GlobeTile>::Handle handle)
-{
+void Globe::setTileHandleAt(int lon, int lat, ResourcePool<GlobeTile>::Handle handle) {
 	unsigned int index = getTileIndex(lon, lat);
 
 	assert(index < myTileHandles.size());
@@ -130,45 +115,37 @@ void Globe::setTileHandleAt(int lon, int lat, ResourcePool<GlobeTile>::Handle ha
 	myTileHandles[index] = handle;
 }
 
-unsigned int Globe::getTileIndex(int lon, int lat) const
-{
+unsigned int Globe::getTileIndex(int lon, int lat) const {
 	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getWrappedLocation();
 
 	unsigned int index = (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
 	return index;
 }
 
-namespace priv
-{
+namespace priv {
 	/**
 	 * Returns the bounding box of the specified vectors.
 	 */
 	template<typename T, int arraySize>
-	Rect<T> getBoundingBox(const std::array<Vector4<T>, arraySize> & vectors)
-	{
+	Rect<T> getBoundingBox(const std::array<Vector4<T>, arraySize>& vectors) {
 		float left, right, top, bottom;
 
-		for (std::size_t i = 0; i < arraySize; ++i)
-		{
+		for (std::size_t i = 0; i < arraySize; ++i) {
 			Vector2f pos = vectors[i].xy();
 
-			if (i == 0 || pos.x < left)
-			{
+			if (i == 0 || pos.x < left) {
 				left = pos.x;
 			}
 
-			if (i == 0 || pos.x > right)
-			{
+			if (i == 0 || pos.x > right) {
 				right = pos.x;
 			}
 
-			if (i == 0 || pos.y < top)
-			{
+			if (i == 0 || pos.y < top) {
 				top = pos.y;
 			}
 
-			if (i == 0 || pos.y > bottom)
-			{
+			if (i == 0 || pos.y > bottom) {
 				bottom = pos.y;
 			}
 		}
@@ -179,8 +156,7 @@ namespace priv
 }
 
 bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
-        vtkMatrix4x4* compositeTransform) const
-{
+                                vtkMatrix4x4* compositeTransform) const {
 	// Define normalized viewer direction: in screenspace, the camera points in the -Z direction.
 	static const Vector3f cameraDirection(0.f, 0.f, -1.f);
 
@@ -188,8 +164,7 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 	static const RectF screenRect(-1.f, -1.f, 2.f, 2.f);
 
 	// TODO: Implement culling for flat map!
-	if (getDisplayModeInterpolation() > 0.5f)
-	{
+	if (getDisplayModeInterpolation() > 0.5f) {
 		return true;
 	}
 
@@ -209,14 +184,12 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 	// Copy array in case it is needed for position calculations later.
 	std::array<Vector4f, 4> tileCornerPositions = tileCornerNormals;
 
-	for (auto & tileNormal : tileCornerNormals)
-	{
+	for (auto& tileNormal : tileCornerNormals) {
 		// Transform the surface normal by the normal transformation matrix calculated earlier.
 		normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
 
 		// Check if normal points away from the camera.
-		if (tileNormal.xyz().dot(cameraDirection) < 0.f)
-		{
+		if (tileNormal.xyz().dot(cameraDirection) < 0.f) {
 			// Other direction? Tile is facing towards viewer, disallow backface culling.
 			visible = true;
 			break;
@@ -224,14 +197,12 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 	}
 
 	// If tile is facing away from camera, it can not possibly be visible.
-	if (!visible)
-	{
+	if (!visible) {
 		return false;
 	}
 
 	// Transform tile position to screenspace.
-	for (auto & tilePosition : tileCornerPositions)
-	{
+	for (auto& tilePosition : tileCornerPositions) {
 
 		// Convert normal to position by multiplication with radius.
 		tilePosition *= getGlobeConfig().globeRadius;
@@ -256,29 +227,24 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 	return visible;
 }
 
-void Globe::setTileVisibility(int lon, int lat, bool visibility)
-{
+void Globe::setTileVisibility(int lon, int lat, bool visibility) {
 	// Get handle to the globe tile.
 	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(lon, lat);
 
 	// Check if tile is already visible/active and is set to be disabled, or if the tile is set to
 	// be enabled from being inactive.
-	if (!visibility && handle.isActive())
-	{
+	if (!visibility && handle.isActive()) {
 		// Get reference to underlying globe tile.
-		GlobeTile & tile = handle.getResource();
+		GlobeTile& tile = handle.getResource();
 
 		// Make tile invisible.
 		tile.setVisibile(false);
 
 		// Mark resource as inactive.
 		handle.setActive(false);
-	}
-	else if (visibility && !handle.isActive())
-	{
+	} else if (visibility && !handle.isActive()) {
 		// Check if the tile resource is already expired.
-		if (handle.isExpired())
-		{
+		if (handle.isExpired()) {
 			// A new tile needs to be acquired from the resource pool.
 			handle = myTilePool.acquire();
 
@@ -286,7 +252,7 @@ void Globe::setTileVisibility(int lon, int lat, bool visibility)
 			setTileHandleAt(lon, lat, handle);
 
 			// Get reference to underlying globe tile.
-			GlobeTile & tile = handle.getResource();
+			GlobeTile& tile = handle.getResource();
 
 			// Make the tile visible.
 			tile.setVisibile(true);
@@ -303,14 +269,12 @@ void Globe::setTileVisibility(int lon, int lat, bool visibility)
 
 			// Start loading process.
 			myDownloader.fetchTile(myZoomLevel, lon, lat);
-		}
-		else
-		{
+		} else {
 			// Re-use existing tile resource by reactivating it.
 			handle.setActive(true);
 
 			// Get reference to underlying globe tile.
-			GlobeTile & tile = handle.getResource();
+			GlobeTile& tile = handle.getResource();
 
 			// Make tile visible.
 			tile.setVisibile(true);
@@ -318,22 +282,18 @@ void Globe::setTileVisibility(int lon, int lat, bool visibility)
 	}
 }
 
-void Globe::createTileHandles()
-{
+void Globe::createTileHandles() {
 	unsigned int height = 1 << myZoomLevel;
 	unsigned int width = height * 2;
 
 	myTileHandles.resize(width * height);
 }
 
-void Globe::eraseTileHandles()
-{
-	for (auto& handle : myTileHandles)
-	{
-		if (handle.isActive())
-		{
+void Globe::eraseTileHandles() {
+	for (auto& handle : myTileHandles) {
+		if (handle.isActive()) {
 			// Get reference to underlying globe tile.
-			GlobeTile & tile = handle.getResource();
+			GlobeTile& tile = handle.getResource();
 
 			// Make tile invisible.
 			tile.setVisibile(false);
@@ -347,24 +307,20 @@ void Globe::eraseTileHandles()
 	}
 }
 
-void Globe::loadGlobeTiles()
-{
+void Globe::loadGlobeTiles() {
 	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
-	
-	while (!myDownloadedTiles.empty())
-	{
-		// TODO: Change to const reference once ImageTile specifies const on methods.
-		ImageTile & tile = myDownloadedTiles.front();
 
-		if (myZoomLevel != tile.getZoomLevel())
-		{
+	while (!myDownloadedTiles.empty()) {
+		// TODO: Change to const reference once ImageTile specifies const on methods.
+		ImageTile& tile = myDownloadedTiles.front();
+
+		if (myZoomLevel != tile.getZoomLevel()) {
 			return;
 		}
 
 		ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY());
 
-		if (!handle.isActive())
-		{
+		if (!handle.isActive()) {
 			return;
 		}
 
@@ -373,8 +329,7 @@ void Globe::loadGlobeTiles()
 		auto rgbIterator = tile.getLayers().find("satelliteImagery");
 		auto heightmapIterator = tile.getLayers().find("heightmap");
 
-		if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end())
-		{
+		if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end()) {
 			return;
 		}
 
@@ -388,60 +343,50 @@ void Globe::loadGlobeTiles()
 		globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
 
 		globeTile.updateUniforms();
-		
+
 		myDownloadedTiles.pop();
 	}
 }
 
-void Globe::setDisplayModeInterpolation(float displayMode)
-{
+void Globe::setDisplayModeInterpolation(float displayMode) {
 	myDisplayModeInterpolation = displayMode;
 
-	for (const auto& tile : myTileHandles)
-	{
-		if (tile.isActive())
-		{
+	for (const auto& tile : myTileHandles) {
+		if (tile.isActive()) {
 			tile.getResource().updateUniforms();
 		}
 	}
 }
 
-float Globe::getDisplayModeInterpolation() const
-{
+float Globe::getDisplayModeInterpolation() const {
 	return myDisplayModeInterpolation;
 }
 
-bool Globe::checkIfRepaintIsNeeded()
-{
+bool Globe::checkIfRepaintIsNeeded() {
 	return !myIsClean.test_and_set();
 }
 
-void Globe::onCameraChanged()
-{
+void Globe::onCameraChanged() {
 	updateZoomLevel();
 	updateTileVisibility();
 	loadGlobeTiles();
 }
 
-void Globe::setGlobeConfig(GlobeConfig globeConfig)
-{
+void Globe::setGlobeConfig(GlobeConfig globeConfig) {
 	myGlobeConfig = globeConfig;
 }
 
-const GlobeConfig& Globe::getGlobeConfig() const
-{
+const GlobeConfig& Globe::getGlobeConfig() const {
 	return myGlobeConfig;
 }
 
-void Globe::onTileLoad(ImageTile tile)
-{
+void Globe::onTileLoad(ImageTile tile) {
 	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
 
 	myDownloadedTiles.push(tile);
 }
 
-void Globe::updateZoomLevel()
-{
+void Globe::updateZoomLevel() {
 	// Get current camera for distance calculations.
 	vtkCamera* camera = getRenderer().GetActiveCamera();
 
@@ -467,22 +412,17 @@ void Globe::updateZoomLevel()
 	unsigned int zoomResult = 0;
 
 	// Check minimum/maximum cases.
-	if (normalizedDistance > 1.f)
-	{
+	if (normalizedDistance > 1.f) {
 		zoomResult = nearZoom;
-	}
-	else if (normalizedDistance < 0.f)
-	{
+	} else if (normalizedDistance < 0.f) {
 		zoomResult = farZoom;
-	}
-	else
-	{
+	} else {
 		// Get the exponential scaling factor.
 		float expScale = Configuration::getInstance().getFloat("globe.zoom.expScale");
 
 		// Calculate the exponential normalized distance.
 		float exponentialDistance = (std::pow(expScale, normalizedDistance) - 1.f)
-		        / (expScale - 1.f);
+		                            / (expScale - 1.f);
 
 		// Interpolate the integer zoom levels based on the exponential normalized distance.
 		zoomResult = exponentialDistance * nearZoom + (1.f - exponentialDistance) * farZoom;
@@ -492,8 +432,7 @@ void Globe::updateZoomLevel()
 	this->setZoomLevel(zoomResult);
 }
 
-void Globe::updateTileVisibility()
-{
+void Globe::updateTileVisibility() {
 	// Get current camera for transformation matrix.
 	vtkCamera* camera = getRenderer().GetActiveCamera();
 
@@ -512,18 +451,16 @@ void Globe::updateTileVisibility()
 
 	// Get Model-View-Projection transformation matrix for globe tile position transformation.
 	vtkMatrix4x4* fullTransform = camera->GetCompositeProjectionTransformMatrix(
-	        (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
-	        clipFar);
+	                                  (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
+	                                  clipFar);
 
 	// Get number of tiles (vertically and horizontally).
 	unsigned int height = 1 << myZoomLevel;
 	unsigned int width = height * 2;
 
 	// Iterate over all tiles.
-	for (unsigned int lat = 0; lat < height; ++lat)
-	{
-		for (unsigned int lon = 0; lon < width; ++lon)
-		{
+	for (unsigned int lat = 0; lat < height; ++lat) {
+		for (unsigned int lon = 0; lon < width; ++lon) {
 			// Perform tile visibility check.
 			bool visible = isTileInViewFrustum(lon, lat, normalTransform, fullTransform);
 

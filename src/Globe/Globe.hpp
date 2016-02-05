@@ -156,13 +156,14 @@ private:
 	/**
 	 * Checks if the specified tile is facing towards the camera and within the camera's view frustum.
 	 */
-	bool isTileInViewFrustum(int lon, int lat, vtkMatrix4x4 * normalTransform, vtkMatrix4x4 * compositeTransform) const;
-	
+	bool isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
+	                         vtkMatrix4x4* compositeTransform) const;
+
 	/**
 	 * Changes the visibility of the specified tile.
 	 */
 	void setTileVisibility(int lon, int lat, bool visibility);
-	
+
 	/**
 	 * Resizes the tile handle list to the current zoom level.
 	 */
@@ -172,7 +173,7 @@ private:
 	 * Hides all currently visible globe tiles and erases the handles.
 	 */
 	void eraseTileHandles();
-	
+
 	/**
 	 * Loads all fetched globe tiles.
 	 */
@@ -196,7 +197,7 @@ private:
 
 	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
 	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;
-	
+
 	vtkSmartPointer<vtkOpenGLTexture> myLoadingTexture;
 
 	ImageDownloader myDownloader;

@@ -28,10 +28,10 @@ vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QIma
 
 /**
  * Creates a VTK texture from a PNG image file.
- * 
+ *
  * @param filename
  *        Contains the name of the file to read from.
- * 
+ *
  * @return A smart pointer to a texture holding the specified image.
  */
 vtkSmartPointer<vtkOpenGLTexture> loadTextureFromFile(const std::string& filename);

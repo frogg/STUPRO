@@ -76,7 +76,7 @@ vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QIma
 	return texture;
 }
 
-vtkSmartPointer<vtkOpenGLTexture> loadTextureFromFile(const std::string & filename) {
+vtkSmartPointer<vtkOpenGLTexture> loadTextureFromFile(const std::string& filename) {
 	// Load image data from PNG file.
 	vtkSmartPointer<vtkPNGReader> pngReader = vtkSmartPointer<vtkPNGReader>::New();
 	pngReader->SetFileName(filename.c_str());
