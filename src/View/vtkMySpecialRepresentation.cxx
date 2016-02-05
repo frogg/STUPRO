@@ -97,7 +97,6 @@ void vtkMySpecialRepresentation::SetVisibility(bool val)
 //----------------------------------------------------------------------------
 bool vtkMySpecialRepresentation::AddToView(vtkView* view)
 {
-    cout << "AddToView" << endl;
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
@@ -108,7 +107,6 @@ bool vtkMySpecialRepresentation::AddToView(vtkView* view)
 }
 bool vtkMySpecialRepresentation::RemoveFromView(vtkView* view)
 {
-    cout << "RemoveFromView" << endl;
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
