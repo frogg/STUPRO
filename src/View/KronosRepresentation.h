@@ -24,7 +24,7 @@ public:
 
   void PrintSelf(ostream& os, vtkIndent indent) override;
   void SetVisibility(bool val) override;
-
+  void SwitchDepthBuffer(bool val);
 protected:
     KronosRepresentation();
     ~KronosRepresentation();
@@ -47,6 +47,7 @@ private:
     vtkSmartPointer<vtkActor2D> labelActor;
     //filter
     vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter;
+    bool useDepthBuffer;
 };
 
 #endif

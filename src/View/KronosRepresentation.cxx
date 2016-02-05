@@ -15,11 +15,15 @@ KronosRepresentation::KronosRepresentation()
     //Set nummber of input connections.
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(0);
-    //Create Actors
+    //Create Object of Everything used;
     this->pointActor = vtkSmartPointer<vtkActor>::New();
     this->labelActor = vtkSmartPointer<vtkActor2D>::New();
+    this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
+    this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
     //Set visibility to false so its not shown on load
     this->SetVisibility(false);
+    this->useDepthBuffer=true;
 }
 
 //----------------------------------------------------------------------------
@@ -45,7 +49,7 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
         this->pointMapper->SetInputData(input);
         
-        // Generate the label hierarchy.
+        //Generate the label hierarchy.
         this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
         this->pointSetToLabelHierarchyFilter->SetInputData(input);
         this->pointSetToLabelHierarchyFilter->SetLabelArrayName("names");
@@ -56,7 +60,11 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
         this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
         //Use depth buffer
-        this->labelMapper->UseDepthBufferOn();
+        if(this->useDepthBuffer){
+            this->labelMapper->UseDepthBufferOn();
+        }else{
+            this->labelMapper->UseDepthBufferOff();
+        }
         //Add the mappers to the actors.
         this->pointActor->SetMapper(this->pointMapper);
         this->labelActor->SetMapper(labelMapper);
@@ -76,6 +84,10 @@ void KronosRepresentation::SetVisibility(bool val)
     this->Superclass::SetVisibility(val);
     this->labelActor->SetVisibility(val?  1 : 0);
     this->pointActor->SetVisibility(val?  1 : 0);
+}
+void KronosRepresentation::SwitchDepthBuffer(bool val)
+{
+    this->useDepthBuffer=val? 1:0;
 }
 
 //----------------------------------------------------------------------------
