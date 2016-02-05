@@ -5,23 +5,25 @@
 #include <vtkSMSessionProxyManager.h>
 #include <string>
 
-const char* CustomFilterLoader::customFilterPath = "res/filters";
+const QString CustomFilterLoader::customFilterPath = "res/filters";
 
 void CustomFilterLoader::loadCustomFilters() {
-	QDir filterDir(customFilterPath);
+	// Get all files in the custom filter directory.
+	QStringList fileList = QDir(customFilterPath).entryList();
 
-	auto fileList = filterDir.entryList();
-
+	// Get the active proxy manager which will load the filters.
 	vtkSmartPointer<vtkSMSessionProxyManager> proxyMgr = vtkSMProxyManager::GetProxyManager()->GetActiveSessionProxyManager();
 
-	for(auto it = fileList.begin(); it != fileList.end(); ++it) {
-		QString curFileName = *it;
+	// Declare a pattern-izeable QString beforehand.
+	QString fileNamePath(customFilterPath + "/%1");
 
-		if(curFileName.length() > 2 && (curFileName.endsWith(".xml") || curFileName.endsWith(".cpd"))) {
-			QString curPath(customFilterPath);
-			curPath.append("/" + curFileName);
+	for(auto curFileName : fileList) {
 
-			proxyMgr->LoadCustomProxyDefinitions(curPath.toStdString().c_str());
+		if(curFileName.length() > 2 // Exclude "." and ".."
+		   && (curFileName.endsWith(".xml") || curFileName.endsWith(".cpd"))) { // Only allow xml and cpd files.
+
+			// Use the proxy manager to load the custom filters using c-strings.
+			proxyMgr->LoadCustomProxyDefinitions((fileNamePath.arg(curFileName)).toStdString().c_str());
 		}
 	}
 }

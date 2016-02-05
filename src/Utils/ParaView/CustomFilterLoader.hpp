@@ -1,9 +1,11 @@
 #ifndef SRC_UTILS_PARAVIEW_CUSTOMFILTERLOADER_HPP_
 #define SRC_UTILS_PARAVIEW_CUSTOMFILTERLOADER_HPP_
+#include <QString>
 
 /**
  * This class is responsible for loading custom filters
  * added to the plugin by default.
+ * Common usage: CustomFilterLoader::loadCustomFilters();
  */
 class CustomFilterLoader  {
 public:
@@ -18,9 +20,7 @@ private:
 	 * Is set to the path where the custom filters
 	 * are located.
 	 */
-	static const char* customFilterPath;
-	
-
+	static const QString customFilterPath;
 };
 
 #endif
