@@ -19,8 +19,8 @@
   </ProxyGroup>
   
   <ProxyGroup name="representations">
-  <RepresentationProxy name="MySpecialRepresentation"
-	class="vtkMySpecialRepresentation"
+  <RepresentationProxy name="Meta Info Representation"
+	class="KronosRepresentation"
 	processes="client|renderserver|dataserver"
 	base_proxygroup="representations"
 	base_proxyname="SurfaceRepresentation">
@@ -30,7 +30,7 @@
 	  our mapper.
 	</Documentation>
 	
-  <!-- End of MySpecialRepresentation -->
+  <!-- Adds a new Representation to visualize Cityes, Twitter and Geodesics  -->
   </RepresentationProxy>
 
   <Extension name="GeometryRepresentation">
@@ -39,13 +39,13 @@
 	  MySpecialRepresentation as a new type of representation.
 	</Documentation>
 
-	<!-- this adds to what is already defined in PVRepresentationBase -->
-	<RepresentationType subproxy="MySpecialRepresentation"
-	  text="Special Mapper" subtype="Surface" />
+	<!-- this adds to what is already defined in PVRepresentationBase to the Kronos Representation -->
+	<RepresentationType subproxy="Meta Info Representation"
+	  text="Meta Infos Representation" subtype="Surface" />
 
 	<SubProxy>
-	  <Proxy name="MySpecialRepresentation"
-		proxygroup="representations" proxyname="MySpecialRepresentation">
+	  <Proxy name="Meta Info Representation"
+		proxygroup="representations" proxyname="Meta Info Representation">
 	  </Proxy>
 	  <ShareProperties subproxy="SurfaceRepresentation">
 		<Exception name="Input" />

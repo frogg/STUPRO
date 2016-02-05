@@ -12,12 +12,12 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-// .NAME vtkMySpecialRepresentation
+// .NAME KronosRepresentation
 // .SECTION Description
 //
 
-#ifndef __vtkMySpecialRepresentation_h
-#define __vtkMySpecialRepresentation_h
+#ifndef __KronosRepresentation_h
+#define __KronosRepresentation_h
 
 #include "vtkGeometryRepresentationWithFaces.h"
 #include "vtkPVClientServerCoreRenderingModule.h" //needed for exports
@@ -33,31 +33,31 @@
 #include "vtkActor2D.h"
 #include "vtkLabelPlacementMapper.h"
 #include "vtkPointSetToLabelHierarchy.h"
-class VTK_EXPORT vtkMySpecialRepresentation : public vtkGeometryRepresentationWithFaces
+class VTK_EXPORT KronosRepresentation : public vtkGeometryRepresentationWithFaces
 {
 public:
-  static vtkMySpecialRepresentation* New();
-    
-  vtkTypeMacro(vtkMySpecialRepresentation, vtkGeometryRepresentationWithFaces);
-    
+  static KronosRepresentation* New();
+
+  vtkTypeMacro(KronosRepresentation, vtkGeometryRepresentationWithFaces);
+
   void PrintSelf(ostream& os, vtkIndent indent);
   void SetVisibility(bool val);
-  
+
 //BTX
 protected:
-    vtkMySpecialRepresentation();
-    ~vtkMySpecialRepresentation();
+    KronosRepresentation();
+    ~KronosRepresentation();
     virtual int RequestData(vtkInformation*,
                             vtkInformationVector**, vtkInformationVector*);
-    
+
     virtual bool AddToView(vtkView* view);
     virtual bool RemoveFromView(vtkView* view);
     int FillInputPortInformation(int, vtkInformation *info) override;
-    
+
 private:
-    
-    vtkMySpecialRepresentation(const vtkMySpecialRepresentation&); // Not implemented
-    void operator=(const vtkMySpecialRepresentation&); // Not implemented
+
+    KronosRepresentation(const KronosRepresentation&); // Not implemented
+    void operator=(const KronosRepresentation&); // Not implemented
     // Create a dummy point set.
     vtkSmartPointer<vtkPolyDataMapper> pointMapper;
     vtkSmartPointer<vtkActor> pointActor;
