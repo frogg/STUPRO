@@ -3,10 +3,11 @@
 #include <thread>
 
 ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed)
-	: ImageDownloader(ConfigUtil::loadConfigFile("./res/layers.json"), onTileFetched, onTileFetchFailed) { }
+	: ImageDownloader(ConfigUtil::loadConfigFile("./res/layers.json"), onTileFetched,
+	                  onTileFetchFailed) { }
 
 ImageDownloader::ImageDownloader(QMap<QString, ImageLayerDescription> imageLayers,
-							     OnTileFetched onTileFetched,
+                                 OnTileFetched onTileFetched,
                                  OnTileFetchFailed onTileFetchFailed)
 	: onTileFetched(onTileFetched), imageLayers(imageLayers),
 	  onTileFetchFailed(onTileFetchFailed) { }
@@ -23,7 +24,7 @@ void ImageDownloader::fetchTile(const QString layer, int zoomLevel, int tileX, i
 
 void ImageDownloader::fetchTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY) {
 	ImageTileFetcher* fetcher = new ImageTileFetcher(this->getAvailableLayerDescriptions(), layers,
-			zoomLevel, tileX, tileY);
+	        zoomLevel, tileX, tileY);
 
 	OnTileFetched onTileFetched = [this, fetcher](ImageTile tile) {
 		this->activeFetchers.remove(fetcher);

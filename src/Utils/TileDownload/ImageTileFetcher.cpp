@@ -10,13 +10,13 @@ ImageTileFetcher::ImageTileFetcher(QMap<QString, ImageLayerDescription> availabl
 	: availableLayers(availableLayers), requestedLayers(requestedLayers), zoomLevel(zoomLevel),
 	  tileX(tileX), tileY(tileY), abortRequested(false) {
 
-    // make sure all requested layers are actually valid
+	// make sure all requested layers are actually valid
 	validateLayersAvailable(availableLayers.keys(), requestedLayers);
 
-    // ensure the requested tile position is valid for all requested layers
-    for (QString& layer : requestedLayers) {
-        availableLayers[layer].validateTileLocation(zoomLevel, tileX, tileY);
-    }
+	// ensure the requested tile position is valid for all requested layers
+	for (QString& layer : requestedLayers) {
+		availableLayers[layer].validateTileLocation(zoomLevel, tileX, tileY);
+	}
 }
 
 void ImageTileFetcher::abortFetching() {
@@ -73,9 +73,9 @@ void ImageTileFetcher::run() {
 			cache.cacheImage(image, worker->getLayerName(), this->zoomLevel, this->tileX, this->tileY);
 		}
 
-        if (this->abortRequested) {
-            throw DownloadAbortedException();
-        }
+		if (this->abortRequested) {
+			throw DownloadAbortedException();
+		}
 
 		ImageTile tile(QMap<QString, MetaImage>(images), this->zoomLevel, this->tileX, this->tileY);
 		this->onTileFetched(tile);
@@ -85,11 +85,11 @@ void ImageTileFetcher::run() {
 }
 
 void ImageTileFetcher::setOnTileFetched(OnTileFetched onTileFetched) {
-    this->onTileFetched = onTileFetched;
+	this->onTileFetched = onTileFetched;
 }
 
 void ImageTileFetcher::setOnTileFetchFailed(OnTileFetchFailed onTileFetchFailed) {
-    this->onTileFetchFailed = onTileFetchFailed;
+	this->onTileFetchFailed = onTileFetchFailed;
 }
 
 QUrl ImageTileFetcher::buildTileDownloadUrl(const QString layer) const {
