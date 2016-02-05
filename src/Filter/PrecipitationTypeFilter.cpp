@@ -90,13 +90,12 @@ vtkStandardNewMacro(PrecipitationTypeFilter);
 int PrecipitationTypeFilter::RequestData(vtkInformation* info,
         vtkInformationVector** inputVector,
         vtkInformationVector* outputVector) {
-	// Get input and output information from the request vectors
-	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+	// Get output information from the request vectors
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
 	// Get the actual objects from the obtained information
-	vtkDataObject* input = vtkDataObject::GetData(inInfo);
-	vtkDataObject* output = vtkDataObject::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkDataObject* input = vtkDataObject::GetData(inputVector[0]);
+	vtkDataObject* output = vtkDataObject::GetData(outputVector);
 
 	// Check the input for compatibility
 	if (!input->IsA("vtkPointSet")) {
