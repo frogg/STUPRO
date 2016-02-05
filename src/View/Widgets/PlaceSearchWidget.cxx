@@ -68,15 +68,32 @@ PlaceSearchWidget::PlaceSearchWidget(QWidget * parent, Qt::WindowFlags flags)
     // add the result list to the widget
     vLayout->addWidget(this->resultList);
 
-    // open a database connection
-    this->citiesDatabase = new CitiesDatabase("kronos","stuproUser","weloveparaview","127.0.0.1","5432");
-    this->citiesDatabase->openDatabase();
+    // try to open a database connection
+    try {
+        this->citiesDatabase = new CitiesDatabase("kronos","stuproUser","weloveparaview","127.0.0.1","5432");
+        this->citiesDatabase->openDatabase();
+    } catch (std::exception const & e) {
+        KRONOS_LOG_WARN("Error opening a connection to the cities database: '%s'", e.what());
+        this->connectionFailed();
+    } catch (...) {
+        KRONOS_LOG_WARN("Unknown error opening a connection to the cities database");
+        this->connectionFailed();
+    }
 }
 
 PlaceSearchWidget::~PlaceSearchWidget() {
-    this->citiesDatabase->closeDatabase();
+    try {
+        this->citiesDatabase->closeDatabase();
+    } catch (...) { }
+
     delete this->citiesDatabase;
     this->citiesDatabase = 0;
+}
+
+void PlaceSearchWidget::connectionFailed() {
+    KRONOS_LOG_WARN("PlaceSearchWidget will not be available");
+    this->setEnabled(false);
+    this->searchBar->setText("Failed to open a database connection");
 }
 
 void PlaceSearchWidget::startSearch() {
