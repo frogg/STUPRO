@@ -33,6 +33,7 @@
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
+            <Filter name="PrecipitationTypeFilter" />
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>
