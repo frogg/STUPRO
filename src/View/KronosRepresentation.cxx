@@ -1,8 +1,5 @@
 #include "KronosRepresentation.h"
-
 #include "vtkObjectFactory.h"
-
-
 #include <vtkPointSetToLabelHierarchy.h>
 #include <vtkLabelPlacementMapper.h>
 #include "vtkPVRenderView.h"
@@ -15,38 +12,25 @@ vtkStandardNewMacro(KronosRepresentation);
 //----------------------------------------------------------------------------
 KronosRepresentation::KronosRepresentation()
 {
-    
+    //Set nummber of input connections.
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(0);
-    // Create a mapper and actor for the points.
-    this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-
+    //Create Actors
     this->pointActor = vtkSmartPointer<vtkActor>::New();
-
-    this->pointActor->SetMapper(this->pointMapper);
-
-    // Generate the label hierarchy.
-    this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
-
-    // Create a mapper and actor for the labels.
-    this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
-    this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
     this->labelActor = vtkSmartPointer<vtkActor2D>::New();
-    this->labelActor->SetMapper(labelMapper);
-
-    this->labelMapper->UseDepthBufferOn();
-    
+    //Set visibility to false so its not shown on load
     this->SetVisibility(false);
 }
 
 //----------------------------------------------------------------------------
 KronosRepresentation::~KronosRepresentation()
 {
+    //Delete everything
     this->pointMapper->Delete();
     this->pointActor->Delete();
-    this->pointSetToLabelHierarchyFilter->Delete();
     this->labelMapper->Delete();
     this->labelActor->Delete();
+    this->pointSetToLabelHierarchyFilter->Delete();
 
 }
 //----------------------------------------------------------------------------
@@ -57,6 +41,7 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
         vtkPolyData *input = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
         
+        //Mapper for the points
         this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
         this->pointMapper->SetInputData(input);
         
@@ -67,17 +52,19 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         this->pointSetToLabelHierarchyFilter->SetPriorityArrayName("priorities");
         this->pointSetToLabelHierarchyFilter->Update();
         
+        //Create the labelmapper
         this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
         this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
+        //Use depth buffer
         this->labelMapper->UseDepthBufferOn();
-        
+        //Add the mappers to the actors.
         this->pointActor->SetMapper(this->pointMapper);
-  
         this->labelActor->SetMapper(labelMapper);
 
-        
+        //In order for the depthbuffer to work we need to delete the input now.
         inputVector[0]->Remove(inInfo);
     }
+    //Call superclass to prevent warnings.
     return this->Superclass::RequestData(request, inputVector, outputVector);
 
 }
@@ -85,6 +72,7 @@ int KronosRepresentation::RequestData(vtkInformation* request,
 //----------------------------------------------------------------------------
 void KronosRepresentation::SetVisibility(bool val)
 {
+    //Set visibility of the actors and superclass.
     this->Superclass::SetVisibility(val);
     this->labelActor->SetVisibility(val?  1 : 0);
     this->pointActor->SetVisibility(val?  1 : 0);
@@ -93,6 +81,7 @@ void KronosRepresentation::SetVisibility(bool val)
 //----------------------------------------------------------------------------
 bool KronosRepresentation::AddToView(vtkView* view)
 {
+    //Adds the actors to the view.
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
@@ -103,6 +92,7 @@ bool KronosRepresentation::AddToView(vtkView* view)
 }
 bool KronosRepresentation::RemoveFromView(vtkView* view)
 {
+    //Removes the actors from the view.
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
@@ -113,6 +103,7 @@ bool KronosRepresentation::RemoveFromView(vtkView* view)
 }
 //----------------------------------------------------------------------------
 int KronosRepresentation::FillInputPortInformation(int, vtkInformation *info) {
+    //The input data needs to be polydata.
     info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
     info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
     return 1;
@@ -120,5 +111,6 @@ int KronosRepresentation::FillInputPortInformation(int, vtkInformation *info) {
 //----------------------------------------------------------------------------
 void KronosRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os, indent);
+    //Print superclass
+    this->Superclass::PrintSelf(os, indent);
 }

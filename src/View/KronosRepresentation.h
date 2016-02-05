@@ -1,21 +1,3 @@
-/*=========================================================================
-
-  Program:   ParaView
-  Module:    $RCSfile$
-
-  Copyright (c) Kitware, Inc.
-  All rights reserved.
-  See Copyright.txt or http://www.paraview.org/HTML/Copyright.html for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-// .NAME KronosRepresentation
-// .SECTION Description
-//
-
 #ifndef __KronosRepresentation_h
 #define __KronosRepresentation_h
 
@@ -40,33 +22,31 @@ public:
 
   vtkTypeMacro(KronosRepresentation, vtkGeometryRepresentationWithFaces);
 
-  void PrintSelf(ostream& os, vtkIndent indent);
-  void SetVisibility(bool val);
+  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void SetVisibility(bool val) override;
 
-//BTX
 protected:
     KronosRepresentation();
     ~KronosRepresentation();
+    
     virtual int RequestData(vtkInformation*,
-                            vtkInformationVector**, vtkInformationVector*);
-
-    virtual bool AddToView(vtkView* view);
-    virtual bool RemoveFromView(vtkView* view);
+                            vtkInformationVector**, vtkInformationVector*) override;
+    //Called when added to views.
+    virtual bool AddToView(vtkView* view) override;
+    virtual bool RemoveFromView(vtkView* view) override;
     int FillInputPortInformation(int, vtkInformation *info) override;
 
 private:
-
     KronosRepresentation(const KronosRepresentation&); // Not implemented
     void operator=(const KronosRepresentation&); // Not implemented
-    // Create a dummy point set.
+    //mapper
     vtkSmartPointer<vtkPolyDataMapper> pointMapper;
-    vtkSmartPointer<vtkActor> pointActor;
     vtkSmartPointer<vtkLabelPlacementMapper> labelMapper;
+    //actors
+    vtkSmartPointer<vtkActor> pointActor;
     vtkSmartPointer<vtkActor2D> labelActor;
+    //filter
     vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter;
-
-
-//ETX
 };
 
 #endif
