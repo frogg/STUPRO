@@ -30,6 +30,10 @@ TEST(TestImageDownloader, GetTile) {
 		try {
 			promise.set_value(tile);
 		} catch (...) { }
+	}, [&](std::exception const & e) {
+		try {
+			promise.set_exception(make_exception_ptr(e));
+		} catch (...) { }
 	});
 
 	const int zoomLevel = 10;
@@ -39,10 +43,11 @@ TEST(TestImageDownloader, GetTile) {
 
 	ASSERT_NO_THROW(downloader.fetchTile(zoomLevel, tileX, tileY));
 
-	if (future.wait_for(std::chrono::seconds(20)) != std::future_status::ready) {
+	if (future.wait_for(std::chrono::seconds(10)) != std::future_status::ready) {
 		FAIL() << "Timeout while waiting for ImageDownloader::fetchTile";
 	}
-	ImageTile tile = future.get();
+	ImageTile tile;
+	ASSERT_NO_THROW(tile = future.get());
 
 	EXPECT_EQ(zoomLevel, tile.getZoomLevel());
 	EXPECT_EQ(tileX, tile.getTileX());
@@ -71,4 +76,30 @@ TEST(TestImageDownloader, GetTile) {
 	// }
 	//
 	// ASSERT_THROW(downloader.getTile("non-existing layer", 0, 0, 0), InvalidLayerException);
+}
+
+TEST(TestImageDownloader, AbortDownload) {
+	std::promise<ImageTile> promise;
+	std::future<ImageTile> future = promise.get_future();
+
+	ImageDownloader downloader([&](ImageTile tile) {
+		try {
+			promise.set_value(tile);
+		} catch (...) { }
+	}, [&](std::exception const & e) {
+		promise.set_exception(make_exception_ptr(e));
+	});
+
+	const int zoomLevel = 2;
+	const int tileX = 1;
+	const int tileY = 1;
+	const QString layerName = downloader.getAvailableLayers()[0];
+
+	downloader.fetchTile(zoomLevel, tileX, tileY);
+	downloader.abortAllDownloads();
+
+	// actually this should check for a DownloadAbortedException, but the onTileFetchFailed lambda
+	// set for this downloader somehow discards the original exception and throws a std::exception
+	// with the reason "std::exception" instead
+	EXPECT_ANY_THROW(future.get());
 }
