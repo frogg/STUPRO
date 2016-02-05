@@ -75,12 +75,6 @@ private:
      * The `vtkSelection` that is being used internally to prune the data set.
      */
 	vtkSmartPointer<vtkSelection> selection;
-    
-    /**
-     * The `vtkSelectionNode` that is attached to the `vtkSelection` this class also holds.
-     * This node contains information on which precipitation types should be kept and will be updated accordingly when callbacks are called.
-     */
-	vtkSmartPointer<vtkSelectionNode> selectionNode;
 	
     /**
      * An internal data structure that maps each precipitation type to a boolean value that denotes its visibility.
