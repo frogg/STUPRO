@@ -5,7 +5,7 @@
 
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
-#include <Reader/DataReader/DataType.hpp>
+#include <Reader/DataReader/Data.hpp>
 
 TEST(TestJsonReaderFactory, ReadValidFiles) {
 	// Test reading some city data
@@ -14,7 +14,11 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 
 	EXPECT_EQ(
 	    cityReader->getDataType(),
+<<<<<<< HEAD
 	    DataType::CITIES
+=======
+	    Data::CITIES
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -28,7 +32,11 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 
 	EXPECT_EQ(
 	    tweetReader->getDataType(),
+<<<<<<< HEAD
 	    DataType::TWEETS
+=======
+	    Data::TWEETS
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(

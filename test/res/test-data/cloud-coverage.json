@@ -1,7 +1,8 @@
 {
   "meta": {
     "dataType": "cloudCover",
-    "temporal": true
+    "temporal": true,
+    "timeResolution": 100
   },
   "root": {
     "children": [

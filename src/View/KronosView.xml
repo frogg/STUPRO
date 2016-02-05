@@ -1,7 +1,7 @@
 <ServerManagerConfiguration>
 	<ProxyGroup name="views">
 		<!-- Register the view using the corresponding class. -->
-		<RenderViewProxy name="StuproView"
+		<StuproViewProxy name="StuproView"
 			class="vtkPVStuproView"
 			label="Kronos View"
 			processes="client|renderserver|dataserver"
@@ -15,8 +15,9 @@
 		<Property name="SwitchCurrentDisplaymode"
 			animateable="1"
 			command="switchCurrentDisplayMode" />
-    </RenderViewProxy>
+    </StuproViewProxy>
   </ProxyGroup>
+<<<<<<< HEAD
   
   <ProxyGroup name="representations">
   <RepresentationProxy name="Meta Info Representation"
@@ -55,4 +56,6 @@
 	</SubProxy>
   </Extension>
 </ProxyGroup>
+=======
+>>>>>>> develop
 </ServerManagerConfiguration>

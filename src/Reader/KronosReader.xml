@@ -15,11 +15,10 @@
                   This Property defines the path to the data source.
               </Documentation>
           </StringVectorProperty>
-          
 
           <DoubleVectorProperty
-                        name="cameraPos"
-                        command="SetCameraPos"
+                        name="cameraPosition"
+                        command="SetCameraPosition"
                         number_of_elements="3"
                         immediate_update="1"
                         default_values="0.0 0.0 0.0"
@@ -28,9 +27,8 @@
           
           <Hints>
               <ReaderFactory extensions="kJson"
-              file_description="Kronos Json" />
+              file_description="Kronos JSON" />
           </Hints>
-          
       </SourceProxy>
   </ProxyGroup>
 </ServerManagerConfiguration>

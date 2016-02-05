@@ -1,12 +1,14 @@
 {
   "meta": {
     "dataType": "precipitation",
-    "temporal": true
+    "temporal": true,
+    "timeResolution": 100
   },
   "root": {
     "children": [
       {
         "precipitationRate": 24.0,
+        "precipitationType": "snow",
         "timestamp": 1439288745,
         "longitude": -122.418335,
         "latitude": 37.775,

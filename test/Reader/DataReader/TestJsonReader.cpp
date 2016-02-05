@@ -5,10 +5,10 @@
 
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
-#include <Reader/DataReader/DataType.hpp>
 #include <Reader/DataReader/DataPoints/DataPoint.hpp>
 #include <Reader/DataReader/DataPoints/NonTemporalDataPoints/CityDataPoint.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 
 #include <Utils/Config/Configuration.hpp>
 
@@ -162,7 +162,11 @@ TEST(TestJsonReader, WriteCitiesToVtkPolyData) {
 
 	EXPECT_EQ(
 	    4,
+<<<<<<< HEAD
 	    priorityArray->GetNumberOfComponents()
+=======
+	    priorityArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -213,7 +217,11 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    priorityArray->GetNumberOfComponents()
+=======
+	    priorityArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -278,7 +286,11 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 
 	EXPECT_EQ(
 	    3,
+<<<<<<< HEAD
 	    timestampArray->GetNumberOfComponents()
+=======
+	    timestampArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -297,7 +309,11 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 
 	EXPECT_EQ(
 	    3,
+<<<<<<< HEAD
 	    priorityArray->GetNumberOfComponents()
+=======
+	    priorityArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -325,11 +341,32 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	EXPECT_EQ(
 	    1,
 	    precipitationRateArray->GetNumberOfComponents()
+<<<<<<< HEAD
 	);
 
 	EXPECT_FLOAT_EQ(
 	    24.0,
 	    precipitationRateArray->GetValue(0)
+=======
+	);
+
+	EXPECT_FLOAT_EQ(
+	    24.0,
+	    precipitationRateArray->GetValue(0)
+	);
+
+	// Test the associated array of precipitation types
+	vtkSmartPointer<vtkDataArray> abstractPrecipitationTypeArray = polyData->GetPointData()
+	        ->GetArray("precipitationTypes");
+	vtkSmartPointer<vtkTypeInt32Array> precipitationTypeArray = vtkTypeInt32Array::SafeDownCast(
+	            abstractPrecipitationTypeArray
+	        );
+	ASSERT_TRUE(precipitationTypeArray);
+
+	EXPECT_FLOAT_EQ(
+	    PrecipitationDataPoint::SNOW,
+	    precipitationTypeArray->GetValue(0)
+>>>>>>> develop
 	);
 
 	// Test the associated array of timestamps
@@ -343,7 +380,11 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    timestampArray->GetNumberOfComponents()
+=======
+	    timestampArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -362,7 +403,11 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    priorityArray->GetNumberOfComponents()
+=======
+	    priorityArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -408,7 +453,11 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    timestampArray->GetNumberOfComponents()
+=======
+	    timestampArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -427,7 +476,11 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    priorityArray->GetNumberOfComponents()
+=======
+	    priorityArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -492,7 +545,11 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    timestampArray->GetNumberOfComponents()
+=======
+	    timestampArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -511,7 +568,11 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    priorityArray->GetNumberOfComponents()
+=======
+	    priorityArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -557,7 +618,11 @@ TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    timestampArray->GetNumberOfComponents()
+=======
+	    timestampArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(
@@ -576,7 +641,11 @@ TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+<<<<<<< HEAD
 	    priorityArray->GetNumberOfComponents()
+=======
+	    priorityArray->GetNumberOfTuples()
+>>>>>>> develop
 	);
 
 	EXPECT_EQ(

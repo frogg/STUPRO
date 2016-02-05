@@ -5,11 +5,11 @@
 #include <QTextStream>
 #include <QPair>
 #include <Utils/Misc/MakeUnique.hpp>
+#include <Reader/DataReader/JsonValidator.hpp>
 #include <rapidjson/error/en.h>
 
-#include <Reader/DataReader/DataType.hpp>
-
 // Workaround to make static initialization possible in the IDE we all love -- Visual Studio.
+<<<<<<< HEAD
 static QMap<QString, int> dataTypeMap() {
 	QMap<QString, int> map;
 
@@ -20,11 +20,23 @@ static QMap<QString, int> dataTypeMap() {
 	map.insert("temperature", DataType::TEMPERATURE);
 	map.insert("wind", DataType::WIND);
 	map.insert("cloudCover", DataType::CLOUDCOVER);
+=======
+static QMap<QString, Data::Type> dataTypeMap() {
+	QMap<QString, Data::Type> map;
+
+	map.insert("cities", Data::CITIES);
+	map.insert("flights", Data::FLIGHTS);
+	map.insert("tweets", Data::TWEETS);
+	map.insert("precipitation", Data::PRECIPITATION);
+	map.insert("temperature", Data::TEMPERATURE);
+	map.insert("wind", Data::WIND);
+	map.insert("cloudCover", Data::CLOUD_COVERAGE);
+>>>>>>> develop
 
 	return map;
 }
 
-const QMap<QString, int> JsonReaderFactory::DATA_TYPES = dataTypeMap();
+const QMap<QString, Data::Type> JsonReaderFactory::DATA_TYPES = dataTypeMap();
 
 std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filename) {
 	// Open the JSON file while checking for potential errors
@@ -48,17 +60,69 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 	if (jsonDocument.HasParseError()) {
 		throw JsonReaderParseException(
 		    jsonFileInfo.absoluteFilePath(),
+<<<<<<< HEAD
 		    rapidjson::GetParseError_En(jsonDocument.GetParseError())
+=======
+		    QString("The file's JSON content is invalid. At position %1: %2")
+		    .arg(
+		        QString::number(jsonDocument.GetErrorOffset()),
+		        QString(rapidjson::GetParseError_En(jsonDocument.GetParseError()))
+		    )
+		);
+	}
+
+	// Check if there is a root
+	if (!jsonDocument.HasMember("root")) {
+		throw JsonReaderParseException(
+		    jsonFileInfo.absoluteFilePath(),
+		    "The file does not contain a root data tag."
+>>>>>>> develop
 		);
 	}
 
 	// Extract meta data and create a new JSON reader
+<<<<<<< HEAD
 	rapidjson::Value& metaData = jsonDocument["meta"];
 	std::unique_ptr<JsonReader> jsonReader = makeUnique<JsonReader>(
 	            jsonDocument["root"],
 	            JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
 	            metaData["temporal"].GetBool()
 	        );
+=======
+	if (!jsonDocument.HasMember("meta")) {
+		throw JsonReaderParseException(
+		    jsonFileInfo.absoluteFilePath(),
+		    "The file does not contain meta information."
+		);
+	}
+
+	rapidjson::Value& metaData = jsonDocument["meta"];
+
+	// Now that we know it exists, check the meta tag for validity
+	JsonValidator::validateMetaData(metaData, jsonFileInfo.absoluteFilePath());
+
+	bool temporal = metaData["temporal"].GetBool();
+
+	std::unique_ptr<JsonReader> jsonReader;
+
+	if (temporal) {
+		jsonReader = makeUnique<JsonReader>(
+		                 jsonDocument["root"],
+		                 JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
+		                 jsonFileInfo.absoluteFilePath(),
+		                 true,
+		                 metaData["timeResolution"].GetInt()
+		             );
+	} else {
+		jsonReader = makeUnique<JsonReader>(
+		                 jsonDocument["root"],
+		                 JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
+		                 jsonFileInfo.absoluteFilePath(),
+		                 false,
+		                 0
+		             );
+	}
+>>>>>>> develop
 
 	return std::move(jsonReader);
 }
