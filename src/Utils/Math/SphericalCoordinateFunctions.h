@@ -6,8 +6,12 @@
 #include "Utils/Config/Configuration.hpp"
 
 
-//is the globe radius (gps.z is 0 at sea level)
-const double BASE_HEIGHT = (Configuration::getInstance().getDouble("globe.radius"));
+// is the globe radius (gps.z is 0 at sea level)
+// BEWARE! Nasty workaround to
+//      - improve performance by just requesting globe.radius once
+//      - avoid a segfault if the config file is not found
+const double *globeRadius = nullptr;
+#define BASE_HEIGHT (globeRadius? *globeRadius : Configuration::getInstance().getDouble("globe.radius"))
 
 /**
  * Convert the spherical (gps) to the cartesian representation
