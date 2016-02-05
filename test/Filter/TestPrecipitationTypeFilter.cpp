@@ -16,7 +16,7 @@
 void testDataSet(vtkSmartPointer<vtkUnstructuredGrid> dataSet, int expectedPointAmount,
                  QList<PrecipitationDataPoint::PrecipitationType> disallowedPrecipitationTypes) {
 	// Check the data set and its amount of points
-	ASSERT_NE(nullptr, dataSet);
+	ASSERT_TRUE(dataSet);
 	EXPECT_EQ(expectedPointAmount, dataSet->GetNumberOfPoints());
 
 	// Extract the array of precipitation types and check its type and size
