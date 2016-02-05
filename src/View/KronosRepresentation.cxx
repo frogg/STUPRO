@@ -34,8 +34,9 @@ KronosRepresentation::KronosRepresentation()
     this->labelActor = vtkSmartPointer<vtkActor2D>::New();
     this->labelActor->SetMapper(labelMapper);
 
-    this->SetVisibility(false);
     this->labelMapper->UseDepthBufferOn();
+    
+    this->SetVisibility(false);
 }
 
 //----------------------------------------------------------------------------
@@ -58,14 +59,23 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         
         this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
         this->pointMapper->SetInputData(input);
-
+        
+        // Generate the label hierarchy.
+        this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
         this->pointSetToLabelHierarchyFilter->SetInputData(input);
         this->pointSetToLabelHierarchyFilter->SetLabelArrayName("names");
-        this->pointSetToLabelHierarchyFilter->SetPriorityArrayName("prioritys");
+        this->pointSetToLabelHierarchyFilter->SetPriorityArrayName("prioritis");
         this->pointSetToLabelHierarchyFilter->Update();
-
+        
+        this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
         this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
+        this->labelMapper->UseDepthBufferOn();
+        
+        this->pointActor->SetMapper(this->pointMapper);
+  
         this->labelActor->SetMapper(labelMapper);
+
+        
         inputVector[0]->Remove(inInfo);
     }
     return this->Superclass::RequestData(request, inputVector, outputVector);
@@ -77,7 +87,7 @@ void KronosRepresentation::SetVisibility(bool val)
 {
     this->Superclass::SetVisibility(val);
     this->labelActor->SetVisibility(val?  1 : 0);
-    this->pointActor->SetVisibility(val? 1 : 0);
+    this->pointActor->SetVisibility(val?  1 : 0);
 }
 
 //----------------------------------------------------------------------------
