@@ -23,19 +23,19 @@
 
 // write further tests with http://www.random-science-tools.com/maths/coordinate-converter.htm
 TEST(TestSphericalToCartesianFilter, ValidCalls) {
-	GeometryTransform* transform = new GeometryTransform(true, true, 200);
+	GeometryTransform* transform = new GeometryTransform(true, true);
 	vtkPoints* points = vtkPoints::New();
 	vtkPoints* transformed = vtkPoints::New();
 	vtkPoints* newPoints = vtkPoints::New();
 	const double precision = 0.01;
 
-	points->InsertNextPoint(0, 0, 200);
+	points->InsertNextPoint(0, 0, 100);
 	newPoints->InsertNextPoint(0, 0, 200);
-	points->InsertNextPoint(90, 0, 200);
+	points->InsertNextPoint(90, 0, 100);
 	newPoints->InsertNextPoint(200, 0, 0);
 	points->InsertNextPoint(0, 90, 10);
-	newPoints->InsertNextPoint(0, 10, 0);
-	points->InsertNextPoint(-90, 0, 200);
+	newPoints->InsertNextPoint(0, 110, 0);
+	points->InsertNextPoint(-90, 0, 100);
 	newPoints->InsertNextPoint(-200, 0, 0);
 
 	transformed->Allocate(points->GetNumberOfPoints());
@@ -44,24 +44,4 @@ TEST(TestSphericalToCartesianFilter, ValidCalls) {
 	for (int i = 0; i < points->GetNumberOfPoints() && i < newPoints->GetNumberOfPoints(); i++) {
 		CHECK_POINT(newPoints->GetPoint(i), transformed->GetPoint(i), precision);
 	}
-}
-
-TEST(SphericalToCartesianFilter, InvalidCalls) {
-	/*  double points[3];
-	  points[0] = -135;
-	  points[1] = 125.264;
-	  points[2] = 0;
-	  transform->transformToCartesian(points,51.9615);
-	  */
-	/*
-	EXPECT_THROW(
-	             Configuration::getInstance().getString("globe.invalid"),
-	             InvalidKeyException
-	             );
-
-	EXPECT_THROW(
-	             Configuration::getInstance().getDouble("globe.name"),
-	             InvalidValueException
-	             );
-	 */
 }
