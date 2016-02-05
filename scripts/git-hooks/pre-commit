@@ -3,6 +3,9 @@ FORMATTER_CHECK=$(./scripts/formatter-check.sh --only-own --no-blame --no-dir-he
 
 if [ $? != 0 ]; then
   echo -e "\e[31mFound formatting errors that seem to be introduced by YOU \e[33m😒\e[39m"
+  echo -e "Formatting files..."
+  exec .scripts/formatter-run.sh
+  echo -e "Please add and commit the formatted files"
   exit 1
 else
   echo -e "\e[32mFormatting seems fine on your side \e[33m✨\e[39m"

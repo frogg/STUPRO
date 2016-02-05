@@ -257,8 +257,8 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 
 			// Insert the new destination as a new tuple of latitude and longitude
 			double coordinates[2] = {
-				dataPoint->getDestination().lat(),
-				dataPoint->getDestination().lon()
+                dataPoint->getDestination().lon(),
+                dataPoint->getDestination().lat()
 			};
 			destinations->SetTuple(tupleNumber, coordinates);
 
