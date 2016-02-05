@@ -23,48 +23,49 @@ void GenerateGeodesics::PrintSelf(std::ostream& os, vtkIndent indent) {
 
 int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** inputVector,
                                    vtkInformationVector* outputVector) {
-    vtkPolyData* input = vtkPolyData::GetData(inputVector[0]);
-    vtkPolyData* output = vtkPolyData::GetData(outputVector);
+	vtkPolyData* input = vtkPolyData::GetData(inputVector[0]);
+	vtkPolyData* output = vtkPolyData::GetData(outputVector);
 
-    if (!input) {
-        vtkErrorMacro( << "Input Error. Aborting...");
-        return 0;
-    }
+	if (!input) {
+		vtkErrorMacro( << "Input Error. Aborting...");
+		return 0;
+	}
 
-    int numberOfFlights = input->GetNumberOfPoints();
+	int numberOfFlights = input->GetNumberOfPoints();
 
-    if (!input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)
-            || input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() != numberOfFlights) {
-        vtkErrorMacro( << "The input data has an unexpected format. Details:" << endl
-                       << "    Number of input arrays: " << input->GetPointData()->GetNumberOfArrays() << endl
-                       << "    Array size: " << numberOfFlights << " and "
-                       << input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples());
-        return 0;
-    }
+	if (!input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)
+	        || input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() !=
+	        numberOfFlights) {
+		vtkErrorMacro( << "The input data has an unexpected format. Details:" << endl
+		               << "    Number of input arrays: " << input->GetPointData()->GetNumberOfArrays() << endl
+		               << "    Array size: " << numberOfFlights << " and "
+		               << input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples());
+		return 0;
+	}
 
-    vtkPoints* points = vtkPoints::New();
-    vtkCellArray* lines = vtkCellArray::New();
+	vtkPoints* points = vtkPoints::New();
+	vtkCellArray* lines = vtkCellArray::New();
 
-    int numberOfPointsPerFlight[numberOfFlights];
+	int numberOfPointsPerFlight[numberOfFlights];
 
-    vtkDataArray* startPoints = input->GetPoints()->GetData();
-    vtkDataArray* destinationPoints = input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME);
+	vtkDataArray* startPoints = input->GetPoints()->GetData();
+	vtkDataArray* destinationPoints = input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME);
 
 	// for each flight
 	for (int flight = 0; flight < numberOfFlights; flight++) {
-        // insert moar points into points
-        Vector3d start(startPoints->GetTuple(flight)[0],
-                       startPoints->GetTuple(flight)[1],
-                       0);
-        Vector3d destination(destinationPoints->GetTuple(flight)[0],
-                             destinationPoints->GetTuple(flight)[1],
-                             0);
+		// insert moar points into points
+		Vector3d start(startPoints->GetTuple(flight)[0],
+		               startPoints->GetTuple(flight)[1],
+		               0);
+		Vector3d destination(destinationPoints->GetTuple(flight)[0],
+		                     destinationPoints->GetTuple(flight)[1],
+		                     0);
 
-        vtkWarningMacro(<< "Next Point:"
-                        << QString("  (%1|%2|%3)").arg(start.x).arg(start.y).arg(start.z).toStdString()
-                        << QString("  (%1|%2|%3)").arg(destination.x).arg(destination.y).arg(destination.z).toStdString());
+		vtkWarningMacro( << "Next Point:"
+		                 << QString("  (%1|%2|%3)").arg(start.x).arg(start.y).arg(start.z).toStdString()
+		                 << QString("  (%1|%2|%3)").arg(destination.x).arg(destination.y).arg(destination.z).toStdString());
 
-        numberOfPointsPerFlight[flight] = calculateFlightPoints(start, destination, points);
+		numberOfPointsPerFlight[flight] = calculateFlightPoints(start, destination, points);
 	}
 	output->SetPoints(points);
 
