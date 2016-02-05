@@ -12,7 +12,6 @@
 #include <Utils/TileDownload/DownloadExceptions.hpp>
 #include <future>
 #include <string>
-#include <thread>
 
 class ImageDownloadWorker {
 public:
@@ -63,7 +62,6 @@ private:
 
 	bool abortRequested;
 	QNetworkReply* reply;
-	std::thread downloadThread;
 
 	/**
 	 * Kicks off the image's download.

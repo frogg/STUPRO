@@ -1,6 +1,7 @@
 #include <Utils/TileDownload/ImageDownloadWorker.hpp>
 
 #include <climits>
+#include <thread>
 #include <vector>
 #include <QEventLoop>
 #include <QRegExp>
