@@ -33,7 +33,8 @@ PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	// Display all precipitation types by default
 	for (int i = PrecipitationDataPoint::NONE; i <= PrecipitationDataPoint::HAIL; i++) {
 		precipitationTypes->SetTuple1(i - 1, i);
-		this->precipitationTypeVisibilities.insert(static_cast<PrecipitationDataPoint::PrecipitationType>(i), true);
+		this->precipitationTypeVisibilities.insert(static_cast<PrecipitationDataPoint::PrecipitationType>
+		        (i), true);
 	}
 
 	selectionNode->SetSelectionList(precipitationTypes);
@@ -96,7 +97,7 @@ int PrecipitationTypeFilter::RequestData(vtkInformation* info,
 	// Get the actual objects from the obtained information
 	vtkDataObject* input = vtkDataObject::GetData(inInfo);
 	vtkDataObject* output = vtkDataObject::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
-	
+
 	// Check the input for compatibility
 	if (!input->IsA("vtkPointSet")) {
 		vtkErrorMacro( << "The input should be a vtkPointSet.");
@@ -104,7 +105,8 @@ int PrecipitationTypeFilter::RequestData(vtkInformation* info,
 	}
 
 	// Actually perform the extraction
-	vtkSmartPointer<vtkDataObject> extractedOutput = this->RequestDataFromBlock(input, this->selection->GetNode(0), outInfo);
+	vtkSmartPointer<vtkDataObject> extractedOutput = this->RequestDataFromBlock(input,
+	        this->selection->GetNode(0), outInfo);
 	if (extractedOutput) {
 		output->ShallowCopy(extractedOutput);
 	}
