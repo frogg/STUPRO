@@ -1,8 +1,7 @@
+#include <Globe/Globe.hpp>
 #include <Globe/GlobeTile.hpp>
 #include <Utils/Graphics/TextureLoad.hpp>
 #include <Utils/Math/Functions.hpp>
-#include <Utils/Math/Vector2.hpp>
-#include <Utils/Math/Vector3.hpp>
 #include <Utils/Misc/Macros.hpp>
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
@@ -12,6 +11,7 @@
 #include <vtkShader2Collection.h>
 #include <vtkShaderProgram2.h>
 #include <vtkUniformVariables.h>
+#include <algorithm>
 #include <cmath>
 
 extern const char* GlobeShader_fsh;
@@ -52,8 +52,8 @@ Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const {
 	return Vector3f(x, y, z);
 }
 
-GlobeTile::GlobeTile(const Globe& globe, Location location) :
-	myGlobe(globe), myLocation(location), myTextureLoadState(TEXTURE_UNLOADED), myIsVisible(false) {
+GlobeTile::GlobeTile(const Globe& globe) :
+	myGlobe(globe), myLocation(0, 0, 0), myTextureLoadState(TEXTURE_UNLOADED), myIsVisible(false) {
 	// Initialize members.
 	myLowerHeight = 0.f;
 	myUpperHeight = 1.f;
@@ -70,6 +70,10 @@ GlobeTile::GlobeTile(const Globe& globe, Location location) :
 
 GlobeTile::~GlobeTile() {
 	myGlobe.getRenderer().RemoveActor(myActor);
+}
+
+void GlobeTile::setLocation(Location location) {
+	myLocation = location;
 }
 
 GlobeTile::Location GlobeTile::getLocation() const {
@@ -142,10 +146,6 @@ void GlobeTile::initShaders() {
 	float displayModeInterpolation = 0.f;
 	float heightFactor = myGlobe.getGlobeConfig().heightFactor;
 
-	RectF bounds = myLocation.getBounds();
-	Vector2f startBounds = bounds.x1y1();
-	Vector2f endBounds = bounds.x2y2();
-
 	// Assign uniform variables.
 	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
 
@@ -153,11 +153,6 @@ void GlobeTile::initShaders() {
 	myVertexShader->GetUniformVariables()->SetUniformf("planeSize", 1, &planeSize);
 	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1, &displayModeInterpolation);
 	myVertexShader->GetUniformVariables()->SetUniformf("heightFactor", 1, &heightFactor);
-
-	myVertexShader->GetUniformVariables()->SetUniformf("longStart", 1, &startBounds.x);
-	myVertexShader->GetUniformVariables()->SetUniformf("longEnd", 1, &endBounds.x);
-	myVertexShader->GetUniformVariables()->SetUniformf("latStart", 1, &startBounds.y);
-	myVertexShader->GetUniformVariables()->SetUniformf("latEnd", 1, &endBounds.y);
 
 	myFragmentShader->GetUniformVariables()->SetUniformi("texture", 1, &textureID);
 
@@ -181,9 +176,19 @@ void GlobeTile::updateUniforms() {
 	float earthRadius = myGlobe.getGlobeConfig().earthRadius;
 	float minHeight = myLowerHeight / earthRadius;
 	float maxHeight = myUpperHeight / earthRadius;
+	
 	myVertexShader->GetUniformVariables()->SetUniformf("displayMode", 1, &displayModeInterpolation);
 	myVertexShader->GetUniformVariables()->SetUniformf("minHeight", 1, &minHeight);
 	myVertexShader->GetUniformVariables()->SetUniformf("maxHeight", 1, &maxHeight);
+
+	RectF bounds = myLocation.getBounds();
+	Vector2f startBounds = bounds.x1y1();
+	Vector2f endBounds = bounds.x2y2();
+	
+	myVertexShader->GetUniformVariables()->SetUniformf("longStart", 1, &startBounds.x);
+	myVertexShader->GetUniformVariables()->SetUniformf("longEnd", 1, &endBounds.x);
+	myVertexShader->GetUniformVariables()->SetUniformf("latStart", 1, &startBounds.y);
+	myVertexShader->GetUniformVariables()->SetUniformf("latEnd", 1, &endBounds.y);
 }
 
 void GlobeTile::setVisibile(bool visible) {

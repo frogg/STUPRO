@@ -1,7 +1,6 @@
 #ifndef STUPRO_GLOBETILE_HPP
 #define STUPRO_GLOBETILE_HPP
 
-#include <Globe/Globe.hpp>
 #include <Utils/Math/Rect.hpp>
 #include <Utils/Math/Vector2.hpp>
 #include <Utils/Math/Vector3.hpp>
@@ -9,6 +8,8 @@
 #include <vtkShader2.h>
 #include <vtkSmartPointer.h>
 #include <vtkTexture.h>
+
+class QImage;
 
 class Globe;
 
@@ -77,16 +78,21 @@ public:
 	};
 
 	/**
-	 * Creates a globe tile belonging to a specific globe at the specified location.
+	 * Creates a globe tile belonging to a specific globe.
 	 *
 	 * Adds the actor to the globe's renderer.
 	 */
-	GlobeTile(const Globe& manager, Location location);
+	GlobeTile(const Globe& manager);
 
 	/**
 	 * Destroys the globe tile and cleans up the actor.
 	 */
 	~GlobeTile();
+	
+	/**
+	 * Changes the location of this globe tile.
+	 */
+	void setLocation(Location location);
 
 	/**
 	 * Returns the location corresponding to this globe tile.

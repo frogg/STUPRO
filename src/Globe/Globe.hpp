@@ -2,14 +2,18 @@
 #define STUPRO_GLOBE_HPP
 
 #include <Globe/GlobeConfig.hpp>
+#include <Globe/GlobeTile.hpp>
+#include <Utils/Graphics/ResourcePool.hpp>
 #include <Utils/Math/Vector2.hpp>
 #include <Utils/TileDownload/ImageDownloader.hpp>
+#include <Utils/TileDownload/ImageTile.hpp>
 #include <vtkOpenGLTexture.h>
 #include <vtkPlaneSource.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
 #include <atomic>
-#include <memory>
+#include <mutex>
+#include <queue>
 #include <vector>
 
 class GlobeTile;
@@ -88,17 +92,6 @@ public:
 	unsigned int getZoomLevel() const;
 
 	/**
-	 * Returns a specific tile from the globe. The lon/lat pair is given in tile indices starting
-	 * from 0 and is normalized/wrapped around the world before selecting the tile.
-	 *
-	 * @param lon The integer longitude to get the tile at
-	 * @param lat The integer latitiude to get the tile at
-	 *
-	 * @return the globe tile at the specified longitude/latitude index
-	 */
-	GlobeTile& getTileAt(int lon, int lat) const;
-
-	/**
 	 * Changes the display mode interpolation between globe view and map view. A value of 0.0 means
 	 * globe, a value of 1.0 means map, and any values in-between result in a smooth animation
 	 * between the two display modes.
@@ -129,9 +122,61 @@ private:
 	unsigned int getTileIndex(int lon, int lat) const;
 
 	/**
-	 * Creates all tiles for the current zoom level of the globe.
+	 * Returns a specific tile from the globe. The lon/lat pair is given in tile indices starting
+	 * from 0 and is normalized/wrapped around the world before selecting the tile.
+	 *
+	 * @param lon The integer longitude to get the tile at
+	 * @param lat The integer latitiude to get the tile at
+	 *
+	 * @return the globe tile at the specified longitude/latitude index
 	 */
-	void createTiles();
+	GlobeTile& getTileAt(int lon, int lat) const;
+
+	/**
+	 * Returns a resource pool handle to a specific tile from the globe. The lon/lat pair is given
+	 * in tile indices starting from 0 and is normalized/wrapped around the world before selecting
+	 * the tile.
+	 *
+	 * @param lon The integer longitude to get the tile at
+	 * @param lat The integer latitiude to get the tile at
+	 *
+	 * @return a handle to the globe tile at the specified longitude/latitude index
+	 */
+	ResourcePool<GlobeTile>::Handle getTileHandleAt(int lon, int lat) const;
+
+	/**
+	 * Assigns the globe tile handle at the specified tile coordinate.
+	 *
+	 * @param lon The integer longitude to set the tile at
+	 * @param lat The integer latitiude to set the tile at
+	 * @param handle The tile handle to assign
+	 */
+	void setTileHandleAt(int lon, int lat, ResourcePool<GlobeTile>::Handle handle);
+
+	/**
+	 * Checks if the specified tile is facing towards the camera and within the camera's view frustum.
+	 */
+	bool isTileInViewFrustum(int lon, int lat, vtkMatrix4x4 * normalTransform, vtkMatrix4x4 * compositeTransform) const;
+	
+	/**
+	 * Changes the visibility of the specified tile.
+	 */
+	void setTileVisibility(int lon, int lat, bool visibility);
+	
+	/**
+	 * Resizes the tile handle list to the current zoom level.
+	 */
+	void createTileHandles();
+
+	/**
+	 * Hides all currently visible globe tiles and erases the handles.
+	 */
+	void eraseTileHandles();
+	
+	/**
+	 * Loads all fetched globe tiles.
+	 */
+	void loadGlobeTiles();
 
 	/**
 	 * Checks which level of detail is required for globe tiles and reloads them with that LOD.
@@ -155,8 +200,11 @@ private:
 	vtkSmartPointer<vtkOpenGLTexture> myLoadingTexture;
 
 	ImageDownloader myDownloader;
+	std::queue<ImageTile> myDownloadedTiles;
+	std::mutex myDownloadedTilesMutex;
 
-	std::vector<std::unique_ptr<GlobeTile> > myTiles;
+	ResourcePool<GlobeTile> myTilePool;
+	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;
 
 	unsigned int myZoomLevel;
 

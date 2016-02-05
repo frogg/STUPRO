@@ -2,11 +2,13 @@
 #define SRC_UTILS_GRAPHICS_RESOURCEPOOL_HPP_
 
 #include <Utils/Misc/Macros.hpp>
+#include <Utils/Misc/MakeUnique.hpp>
+#include <functional>
 #include <map>
 #include <memory>
 #include <stdexcept>
 
-class ExpiredException : public std::exception
+class ExpiredException: public std::exception
 {
 	inline const char * what() const KRONOS_NOTHROW
 	{
@@ -14,7 +16,7 @@ class ExpiredException : public std::exception
 	}
 };
 
-class InactiveException : public std::exception
+class InactiveException: public std::exception
 {
 	inline const char * what() const KRONOS_NOTHROW
 	{
@@ -35,16 +37,49 @@ public:
 	{
 	public:
 
+		/**
+		 * Creates an invalid (expired) handle.
+		 */
+		Handle() :
+				pool(nullptr),
+				id(0)
+		{
+		}
+
 		Handle(const Handle & other) :
 				pool(other.pool),
 				id(other.id)
 		{
-			pool->incrementHandleCount(id);
+			if (pool != nullptr)
+			{
+				pool->incrementHandleCount(id);
+			}
+		}
+
+		Handle & operator=(const Handle & other)
+		{
+			if (other.pool != nullptr)
+			{
+				other.pool->incrementHandleCount(other.id);
+			}
+			
+			if (pool != nullptr)
+			{
+				pool->decrementHandleCount(id);
+			}
+			
+			pool = other.pool;
+			id = other.id;
+			
+			return *this;
 		}
 
 		~Handle()
 		{
-			pool->decrementHandleCount(id);
+			if (pool != nullptr)
+			{
+				pool->decrementHandleCount(id);
+			}
 		}
 
 		/**
@@ -75,7 +110,10 @@ public:
 				throw ExpiredException();
 			}
 
-			pool->setResourceActive(id, active);
+			if (pool != nullptr)
+			{
+				pool->setResourceActive(id, active);
+			}
 		}
 
 		/**
@@ -83,7 +121,7 @@ public:
 		 */
 		bool isActive() const
 		{
-			return pool->getResourceInfo(id).isActive();
+			return pool != nullptr && pool->getResourceInfo(id).isActive();
 		}
 
 		/**
@@ -92,7 +130,7 @@ public:
 		 */
 		bool isExpired() const
 		{
-			return pool->getResourceInfo(id).isExpired();
+			return pool == nullptr || pool->getResourceInfo(id).isExpired();
 		}
 
 	private:
@@ -106,14 +144,20 @@ public:
 
 		ResourcePool<ResourceType> * pool;
 		ID id;
-		
-		friend class ResourcePool<ResourceType>;
+
+		friend class ResourcePool<ResourceType> ;
 	};
 
-	ResourcePool() :
+	static std::unique_ptr<ResourceType> defaultNewFunc()
+	{
+		return makeUnique<ResourceType>();
+	}
+
+	ResourcePool(std::function<std::unique_ptr<ResourceType>()> newFunc = defaultNewFunc) :
 			poolSize(0),
 			resourceCount(0),
-			currentID(0)
+			currentID(0),
+			newFunc(newFunc)
 	{
 	}
 
@@ -176,10 +220,10 @@ public:
 		}
 
 		// No available resource found?
-		if (newResource == nullptr)
+		if (newResource.data == nullptr)
 		{
 			// Create fresh resource object.
-			newResource = makeUnique<ResourceType>();
+			newResource.data = newFunc();
 
 			// Increment resource counter.
 			resourceCount++;
@@ -223,7 +267,7 @@ private:
 		return entry->second;
 	}
 
-	void cleanUp(std::map<ID, ResourceInfo>::iterator entry)
+	void cleanUp(typename std::map<ID, ResourceInfo>::iterator entry)
 	{
 		if (entry == resources.end())
 		{
@@ -308,8 +352,10 @@ private:
 	unsigned int resourceCount;
 	ID currentID;
 
+	std::function<std::unique_ptr<ResourceType>()> newFunc;
+
 	std::map<ID, ResourceInfo> resources;
-	
+
 	friend class Handle;
 };
 
