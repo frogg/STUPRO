@@ -18,11 +18,9 @@ public:
 	 * @param coordinate The point's coordinates
 	 * @param priority The point's zoom level priority
 	 */
-<<<<<<< HEAD
-	TemporalDataPoint(int dataType, Coordinate coordinate, int priority, int timestamp);
-=======
+
 	TemporalDataPoint(Data::Type dataType, Coordinate coordinate, int priority, int timestamp);
->>>>>>> develop
+
 
 	/**
 	* Get the timestamp of the data in this point.

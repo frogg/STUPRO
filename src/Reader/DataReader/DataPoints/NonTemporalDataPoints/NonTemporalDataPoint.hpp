@@ -18,11 +18,9 @@ public:
 	 * @param coordinate The point's coordinates
 	 * @param priority The point's zoom level priority
 	 */
-<<<<<<< HEAD
-	NonTemporalDataPoint(int dataType, Coordinate coordinate, int priority);
-=======
+
 	NonTemporalDataPoint(Data::Type dataType, Coordinate coordinate, int priority);
->>>>>>> develop
+
 
 };
 

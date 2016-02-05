@@ -17,7 +17,7 @@
 			command="switchCurrentDisplayMode" />
     </StuproViewProxy>
   </ProxyGroup>
-<<<<<<< HEAD
+
   
   <ProxyGroup name="representations">
   <RepresentationProxy name="Meta Info Representation"
@@ -56,6 +56,5 @@
 	</SubProxy>
   </Extension>
 </ProxyGroup>
-=======
->>>>>>> develop
+
 </ServerManagerConfiguration>

@@ -64,7 +64,7 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
         this->pointSetToLabelHierarchyFilter->SetInputData(input);
         this->pointSetToLabelHierarchyFilter->SetLabelArrayName("names");
-        this->pointSetToLabelHierarchyFilter->SetPriorityArrayName("prioritis");
+        this->pointSetToLabelHierarchyFilter->SetPriorityArrayName("priorities");
         this->pointSetToLabelHierarchyFilter->Update();
         
         this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();

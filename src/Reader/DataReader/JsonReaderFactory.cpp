@@ -9,18 +9,7 @@
 #include <rapidjson/error/en.h>
 
 // Workaround to make static initialization possible in the IDE we all love -- Visual Studio.
-<<<<<<< HEAD
-static QMap<QString, int> dataTypeMap() {
-	QMap<QString, int> map;
 
-	map.insert("cities", DataType::CITIES);
-	map.insert("flights", DataType::FLIGHTS);
-	map.insert("tweets", DataType::TWEETS);
-	map.insert("precipitation", DataType::PRECIPITATION);
-	map.insert("temperature", DataType::TEMPERATURE);
-	map.insert("wind", DataType::WIND);
-	map.insert("cloudCover", DataType::CLOUDCOVER);
-=======
 static QMap<QString, Data::Type> dataTypeMap() {
 	QMap<QString, Data::Type> map;
 
@@ -31,7 +20,7 @@ static QMap<QString, Data::Type> dataTypeMap() {
 	map.insert("temperature", Data::TEMPERATURE);
 	map.insert("wind", Data::WIND);
 	map.insert("cloudCover", Data::CLOUD_COVERAGE);
->>>>>>> develop
+
 
 	return map;
 }
@@ -60,9 +49,7 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 	if (jsonDocument.HasParseError()) {
 		throw JsonReaderParseException(
 		    jsonFileInfo.absoluteFilePath(),
-<<<<<<< HEAD
-		    rapidjson::GetParseError_En(jsonDocument.GetParseError())
-=======
+
 		    QString("The file's JSON content is invalid. At position %1: %2")
 		    .arg(
 		        QString::number(jsonDocument.GetErrorOffset()),
@@ -76,19 +63,12 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 		throw JsonReaderParseException(
 		    jsonFileInfo.absoluteFilePath(),
 		    "The file does not contain a root data tag."
->>>>>>> develop
+
 		);
 	}
 
 	// Extract meta data and create a new JSON reader
-<<<<<<< HEAD
-	rapidjson::Value& metaData = jsonDocument["meta"];
-	std::unique_ptr<JsonReader> jsonReader = makeUnique<JsonReader>(
-	            jsonDocument["root"],
-	            JsonReaderFactory::DATA_TYPES.value(QString(metaData["dataType"].GetString())),
-	            metaData["temporal"].GetBool()
-	        );
-=======
+
 	if (!jsonDocument.HasMember("meta")) {
 		throw JsonReaderParseException(
 		    jsonFileInfo.absoluteFilePath(),
@@ -122,7 +102,7 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 		                 0
 		             );
 	}
->>>>>>> develop
+
 
 	return std::move(jsonReader);
 }

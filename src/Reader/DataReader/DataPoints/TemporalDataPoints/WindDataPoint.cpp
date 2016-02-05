@@ -2,11 +2,9 @@
 #include <Reader/DataReader/Data.hpp>
 
 WindDataPoint::WindDataPoint(Coordinate coordinate, int priority, int timestamp, float direction,
-<<<<<<< HEAD
-                             float speed) : TemporalDataPoint(DataType::WIND, coordinate, priority, timestamp),
-=======
+
                              float speed) : TemporalDataPoint(Data::WIND, coordinate, priority, timestamp),
->>>>>>> develop
+
 	direction(direction), speed(speed) { }
 
 float WindDataPoint::getDirection() const {

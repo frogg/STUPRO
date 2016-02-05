@@ -14,11 +14,9 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 
 	EXPECT_EQ(
 	    cityReader->getDataType(),
-<<<<<<< HEAD
-	    DataType::CITIES
-=======
+
 	    Data::CITIES
->>>>>>> develop
+
 	);
 
 	EXPECT_EQ(
@@ -32,11 +30,9 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 
 	EXPECT_EQ(
 	    tweetReader->getDataType(),
-<<<<<<< HEAD
-	    DataType::TWEETS
-=======
+
 	    Data::TWEETS
->>>>>>> develop
+
 	);
 
 	EXPECT_EQ(
