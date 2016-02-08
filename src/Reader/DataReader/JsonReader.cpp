@@ -224,7 +224,7 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, int time) 
 }
 
 vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, int time, bool temporal) {
-    bool verifiedTemporal = this->hasTemporalData() && temporal;
+	bool verifiedTemporal = this->hasTemporalData() && temporal;
 
 	// If possible, retrieve the data set from the cache
 	if (this->cachingEnabled) {

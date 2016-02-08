@@ -49,7 +49,7 @@ void PrecipitationTypeFilter::displayPrecipitationType(PrecipitationDataPoint::P
 	if (this->error) {
 		return;
 	}
-			
+
 	this->precipitationTypeVisibilities[type] = display;
 
 	// Create the updated selection list this filter uses
@@ -92,8 +92,8 @@ void PrecipitationTypeFilter::enableHail(int enabled) {
 }
 
 void PrecipitationTypeFilter::fail(QString message) {
-    vtkErrorMacro(<< message.toStdString());
-    this->error = true;
+	vtkErrorMacro( << message.toStdString());
+	this->error = true;
 }
 
 vtkStandardNewMacro(PrecipitationTypeFilter);
@@ -104,7 +104,7 @@ int PrecipitationTypeFilter::RequestData(vtkInformation* info,
 	if (this->error) {
 		return 0;
 	}
-			
+
 	// Get output information from the request vectors
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
@@ -128,15 +128,17 @@ int PrecipitationTypeFilter::RequestData(vtkInformation* info,
 	return 1;
 }
 
-int PrecipitationTypeFilter::RequestInformation(vtkInformation *request,
-				vtkInformationVector **inputVector,
-				vtkInformationVector *outputVector) {
-	vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
+int PrecipitationTypeFilter::RequestInformation(vtkInformation* request,
+        vtkInformationVector** inputVector,
+        vtkInformationVector* outputVector) {
+	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
 		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
 		if (dataType != Data::PRECIPITATION) {
-			this->fail(QString("This filter only works with Precipitation data, but the input contains %1 data.").arg(Data::getDataTypeName(dataType)));
+			this->fail(
+			    QString("This filter only works with Precipitation data, but the input contains %1 data.").arg(
+			        Data::getDataTypeName(dataType)));
 			return 0;
 		}
 	} else {

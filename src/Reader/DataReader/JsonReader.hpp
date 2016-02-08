@@ -55,7 +55,7 @@ public:
 	 * point's data stored in the data point's scalar values.
 	 */
 	vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel);
-	
+
 	/**
 	 * Get all data stored in the file this reader uses, pruned by a specified zoom level and time
 	 * range.
@@ -143,7 +143,7 @@ private:
 	 * Boolean flag denoting whether a cache should be used
 	 */
 	bool cachingEnabled;
-	
+
 	/**
 	 * Get all data stored in the file this reader uses, pruned by a specified zoom level and time
 	 * range.
