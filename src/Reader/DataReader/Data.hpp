@@ -5,6 +5,9 @@
 
 #include <vtkInformationDataObjectMetaDataKey.h>
 
+#include <QMap>
+#include <QString>
+
 class Data {
 public:
 	/**
@@ -27,6 +30,19 @@ public:
 	 * @return True if the data type contains time information, false otherwise
 	 */
 	static bool isTemporal(const Data::Type dataType);
+	
+	/**
+	 * Get a human-readable name of a data type.
+	 * @param dataType The data type whose name should be retrieved
+	 * @return The data type's name
+	 */
+	static QString getDataTypeName(const Data::Type dataType);
+	
+private:
+	/**
+	 * Maps data types to human-readable names of themselves.
+	 */
+	static const QMap<Data::Type, QString> DATA_TYPE_NAMES;
 };
 
 #endif
