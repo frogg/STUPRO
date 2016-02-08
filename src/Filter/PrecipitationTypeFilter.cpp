@@ -15,7 +15,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
 
-PrecipitationTypeFilter::PrecipitationTypeFilter() {
+PrecipitationTypeFilter::PrecipitationTypeFilter() : error(false) {
 	// Initialize the selection
 	this->selection = vtkSmartPointer<vtkSelection>::New();
 	vtkSmartPointer<vtkSelectionNode> selectionNode = vtkSmartPointer<vtkSelectionNode>::New();
