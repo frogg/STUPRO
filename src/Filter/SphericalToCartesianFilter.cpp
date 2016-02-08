@@ -26,9 +26,8 @@
 #include <cmath>
 
 SphericalToCartesianFilter::SphericalToCartesianFilter() {
-	this->transformGlobe = GeometryTransform::New(true);
-	this->transformPassthrough = GeometryTransform::New(false);
-	this->Transform = this->transformGlobe;
+	//take this transformation, true -> it transforms per default
+	this->Transform = GeometryTransform::New(true);
 }
 
 SphericalToCartesianFilter::~SphericalToCartesianFilter() {
@@ -36,16 +35,6 @@ SphericalToCartesianFilter::~SphericalToCartesianFilter() {
 
 vtkStandardNewMacro(SphericalToCartesianFilter)
 
-int SphericalToCartesianFilter::RequestData(vtkInformation* info,
-        vtkInformationVector** inputVector,
-        vtkInformationVector* outputVector) {
-
-	this->Transform = this->transformGlobe;
-
-	return this->Superclass::RequestData(info, inputVector, outputVector);
-
-	// TODO: Generate correct surface normals here or correct transformation
-}
 
 void SphericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
@@ -58,9 +47,19 @@ int SphericalToCartesianFilter::FillOutputPortInformation(int, vtkInformation* i
 }
 
 int SphericalToCartesianFilter::FillInputPortInformation(int, vtkInformation* info) {
+	//make sure that we only accept vtkPointSet, vtkImageData and vtkRectilinearGrid as input
 	info->Remove(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkImageData");
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkRectilinearGrid");
 	return 1;
+}
+
+void SphericalToCartesianFilter::setTransform(bool value) {
+	GeometryTransform* trans = ((GeometryTransform*) this->Transform);
+	if (trans) {
+		trans->setTransform(value);
+	}
+	//indicates that transformation should be done again
+	this->Modified();
 }
