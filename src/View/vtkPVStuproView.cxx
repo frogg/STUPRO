@@ -19,7 +19,7 @@ void vtkPVStuproView::Initialize(unsigned int id)
 
 	initParameters();
 	initRenderer();
-	//registerTimerCallback();
+	registerTimerCallback();
 	initGlobe();
 }
 
@@ -83,6 +83,7 @@ void vtkPVStuproView::registerTimerCallback()
     GetRenderWindow()->Render();
 
     // Enable timer on the render window.
+    // TODO: Change this to a Qt-based timer system.
     GetRenderWindow()->GetInteractor()->CreateRepeatingTimer(17);
     GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::TimerEvent, timerCallback);
 }

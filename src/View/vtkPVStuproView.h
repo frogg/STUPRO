@@ -88,7 +88,8 @@ protected:
 	 * called outside of this class. Therefore it can only be
 	 * instantiated by a vtkSmartPointer.
 	 */
-	vtkPVStuproView()
+	vtkPVStuproView() :
+		displayMode(DisplayGlobe), displayModeInterpolation(0.f)
 	{
 	};
 
