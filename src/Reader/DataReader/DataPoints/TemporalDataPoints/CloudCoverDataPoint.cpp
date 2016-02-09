@@ -3,7 +3,7 @@
 
 
 CloudCoverDataPoint::CloudCoverDataPoint(Coordinate coordinate, int priority, int timestamp,
-                                         float cloudCover) : TemporalDataPoint(Data::CLOUD_COVERAGE, coordinate, priority, timestamp),
+        float cloudCover) : TemporalDataPoint(Data::CLOUD_COVERAGE, coordinate, priority, timestamp),
 	cloudCover(cloudCover) { }
 
 float CloudCoverDataPoint::getCloudCover() const {
