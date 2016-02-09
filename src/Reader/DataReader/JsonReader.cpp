@@ -203,7 +203,7 @@ bool JsonReader::hasTemporalData() const {
 
 }
 
-float JsonReader::getTimeStepSize() const {
+int JsonReader::getAmountOfTimeSteps() const {
 	return (this->endTime - this->startTime) / (this->timeResolution * 1.0f);
 
 }

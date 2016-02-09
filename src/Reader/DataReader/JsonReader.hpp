@@ -98,6 +98,8 @@ public:
 	 * Clear all cached vtkPolyData
 	 */
 	void clearCache();
+    
+    
 
 private:
 	/**
