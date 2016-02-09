@@ -85,7 +85,13 @@ int TemporalAggregationFilter::RequestUpdateExtent (
   vtkInformation *request,
   vtkInformationVector **inputVector,
   vtkInformationVector *outputVector) {
-    // TODO: Make the VTK executive step through all time steps in order
-    
+    vtkInformation *inputInformation = inputVector[0]->GetInformationObject(0);
+
+    // Make the pipeline executive iterate the upstream pipeline time steps by setting the update time step appropiately
+    double *inputTimeSteps = inputInformation->Get(vtkStreamingDemandDrivenPipeline::TIME_STEPS());
+    if (inputTimeSteps) {
+        inputInformation->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), inputTimeSteps[this->currentTimeStep]);
+    }
+
     return 1;
 }
