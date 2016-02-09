@@ -4,6 +4,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
+#include <Utils/Misc/Exceptions.hpp>
 #include <exception>
 #include <string>
 
@@ -11,27 +12,15 @@
  * Exception that will be thrown whenever a configuration file could not be
  * opened.
  */
-struct FileOpenException : public std::exception {
-	std::string reason;
-
-	FileOpenException(QString message) : reason(message.toStdString()) { }
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
+struct FileOpenException : public KronosException {
+	FileOpenException(QString message) : KronosException(message) { }
 };
 
 /**
  * Exception thrown when an error occurred trying to parse JSON data.
  */
-struct JsonParseException : public std::exception {
-	std::string reason;
-
-	JsonParseException(QString message) : reason(message.toStdString()) { }
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
+struct JsonParseException : public KronosException {
+	JsonParseException(QString message) : KronosException(message) { }
 };
 
 class ConfigUtil {

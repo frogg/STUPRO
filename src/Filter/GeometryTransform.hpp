@@ -4,101 +4,92 @@
 #include <vtkAbstractTransform.h>
 
 #include "Utils/Math/Vector3.hpp"
+#include "Utils/Math/SphericalCoordinateFunctions.h"
 #include "Utils/Misc/Macros.hpp"
+#include "Utils/Misc/Exceptions.hpp"
 
+#include <exception>
+#include <QString>
+
+/**
+ * we do not support Backward transformation and throw an exception if someone wants it
+ */
+struct NoBackwardTransformationException : public KronosException {
+	NoBackwardTransformationException(QString reason) : KronosException(reason) { }
+};
+
+
+/**
+ * transforms from gps to world coodinates
+ */
 class GeometryTransform : public vtkAbstractTransform {
 private:
+	//inidcates if transformation should be done.
 	bool transform;
+	//indictes direction in which we transform (normally forward and backward transformation are supported). We only support forward transformation.
 	bool transformForward;
+
+	//globe radius
 	double baseAltitude;
 
-	template<typename T> void gpsToNormalWorldCoordinates(const Vector3<T> gps, Vector3<T>& normal) {
-		const double lon = gps.x * KRONOS_PI / 180;
-		const double lat = gps.y * KRONOS_PI / 180;
-
-		normal.z = cos(lat) * cos(lon);
-		normal.x = cos(lat) * sin(lon);
-		normal.y = sin(lat);
+	/**
+	 * transforms gps cooridinates (lat, long, height) to world/cartesian coodinate systen
+	 */
+	template<typename T> void gpsToWorldCoordinates(const Vector3<T>& gps, Vector3<T>& cartesian) {
+		cartesian = sphericalToCartesian(gps);
 	}
 
-	template<typename T> void gpsToWorldCoordinates(const Vector3<T> gps, Vector3<T>& world) {
-		gpsToNormalWorldCoordinates(gps, world);
+	/**
+	 * transforms gps cooridinates (lat, long, height) to world/cartesian coodinate systen, and also derivates
+	 */
+	template<typename T> void gpsToWorldAndDerivatives(const Vector3<T>& gps, Vector3<T>& cartesian,
+	        T derivatives[3][3]) {
 
-		const double radius = baseAltitude + gps.z;
-
-		world.x *= radius;
-		world.y *= radius;
-		world.z *= radius;
+		gpsToWorldCoordinates(gps, cartesian);
+		sphericalToCartesianJacobian(gps, derivatives);
 	}
 
-	template<typename T> void gpsToWorldAndDerivatives(const Vector3<T> gps, Vector3<T>& world,
-	        Vector3<Vector3<T>>& derivatives) {
-		gpsToNormalWorldCoordinates(gps, world);
-
-		const double lon = gps.x * KRONOS_PI / 180;
-		const double lat = gps.y * KRONOS_PI / 180;
-		const double radius = baseAltitude + gps.z;
-
-		derivatives.x.z = world.x;
-		derivatives.y.z = world.y;
-		derivatives.z.z = world.z;
-
-		world *= radius;
-
-		derivatives.x.x = world.x * KRONOS_PI / 180;
-		derivatives.y.x = 0;
-		derivatives.z.x = world.z * KRONOS_PI / 180;
-
-		derivatives.x.y = -sin(lat) * sin(lon) * radius * KRONOS_PI / 180;
-		derivatives.y.y = cos(lat) * radius * KRONOS_PI / 180;
-		derivatives.z.y = -sin(lat) * cos(lon) * radius * KRONOS_PI / 180;
-	}
-
-	template<typename T> void worldToGPSCoordinates(const Vector3<T> world, Vector3<T>& gps) {
-		// TODO
-	}
-
-	template<typename T> void worldToGPSAndDerivatives(const Vector3<T> in, Vector3<T>& out,
-	        Vector3<Vector3<T>>& derivatives) {
-		// TODO
-	}
-
+	/**
+	 * copies a vector to an array
+	 */
 	template<typename T> void copyVectorToArray(const Vector3<T>& vector, T array[3]) {
 		array[0] = vector.x;
 		array[1] = vector.y;
 		array[2] = vector.z;
 	}
 
-	template<typename T> void copyVectorToArray(const Vector3<T>& v1,
-	        T a1[3],
-	        const Vector3<Vector3<T>>& v2,
-	        T a2[3][3]) {
-		copyVectorToArray(v1, a1);
-		copyVectorToArray(v2.x, a2[0]);
-		copyVectorToArray(v2.y, a2[1]);
-		copyVectorToArray(v2.z, a2[2]);
-	}
-
 public:
-	static GeometryTransform* New(bool transform = true, bool forward = true,
-	                              double baseAltitude = 100.0) {
-		return new GeometryTransform(transform, forward, baseAltitude);
+	static GeometryTransform* New(bool transform = true, bool forward = true) {
+		return new GeometryTransform(transform, forward);
 	}
 
-	GeometryTransform(bool transform = true, bool forward = true, double baseAltitude = 100.0) {
+	GeometryTransform(bool transform = true, bool forward = true) {
 		this->transform = transform;
 		this->transformForward = forward;
-		this->baseAltitude = baseAltitude;
+		this->baseAltitude = Configuration::getInstance().getDouble("globe.radius");
 	}
 
 	~GeometryTransform() {
 	}
 
+	/**
+	 * transformation is active by default, can be (de)actived with this method
+	 */
+	void setTransform(bool transform = true) {
+		this->transform = transform;
+	}
+
+	/**
+	 * change from forward transformation to backward transformation or the other way round. We only support forward transformation.
+	 */
 	void Inverse() override {
 		this->transformForward = !this->transformForward;
 		this->Modified();
 	}
 
+	/**
+	 * InternalTransformPoint for floats
+	 */
 	void InternalTransformPoint(const float in[3], float out[3]) override {
 		if (!transform) {
 			return;
@@ -107,11 +98,14 @@ public:
 		if (this->transformForward) {
 			gpsToWorldCoordinates(Vector3f(in), outV);
 		} else {
-			worldToGPSCoordinates(Vector3f(in), outV);
+			throw NoBackwardTransformationException("no backward transformation supported");
 		}
 		copyVectorToArray(outV, out);
 	}
 
+	/**
+	 * InternalTransformPoint for doubles
+	 */
 	void InternalTransformPoint(const double in[3], double out[3]) override {
 		if (!transform) {
 			return;
@@ -120,45 +114,48 @@ public:
 		if (this->transformForward) {
 			gpsToWorldCoordinates(Vector3d(in), outV);
 		} else {
-			worldToGPSCoordinates(Vector3d(in), outV);
+			throw NoBackwardTransformationException("no backward transformation supported");
 		}
 		copyVectorToArray(outV, out);
 	}
 
+	/**
+	 * InternalTransformDerivative for floats (transforms point AND deriactive)
+	 */
 	void InternalTransformDerivative(const float in[3], float out[3], float derivative[3][3]) override {
 		if (!transform) {
 			return;
 		}
 		Vector3f outV = Vector3f(out);
-		Vector3<Vector3f> outDeriv = Vector3<Vector3f>(Vector3f(derivative[0]), Vector3f(derivative[1]),
-		                             Vector3f(derivative[2]));
+
 		if (this->transformForward) {
-			gpsToWorldAndDerivatives(Vector3f(in), outV, outDeriv);
+			gpsToWorldAndDerivatives(Vector3f(in), outV, derivative);
 		} else {
-			worldToGPSAndDerivatives(Vector3f(in), outV, outDeriv);
+			throw NoBackwardTransformationException("no backward transformation supported");
 		}
-		copyVectorToArray<float>(outV, out, outDeriv, derivative);
+		copyVectorToArray<float>(outV, out);
 	}
 
+	/**
+	 * InternalTransformDerivative for doubles (transforms point AND deriactive)
+	 */
 	void InternalTransformDerivative(const double in[3], double out[3],
 	                                 double derivative[3][3]) override {
 		if (!transform) {
 			return;
 		}
 		Vector3d outV = Vector3d(out);
-		Vector3<Vector3d> outDeriv = Vector3<Vector3d>(Vector3d(derivative[0]), Vector3d(derivative[1]),
-		                             Vector3d(derivative[2]));
+
 		if (this->transformForward) {
-			gpsToWorldAndDerivatives(Vector3d(in), outV, outDeriv);
+			gpsToWorldAndDerivatives(Vector3d(in), outV, derivative);
 		} else {
-			worldToGPSAndDerivatives(Vector3d(in), outV, outDeriv);
+			throw NoBackwardTransformationException("no backward transformation supported");
 		}
-		copyVectorToArray(outV, out, outDeriv, derivative);
+		copyVectorToArray(outV, out);
 	}
 
 	vtkAbstractTransform* MakeTransform() override {
-		GeometryTransform* geoTrans = GeometryTransform::New(this->transform, this->transformForward,
-		                              this->baseAltitude);
+		GeometryTransform* geoTrans = GeometryTransform::New(this->transform, this->transformForward);
 		return geoTrans;
 	}
 };

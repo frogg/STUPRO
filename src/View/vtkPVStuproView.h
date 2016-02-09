@@ -47,6 +47,25 @@ public:
 	 * @param id the id of the view, gets set by the calling instance, used for Superclass::Initialize(id)
 	 */
 	virtual void Initialize(unsigned int id) override;
+	
+	/**
+	 * Moves the camera the specified latitude and longitude, keeping the distance the same as it was before and
+	 * pointing the camera directly at the globe's center.
+	 */
+	void moveCamera(float latitude, float longitude);
+
+	/**
+	 * Moves the camera the specified latitude and longitude, altering its distance and pointing the camera directly at
+	 * the globe's center.
+	 */
+	void moveCamera(float latitude, float longitude, float distance);
+	
+	/**
+	 * Returns the distance between the camera and the globe's center point.
+	 * 
+	 * This method should be const, but cannot be set to const as VTK is not const-correct.
+	 */
+	float getCameraDistance();
 
 	/**
 	 * Upon call, switches the currently used display mode to the opposite,

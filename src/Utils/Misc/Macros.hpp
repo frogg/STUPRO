@@ -13,7 +13,7 @@
 #elif defined(__linux__)
 	#define KRONOS_LINUX
 #else
-	#	error Unrecognized Operating System!
+	#error Unrecognized Operating System!
 #endif
 
 /**

@@ -3,17 +3,16 @@
 
 #include <qstring.h>
 #include <Utils/TileDownload/MetaImage.hpp>
+#include <Utils/Misc/Exceptions.hpp>
 #include <exception>
 #include <string>
 
-struct ImageNotCachedException : public std::exception {
-	QString message;
+struct ImageNotCachedException : public KronosException {
+	ImageNotCachedException(QString message) : KronosException(message) { }
+};
 
-	ImageNotCachedException(QString message) : message(message) { }
-
-	const char* what () const throw () {
-		return message.toStdString().c_str();
-	}
+struct ImageCorruptedException : public KronosException {
+	ImageCorruptedException(QString message) : KronosException(message) { }
 };
 
 class ImageCache {
@@ -54,6 +53,15 @@ public:
 	 * @param tileY Vertical position of the requested tile
 	 */
 	const void cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX, int tileY);
+
+	/**
+	 * Remove a single image from the cache.
+	 * @param layer Unique identifier of an existing layer
+	 * @param zoomLevel Zoom level down the quad tree of images
+	 * @param tileX Horizontal position of the tile to be deleted
+	 * @param tileY Vertical position of the tile to be deleted
+	 */
+	const void deleteCachedImage(QString layer, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Delete all cached data from a specified layer.
@@ -116,6 +124,10 @@ private:
 	 * Error message used if the requested image file could not be read.
 	 */
 	static const QString IMAGE_COULD_NOT_BE_READ_MESSAGE;
+	/**
+	 * Error message used if the requested image file has not been cached yet.
+	 */
+	static const QString IMAGE_CORRUPTED_MESSAGE;
 };
 
 #endif

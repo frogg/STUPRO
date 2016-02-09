@@ -6,6 +6,19 @@ else()
 	cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
 endif()
 
+# files to be moced for the plugin part
+set(PLUGIN_MOC_SRCS
+	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/CityListModel.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/PlaceSearchDockWidget.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/PlaceSearchWidget.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Kronos.h"
+)
+
+# files to be moced for the paraview part
+set(PARAVIEW_MOC_SRCS
+	"${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp"
+)
+
 set(PRINT_CLANG_COMPLETE NO CACHE BOOL "Generate output to be pasted into a .clang_complete file")
 
 # find pthread (C++11 threading) library and headers
@@ -27,13 +40,23 @@ else()
 	include(${QT_USE_FILE})
 endif()
 
-# automatically wrap *.ui files and classes inheriting from QObject
-set(CMAKE_AUTOMOC TRUE)
+# find and include PostgreSQL libraries
+find_library(PQXX_LIB NAMES pqxx libpqxx DOC "PostgreSQL libpqxx library")
+find_library(PQ_LIB NAMES pq libpq DOC "PostgreSQL libpq library")
+find_path(PQXX_HEADERS pqxx DOC "PostgreSQL header files")
+include_directories(${PQXX_HEADERS})
+
+# wrap classes inheriting from QObject
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
+	QT5_WRAP_CPP(PLUGIN_MOC_FILES ${PLUGIN_MOC_SRCS})
+	QT5_WRAP_CPP(PARAVIEW_MOC_FILES ${PARAVIEW_MOC_SRCS})
 	QT5_WRAP_UI(UISrcs StuproWindow.ui)
 else()
+	QT4_WRAP_CPP(PLUGIN_MOC_FILES ${PLUGIN_MOC_SRCS})
+	QT4_WRAP_CPP(PARAVIEW_MOC_FILES ${PARAVIEW_MOC_SRCS})
 	QT4_WRAP_UI(UISrcs StuproWindow.ui)
 endif()
+
 # fallback (works only for CMake 3.0 and above)
 # set(CMAKE_AUTOUIC TRUE)
 
@@ -41,11 +64,13 @@ endif()
 set(ParaView_SOURCE_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp
+	${PARAVIEW_MOC_SRCS}
 	${UISrcs}
 )
 
 # all other Kronos source files
 file(GLOB_RECURSE StuproView_SOURCE_FILES
+	"${CMAKE_CURRENT_SOURCE_DIR}/Kronos.*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.cxx"
@@ -76,6 +101,7 @@ include_directories(${CMAKE_SOURCE_DIR}/libs)
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/View/
+	${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/
 	${CMAKE_CURRENT_SOURCE_DIR}/Filter/
 	${CMAKE_CURRENT_SOURCE_DIR}/Sources/
 	${CMAKE_CURRENT_SOURCE_DIR}/Reader/
@@ -87,6 +113,20 @@ include_directories(
 encode_files_as_strings(StuproView_ENCODED_SHADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/glsl/GlobeShader_fsh.glsl
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/glsl/GlobeShader_vsh.glsl
+)
+
+# register methods to be called on startup and shutdown of the plugin
+add_paraview_auto_start(Kronos_Main_Interfaces Kronos_Main_Interfaces_SRCS
+	CLASS_NAME Kronos
+	STARTUP onStartup
+	SHUTDOWN onShutdown
+)
+
+# register the place search widget
+add_paraview_dock_window(
+	PLACE_SEARCH_WIDGET_OUTIFACES
+	PLACE_SEARCH_WIDGET_OUTSRCS
+	CLASS_NAME PlaceSearchDockWidget
 )
 
 # register a ParaView plugin
@@ -106,10 +146,21 @@ add_paraview_plugin(
 		Filter/KronosFilter.xml
 		Sources/KronosSources.xml
 		Reader/KronosReader.xml
+	GUI_INTERFACES
+		${PLACE_SEARCH_WIDGET_OUTIFACES}
+		${Kronos_Main_Interfaces}
+	GUI_SOURCES
+		${PLACE_SEARCH_WIDGET_OUTSRCS}
 	SOURCES
 		${StuproView_SOURCE_FILES}
 		${StuproView_ENCODED_SHADERS}
+		${PLACE_SEARCH_WIDGET_OUTSRCS}
+		${PLUGIN_MOC_FILES}
+		${Kronos_Main_Interfaces_SRCS}
 )
+
+# link against PostgreSQL libraries
+target_link_libraries(KronosPlugin PRIVATE ${PQXX_LIB} ${PQ_LIB})
 
 # link against Qt libraries
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
@@ -135,17 +186,19 @@ build_paraview_client(
 	PVMAIN_WINDOW StuproWindow
 	PVMAIN_WINDOW_INCLUDE StuproWindow.hpp
 	REQUIRED_PLUGINS KronosPlugin
-	SOURCES ${ParaView_SOURCE_FILES}
+	SOURCES
+		${ParaView_SOURCE_FILES}
+		${PARAVIEW_MOC_FILES}
 	GUI_CONFIGURATION_XMLS
-    ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewSources.xml
-	${CMAKE_CURRENT_SOURCE_DIR}/ParaViewFilters.xml
+		${CMAKE_CURRENT_SOURCE_DIR}/ParaViewSources.xml
+		${CMAKE_CURRENT_SOURCE_DIR}/ParaViewFilters.xml
 )
 
 # use C++11 to compile the client
 set_property(TARGET paraview_stupro PROPERTY CXX_STANDARD 11)
 
 # make sure not to copy or delete the resource folder if we are doing an in-source build
-if(NOT ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${KRONOS_BIN_DIR}"))
+if(NOT ("${CMAKE_SOURCE_DIR}" STREQUAL "${KRONOS_BIN_DIR}"))
 	# copy over all required resources
 	file(
 		COPY ${CMAKE_SOURCE_DIR}/res

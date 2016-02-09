@@ -1,0 +1,224 @@
+<CustomFilterDefinitions>
+  <CustomProxyDefinition name="Testfilter loaded from a F I L E" group="filters">
+    <CompoundSourceProxy id="5166" servers="1">
+      <Proxy group="filters" type="Clip" id="5058" servers="1" compound_name="Clip1">
+        <Property name="ClipFunction" id="5058.ClipFunction" number_of_elements="1">
+          <Proxy value="5054"/>
+          <Domain name="groups" id="5058.ClipFunction.groups"/>
+          <Domain name="proxy_list" id="5058.ClipFunction.proxy_list">
+            <Proxy value="5054"/>
+            <Proxy value="5055"/>
+            <Proxy value="5056"/>
+            <Proxy value="5057"/>
+          </Domain>
+        </Property>
+        <Property name="Input" id="5058.Input" number_of_elements="1">
+          <Proxy value="4965" output_port="0"/>
+          <Domain name="groups" id="5058.Input.groups"/>
+          <Domain name="input_array" id="5058.Input.input_array"/>
+          <Domain name="input_type" id="5058.Input.input_type"/>
+        </Property>
+        <Property name="InputBounds" id="5058.InputBounds">
+          <Domain name="bounds" id="5058.InputBounds.bounds"/>
+        </Property>
+        <Property name="InsideOut" id="5058.InsideOut" number_of_elements="1">
+          <Element index="0" value="0"/>
+          <Domain name="bool" id="5058.InsideOut.bool"/>
+        </Property>
+        <Property name="PreserveInputCells" id="5058.PreserveInputCells" number_of_elements="1">
+          <Element index="0" value="0"/>
+          <Domain name="bool" id="5058.PreserveInputCells.bool"/>
+        </Property>
+        <Property name="SelectInputScalars" id="5058.SelectInputScalars" number_of_elements="5">
+          <Element index="0" value=""/>
+          <Element index="1" value=""/>
+          <Element index="2" value=""/>
+          <Element index="3" value="0"/>
+          <Element index="4" value=""/>
+          <Domain name="array_list" id="5058.SelectInputScalars.array_list"/>
+          <Domain name="field_list" id="5058.SelectInputScalars.field_list">
+            <Entry value="0" text="Point Data"/>
+          </Domain>
+        </Property>
+        <Property name="UseValueAsOffset" id="5058.UseValueAsOffset" number_of_elements="1">
+          <Element index="0" value="0"/>
+          <Domain name="bool" id="5058.UseValueAsOffset.bool"/>
+        </Property>
+        <Property name="Value" id="5058.Value" number_of_elements="1">
+          <Element index="0" value="0"/>
+          <Domain name="range" id="5058.Value.range"/>
+        </Property>
+      </Proxy>
+      <Proxy group="filters" type="Glyph" id="4965" servers="1" compound_name="Glyph1">
+        <Property name="GlyphMode" id="4965.GlyphMode" number_of_elements="1">
+          <Element index="0" value="2"/>
+          <Domain name="enum" id="4965.GlyphMode.enum">
+            <Entry value="0" text="All Points"/>
+            <Entry value="1" text="Every Nth Point"/>
+            <Entry value="2" text="Uniform Spatial Distribution"/>
+          </Domain>
+        </Property>
+        <Property name="GlyphTransform" id="4965.GlyphTransform" number_of_elements="1">
+          <Proxy value="4887"/>
+          <Domain name="proxy_list" id="4965.GlyphTransform.proxy_list">
+            <Proxy value="4887"/>
+          </Domain>
+        </Property>
+        <Property name="Input" id="4965.Input" number_of_elements="1">
+          <Domain name="groups" id="4965.Input.groups"/>
+          <Domain name="input_array1" id="4965.Input.input_array1"/>
+          <Domain name="input_array2" id="4965.Input.input_array2"/>
+          <Domain name="input_type" id="4965.Input.input_type"/>
+        </Property>
+        <Property name="MaximumNumberOfSamplePoints" id="4965.MaximumNumberOfSamplePoints" number_of_elements="1">
+          <Element index="0" value="5000"/>
+          <Domain name="range" id="4965.MaximumNumberOfSamplePoints.range"/>
+        </Property>
+        <Property name="Orient" id="4965.Orient" number_of_elements="1">
+          <Element index="0" value="1"/>
+          <Domain name="bool" id="4965.Orient.bool"/>
+        </Property>
+        <Property name="Scalars" id="4965.Scalars" number_of_elements="5">
+          <Element index="0" value=""/>
+          <Element index="1" value=""/>
+          <Element index="2" value=""/>
+          <Element index="3" value=""/>
+          <Element index="4" value=""/>
+          <Domain name="array_list" id="4965.Scalars.array_list"/>
+        </Property>
+        <Property name="ScaleFactor" id="4965.ScaleFactor" number_of_elements="1">
+          <Element index="0" value="0.4"/>
+          <Domain name="bounds" id="4965.ScaleFactor.bounds"/>
+          <Domain name="scalar_range" id="4965.ScaleFactor.scalar_range"/>
+          <Domain name="vector_range" id="4965.ScaleFactor.vector_range"/>
+        </Property>
+        <Property name="ScaleMode" id="4965.ScaleMode" number_of_elements="1">
+          <Element index="0" value="3"/>
+          <Domain name="enum" id="4965.ScaleMode.enum">
+            <Entry value="0" text="scalar"/>
+            <Entry value="1" text="vector"/>
+            <Entry value="2" text="vector_components"/>
+            <Entry value="3" text="off"/>
+          </Domain>
+        </Property>
+        <Property name="Seed" id="4965.Seed" number_of_elements="1">
+          <Element index="0" value="10339"/>
+          <Domain name="range" id="4965.Seed.range"/>
+        </Property>
+        <Property name="Source" id="4965.Source" number_of_elements="1">
+          <Proxy value="4888" output_port="0"/>
+          <Domain name="groups" id="4965.Source.groups"/>
+          <Domain name="input_type" id="4965.Source.input_type"/>
+          <Domain name="proxy_list" id="4965.Source.proxy_list">
+            <Proxy value="4888"/>
+            <Proxy value="4899"/>
+            <Proxy value="4910"/>
+            <Proxy value="4921"/>
+            <Proxy value="4932"/>
+            <Proxy value="4943"/>
+            <Proxy value="4954"/>
+          </Domain>
+        </Property>
+        <Property name="Stride" id="4965.Stride" number_of_elements="1">
+          <Element index="0" value="1"/>
+          <Domain name="range" id="4965.Stride.range"/>
+        </Property>
+        <Property name="Vectors" id="4965.Vectors" number_of_elements="5">
+          <Element index="0" value="1"/>
+          <Element index="1" value=""/>
+          <Element index="2" value=""/>
+          <Element index="3" value="0"/>
+          <Element index="4" value="Normals"/>
+          <Domain name="array_list" id="4965.Vectors.array_list">
+            <String text="Normals"/>
+          </Domain>
+        </Property>
+      </Proxy>
+      <Proxy group="extended_sources" type="Transform2" id="4887" servers="1" compound_name="auto_4887">
+        <Property name="Position" id="4887.Position" number_of_elements="3">
+          <Element index="0" value="0"/>
+          <Element index="1" value="0"/>
+          <Element index="2" value="0"/>
+          <Domain name="range" id="4887.Position.range"/>
+        </Property>
+        <Property name="PositionInfo" id="4887.PositionInfo" number_of_elements="3">
+          <Element index="0" value="0"/>
+          <Element index="1" value="0"/>
+          <Element index="2" value="0"/>
+        </Property>
+        <Property name="Rotation" id="4887.Rotation" number_of_elements="3">
+          <Element index="0" value="0"/>
+          <Element index="1" value="0"/>
+          <Element index="2" value="0"/>
+          <Domain name="range" id="4887.Rotation.range"/>
+        </Property>
+        <Property name="RotationInfo" id="4887.RotationInfo" number_of_elements="3">
+          <Element index="0" value="0"/>
+          <Element index="1" value="0"/>
+          <Element index="2" value="0"/>
+        </Property>
+        <Property name="Scale" id="4887.Scale" number_of_elements="3">
+          <Element index="0" value="1"/>
+          <Element index="1" value="1"/>
+          <Element index="2" value="1"/>
+          <Domain name="range" id="4887.Scale.range"/>
+        </Property>
+        <Property name="ScaleInfo" id="4887.ScaleInfo" number_of_elements="3">
+          <Element index="0" value="1"/>
+          <Element index="1" value="1"/>
+          <Element index="2" value="1"/>
+        </Property>
+      </Proxy>
+      <Proxy group="sources" type="ArrowSource" id="4888" servers="1" compound_name="auto_4888">
+        <Property name="Invert" id="4888.Invert" number_of_elements="1">
+          <Element index="0" value="0"/>
+          <Domain name="bool" id="4888.Invert.bool"/>
+        </Property>
+        <Property name="ShaftRadius" id="4888.ShaftRadius" number_of_elements="1">
+          <Element index="0" value="0.03"/>
+          <Domain name="range" id="4888.ShaftRadius.range"/>
+        </Property>
+        <Property name="ShaftResolution" id="4888.ShaftResolution" number_of_elements="1">
+          <Element index="0" value="6"/>
+          <Domain name="range" id="4888.ShaftResolution.range"/>
+        </Property>
+        <Property name="TipLength" id="4888.TipLength" number_of_elements="1">
+          <Element index="0" value="0.35"/>
+          <Domain name="range" id="4888.TipLength.range"/>
+        </Property>
+        <Property name="TipRadius" id="4888.TipRadius" number_of_elements="1">
+          <Element index="0" value="0.1"/>
+          <Domain name="range" id="4888.TipRadius.range"/>
+        </Property>
+        <Property name="TipResolution" id="4888.TipResolution" number_of_elements="1">
+          <Element index="0" value="6"/>
+          <Domain name="range" id="4888.TipResolution.range"/>
+        </Property>
+      </Proxy>
+      <Proxy group="implicit_functions" type="Plane" id="5054" servers="1" compound_name="auto_5054">
+        <Property name="Normal" id="5054.Normal" number_of_elements="3">
+          <Element index="0" value="0.405150102428474"/>
+          <Element index="1" value="0.844970696078648"/>
+          <Element index="2" value="0.349110179270903"/>
+          <Domain name="range" id="5054.Normal.range"/>
+        </Property>
+        <Property name="Offset" id="5054.Offset" number_of_elements="1">
+          <Element index="0" value="0"/>
+        </Property>
+        <Property name="Origin" id="5054.Origin" number_of_elements="3">
+          <Element index="0" value="-0.320372752120942"/>
+          <Element index="1" value="0"/>
+          <Element index="2" value="0"/>
+          <Domain name="range" id="5054.Origin.range"/>
+        </Property>
+      </Proxy>
+      <ExposedProperties>
+        <Property name="Input" proxy_name="Glyph1" exposed_name="Input"/>
+      </ExposedProperties>
+      <OutputPort name="Output" proxy="Clip1" port_index="0"/>
+      <Hints>
+        <ShowInMenu/>
+      </Hints>
+    </CompoundSourceProxy>
+  </CustomProxyDefinition>
+</CustomFilterDefinitions>

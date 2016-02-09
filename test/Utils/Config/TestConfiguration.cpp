@@ -8,8 +8,8 @@ TEST(TestConfiguration, ValidCalls) {
 	EXPECT_TRUE(!Configuration::getInstance().hasKey("globe.invalid"));
 
 	EXPECT_EQ(
-	    42,
-	    Configuration::getInstance().getInteger("globe.radius")
+	    100,
+	    Configuration::getInstance().getDouble("globe.radius")
 	);
 
 	EXPECT_EQ(
