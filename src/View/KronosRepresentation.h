@@ -15,7 +15,7 @@
 #include "vtkActor2D.h"
 #include "vtkLabelPlacementMapper.h"
 #include "vtkPointSetToLabelHierarchy.h"
-#include <QString.h>
+#include <qstring.h>
 
 class VTK_EXPORT KronosRepresentation : public vtkGeometryRepresentationWithFaces
 {
