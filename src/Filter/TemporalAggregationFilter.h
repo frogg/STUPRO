@@ -5,6 +5,8 @@
 #include <vtkMultiTimeStepAlgorithm.h>
 #include <vtkDataSet.h>
 
+#include <qstring.h>
+
 class VTKFILTERSHYBRID_EXPORT TemporalAggregationFilter : public vtkMultiTimeStepAlgorithm {
 public:
     static TemporalAggregationFilter *New();
@@ -31,6 +33,17 @@ protected:
                                  vtkInformationVector *outputVector);
 
 private:
+    /**
+     * Display an error message and remember that this filter does not hold valid data.
+     * @param message The error message to be shown to the user
+     */
+    void fail(QString message);
+
+    /**
+     * Boolean flag denoting whether there was an error.
+     */
+    bool error;
+    
     TemporalAggregationFilter(const TemporalAggregationFilter&); // Not implemented.
     void operator=(const TemporalAggregationFilter&); // Not implemented.
 };

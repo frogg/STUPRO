@@ -27,6 +27,11 @@ TemporalAggregationFilter::TemporalAggregationFilter() {
 
 TemporalAggregationFilter::~TemporalAggregationFilter() { }
 
+void TemporalAggregationFilter::fail(QString message) {
+	vtkErrorMacro( << message.toStdString());
+	this->error = true;
+}
+
 void TemporalAggregationFilter::PrintSelf(ostream& os, vtkIndent indent) {
     this->Superclass::PrintSelf(os, indent);
 
