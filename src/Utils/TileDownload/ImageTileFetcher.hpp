@@ -5,40 +5,27 @@
 #include <qmap.h>
 #include <qrunnable.h>
 #include <qstring.h>
-#include <Utils/TileDownload/ImageDownloader.hpp>
+#include <Utils/TileDownload/DownloadExceptions.hpp>
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
-#include <exception>
+#include <Utils/TileDownload/ImageTile.hpp>
 #include <string>
+#include <functional>
+
 
 class QUrl;
 
-
-/**
- * Exception thrown when a non-existing layer is requested.
- */
-struct InvalidLayerException : public std::exception {
-	std::string reason;
-
-	InvalidLayerException(QString givenLayer, QList<QString> availableLayers) {
-		QString message("The given layer wasn't recognized. Expected one of { ");
-		for (int i = 0; i < availableLayers.size(); i++) {
-			message += "'" + availableLayers[i] + "'";
-			if (i < availableLayers.size() - 1) {
-				message += ", ";
-			}
-		}
-		message += " }. Was given '" + givenLayer + "'.";
-		this->reason = message.toStdString();
-	}
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
-};
-
-
 class ImageTileFetcher : public QRunnable {
 public:
+	/**
+	 * Type used for the tile fetched callback.
+	 */
+	typedef std::function<void(ImageTile tile)> OnTileFetched;
+
+	/**
+	 * Type used for the tile fetch failed callback.
+	 */
+	typedef std::function<void(std::exception const& e)> OnTileFetchFailed;
+
 	/**
 	 * Creates a new ImageFetcher that loads the tile with the given parameters.
 	 * Executes the callback with the resulting ImageTile when done.
@@ -47,16 +34,29 @@ public:
 	 * @param zoomLevel     how deep to dive into the quad-tree
 	 * @param tileX         horizontal position of the requested tile (westernmost tile = 0)
 	 * @param tileY         vertical position of the requested tile (northernmost tile = 0)
-	 * @param onTileFetched function to call when the tile is loaded
 	 */
 	ImageTileFetcher(QMap<QString, ImageLayerDescription> availableLayers,
-	                 QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY,
-	                 ImageDownloader::OnTileFetched onTileFetched);
+	                 QList<QString> requestedLayers, int zoomLevel, int tileX, int tileY);
+
+	/**
+	 * Aborts the currently running fetching process.
+	 */
+	void abortFetching();
 
 	/**
 	 * Function executed by the thread pool when ready.
 	 */
 	void run();
+
+	/**
+	 * Sets the callback to execute when a tile was sucessfully fetched.
+	 */
+	void setOnTileFetched(OnTileFetched onTileFetched);
+
+	/**
+	 * Sets the callback to execute when a tile failed to be fetched.
+	 */
+	void setOnTileFetchFailed(OnTileFetchFailed onTileFetchFailed);
 
 private:
 	QMap<QString, ImageLayerDescription> availableLayers;
@@ -64,7 +64,9 @@ private:
 	int zoomLevel;
 	int tileX;
 	int tileY;
-	ImageDownloader::OnTileFetched onTileFetched;
+	bool abortRequested;
+	OnTileFetched onTileFetched;
+	OnTileFetchFailed onTileFetchFailed;
 
 	/**
 	 * Returns the URL at which the image with of the given layer can be found.

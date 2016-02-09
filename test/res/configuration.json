@@ -1,6 +1,6 @@
 {
   "globe": {
-    "radius": 42,
+    "radius": 100.0,
     "name": "Foo",
     "spheric": true
   },

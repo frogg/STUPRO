@@ -2,51 +2,10 @@
 #define KRONOS_UTILS_TILEDOWNLOAD_IMAGELAYERDESCRIPTION_HPP
 
 #include <Utils/TileDownload/LayerStep.hpp>
-#include <Utils/Misc/Macros.hpp>
+#include <Utils/TileDownload/DownloadExceptions.hpp>
 
 #include <QString>
 #include <QList>
-
-
-/**
- * Exception thrown when a tile location parameter is out of range.
- */
-struct InvalidTileLocationException : public std::exception {
-	std::string reason;
-
-	InvalidTileLocationException(QString message) : reason(message.toStdString()) { }
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
-};
-
-/**
- * Exception thrown when a tile's zoom level is out of range.
- */
-struct InvalidTileZoomException : public InvalidTileLocationException {
-	InvalidTileZoomException(int given, int min, int max)
-		: InvalidTileLocationException(
-		      QString("The given zoomLevel is invalid. Expected value between (including) %2 and %3. Was given %1.")
-		      .arg(given, min, max)
-		  ) { }
-};
-
-/**
- * Exception thrown when a tile's x or y position is out of range.
- */
-struct InvalidTilePositionException : public InvalidTileLocationException {
-	InvalidTilePositionException(int zoomLevel, int xMin, int xMax, int xActual, int yMin, int yMax,
-	                             int yActual)
-		: InvalidTileLocationException(
-		      QString("The given tile position is invalid. Valid tile positions for zoom level %1 must be within x%2 to x%3 and y%5 to y%6. Was given x%4 y%7.")
-		      .arg(
-		          QString::number(zoomLevel),
-		          QString::number(xMin), QString::number(xMax), QString::number(xActual),
-		          QString::number(yMin), QString::number(yMax), QString::number(yActual)
-		      )
-		  ) { }
-};
 
 /**
  * This class holds information containing a whole image layer and how it

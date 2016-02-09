@@ -2,6 +2,7 @@
 
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
+#include <Reader/DataReader/Data.hpp>
 #include <Utils/Config/Configuration.hpp>
 
 #include <vtkInformation.h>
@@ -9,6 +10,7 @@
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkCommand.h>
 #include <vtkObjectFactory.h>
+#include <vtkExecutive.h>
 
 #include <math.h>
 #include <algorithm>
@@ -86,14 +88,24 @@ int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationV
 
     // Add information to the output vector if the data contains time information
     if (this->jsonReader->hasTemporalData()) {
-        double timeStepValue = this->jsonReader->getTimeStepSize();
-        outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(), &timeStepValue, 1);
+        int amountOfTimeSteps = this->jsonReader->getAmountOfTimeSteps();
+
+        double timeSteps[amountOfTimeSteps];
+        for (int i = 0; i < amountOfTimeSteps; i++) {
+            timeSteps[i] = i;
+        }
+
+        outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(), timeSteps, amountOfTimeSteps);
         
         double timeRange[2];
-        timeRange[0] = 0;
-        timeRange[1] = 1;
+        timeRange[0] = 0.0;
+        timeRange[1] = amountOfTimeSteps;
         outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_RANGE(), timeRange, 2);
     }
+    
+    // Append the data type as an entry to the output information
+    outInfo->Set(Data::VTK_DATA_TYPE(), this->jsonReader->getDataType());
+    request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TYPE());
 
     return 1;
 }
@@ -122,8 +134,10 @@ int vtkKronosReader::RequestData(vtkInformation*, vtkInformationVector**,
             
             polyData = this->jsonReader->getVtkDataSet(
                 this->zoomLevel,
-                requestedTimeValue
+                (int) requestedTimeValue
             );
+            
+            polyData->GetInformation()->Set(vtkDataObject::DATA_TIME_STEP(), requestedTimeValue);
         } else {
             // There is no time information or the data is not time-sensitive
             

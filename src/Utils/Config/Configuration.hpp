@@ -3,6 +3,7 @@
 
 #include <Utils/Config/ConfigurationValue.hpp>
 #include <Utils/Misc/Macros.hpp>
+#include <Utils/Misc/Exceptions.hpp>
 
 #include <QString>
 #include <QMap>
@@ -13,14 +14,8 @@
  * Super class for all exceptions thrown while a requested configuration value
  * is being fetched.
  */
-struct ConfigurationException : public std::exception {
-	std::string reason;
-
-	ConfigurationException(QString reason) : reason(reason.toStdString()) { }
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
+struct ConfigurationException : public KronosException {
+	ConfigurationException(QString reason) : KronosException(reason) { }
 };
 
 /**

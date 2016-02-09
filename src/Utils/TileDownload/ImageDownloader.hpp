@@ -4,10 +4,12 @@
 #include <qlist.h>
 #include <qmap.h>
 #include <qstring.h>
+#include <QSet>
 #include <qthreadpool.h>
+#include <Utils/Misc/KronosLogger.hpp>
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
 #include <Utils/TileDownload/ImageTile.hpp>
-#include <functional>
+#include <Utils/TileDownload/ImageTileFetcher.hpp>
 
 
 class ImageDownloader {
@@ -15,23 +17,36 @@ public:
 	/**
 	 * Type used for the tile fetched callback.
 	 */
-	typedef std::function<void(ImageTile tile)> OnTileFetched;
+	typedef ImageTileFetcher::OnTileFetched OnTileFetched;
+
+	/**
+	 * Type used for the tile fetch failed callback.
+	 */
+	typedef ImageTileFetcher::OnTileFetchFailed OnTileFetchFailed;
 
 	/**
 	 * Creates a new ImageDownloader using the default configuration.
 	 *
 	 * @param onTileFetched the callback to call whenever a tile has finished loading.
+	 * @param onTileFetchFailed callback to call whenever a tile download was aborted or failed
 	 */
-	ImageDownloader(OnTileFetched onTileFetched);
+	ImageDownloader(OnTileFetched onTileFetched,
+	OnTileFetchFailed onTileFetchFailed = [](std::exception const& e) {
+		KRONOS_LOG_WARN("%s", e.what());
+	});
 
 	/**
 	 * Creates a new ImageDownloader using the given configuration.
 	 *
-	 * @param onTileFetched the callback to call whenever a tile has finished loading.
-	 * @param imageLayers   a map containing layername - layerdescription objects to be used for
-	 *                      loading the tiles.
+	 * @param imageLayers       a map containing layername - layerdescription objects to be used for
+	 *                          loading the tiles.
+	 * @param onTileFetched     the callback to call whenever a tile has finished loading.
+	 * @param onTileFetchFailed the callback to call when a tile download was aborted or failed
 	 */
-	ImageDownloader(OnTileFetched onTileFetched, QMap<QString, ImageLayerDescription> imageLayers);
+	ImageDownloader(QMap<QString, ImageLayerDescription> imageLayers, OnTileFetched onTileFetched,
+	OnTileFetchFailed onTileFetchFailed = [](std::exception const& e) {
+		KRONOS_LOG_WARN("%s", e.what());
+	});
 
 	/**
 	 * Fetches images of all layers at the given location.
@@ -69,6 +84,12 @@ public:
 	void fetchTile(const QList<QString> layers, int zoomLevel, int tileX, int tileY);
 
 	/**
+	 * Aborts all downloads, causing the onTileFetchFailed callback to be called instead of the
+	 * onTileFetched callback.
+	 */
+	void abortAllDownloads();
+
+	/**
 	 * Returns a list of available image layers.
 	 *
 	 * @returns a list containing the names of all available image layers as read from the config
@@ -87,13 +108,18 @@ private:
 	/**
 	 * Threadpool used to fetch individual tiles in an asynchronous manner.
 	 */
-	QThreadPool fetchThreadPool;
+	QSet<ImageTileFetcher*> activeFetchers;
 
 	/**
 	 * Callback function to be called when a requested tile was downloaded or fetched from the file
 	 * system.
 	 */
 	OnTileFetched onTileFetched;
+
+	/**
+	 * Callback function to be called when the download of a requested tile was aborted or failed.
+	 */
+	OnTileFetchFailed onTileFetchFailed;
 
 	/**
 	 * An object holding all configuration information.

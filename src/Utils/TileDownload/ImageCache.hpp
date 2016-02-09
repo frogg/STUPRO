@@ -3,17 +3,12 @@
 
 #include <qstring.h>
 #include <Utils/TileDownload/MetaImage.hpp>
+#include <Utils/Misc/Exceptions.hpp>
 #include <exception>
 #include <string>
 
-struct ImageNotCachedException : public std::exception {
-	QString message;
-
-	ImageNotCachedException(QString message) : message(message) { }
-
-	const char* what () const throw () {
-		return message.toStdString().c_str();
-	}
+struct ImageNotCachedException : public KronosException {
+	ImageNotCachedException(QString message) : KronosException(message) { }
 };
 
 class ImageCache {

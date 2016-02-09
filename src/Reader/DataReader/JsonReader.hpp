@@ -49,7 +49,7 @@ public:
 	 * Get the size of each time step.
 	 * @return The size of each time step
 	 */
-	float getTimeStepSize() const;
+	int getAmountOfTimeSteps() const;
 
 	/**
 
@@ -67,11 +67,11 @@ public:
 	 * range.
 	 * @param zoomLevel The zoom level of the data set. Every data point with a higher zoom level
 	 * will be discarded while creating the vtkPolyData.
-	 * @param time The current time as used by ParaView, should be between 0 and 1 inclusively
+	 * @param time The current time step to be retrieved as used by ParaView
 	 * @return All data relevant to the specified zoom level, formatted as vtkPolyData with each
 	 * point's data stored in the data point's scalar values.
 	 */
-	vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel, float time);
+	vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel, int time);
 
 	/**
 
@@ -156,6 +156,18 @@ private:
 	 * Boolean flag denoting whether a cache should be used
 	 */
 	bool cachingEnabled;
+
+	/**
+	 * Get all data stored in the file this reader uses, pruned by a specified zoom level and time
+	 * range.
+	 * @param zoomLevel The zoom level of the data set. Every data point with a higher zoom level
+	 * will be discarded while creating the vtkPolyData.
+	 * @param time The current time step to be retrieved as used by ParaView
+	 * @param temporal True if the data to be retrieved is a time slice, false otherwise
+	 * @return All data relevant to the specified zoom level, formatted as vtkPolyData with each
+	 * point's data stored in the data point's scalar values.
+	 */
+	vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel, int time, bool temporal);
 
 	/**
 	 * Iterate through a JSON representation of data points and save them to the PointDataSet this
