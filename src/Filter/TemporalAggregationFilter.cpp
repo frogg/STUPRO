@@ -56,6 +56,10 @@ int TemporalAggregationFilter::RequestInformation (
   vtkInformation *request,
   vtkInformationVector **inputVector,
   vtkInformationVector *outputVector) {
+    if (this->error) {
+      return 0;
+    }
+
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
     vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
 
@@ -73,6 +77,10 @@ int TemporalAggregationFilter::RequestData(
   vtkInformation *request,
   vtkInformationVector **inputVector,
   vtkInformationVector *outputVector) {
+    if (this->error) {
+      return 0;
+    }
+    
     vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
@@ -85,6 +93,10 @@ int TemporalAggregationFilter::RequestUpdateExtent (
   vtkInformation *request,
   vtkInformationVector **inputVector,
   vtkInformationVector *outputVector) {
+    if (this->error) {
+        return 0;
+    }
+    
     vtkInformation *inputInformation = inputVector[0]->GetInformationObject(0);
 
     // Make the pipeline executive iterate the upstream pipeline time steps by setting the update time step appropiately
