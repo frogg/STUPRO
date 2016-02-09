@@ -66,8 +66,8 @@ template<typename T> Vector3<T> cartesianToSpherical(const Vector3<T>& point) {
     Vector3<T> retVal;
     retVal.z = point.length() - getGlobeRadius();
     retVal.x = atan2(point.x, point.z) * 180 / KRONOS_PI;
-    retVal.y = asin(point.y / (point.length() - getGlobeRadius())) * 180 / KRONOS_PI;
-    return point;
+    retVal.y = asin(point.y / point.length()) * 180 / KRONOS_PI;
+    return retVal;
 }
 
 /**
