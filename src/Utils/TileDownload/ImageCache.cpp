@@ -71,6 +71,17 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 	writer.write(image.getImage());
 }
 
+const void ImageCache::deleteCachedImage(QString layer, int zoomLevel, int tileX, int tileY) {
+    if(!ImageCache::getInstance().isImageCached(layer, zoomLevel, tileX, tileY)) {
+        throw ImageNotCachedException(ImageCache::IMAGE_NOT_CACHED_MESSAGE
+                                      .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+    }
+    
+    QFile imageTile(ImageCache::IMAGE_TILE_PATH
+	                   .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
+    imageTile.remove();
+}
+
 const void ImageCache::clearCache(QString layer) {
 	QDir layerDirectory(ImageCache::LAYER_DIRECTORY_PATH.arg(layer));
 	if (layerDirectory.exists()) {
