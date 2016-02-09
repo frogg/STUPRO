@@ -70,9 +70,9 @@ StuproWindow::StuproWindow() {
 	// behaviors, we use this convenience method.
 	new pqParaViewBehaviors(this, this);
 
-	this->Internals->MultiViewWidget->closeTab(0);
-	pqApplicationCore::instance()->getObjectBuilder()->createView("StuproView",
-	        pqActiveObjects::instance().activeServer());
+	// this->Internals->MultiViewWidget->closeTab(0);
+	// pqApplicationCore::instance()->getObjectBuilder()->createView("StuproView",
+	//         pqActiveObjects::instance().activeServer());
 }
 
 //-----------------------------------------------------------------------------

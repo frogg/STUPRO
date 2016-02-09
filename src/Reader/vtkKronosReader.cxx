@@ -2,6 +2,7 @@
 
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
+#include <Reader/DataReader/Data.hpp>
 #include <Utils/Config/Configuration.hpp>
 
 #include <vtkInformation.h>
@@ -9,6 +10,7 @@
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkCommand.h>
 #include <vtkObjectFactory.h>
+#include <vtkExecutive.h>
 
 #include <math.h>
 #include <algorithm>
@@ -100,6 +102,10 @@ int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationV
         timeRange[1] = amountOfTimeSteps;
         outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_RANGE(), timeRange, 2);
     }
+    
+    // Append the data type as an entry to the output information
+    outInfo->Set(Data::VTK_DATA_TYPE(), this->jsonReader->getDataType());
+    request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TYPE());
 
     return 1;
 }

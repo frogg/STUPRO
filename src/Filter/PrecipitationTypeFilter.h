@@ -21,6 +21,9 @@ public:
 	int RequestData(vtkInformation *info,
 					vtkInformationVector **inputVector,
 					vtkInformationVector *outputVector) override;
+    int RequestInformation(vtkInformation *request,
+                    vtkInformationVector **inputVector,
+                    vtkInformationVector *outputVector) override;
 	int FillOutputPortInformation(int port, vtkInformation *info) override;
 	int FillInputPortInformation(int port, vtkInformation *info) override;
 	
@@ -63,6 +66,17 @@ private:
 
 	PrecipitationTypeFilter(const PrecipitationTypeFilter &); // Not implemented.
     void operator=(const PrecipitationTypeFilter &); // Not implemented.
+    
+    /**
+     * Display an error message and remember that this filter does not hold valid data.
+     * @param message The error message to be shown to the user
+     */
+    void fail(QString message);
+
+    /**
+     * Boolean flag denoting whether there was an error.
+     */
+    bool error;
     
     /**
      * Internal method that handles VTK-related mechanics to set a specific precipitation type's visibility.

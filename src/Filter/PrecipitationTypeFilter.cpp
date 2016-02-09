@@ -1,5 +1,7 @@
 #include <Filter/PrecipitationTypeFilter.h>
 
+#include <Reader/DataReader/Data.hpp>
+
 #include <vtkSelection.h>
 #include <vtkSelectionNode.h>
 #include <vtkIntArray.h>
@@ -13,7 +15,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
 
-PrecipitationTypeFilter::PrecipitationTypeFilter() {
+PrecipitationTypeFilter::PrecipitationTypeFilter() : error(false) {
 	// Initialize the selection
 	this->selection = vtkSmartPointer<vtkSelection>::New();
 	vtkSmartPointer<vtkSelectionNode> selectionNode = vtkSmartPointer<vtkSelectionNode>::New();
@@ -44,6 +46,10 @@ PrecipitationTypeFilter::~PrecipitationTypeFilter() { }
 
 void PrecipitationTypeFilter::displayPrecipitationType(PrecipitationDataPoint::PrecipitationType
         type, bool display) {
+	if (this->error) {
+		return;
+	}
+
 	this->precipitationTypeVisibilities[type] = display;
 
 	// Create the updated selection list this filter uses
@@ -85,11 +91,20 @@ void PrecipitationTypeFilter::enableHail(int enabled) {
 	this->displayPrecipitationType(PrecipitationDataPoint::HAIL, enabled);
 }
 
+void PrecipitationTypeFilter::fail(QString message) {
+	vtkErrorMacro( << message.toStdString());
+	this->error = true;
+}
+
 vtkStandardNewMacro(PrecipitationTypeFilter);
 
 int PrecipitationTypeFilter::RequestData(vtkInformation* info,
         vtkInformationVector** inputVector,
         vtkInformationVector* outputVector) {
+	if (this->error) {
+		return 0;
+	}
+
 	// Get output information from the request vectors
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
@@ -99,7 +114,7 @@ int PrecipitationTypeFilter::RequestData(vtkInformation* info,
 
 	// Check the input for compatibility
 	if (!input->IsA("vtkPointSet")) {
-		vtkErrorMacro( << "The input should be a vtkPointSet.");
+		this->fail("The input should be a vtkPointSet.");
 		return 0;
 	}
 
@@ -108,6 +123,27 @@ int PrecipitationTypeFilter::RequestData(vtkInformation* info,
 	        this->selection->GetNode(0), outInfo);
 	if (extractedOutput) {
 		output->ShallowCopy(extractedOutput);
+	}
+
+	return 1;
+}
+
+int PrecipitationTypeFilter::RequestInformation(vtkInformation* request,
+        vtkInformationVector** inputVector,
+        vtkInformationVector* outputVector) {
+	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+
+	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
+		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
+		if (dataType != Data::PRECIPITATION) {
+			this->fail(
+			    QString("This filter only works with Precipitation data, but the input contains %1 data.").arg(
+			        Data::getDataTypeName(dataType)));
+			return 0;
+		}
+	} else {
+		this->fail("This filter only works with data read by the Kronos reader.");
+		return 0;
 	}
 
 	return 1;
