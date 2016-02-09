@@ -15,6 +15,7 @@
 #include <math.h>
 #include <algorithm>
 #include <thread>
+#include <vector>
 
 vtkStandardNewMacro(vtkKronosReader);
 
@@ -90,12 +91,11 @@ int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationV
     if (this->jsonReader->hasTemporalData()) {
         int amountOfTimeSteps = this->jsonReader->getAmountOfTimeSteps();
 
-        double timeSteps[amountOfTimeSteps];
+        std::vector<double> timeSteps;
         for (int i = 0; i < amountOfTimeSteps; i++) {
-            timeSteps[i] = i;
+            timeSteps.push_back(i);
         }
-
-        outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(), timeSteps, amountOfTimeSteps);
+        outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(), &timeSteps[0], amountOfTimeSteps);
         
         double timeRange[2];
         timeRange[0] = 0.0;
