@@ -5,6 +5,7 @@
 #include <vtkDataArray.h>
 #include <vtkTypeInt32Array.h>
 #include <vtkPointData.h>
+#include <vtkInformation.h>
 
 #include <Filter/PrecipitationTypeFilter.h>
 #include <Reader/DataReader/JsonReader.hpp>
