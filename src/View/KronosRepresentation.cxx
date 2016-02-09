@@ -1,3 +1,5 @@
+#include <Reader/DataReader/Data.hpp>
+
 #include "KronosRepresentation.h"
 #include "vtkObjectFactory.h"
 #include <vtkPointSetToLabelHierarchy.h>
@@ -7,7 +9,9 @@
 #include "vtkStringArray.h"
 #include "vtkPointSetToLabelHierarchy.h"
 #include "vtkPointData.h"
-
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
+#include <vtkIntArray.h>
 vtkStandardNewMacro(KronosRepresentation);
 //----------------------------------------------------------------------------
 KronosRepresentation::KronosRepresentation()
@@ -35,12 +39,35 @@ KronosRepresentation::~KronosRepresentation()
     this->labelMapper->Delete();
     this->labelActor->Delete();
     this->pointSetToLabelHierarchyFilter->Delete();
-
+}
+//---------------------------------------------------------------------------
+int KronosRepresentation::RequestInformation(vtkInformation* request,
+                                                vtkInformationVector** inputVector,
+                                                vtkInformationVector* outputVector) {
+    vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+    
+    if (inInfo->Has(Data::VTK_DATA_TYPE())) {
+        Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
+        if (dataType != Data::CITIES) {
+            this->fail(
+                       QString("This filter only works with Cities data, but the input contains %1 data.").arg(                                                                                                                      Data::getDataTypeName(dataType)));
+            return 0;
+        }
+    } else {
+        this->fail("This filter only works with data read by the Kronos reader.");
+        return 0;
+    }
+    
+    return 1;
 }
 //----------------------------------------------------------------------------
 int KronosRepresentation::RequestData(vtkInformation* request,
                                             vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
+    //Quit if an error occured.
+    if (this->error) {
+        return 0;
+    }
     if(inputVector[0]->GetNumberOfInformationObjects()==1){
         vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
         vtkPolyData *input = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
@@ -49,7 +76,7 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
         this->pointMapper->SetInputData(input);
         
-        //Generate the label hierarchy.
+        //Generate the label hierarchy and filter the points according to the priorities.
         this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
         this->pointSetToLabelHierarchyFilter->SetInputData(input);
         this->pointSetToLabelHierarchyFilter->SetLabelArrayName("names");
@@ -85,9 +112,9 @@ void KronosRepresentation::SetVisibility(bool val)
     this->labelActor->SetVisibility(val?  1 : 0);
     this->pointActor->SetVisibility(val?  1 : 0);
 }
-void KronosRepresentation::SwitchDepthBuffer(bool val)
+void KronosRepresentation::SetDepthBuffer(bool val)
 {
-    this->useDepthBuffer=val? 1:0;
+    this->useDepthBuffer=val;
 }
 
 //----------------------------------------------------------------------------
@@ -121,8 +148,15 @@ int KronosRepresentation::FillInputPortInformation(int, vtkInformation *info) {
     return 1;
 }
 //----------------------------------------------------------------------------
+void KronosRepresentation::fail(QString message) {
+    vtkErrorMacro( << message.toStdString());
+    this->error = true;
+}
+//----------------------------------------------------------------------------
 void KronosRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
     //Print superclass
     this->Superclass::PrintSelf(os, indent);
+    os << indent << "Representation for Data read by the Kronosreader. This class is part of the Kronos Project." <<
+	   endl;
 }
