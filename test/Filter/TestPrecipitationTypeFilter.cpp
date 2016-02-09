@@ -10,6 +10,7 @@
 #include <Reader/DataReader/JsonReader.hpp>
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
+#include <Reader/DataReader/Data.hpp>
 
 #include <QList>
 
@@ -48,8 +49,8 @@ TEST(TestPrecipitationTypeFilter, TestFilter) {
 
 	// Set up the filter and its input
 	vtkSmartPointer<PrecipitationTypeFilter> filter = PrecipitationTypeFilter::New();
-	// filter->SetInputDataObject(0, inputDataSet);
 	filter->SetInputData(0, inputDataSet);
+	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::PRECIPITATION);
 	filter->Update();
 
 	// Test the filter's output without excluding any precipitation type
