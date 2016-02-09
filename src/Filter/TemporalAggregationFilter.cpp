@@ -20,6 +20,8 @@
 
 vtkStandardNewMacro(TemporalAggregationFilter);
 
+const QList<Data::Type> TemporalAggregationFilter::SUPPORTED_DATA_TYPES = QList<Data::Type>() << Data::PRECIPITATION << Data::TEMPERATURE << Data::WIND << Data::CLOUD_COVERAGE;
+
 TemporalAggregationFilter::TemporalAggregationFilter() : currentTimeStep(0) {
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(1);
@@ -62,9 +64,33 @@ int TemporalAggregationFilter::RequestInformation (
 
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
     vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-
-    // TODO: Set this filter's data type for deciding later on what kind of aggregation should be performed
-    // TODO: Check the data type for compatibility
+    
+    if (inInfo->Has(Data::VTK_DATA_TYPE())) {
+		this->dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
+	} else {
+		this->fail("This filter only works with data read by the Kronos reader.");
+		return 0;
+	}
+    
+    // Overkill code for creating a comma-separated string with the names of all supported data types
+    QString supportedTypes = "";
+    int amountOfSupportedDataTypes = TemporalAggregationFilter::SUPPORTED_DATA_TYPES.size();
+    if (amountOfSupportedDataTypes == 1) {
+        supportedTypes.append(Data::getDataTypeName(TemporalAggregationFilter::SUPPORTED_DATA_TYPES.value(0)));
+    } else if (amountOfSupportedDataTypes > 1) {
+        for (int i = 0; i < amountOfSupportedDataTypes - 2; i++) {
+            supportedTypes.append(Data::getDataTypeName(TemporalAggregationFilter::SUPPORTED_DATA_TYPES.value(i)));
+            if (i < amountOfSupportedDataTypes - 3) {
+                supportedTypes.append(", ");
+            }
+        }
+        supportedTypes.append(" and ").append(Data::getDataTypeName(TemporalAggregationFilter::SUPPORTED_DATA_TYPES.value(amountOfSupportedDataTypes - 1)));
+    }
+    
+    if (!TemporalAggregationFilter::SUPPORTED_DATA_TYPES.contains(this->dataType)) {
+        this->fail(QString("This filter only supports %1 data, but the input contains %2 data.").arg(supportedTypes, Data::getDataTypeName(this->dataType)));
+        return 0;
+    }
     
     // This filter's output is an aggregation of values over time and therefore has no time information
     outInfo->Remove(vtkStreamingDemandDrivenPipeline::TIME_STEPS());

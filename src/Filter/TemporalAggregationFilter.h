@@ -8,6 +8,7 @@
 #include <vtkDataSet.h>
 
 #include <qstring.h>
+#include <qlist.h>
 
 class VTKFILTERSHYBRID_EXPORT TemporalAggregationFilter : public vtkMultiTimeStepAlgorithm {
 public:
@@ -56,6 +57,11 @@ private:
      * Stores the type of data this filter receives.
      */
     Data::Type dataType;
+    
+    /**
+     * This list contains all data types that are supported by this filter.
+     */
+    const static QList<Data::Type> SUPPORTED_DATA_TYPES;
     
     TemporalAggregationFilter(const TemporalAggregationFilter&); // Not implemented.
     void operator=(const TemporalAggregationFilter&); // Not implemented.
