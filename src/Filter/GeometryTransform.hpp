@@ -7,6 +7,26 @@
 #include "Utils/Math/SphericalCoordinateFunctions.h"
 #include "Utils/Misc/Macros.hpp"
 
+#include <exception>
+#include <QString>
+
+/**
+ * we do not support Backward transformation and throw an exception if someone wants it
+ */
+struct NoBackwardTransformationException : public std::exception {
+	std::string reason;
+
+	NoBackwardTransformationException(QString reason) : reason(reason.toStdString()) { }
+
+	const char* what() const KRONOS_NOTHROW override {
+		return reason.c_str();
+	}
+};
+
+
+/**
+ * transforms from gps to world coodinates
+ */
 class GeometryTransform : public vtkAbstractTransform {
 private:
 	//inidcates if transformation should be done.
@@ -41,16 +61,6 @@ private:
 		array[0] = vector.x;
 		array[1] = vector.y;
 		array[2] = vector.z;
-	}
-
-	template<typename T> void copyVectorToArray(const Vector3<T>& v1,
-	        T a1[3],
-	        const Vector3<Vector3<T>>& v2,
-	        T a2[3][3]) {
-		copyVectorToArray(v1, a1);
-		copyVectorToArray(v2.x, a2[0]);
-		copyVectorToArray(v2.y, a2[1]);
-		copyVectorToArray(v2.z, a2[2]);
 	}
 
 public:
