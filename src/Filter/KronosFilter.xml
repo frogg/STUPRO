@@ -28,6 +28,53 @@
 		<ShowInMenu category="Kronos" />
 	    </Hints>
         </SourceProxy>
+        <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Type Filter">
+            <Documentation
+                long_help="This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point."
+                short_help="Extract data based on the type of precipitation">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <IntVectorProperty name="Display precipitation of undefined type"
+             command="enableUndefined"
+             number_of_elements="1"
+             default_values="1">
+                <BooleanDomain name="bool"/>
+            </IntVectorProperty>
+            <IntVectorProperty name="Display rain"
+             command="enableRain"
+             number_of_elements="1"
+             default_values="1">
+                <BooleanDomain name="bool"/>
+            </IntVectorProperty>
+            <IntVectorProperty name="Display snow"
+             command="enableSnow"
+             number_of_elements="1"
+             default_values="1">
+                <BooleanDomain name="bool"/>
+            </IntVectorProperty>
+            <IntVectorProperty name="Display sleet"
+             command="enableSleet"
+             number_of_elements="1"
+             default_values="1">
+                <BooleanDomain name="bool"/>
+            </IntVectorProperty>
+            <IntVectorProperty name="Display hail"
+             command="enableHail"
+             number_of_elements="1"
+             default_values="1">
+                <BooleanDomain name="bool"/>
+            </IntVectorProperty>
+        </SourceProxy>
         </ProxyGroup>
     
     <ParaViewFilters>

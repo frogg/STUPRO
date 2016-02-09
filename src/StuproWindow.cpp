@@ -5,6 +5,9 @@
 #include <qnamespace.h>
 #include <qstring.h>
 #include <StuproWindow.hpp>
+#include <pqActiveObjects.h>
+#include <pqObjectBuilder.h>
+#include <pqApplicationCore.h>
 
 #include "ui_StuproWindow.h"
 
@@ -67,7 +70,9 @@ StuproWindow::StuproWindow() {
 	// behaviors, we use this convenience method.
 	new pqParaViewBehaviors(this, this);
 
-
+	// this->Internals->MultiViewWidget->closeTab(0);
+	// pqApplicationCore::instance()->getObjectBuilder()->createView("StuproView",
+	//         pqActiveObjects::instance().activeServer());
 }
 
 //-----------------------------------------------------------------------------

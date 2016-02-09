@@ -32,7 +32,7 @@ public:
 	 */
 	ImageDownloader(OnTileFetched onTileFetched,
 	OnTileFetchFailed onTileFetchFailed = [](std::exception const& e) {
-		KRONOS_LOG_WARN(e.what());
+		KRONOS_LOG_WARN("%s", e.what());
 	});
 
 	/**
@@ -45,7 +45,7 @@ public:
 	 */
 	ImageDownloader(QMap<QString, ImageLayerDescription> imageLayers, OnTileFetched onTileFetched,
 	OnTileFetchFailed onTileFetchFailed = [](std::exception const& e) {
-		KRONOS_LOG_WARN(e.what());
+		KRONOS_LOG_WARN("%s", e.what());
 	});
 
 	/**
