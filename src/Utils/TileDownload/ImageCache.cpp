@@ -26,6 +26,8 @@ const QString ImageCache::IMAGE_NOT_CACHED_MESSAGE = QString("The requested imag
         " from layer %1 with zoom level %2 and position %3/%4 has not been cached yet.");
 const QString ImageCache::IMAGE_COULD_NOT_BE_READ_MESSAGE = QString("The requested"
         " image from layer %1 with zoom level %2 and position %3/%4 could not be read.");
+const QString ImageCache::IMAGE_CORRUPTED_MESSAGE = QString("The requested"
+        " image from layer %1 with zoom level %2 and position %3/%4 seems to be corrupted.");
 
 ImageCache& ImageCache::getInstance() {
 	static ImageCache instance;
@@ -94,9 +96,31 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 	                   .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX);
 	QImageReader reader(filename);
 	reader.setFormat(ImageCache::IMAGE_FILE_EXTENSION.toStdString().c_str());
+    
+    /* Ensure that the meta tag containing the image size exists in the first place */
+    if (!reader.textKeys().contains(ImageCache::META_TAG_IMAGE_SIZE)) {
+        throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
+		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+    }
 
 	/* Create a new image with the image dimensions as read from the file meta data */
 	QStringList imageSize = reader.text(ImageCache::META_TAG_IMAGE_SIZE).split(",");
+    
+    /* Ensure that the meta tag contains two values */
+    if (imageSize.size() != 2) {
+        throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
+                                      .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+    }
+    
+    /* Ensure that both values in the meta tag can be converted to integers */
+    bool conversionSuccess = false;
+    imageSize.at(0).toInt(&conversionSuccess);
+    imageSize.at(1).toInt(&conversionSuccess);
+    if (!conversionSuccess) {
+        throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
+                                      .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+    }
+    
 	QImage readImage(imageSize.at(0).toInt(), imageSize.at(1).toInt(), QImage::Format_RGB32);
 
 	/* Read the image and possible meta data and return everything */
@@ -109,8 +133,8 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 			return MetaImage(readImage);
 		}
 	} else {
-		throw ImageNotCachedException(ImageCache::IMAGE_COULD_NOT_BE_READ_MESSAGE
-		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+        throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
+                                      .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
 	}
 }
 
