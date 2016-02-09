@@ -53,7 +53,7 @@ public:
 	 * @param tileY Vertical position of the requested tile
 	 */
 	const void cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX, int tileY);
-	
+
 	/**
 	 * Remove a single image from the cache.
 	 * @param layer Unique identifier of an existing layer

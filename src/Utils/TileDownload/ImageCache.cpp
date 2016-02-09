@@ -72,14 +72,14 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 }
 
 const void ImageCache::deleteCachedImage(QString layer, int zoomLevel, int tileX, int tileY) {
-    if(!ImageCache::getInstance().isImageCached(layer, zoomLevel, tileX, tileY)) {
-        throw ImageNotCachedException(ImageCache::IMAGE_NOT_CACHED_MESSAGE
-                                      .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
-    }
-    
-    QFile imageTile(ImageCache::IMAGE_TILE_PATH
-	                   .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
-    imageTile.remove();
+	if (!ImageCache::getInstance().isImageCached(layer, zoomLevel, tileX, tileY)) {
+		throw ImageNotCachedException(ImageCache::IMAGE_NOT_CACHED_MESSAGE
+		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+	}
+
+	QFile imageTile(ImageCache::IMAGE_TILE_PATH
+	                .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
+	imageTile.remove();
 }
 
 const void ImageCache::clearCache(QString layer) {
@@ -107,31 +107,31 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 	                   .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX);
 	QImageReader reader(filename);
 	reader.setFormat(ImageCache::IMAGE_FILE_EXTENSION.toStdString().c_str());
-    
-    /* Ensure that the meta tag containing the image size exists in the first place */
-    if (!reader.textKeys().contains(ImageCache::META_TAG_IMAGE_SIZE)) {
-        throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
+
+	/* Ensure that the meta tag containing the image size exists in the first place */
+	if (!reader.textKeys().contains(ImageCache::META_TAG_IMAGE_SIZE)) {
+		throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
 		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
-    }
+	}
 
 	/* Create a new image with the image dimensions as read from the file meta data */
 	QStringList imageSize = reader.text(ImageCache::META_TAG_IMAGE_SIZE).split(",");
-    
-    /* Ensure that the meta tag contains two values */
-    if (imageSize.size() != 2) {
-        throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
-                                      .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
-    }
-    
-    /* Ensure that both values in the meta tag can be converted to integers */
-    bool conversionSuccess = false;
-    imageSize.at(0).toInt(&conversionSuccess);
-    imageSize.at(1).toInt(&conversionSuccess);
-    if (!conversionSuccess) {
-        throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
-                                      .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
-    }
-    
+
+	/* Ensure that the meta tag contains two values */
+	if (imageSize.size() != 2) {
+		throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
+		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+	}
+
+	/* Ensure that both values in the meta tag can be converted to integers */
+	bool conversionSuccess = false;
+	imageSize.at(0).toInt(&conversionSuccess);
+	imageSize.at(1).toInt(&conversionSuccess);
+	if (!conversionSuccess) {
+		throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
+		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+	}
+
 	QImage readImage(imageSize.at(0).toInt(), imageSize.at(1).toInt(), QImage::Format_RGB32);
 
 	/* Read the image and possible meta data and return everything */
@@ -144,8 +144,8 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 			return MetaImage(readImage);
 		}
 	} else {
-        throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
-                                      .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
+		throw ImageCorruptedException(ImageCache::IMAGE_CORRUPTED_MESSAGE
+		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
 	}
 }
 

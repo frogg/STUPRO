@@ -132,14 +132,15 @@ TEST_F(TestImageCache, DeleteCachedImage) {
 	ImageCache::getInstance().cacheImage(MetaImage(image, 1, 42),
 	                                     QString("layer"), 2, 1, 3);
 	ASSERT_TRUE(ImageCache::getInstance().isImageCached(
-					QString("layer"), 2, 1, 3
-				));
-				
-	EXPECT_THROW(ImageCache::getInstance().deleteCachedImage(QString("layer"), 42, 1, 3), ImageNotCachedException);
+	                QString("layer"), 2, 1, 3
+	            ));
+
+	EXPECT_THROW(ImageCache::getInstance().deleteCachedImage(QString("layer"), 42, 1, 3),
+	             ImageNotCachedException);
 
 	ImageCache::getInstance().deleteCachedImage(QString("layer"), 2, 1, 3);
 	EXPECT_TRUE(QDir("cache").exists());
 	EXPECT_FALSE(ImageCache::getInstance().isImageCached(
-					QString("layer"), 2, 1, 3
-				));
+	                 QString("layer"), 2, 1, 3
+	             ));
 }
