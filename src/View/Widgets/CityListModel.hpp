@@ -3,7 +3,7 @@
 
 #include <QAbstractListModel>
 #include <Utils/Misc/City.hpp>
-#include <Vector>
+#include <vector>
 class CityListModel : public QAbstractListModel {
 	Q_OBJECT
 

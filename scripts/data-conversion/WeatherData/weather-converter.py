@@ -43,14 +43,17 @@ for index, entry in enumerate(weatherData):
 		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'precipitationType':entry["precipType"],'timestamp':entry["time"]}
 		precipitationData.append(precipitationEntry)
 	elif type == False and intens == True:
-		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'timestamp':entry["time"]}
+		precipitationEntry = {'latitude':entry["latitude"],'longitude':entry["longitude"],'precipitationRate':entry["precipIntensity"],'precipitationType':"NoData",'timestamp':entry["time"],"children": []}
 		precipitationData.append(precipitationEntry)
-
-# adds a header to each DataArray	
-temperatureDict = {'meta': {'dataType': 'temperature', 'temporal': "true"}, 'data': temperatureData}
-windDict = {'meta': {'dataType': 'wind', 'temporal': "true"}, 'data': windData}
-cloudCoverDict = {'meta': {'dataType': 'cloudCover', 'temporal': "true"}, 'data': cloudCoverData}
-precipitationDict = {'meta': {'dataType': 'precipitation', 'temporal': "true"}, 'data': precipitationData}
+ 
+ # adds a header to each DataArray
+timeResolution = 1 * 60 * 60
+ 
+temperatureDict = {'meta': {'dataType': 'temperature', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":temperatureData}}
+windDict = {'meta': {'dataType': 'wind', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":windData}}
+cloudCoverDict = {'meta': {'dataType': 'cloudCover', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":cloudCoverData}}
+precipitationDict = {'meta': {'dataType': 'precipitation', 'temporal': True, 'timeResolution': timeResolution}, 'root':{"children":precipitationData}}
+ 
 
 # writes the different kJson-files for the different weatherSources	
 d.write_json_file(temperatureDict, 'temperature-data.kJson', True)
