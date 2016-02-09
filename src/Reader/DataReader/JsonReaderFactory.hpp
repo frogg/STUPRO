@@ -7,6 +7,7 @@
 #include <Reader/DataReader/JsonReader.hpp>
 #include <Reader/DataReader/Data.hpp>
 #include <Utils/Misc/Macros.hpp>
+#include <Utils/Misc/Exceptions.hpp>
 
 #include <exception>
 #include <memory>
@@ -14,14 +15,8 @@
 /**
  * Super class for all exceptions thrown while a JSON file is being loaded.
  */
-struct ReaderException : public std::exception {
-	std::string reason;
-
-	ReaderException(QString reason) : reason(reason.toStdString()) { }
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
+struct ReaderException : public KronosException {
+	ReaderException(QString reason) : KronosException(reason) { }
 };
 
 /**

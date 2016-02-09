@@ -6,6 +6,7 @@
 #include "Utils/Math/Vector3.hpp"
 #include "Utils/Math/SphericalCoordinateFunctions.h"
 #include "Utils/Misc/Macros.hpp"
+#include "Utils/Misc/Exceptions.hpp"
 
 #include <exception>
 #include <QString>
@@ -13,14 +14,8 @@
 /**
  * we do not support Backward transformation and throw an exception if someone wants it
  */
-struct NoBackwardTransformationException : public std::exception {
-	std::string reason;
-
-	NoBackwardTransformationException(QString reason) : reason(reason.toStdString()) { }
-
-	const char* what() const KRONOS_NOTHROW override {
-		return reason.c_str();
-	}
+struct NoBackwardTransformationException : public KronosException {
+	NoBackwardTransformationException(QString reason) : KronosException(reason) { }
 };
 
 
