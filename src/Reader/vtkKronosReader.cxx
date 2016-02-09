@@ -1,4 +1,4 @@
-#include <Reader/vtkKronosReader.h>
+#include <vtkKronosReader.h>
 
 #include <Reader/DataReader/JsonReaderFactory.hpp>
 #include <Reader/DataReader/JsonReader.hpp>
@@ -145,7 +145,6 @@ int vtkKronosReader::RequestData(vtkInformation*, vtkInformationVector**,
                 this->zoomLevel
             );
         }
-        
         output->DeepCopy(polyData);
     }
     

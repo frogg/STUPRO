@@ -29,11 +29,14 @@ public:
 	           int timeResolution);
 	virtual ~JsonReader();
 
+
 	/**
 	 * Get the type of data read by this reader
 	 * @return The type of data read by this reader
 	 */
+
 	Data::Type getDataType() const;
+
 
 	/**
 	 * Check whether the data read by this reader is of temporal nature
@@ -42,12 +45,14 @@ public:
 	bool hasTemporalData() const;
 
 	/**
-	 * Get the amount of time steps this reader exports.
-	 * @return The amount of time steps this reader exports
+
+	 * Get the size of each time step.
+	 * @return The size of each time step
 	 */
 	int getAmountOfTimeSteps() const;
 
 	/**
+
 	 * Get all data stored in the file this reader uses, pruned by a specified zoom level.
 	 * @param zoomLevel The zoom level of the data set. Every data point with a higher zoom level
 	 * will be discarded while creating the vtkPolyData.
@@ -57,6 +62,7 @@ public:
 	vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel);
 
 	/**
+
 	 * Get all data stored in the file this reader uses, pruned by a specified zoom level and time
 	 * range.
 	 * @param zoomLevel The zoom level of the data set. Every data point with a higher zoom level
@@ -68,6 +74,7 @@ public:
 	vtkSmartPointer<vtkPolyData> getVtkDataSet(int zoomLevel, int time);
 
 	/**
+
 	 * Specify whether vtkPolyData for a specific zoom level should be cached after it has been
 	 * created using the method `getVtkDataSet(int zoomLevel)` and be retrieved from the cache
 	 * in subsequent method calls.
@@ -91,19 +98,24 @@ public:
 	 * Clear all cached vtkPolyData
 	 */
 	void clearCache();
+    
+    
 
 private:
 	/**
+
 	 * The absolute path of the file reader, used for error messages
 	 */
 	QString filePath;
 
 	/**
+
 	 * Boolean flag denoting whether the data read by this reader contains time information
 	 */
 	bool temporal;
 
 	/**
+
 	 * Enum denoting the type of data read by this reader, as defined in the `Data.hpp` file
 	 */
 	Data::Type dataType;
@@ -123,12 +135,14 @@ private:
 	 */
 	int endTime;
 
+
 	/**
 	 * A set of all points and their stored information read by this reader
 	 */
 	PointDataSet pointDataSet;
 
 	/**
+
 	 * A map with cached non-temporal vtkPolyData for specified zoom levels
 	 */
 	QMap<int, vtkSmartPointer<vtkPolyData>> nonTemporalCache;
@@ -138,6 +152,7 @@ private:
 	 * zoom level
 	 */
 	QMap<int, QMap<int, vtkSmartPointer<vtkPolyData>>> temporalCache;
+
 
 	/**
 	 * Boolean flag denoting whether a cache should be used

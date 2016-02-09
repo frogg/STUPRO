@@ -14,7 +14,9 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 
 	EXPECT_EQ(
 	    cityReader->getDataType(),
+
 	    Data::CITIES
+
 	);
 
 	EXPECT_EQ(
@@ -28,7 +30,9 @@ TEST(TestJsonReaderFactory, ReadValidFiles) {
 
 	EXPECT_EQ(
 	    tweetReader->getDataType(),
+
 	    Data::TWEETS
+
 	);
 
 	EXPECT_EQ(

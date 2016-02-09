@@ -4,7 +4,6 @@
 #include <QAbstractListModel>
 #include <Utils/Misc/City.hpp>
 #include <vector>
-
 class CityListModel : public QAbstractListModel {
 	Q_OBJECT
 

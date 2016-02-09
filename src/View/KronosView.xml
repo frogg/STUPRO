@@ -17,4 +17,46 @@
 			command="switchCurrentDisplayMode" />
     </StuproViewProxy>
   </ProxyGroup>
+
+
+  
+  <ProxyGroup name="representations">
+  <RepresentationProxy name="Meta Info Representation"
+	class="KronosRepresentation"
+	processes="client|renderserver|dataserver"
+	base_proxygroup="representations"
+	base_proxyname="SurfaceRepresentation">
+	<Documentation>
+        Representation to visualize Input from Kronos Reader.
+    </Documentation>
+ <!--
+    Not working???
+    <IntVectorProperty name="SwitchDepthBuffer"
+        command="switchDepthBuffer"
+        number_of_elements="1"
+        default_values="1">
+        <BooleanDomain name="bool"/>
+    </IntVectorProperty> -->
+  <!-- Adds a new Representation to visualize Cityes, Twitter and Geodesics  -->
+  </RepresentationProxy>
+
+  <Extension name="GeometryRepresentation">
+	<!-- this adds to what is already defined in PVRepresentationBase to the Kronos Representation -->
+	<RepresentationType subproxy="Meta Info Representation"
+	  text="Meta Infos Representation" subtype="Surface" />
+
+	<SubProxy>
+	  <Proxy name="Meta Info Representation"
+		proxygroup="representations" proxyname="Meta Info Representation">
+	  </Proxy>
+	  <ShareProperties subproxy="SurfaceRepresentation">
+		<Exception name="Input" />
+		<Exception name="Visibility" />
+		<Exception name="Representation" />
+	  </ShareProperties>
+
+	</SubProxy>
+  </Extension>
+</ProxyGroup>
+
 </ServerManagerConfiguration>

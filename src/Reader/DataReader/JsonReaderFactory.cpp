@@ -9,6 +9,7 @@
 #include <rapidjson/error/en.h>
 
 // Workaround to make static initialization possible in the IDE we all love -- Visual Studio.
+
 static QMap<QString, Data::Type> dataTypeMap() {
 	QMap<QString, Data::Type> map;
 
@@ -19,6 +20,7 @@ static QMap<QString, Data::Type> dataTypeMap() {
 	map.insert("temperature", Data::TEMPERATURE);
 	map.insert("wind", Data::WIND);
 	map.insert("cloudCover", Data::CLOUD_COVERAGE);
+
 
 	return map;
 }
@@ -47,6 +49,7 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 	if (jsonDocument.HasParseError()) {
 		throw JsonReaderParseException(
 		    jsonFileInfo.absoluteFilePath(),
+
 		    QString("The file's JSON content is invalid. At position %1: %2")
 		    .arg(
 		        QString::number(jsonDocument.GetErrorOffset()),
@@ -60,10 +63,12 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 		throw JsonReaderParseException(
 		    jsonFileInfo.absoluteFilePath(),
 		    "The file does not contain a root data tag."
+
 		);
 	}
 
 	// Extract meta data and create a new JSON reader
+
 	if (!jsonDocument.HasMember("meta")) {
 		throw JsonReaderParseException(
 		    jsonFileInfo.absoluteFilePath(),
@@ -97,6 +102,7 @@ std::unique_ptr<JsonReader> JsonReaderFactory::createReader(const QString filena
 		                 0
 		             );
 	}
+
 
 	return std::move(jsonReader);
 }

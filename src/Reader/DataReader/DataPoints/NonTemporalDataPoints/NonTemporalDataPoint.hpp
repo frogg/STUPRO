@@ -18,7 +18,9 @@ public:
 	 * @param coordinate The point's coordinates
 	 * @param priority The point's zoom level priority
 	 */
+
 	NonTemporalDataPoint(Data::Type dataType, Coordinate coordinate, int priority);
+
 
 };
 

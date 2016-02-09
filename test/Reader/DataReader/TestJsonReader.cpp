@@ -162,7 +162,9 @@ TEST(TestJsonReader, WriteCitiesToVtkPolyData) {
 
 	EXPECT_EQ(
 	    4,
+
 	    priorityArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -213,7 +215,9 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    priorityArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -278,7 +282,9 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 
 	EXPECT_EQ(
 	    3,
+
 	    timestampArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -297,7 +303,9 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 
 	EXPECT_EQ(
 	    3,
+
 	    priorityArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -325,6 +333,7 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	EXPECT_EQ(
 	    1,
 	    precipitationRateArray->GetNumberOfComponents()
+
 	);
 
 	EXPECT_FLOAT_EQ(
@@ -343,6 +352,7 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	EXPECT_FLOAT_EQ(
 	    PrecipitationDataPoint::SNOW,
 	    precipitationTypeArray->GetValue(0)
+
 	);
 
 	// Test the associated array of timestamps
@@ -356,7 +366,9 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    timestampArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -375,7 +387,9 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    priorityArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -421,7 +435,9 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    timestampArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -440,7 +456,9 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    priorityArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -505,7 +523,9 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    timestampArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -524,7 +544,9 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    priorityArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -570,7 +592,9 @@ TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    timestampArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(
@@ -589,7 +613,9 @@ TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
 
 	EXPECT_EQ(
 	    1,
+
 	    priorityArray->GetNumberOfTuples()
+
 	);
 
 	EXPECT_EQ(

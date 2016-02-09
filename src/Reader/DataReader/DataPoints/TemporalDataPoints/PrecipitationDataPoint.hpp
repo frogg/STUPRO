@@ -31,8 +31,10 @@ public:
 	 * @param precipitationType The point's precipitation type
 	 */
 	PrecipitationDataPoint(Coordinate coordinate, int priority, int timestamp,
+
 	                       float precipitationRate,
 	                       PrecipitationDataPoint::PrecipitationType precipitationType);
+
 
 	/**
 	* Get the precipitation rate of this data point.

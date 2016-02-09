@@ -12,6 +12,7 @@
 #include <Reader/DataReader/PolyDataSetHelper.hpp>
 #include <Utils/Config/Configuration.hpp>
 
+
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
                        bool temporal,
                        int timeResolution) : dataType(dataType), filePath(path), temporal(temporal),
@@ -59,18 +60,23 @@ JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QStr
 
 JsonReader::~JsonReader() {
 	this->clearCache();
+
 }
 
 void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 	for (rapidjson::SizeType i = 0; i < jsonValue.Size(); i++) {
+
 		// Validate the data point's content before using it
 		JsonValidator::validateChildElement(jsonValue[i], this->dataType, this->filePath);
+
 
 		DataPoint* dataPoint;
 
 		// Initialize the new data point depending on the data type
 		switch (this->dataType) {
+
 		case Data::CITIES:
+
 			dataPoint = new CityDataPoint(
 			    Coordinate(
 			        jsonValue[i]["latitude"].GetDouble(),
@@ -80,7 +86,9 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    jsonValue[i]["name"].GetString()
 			);
 			break;
+
 		case Data::FLIGHTS:
+
 			dataPoint = new FlightDataPoint(
 			    Coordinate(
 			        jsonValue[i]["startPosition"]["latitude"].GetDouble(),
@@ -93,7 +101,9 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    )
 			);
 			break;
+
 		case Data::TWEETS:
+
 			dataPoint = new TweetDataPoint(
 			    Coordinate(
 			        jsonValue[i]["latitude"].GetDouble(),
@@ -105,6 +115,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    jsonValue[i]["content"].GetString()
 			);
 			break;
+
 		case Data::PRECIPITATION: {
 			PrecipitationDataPoint::PrecipitationType precipitationType
 			    = PrecipitationDataPoint::NONE;
@@ -119,6 +130,7 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 				precipitationType = PrecipitationDataPoint::HAIL;
 			}
 
+
 			dataPoint = new PrecipitationDataPoint(
 			    Coordinate(
 			        jsonValue[i]["latitude"].GetDouble(),
@@ -126,12 +138,14 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    ),
 			    depth,
 			    jsonValue[i]["timestamp"].GetInt(),
+
 			    (float) jsonValue[i]["precipitationRate"].GetDouble(),
 			    precipitationType
 			);
 			break;
 		}
 		case Data::TEMPERATURE:
+
 			dataPoint = new TemperatureDataPoint(
 			    Coordinate(
 			        jsonValue[i]["latitude"].GetDouble(),
@@ -142,7 +156,9 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    (float) jsonValue[i]["temperature"].GetDouble()
 			);
 			break;
+
 		case Data::WIND:
+
 			dataPoint = new WindDataPoint(
 			    Coordinate(
 			        jsonValue[i]["latitude"].GetDouble(),
@@ -154,8 +170,10 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    (float) jsonValue[i]["speed"].GetDouble()
 			);
 			break;
+
 		case Data::CLOUD_COVERAGE:
 			dataPoint = new CloudCoverageDataPoint(
+
 			    Coordinate(
 			        jsonValue[i]["latitude"].GetDouble(),
 			        jsonValue[i]["longitude"].GetDouble()
@@ -174,16 +192,20 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 	}
 }
 
+
 Data::Type JsonReader::getDataType() const {
+
 	return this->dataType;
 }
 
 bool JsonReader::hasTemporalData() const {
 	return temporal;
+
 }
 
 int JsonReader::getAmountOfTimeSteps() const {
-	return (this->endTime - this->startTime) / this->timeResolution;
+	return (this->endTime - this->startTime) / (this->timeResolution * 1.0f);
+
 }
 
 void JsonReader::setCachingEnabled(bool cachingEnabled) {
@@ -199,6 +221,7 @@ void JsonReader::cacheAllData() {
 
 	for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
 	        i++) {
+
 		if (this->hasTemporalData()) {
 			for (float currentTime = 0.0f; currentTime <= 1.0f;
 			        currentTime += (this->endTime - this->startTime) / (this->timeResolution * 1.0f)) {
@@ -207,10 +230,12 @@ void JsonReader::cacheAllData() {
 		} else {
 			this->getVtkDataSet(i);
 		}
+
 	}
 }
 
 void JsonReader::clearCache() {
+
 	this->nonTemporalCache.clear();
 	this->temporalCache.clear();
 }
@@ -272,6 +297,7 @@ vtkSmartPointer<vtkPolyData> JsonReader::getVtkDataSet(int zoomLevel, int time, 
 		} else {
 			this->nonTemporalCache[zoomLevel] = dataSet;
 		}
+
 	}
 
 	return dataSet;

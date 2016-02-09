@@ -16,14 +16,22 @@ public:
 	 * @param coordinate The point's coordinates
 	 * @param priority The point's zoom level priority
 	 */
+
+
+
 	DataPoint(Data::Type dataType, Coordinate coordinate, int priority);
+
 	virtual ~DataPoint() { }
 
 	/**
 	 * Get the data type of this data point, referring to the constants defined in DataType.hpp.
 	 * @return The data type of this data point
 	 */
+
+
+
 	Data::Type getDataType() const;
+
 
 	/**
 	 * Get the minimum zoom level this data point should be displayed at.
@@ -40,6 +48,7 @@ public:
 private:
 	Coordinate coordinate;
 	Data::Type dataType;
+
 	int priority;
 
 };
