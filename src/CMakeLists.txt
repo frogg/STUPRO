@@ -199,11 +199,11 @@ set_property(TARGET paraview_stupro PROPERTY CXX_STANDARD 11)
 
 # make sure not to copy or delete the resource folder if we are doing an in-source build
 if(NOT ("${CMAKE_SOURCE_DIR}" STREQUAL "${KRONOS_BIN_DIR}"))
-	# copy over all required resources
-	file(
-		COPY ${CMAKE_SOURCE_DIR}/res
-		DESTINATION ${KRONOS_BIN_DIR}/
-		PATTERN glsl EXCLUDE
+	# copy over all required resources after each build
+	add_custom_command(
+		TARGET paraview_stupro
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${KRONOS_BIN_DIR}/res
 	)
 	# delete the resource folder when executing make clean
 	set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${KRONOS_BIN_DIR}/res")
