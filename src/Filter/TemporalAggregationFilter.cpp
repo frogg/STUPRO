@@ -20,7 +20,7 @@
 
 vtkStandardNewMacro(TemporalAggregationFilter);
 
-TemporalAggregationFilter::TemporalAggregationFilter() {
+TemporalAggregationFilter::TemporalAggregationFilter() : currentTimeStep(0) {
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(1);
 }
