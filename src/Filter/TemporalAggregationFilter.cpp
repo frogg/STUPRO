@@ -20,7 +20,11 @@
 
 vtkStandardNewMacro(TemporalAggregationFilter);
 
-TemporalAggregationFilter::TemporalAggregationFilter() { }
+TemporalAggregationFilter::TemporalAggregationFilter() {
+    this->SetNumberOfInputPorts(1);
+    this->SetNumberOfOutputPorts(1);
+}
+
 TemporalAggregationFilter::~TemporalAggregationFilter() { }
 
 void TemporalAggregationFilter::PrintSelf(ostream& os, vtkIndent indent) {
@@ -38,7 +42,7 @@ int TemporalAggregationFilter::FillInputPortInformation(int port, vtkInformation
     return 1;
 }
 
-int TemporalAggregationFilter::FillOutputPortInformation(int vtkNotUsed(port), vtkInformation* info) {
+int TemporalAggregationFilter::FillOutputPortInformation(int port, vtkInformation* info) {
     info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPointSet");
     return 1;
 }
