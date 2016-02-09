@@ -9,7 +9,7 @@
  * @brief getGlobeRadius get the radius of the globe
  * @return the globe radius
  */
-double getGlobeRadius() {
+inline double getGlobeRadius() {
     static double globeRadius = Configuration::getInstance().getDouble("globe.radius");
     return globeRadius;
 }
