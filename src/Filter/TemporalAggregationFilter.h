@@ -1,6 +1,8 @@
 #ifndef KRONOS_TEMPORAL_AGGREGATION_FILTER_HPP
 #define KRONOS_TEMPORAL_AGGREGATION_FILTER_HPP
 
+#include <Reader/DataReader/Data.hpp>
+
 #include <vtkFiltersHybridModule.h>
 #include <vtkMultiTimeStepAlgorithm.h>
 #include <vtkDataSet.h>
@@ -49,6 +51,11 @@ private:
      * to aggregate data.
      */
     int currentTimeStep;
+    
+    /**
+     * Stores the type of data this filter receives.
+     */
+    Data::Type dataType;
     
     TemporalAggregationFilter(const TemporalAggregationFilter&); // Not implemented.
     void operator=(const TemporalAggregationFilter&); // Not implemented.
