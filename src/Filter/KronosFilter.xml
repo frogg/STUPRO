@@ -96,9 +96,8 @@
             </InputProperty>
             <StringVectorProperty name="Select Author"
                 command="setAuthorName"
-                animateable="0"
-                number_of_elements="0"
-                repeat_command="1"
+                number_of_elements="1"
+                default_values="name"
                 information_property="Author name">
             </StringVectorProperty>
             <Hints>

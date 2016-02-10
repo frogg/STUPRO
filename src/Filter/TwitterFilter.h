@@ -28,13 +28,11 @@ public:
                     vtkInformationVector *outputVector) override;
 	int FillOutputPortInformation(int port, vtkInformation *info) override;
 	int FillInputPortInformation(int port, vtkInformation *info) override;
-	
-//    /**
-//     * Callback method for setting the visibility of precipitation of undefined type.
-//     * @param enabled `1` if this precipitation type should be visible, `0` if it should be hidden
-//     */
-//	void enableUndefined(int enabled);
-//    
+    
+    /**
+      * Callback method for setting the name of the author(s) of the visible tweets.
+      * @param authorName
+     */
     void setAuthorName(const char* authorName){
         std::cout << "test12345566" << authorName;
     }
@@ -43,7 +41,7 @@ public:
 
 private:
     /**
-     * Initialize a new instance of the precipitation type filter.
+     * Initialize a new instance of the twitter filter.
      */
 	TwitterFilter();
 	~TwitterFilter();
@@ -61,6 +59,10 @@ private:
      * Boolean flag denoting whether there was an error.
      */
     bool error;
+    
+    
+    
+    
     
     /**
      * Internal method that handles VTK-related mechanics to set a specific precipitation type's visibility.
