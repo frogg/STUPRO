@@ -28,7 +28,7 @@
 		<ShowInMenu category="Kronos" />
 	    </Hints>
         </SourceProxy>
-        <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Type Filter">
+        <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Filter">
             <Documentation
                 long_help="This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point."
                 short_help="Extract data based on the type of precipitation">
@@ -78,10 +78,10 @@
                 <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
-        <SourceProxy name="TwitterFilter" class="TwitterFilter" label="Kronos TwitterFilter Type Filter">
+        <SourceProxy name="TwitterFilter" class="TwitterFilter" label="Kronos Twitter Filter">
             <Documentation
-                long_help="This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point."
-                short_help="Extract data based on the type of precipitation">
+                long_help="This filter can extract data from twitter point sets read by a Kronos reader depending on the author and hashtags."
+                short_help="Extract data based on the author or hashtags">
             </Documentation>
             <InputProperty
                 name="Input"
@@ -94,36 +94,13 @@
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
-            <IntVectorProperty name="Display precipitation of undefined type"
-                command="enableUndefined"
-                number_of_elements="1"
-                default_values="1">
-                <BooleanDomain name="bool"/>
-            </IntVectorProperty>
-            <IntVectorProperty name="Display rain"
-                command="enableRain"
-                number_of_elements="1"
-                default_values="1">
-                <BooleanDomain name="bool"/>
-            </IntVectorProperty>
-            <IntVectorProperty name="Display snow"
-                command="enableSnow"
-                number_of_elements="1"
-                default_values="1">
-                <BooleanDomain name="bool"/>
-            </IntVectorProperty>
-            <IntVectorProperty name="Display sleet"
-                command="enableSleet"
-                number_of_elements="1"
-                default_values="1">
-                <BooleanDomain name="bool"/>
-            </IntVectorProperty>
-            <IntVectorProperty name="Display hail"
-                command="enableHail"
-                number_of_elements="1"
-                default_values="1">
-                <BooleanDomain name="bool"/>
-            </IntVectorProperty>
+            <StringVectorProperty name="Select Author"
+                command="setAuthorName"
+                animateable="0"
+                number_of_elements="0"
+                repeat_command="1"
+                information_property="Author name">
+            </StringVectorProperty>
             <Hints>
                 <ShowInMenu category="Kronos" />
             </Hints>

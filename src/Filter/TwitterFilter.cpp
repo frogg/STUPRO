@@ -70,26 +70,12 @@ void TwitterFilter::displayPrecipitationType(PrecipitationDataPoint::Precipitati
 
 	this->Modified();
 }
-
+/*
 void TwitterFilter::enableUndefined(int enabled) {
 	this->displayPrecipitationType(PrecipitationDataPoint::NONE, enabled);
 }
+ */
 
-void TwitterFilter::enableRain(int enabled) {
-	this->displayPrecipitationType(PrecipitationDataPoint::RAIN, enabled);
-}
-
-void TwitterFilter::enableSnow(int enabled) {
-	this->displayPrecipitationType(PrecipitationDataPoint::SNOW, enabled);
-}
-
-void TwitterFilter::enableSleet(int enabled) {
-	this->displayPrecipitationType(PrecipitationDataPoint::SLEET, enabled);
-}
-
-void TwitterFilter::enableHail(int enabled) {
-	this->displayPrecipitationType(PrecipitationDataPoint::HAIL, enabled);
-}
 
 void TwitterFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());

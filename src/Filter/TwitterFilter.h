@@ -4,6 +4,8 @@
 #include <vtkExtractSelection.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
+#include <iostream>
+
 
 #include <QMap>
 
@@ -27,35 +29,17 @@ public:
 	int FillOutputPortInformation(int port, vtkInformation *info) override;
 	int FillInputPortInformation(int port, vtkInformation *info) override;
 	
-    /**
-     * Callback method for setting the visibility of precipitation of undefined type.
-     * @param enabled `1` if this precipitation type should be visible, `0` if it should be hidden
-     */
-	void enableUndefined(int enabled);
-    
-    /**
-     * Callback method for setting the visibility of precipitation of type rain.
-     * @param enabled `1` if this precipitation type should be visible, `0` if it should be hidden
-     */
-	void enableRain(int enabled);
-    
-    /**
-     * Callback method for setting the visibility of precipitation of type snow.
-     * @param enabled `1` if this precipitation type should be visible, `0` if it should be hidden
-     */
-	void enableSnow(int enabled);
-    
-    /**
-     * Callback method for setting the visibility of precipitation of type sleet.
-     * @param enabled `1` if this precipitation type should be visible, `0` if it should be hidden
-     */
-	void enableSleet(int enabled);
-    
-    /**
-     * Callback method for setting the visibility of precipitation of type hail.
-     * @param enabled `1` if this precipitation type should be visible, `0` if it should be hidden
-     */
-	void enableHail(int enabled);
+//    /**
+//     * Callback method for setting the visibility of precipitation of undefined type.
+//     * @param enabled `1` if this precipitation type should be visible, `0` if it should be hidden
+//     */
+//	void enableUndefined(int enabled);
+//    
+    void setAuthorName(const char* authorName){
+        std::cout << "test12345566" << authorName;
+    }
+
+
 
 private:
     /**
