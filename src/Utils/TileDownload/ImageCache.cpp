@@ -43,7 +43,7 @@ ImageCache::ImageCache() {
 	}
 }
 
-const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX,
+void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX,
                                   int tileY) {
 	/* If necessary, create the cache directory of the specified layer */
 	QDir layerDirectory(ImageCache::LAYER_DIRECTORY_PATH.arg(layer));
@@ -71,7 +71,7 @@ const void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel,
 	writer.write(image.getImage());
 }
 
-const void ImageCache::deleteCachedImage(QString layer, int zoomLevel, int tileX, int tileY) {
+void ImageCache::deleteCachedImage(QString layer, int zoomLevel, int tileX, int tileY) {
 	if (!ImageCache::getInstance().isImageCached(layer, zoomLevel, tileX, tileY)) {
 		throw ImageNotCachedException(ImageCache::IMAGE_NOT_CACHED_MESSAGE
 		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
@@ -82,21 +82,21 @@ const void ImageCache::deleteCachedImage(QString layer, int zoomLevel, int tileX
 	imageTile.remove();
 }
 
-const void ImageCache::clearCache(QString layer) {
+void ImageCache::clearCache(QString layer) {
 	QDir layerDirectory(ImageCache::LAYER_DIRECTORY_PATH.arg(layer));
 	if (layerDirectory.exists()) {
 		ImageCache::removeDirectory(layerDirectory.absolutePath());
 	}
 }
 
-const bool ImageCache::isImageCached(QString layer, int zoomLevel, int tileX, int tileY) {
+const bool ImageCache::isImageCached(QString layer, int zoomLevel, int tileX, int tileY) const {
 	QFileInfo imageFile(ImageCache::IMAGE_TILE_PATH
 	                    .arg(layer).arg(zoomLevel).arg(tileY).arg(tileX));
 	return imageFile.exists() && imageFile.isFile();
 }
 
 const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int tileX,
-        int tileY) {
+        int tileY) const {
 	if (!ImageCache::getInstance().isImageCached(layer, zoomLevel, tileX, tileY)) {
 		throw ImageNotCachedException(ImageCache::IMAGE_NOT_CACHED_MESSAGE
 		                              .arg(layer).arg(zoomLevel).arg(tileX).arg(tileY));
