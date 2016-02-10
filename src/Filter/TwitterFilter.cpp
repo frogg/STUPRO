@@ -16,6 +16,7 @@
 #include <vtkPointSet.h>
 
 TwitterFilter::TwitterFilter() : error(false) {
+    /*
 	// Initialize the selection
 	this->selection = vtkSmartPointer<vtkSelection>::New();
 	vtkSmartPointer<vtkSelectionNode> selectionNode = vtkSmartPointer<vtkSelectionNode>::New();
@@ -40,10 +41,11 @@ TwitterFilter::TwitterFilter() : error(false) {
 	}
 
 	selectionNode->SetSelectionList(precipitationTypes);
+     */
 }
 
 TwitterFilter::~TwitterFilter() { }
-
+/*
 void TwitterFilter::displayPrecipitationType(PrecipitationDataPoint::PrecipitationType
         type, bool display) {
 	if (this->error) {
@@ -68,8 +70,10 @@ void TwitterFilter::displayPrecipitationType(PrecipitationDataPoint::Precipitati
 
 	this->selection->GetNode(0)->SetSelectionList(precipitationTypes);
 
+ //wichtig, dass das neu angefragt wird
 	this->Modified();
 }
+ */
 /*
 void TwitterFilter::enableUndefined(int enabled) {
 	this->displayPrecipitationType(PrecipitationDataPoint::NONE, enabled);
@@ -104,13 +108,16 @@ int TwitterFilter::RequestData(vtkInformation* info,
 		return 0;
 	}
 
+    //copys the data but not any of the pipeline connection
+    output -> ShallowCopy(input);
+    /*
 	// Actually perform the extraction
 	vtkSmartPointer<vtkDataObject> extractedOutput = this->RequestDataFromBlock(input,
 	        this->selection->GetNode(0), outInfo);
 	if (extractedOutput) {
 		output->ShallowCopy(extractedOutput);
 	}
-
+*/
 	return 1;
 }
 
@@ -121,9 +128,9 @@ int TwitterFilter::RequestInformation(vtkInformation* request,
 
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
 		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
-		if (dataType != Data::PRECIPITATION) {
+		if (dataType != Data::TWEETS) {
 			this->fail(
-			    QString("This filter only works with Precipitation data, but the input contains %1 data.").arg(
+			    QString("This filter only works with Twitter data, but the input contains %1 data.").arg(
 			        Data::getDataTypeName(dataType)));
 			return 0;
 		}
@@ -137,7 +144,7 @@ int TwitterFilter::RequestInformation(vtkInformation* request,
 
 void TwitterFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
-	os << indent << "Precipitation data point extraction based on precipitation type, Kronos Project" <<
+	os << indent << "Twitter data point extraction based on author name or hashtag, Kronos Project" <<
 	   endl;
 }
 
