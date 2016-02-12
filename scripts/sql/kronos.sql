@@ -9,6 +9,41 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
+DROP DATABASE kronos;
+--
+-- Name: kronos; Type: DATABASE; Schema: -; Owner: stuproUser
+--
+
+CREATE DATABASE kronos WITH TEMPLATE = template0 ENCODING = 'SQL_ASCII' LC_COLLATE = 'C' LC_CTYPE = 'C';
+
+
+ALTER DATABASE kronos OWNER TO "stuproUser";
+
+\connect kronos
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: UTF8
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO "UTF8";
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: UTF8
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
@@ -48073,16 +48108,6 @@ SELECT pg_catalog.setval('city_id_seq', 47980, true);
 
 ALTER TABLE ONLY city
     ADD CONSTRAINT city_pkey PRIMARY KEY (id);
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: larissa
---
-
--— REVOKE ALL ON SCHEMA public FROM PUBLIC;
--— REVOKE ALL ON SCHEMA public FROM larissa;
--— GRANT ALL ON SCHEMA public TO larissa;
--— GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
