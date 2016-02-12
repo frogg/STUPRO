@@ -5,12 +5,15 @@
 #include <Globe/GlobeTile.hpp>
 #include <Utils/Graphics/ResourcePool.hpp>
 #include <Utils/Math/Vector2.hpp>
+#include <Utils/Misc/SlotCallback.hpp>
 #include <Utils/TileDownload/ImageDownloader.hpp>
 #include <Utils/TileDownload/ImageTile.hpp>
 #include <vtkOpenGLTexture.h>
 #include <vtkPlaneSource.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
+#include <QEventLoop>
+#include <QTimer>
 #include <atomic>
 #include <mutex>
 #include <queue>
@@ -188,6 +191,11 @@ private:
 	 * Loads all fetched globe tiles.
 	 */
 	void loadGlobeTiles();
+	
+	/**
+	 * Loads a globe tile from an ImageTile.
+	 */
+	void loadGlobeTile(const ImageTile & tile);
 
 	/**
 	 * Checks which level of detail is required for globe tiles and reloads them with that LOD.
@@ -213,9 +221,12 @@ private:
 	ImageDownloader myDownloader;
 	std::queue<ImageTile> myDownloadedTiles;
 	std::mutex myDownloadedTilesMutex;
-
+	
+	QTimer myTileLoadTimer;
+	SlotCallback myTileLoadCallback;
+	
 	ResourcePool<GlobeTile> myTilePool;
-	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;
+	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;	
 
 	unsigned int myZoomLevel;
 

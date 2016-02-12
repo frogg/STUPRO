@@ -33,10 +33,18 @@ Globe::Globe(vtkRenderer& renderer, GlobeConfig globeConfig) :
 myTilePool([this]() -> std::unique_ptr<GlobeTile> {
 	return makeUnique<GlobeTile>(*this);
 }),
+myTileLoadCallback([this](void * unused){
+	loadGlobeTiles();
+}),
 myZoomLevel(3),
 myDisplayModeInterpolation(0) {
 	// TODO: add config option for pool size.
 	myTilePool.setPoolSize(32);
+	
+	QObject::connect(&myTileLoadTimer, SIGNAL(timeout()), &myTileLoadCallback, SLOT(callbackSlot()));
+	
+	// TODO: add config option for texture load check interval.
+	myTileLoadTimer.start(50);
 
 	setGlobeConfig(globeConfig);
 
@@ -237,9 +245,9 @@ void Globe::setTileVisibility(int lon, int lat, bool visibility) {
 	// Check if tile is already visible/active and is set to be disabled, or if the tile is set to
 	// be enabled from being inactive.
 	if (!visibility && handle.isActive()) {
-		showTile(lon, lat);
-	} else if (visibility && !handle.isActive()) {
 		hideTile(lon, lat);
+	} else if (visibility && !handle.isActive()) {
+		showTile(lon, lat);
 	}
 }
 
@@ -288,15 +296,18 @@ void Globe::showTile(int lon, int lat) {
 void Globe::hideTile(int lon, int lat) {
 	// Get handle to the globe tile.
 	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(lon, lat);
+
+	// Check if handle is currently active.
+	if (handle.isActive()) {
+		// Get reference to underlying globe tile.
+		GlobeTile& tile = handle.getResource();
 	
-	// Get reference to underlying globe tile.
-	GlobeTile& tile = handle.getResource();
-
-	// Make tile invisible.
-	tile.setVisibile(false);
-
-	// Mark resource as inactive.
-	handle.setActive(false);
+		// Make tile invisible.
+		tile.setVisibile(false);
+	
+		// Mark resource as inactive.
+		handle.setActive(false);
+	}
 }
 
 void Globe::createTileHandles() {
@@ -325,27 +336,41 @@ void Globe::loadGlobeTiles() {
 	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
 
 	while (!myDownloadedTiles.empty()) {
-		// TODO: Change to const reference once ImageTile specifies const on methods.
-		ImageTile& tile = myDownloadedTiles.front();
+		
+		ImageTile tile = std::move(myDownloadedTiles.front());
+		myDownloadedTiles.pop();
+		
+		loadGlobeTile(tile);
+	}
+}
 
-		if (myZoomLevel != tile.getZoomLevel()) {
+void Globe::loadGlobeTile(const ImageTile & tile) {
+	
+	if (myZoomLevel != tile.getZoomLevel()) {
+		KRONOS_LOG_WARN("Attempt to load zoom-mismatched tile %d,%d", tile.getTileX(), tile.getTileY());
+		return;
+	}
+
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY());
+	
+	bool handleIsActive = handle.isActive();
+
+	if (!handleIsActive) {
+		if (handle.isExpired()) {
+			KRONOS_LOG_WARN("Attempt to load expired tile %d,%d", tile.getTileX(), tile.getTileY());
 			return;
 		}
+		
+		// Temporarily activate globe tile to load texture, deactivate again after loading.
+		handle.setActive(true);
+	}
 
-		ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY());
+	GlobeTile& globeTile = handle.getResource();
 
-		if (!handle.isActive()) {
-			return;
-		}
+	auto rgbIterator = tile.getLayers().find("satelliteImagery");
+	auto heightmapIterator = tile.getLayers().find("heightmap");
 
-		GlobeTile& globeTile = handle.getResource();
-
-		auto rgbIterator = tile.getLayers().find("satelliteImagery");
-		auto heightmapIterator = tile.getLayers().find("heightmap");
-
-		if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end()) {
-			return;
-		}
+	if (rgbIterator != tile.getLayers().end() && heightmapIterator != tile.getLayers().end()) {
 
 		const QImage& rgb = rgbIterator->getImage();
 		const QImage& heightmap = heightmapIterator->getImage();
@@ -357,9 +382,16 @@ void Globe::loadGlobeTiles() {
 		globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
 
 		globeTile.updateUniforms();
-
-		myDownloadedTiles.pop();
+		
+	} else {
+		KRONOS_LOG_WARN("Missing or incomplete image data for tile %d,%d", tile.getTileX(), tile.getTileY());
 	}
+	
+	if (!handleIsActive) {
+		// Disable globe tile again.
+		handle.setActive(false);
+	}
+	
 }
 
 void Globe::setDisplayModeInterpolation(float displayMode) {

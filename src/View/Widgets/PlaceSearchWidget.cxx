@@ -83,7 +83,9 @@ PlaceSearchWidget::PlaceSearchWidget(QWidget * parent, Qt::WindowFlags flags)
 
 PlaceSearchWidget::~PlaceSearchWidget() {
     try {
-        this->citiesDatabase->closeDatabase();
+    	if (this->citiesDatabase) {
+    		this->citiesDatabase->closeDatabase();
+    	}
     } catch (...) { }
 
     delete this->citiesDatabase;

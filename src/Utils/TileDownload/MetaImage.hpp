@@ -31,7 +31,7 @@ public:
 	 * Get the actual image stored in this MetaImage.
 	 * @return The image of this MetaImage
 	 */
-	const QImage& getImage();
+	const QImage& getImage() const;
 
 	/**
 	 * Set the actual image stored in this MetaImage.
@@ -43,13 +43,13 @@ public:
 	 * Get the minimum height from the meta data.
 	 * @return The minimum height of this MetaImage
 	 */
-	short getMinimumHeight();
+	short getMinimumHeight() const;
 
 	/**
 	 * Get the maximum height from the meta data.
 	 * @return The maximum height of this MetaImage
 	 */
-	short getMaximumHeight();
+	short getMaximumHeight() const;
 
 	/**
 	 * Set the meta data stored in this MetaImage.
@@ -62,7 +62,7 @@ public:
 	 * Get whether this MetaImage has meta data attached.
 	 * @return True if there is meta data available, false otherwise
 	 */
-	bool hasMetaData();
+	bool hasMetaData() const;
 
 private:
 	QImage image;

@@ -14,7 +14,7 @@ ImageTile::~ImageTile() {
 	this->layers.clear();
 }
 
-QMap<QString, MetaImage>& ImageTile::getLayers() {
+const QMap<QString, MetaImage>& ImageTile::getLayers() const {
 	return this->layers;
 }
 
@@ -22,7 +22,7 @@ void ImageTile::setLayers(const QMap<QString, MetaImage> layers) {
 	this->layers = layers;
 }
 
-int ImageTile::getZoomLevel() {
+int ImageTile::getZoomLevel() const {
 	return this->zoomLevel;
 }
 
@@ -30,7 +30,7 @@ void ImageTile::setZoomLevel(int zoomLevel) {
 	this->zoomLevel = zoomLevel;
 }
 
-int ImageTile::getTileX() {
+int ImageTile::getTileX() const {
 	return this->tileX;
 }
 
@@ -38,7 +38,7 @@ void ImageTile::setTileX(int tileX) {
 	this->tileX = tileX;
 }
 
-int ImageTile::getTileY() {
+int ImageTile::getTileY() const {
 	return this->tileY;
 }
 
