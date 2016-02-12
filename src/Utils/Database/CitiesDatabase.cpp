@@ -5,12 +5,12 @@
 #include <QSqlResult>
 
 const QString KITTY_QUERY_STRING("select * from city "
-		"where lower(name) like lower(?) "
-		"order by char_length(name), name, countrycode");
+                                 "where lower(name) like lower(?) "
+                                 "order by char_length(name), name, countrycode");
 
 CitiesDatabase::CitiesDatabase(const QString databaseName, const QString user,
-				const QString password, const QString hostaddr, int port)
-				: PostgresDB(databaseName, user, password, hostaddr, port), isPrepared(false) {
+                               const QString password, const QString hostaddr, int port)
+	: PostgresDB(databaseName, user, password, hostaddr, port), isPrepared(false) {
 }
 
 QList<City> CitiesDatabase::getCity(QString name) {
