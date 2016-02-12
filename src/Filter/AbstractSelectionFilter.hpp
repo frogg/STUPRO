@@ -6,11 +6,13 @@
 #include <vtkDataObjectAlgorithm.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
+#include <vtkPointData.h>
 
 #include <qstring.h>
 #include <qlist.h>
 
 #include <Reader/DataReader/Data.hpp>
+#include <Globe/Coordinate.hpp>
 
 /**
  * Abstract super class for filters that work on a Kronos point data set and extract some of those points.
@@ -37,8 +39,14 @@ public:
      */
     virtual QList<Data::Type> getCompatibleDataTypes() = 0;
     
-    // TODO
-    // virtual bool evaluatePoint( ... ) = 0;
+    /**
+     * Decide whether a data point should be kept in the selection.
+     * @param pointIndex The index of the point to be checked
+     * @param coordinate The coordinate of the point
+     * @param pointData All scalar point data
+     * @return True if the point should be kept, false otherwise
+     */
+    virtual bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) = 0;
     
 protected:
     /**

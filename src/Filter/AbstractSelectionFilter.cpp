@@ -1,6 +1,6 @@
 #include <Filter/AbstractSelectionFilter.hpp>
 
-#include <vtkPointSet.h>
+#include <vtkPolyData.h>
 #include <vtkDataObject.h>
 #include <vtkAlgorithm.h>
 
@@ -21,9 +21,20 @@ int AbstractSelectionFilter::RequestData(vtkInformation* info,
 	if (this->error) {
 		return 0;
 	}
-    
-	std::cout << "request data called" << std::endl;
-    // TODO: Loop through points and extract all valid ones
+	
+	vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
+	vtkPolyData* inputData = vtkPolyData::SafeDownCast(inputInformation->Get(vtkDataObject::DATA_OBJECT()));
+	
+	vtkInformation* outputInformation = outputVector->GetInformationObject(0);
+	vtkPolyData* output = vtkPolyData::SafeDownCast(outputInformation->Get(vtkDataObject::DATA_OBJECT()));
+	
+	for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
+		double coordinates[3];
+		inputData->GetPoint(i, coordinates);
+		if (this->evaluatePoint(i, Coordinate(coordinates[0], coordinates[1]), inputData->GetPointData())) {
+			// TODO
+		}
+	}
 
 	return 1;
 }
