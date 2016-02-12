@@ -93,7 +93,7 @@ vtkSmartPointer<vtkTexture> GlobeTile::getTexture() const {
 
 void GlobeTile::setLowerHeight(float lower) {
 	myLowerHeight = lower;
-	
+
 	updateMapper();
 }
 
@@ -194,7 +194,6 @@ bool GlobeTile::isVisible() const {
 	return myIsVisible;
 }
 
-void GlobeTile::updateMapper()
-{
+void GlobeTile::updateMapper() {
 	myActor->SetMapper(myGlobe.getPlaneMapper(myUpperHeight - myLowerHeight));
 }

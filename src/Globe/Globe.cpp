@@ -35,7 +35,7 @@ Globe::Globe(vtkRenderer& renderer, GlobeConfig globeConfig) :
 myTilePool([this]() -> std::unique_ptr<GlobeTile> {
 	return makeUnique<GlobeTile>(*this);
 }),
-myTimerCallback([this](void * unused){
+myTimerCallback([this](void* unused) {
 	loadGlobeTiles();
 	updateDisplayMode(false);
 }),
@@ -44,13 +44,13 @@ myDisplayMode(DisplayGlobe),
 myDisplayModeInterpolation(0.f) {
 	// TODO: add config option for pool size.
 	myTilePool.setPoolSize(32);
-	
+
 	// Check if we have a ParaView application instance (and the Event Loop that comes with it).
 	if (pqApplicationCore::instance() != nullptr) {
-		
+
 		// Create timer.
 		myTimer = makeUnique<QTimer>();
-		
+
 		// Set timer callback.
 		QObject::connect(myTimer.get(), SIGNAL(timeout()), &myTimerCallback, SLOT(callbackSlot()));
 
@@ -59,16 +59,16 @@ myDisplayModeInterpolation(0.f) {
 	}
 
 	myLoadingTexture = loadTextureFromFile("./res/tiles/TileLoading.png");
-	
+
 	setGlobeConfig(globeConfig);
 	generateLODTable();
 	createTileHandles();
-	
+
 	onCameraChanged();
 }
 
 Globe::~Globe() {
-	
+
 	// This is to abort all current tile downloads.
 	eraseTileHandles();
 }
@@ -76,14 +76,14 @@ Globe::~Globe() {
 vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper(float heightDifference) const {
 
 	assert(!myLODTable.empty());
-	
+
 	// Iterate over LOD table.
 	for (auto it = myLODTable.begin(); it != myLODTable.end(); ++it) {
 		if (heightDifference < it->heightRange) {
 			return it->planeMapper;
 		}
 	}
-	
+
 	return myLODTable.back().planeMapper;
 }
 
@@ -255,7 +255,7 @@ void Globe::setTileVisibility(int lon, int lat, bool visibility) {
 void Globe::showTile(int lon, int lat) {
 	// Get handle to the globe tile.
 	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(lon, lat);
-	
+
 	// Check if the tile resource is already expired.
 	if (handle.isExpired()) {
 		// A new tile needs to be acquired from the resource pool.
@@ -303,10 +303,10 @@ void Globe::hideTile(int lon, int lat) {
 	if (handle.isActive()) {
 		// Get reference to underlying globe tile.
 		GlobeTile& tile = handle.getResource();
-	
+
 		// Make tile invisible.
 		tile.setVisibile(false);
-	
+
 		// Mark resource as inactive.
 		handle.setActive(false);
 	}
@@ -320,10 +320,10 @@ void Globe::createTileHandles() {
 }
 
 void Globe::eraseTileHandles() {
-	
+
 	// Cancel all pending downloads.
 	myDownloader.abortAllDownloads();
-	
+
 	for (auto& handle : myTileHandles) {
 		if (handle.isActive()) {
 			hideTile(handle.getResource().getLocation().longitude, handle.getResource().getLocation().latitude);
@@ -337,30 +337,30 @@ void Globe::eraseTileHandles() {
 void Globe::loadGlobeTiles() {
 
 	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
-	
+
 	if (!myDownloadedTiles.empty()) {
-		
+
 		while (!myDownloadedTiles.empty()) {
-		
+
 			ImageTile tile = std::move(myDownloadedTiles.front());
 			myDownloadedTiles.pop();
-			
+
 			loadGlobeTile(tile);
 		}
-		
+
 		getRenderWindow().Render();
 	}
 }
 
-void Globe::loadGlobeTile(const ImageTile & tile) {
-	
+void Globe::loadGlobeTile(const ImageTile& tile) {
+
 	if (myZoomLevel != tile.getZoomLevel()) {
 		KRONOS_LOG_WARN("Attempt to load zoom-mismatched tile %d,%d", tile.getTileX(), tile.getTileY());
 		return;
 	}
 
 	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY());
-	
+
 	bool handleIsActive = handle.isActive();
 
 	if (!handleIsActive) {
@@ -368,7 +368,7 @@ void Globe::loadGlobeTile(const ImageTile & tile) {
 			KRONOS_LOG_WARN("Attempt to load expired tile %d,%d", tile.getTileX(), tile.getTileY());
 			return;
 		}
-		
+
 		// Temporarily activate globe tile to load texture, deactivate again after loading.
 		handle.setActive(true);
 	}
@@ -389,25 +389,26 @@ void Globe::loadGlobeTile(const ImageTile & tile) {
 		globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
 
 		globeTile.updateUniforms();
-		
+
 	} else {
-		KRONOS_LOG_WARN("Missing or incomplete image data for tile %d,%d", tile.getTileX(), tile.getTileY());
+		KRONOS_LOG_WARN("Missing or incomplete image data for tile %d,%d", tile.getTileX(),
+		                tile.getTileY());
 	}
-	
+
 	if (!handleIsActive) {
 		// Disable globe tile again.
 		handle.setActive(false);
 	}
-	
+
 }
 
 void Globe::updateDisplayMode(bool instant) {
-	
+
 	float target = (float)myDisplayMode;
 	float animSpeed = Configuration::getInstance().getFloat("globe.transitionEffectSpeed");
-	
+
 	if (instant) {
-		myDisplayModeInterpolation = target;		
+		myDisplayModeInterpolation = target;
 	} else if (std::abs(myDisplayModeInterpolation - target) > 0.00001f) {
 		myDisplayModeInterpolation = (myDisplayModeInterpolation + target * animSpeed) / (1.f + animSpeed);
 	} else {
@@ -420,15 +421,15 @@ void Globe::updateDisplayMode(bool instant) {
 			tile.getResource().updateUniforms();
 		}
 	}
-	
+
 	getRenderWindow().Render();
 }
 
 void Globe::setDisplayMode(DisplayMode displayMode) {
 	myDisplayMode = displayMode;
-	
+
 	updateTileVisibility();
-	
+
 	// If the timer is disabled, update display mode instantly.
 	if (myTimer == nullptr) {
 		updateDisplayMode(true);
@@ -459,32 +460,32 @@ const GlobeConfig& Globe::getGlobeConfig() const {
 
 void Globe::generateLODTable() {
 	myLODTable.clear();
-	
+
 	unsigned int minLOD = Configuration::getInstance().getInteger("globe.lod.minimumResolution");
 	unsigned int maxLOD = Configuration::getInstance().getInteger("globe.lod.maximumResolution");
-	
+
 	float minDiff = Configuration::getInstance().getFloat("globe.lod.minimumHeightDifference");
 	float maxDiff = Configuration::getInstance().getFloat("globe.lod.maximumHeightDifference");
-	
+
 	// Convert LODs to powers of 2.
 	minLOD = getNextPowerOf2(minLOD);
 	maxLOD = getNextPowerOf2(maxLOD);
-	
+
 	// Iterate over all levels of detail, skipping the highest one.
 	for (unsigned int lod = minLOD; lod < maxLOD; lod *= 2) {
-		
-		// Perform reverse linear interpolation over level of detail value to get normalized 
+
+		// Perform reverse linear interpolation over level of detail value to get normalized
 		// interpolation factor. MaxLOD is divided by 2 as the last LOD is skipped for now, since it
 		// is used as a fallback for too high terrain ranges.
 		float normalizedLOD = float(lod - minLOD) / float(maxLOD / 2 - minLOD);
-		
+
 		// Calculate the resulting height difference threshold.
 		float heightDifference = interpolateLinear(minDiff, maxDiff, normalizedLOD);
-		
+
 		// Add entry to table.
 		myLODTable.push_back(LODSetting(heightDifference, lod));
 	}
-	
+
 	// Add maximum LOD entry to table.
 	myLODTable.push_back(LODSetting(maxDiff, maxLOD));
 }
@@ -498,7 +499,7 @@ void Globe::onTileLoad(ImageTile tile) {
 void Globe::updateZoomLevel() {
 	// Get current camera for distance calculations.
 	vtkCamera* camera = getRenderer().GetActiveCamera();
-	
+
 	if (camera == nullptr) {
 		KRONOS_LOG_WARN("Camera was null while trying to update zoom level.");
 		return;
@@ -549,7 +550,7 @@ void Globe::updateZoomLevel() {
 void Globe::updateTileVisibility() {
 	// Get current camera for transformation matrix.
 	vtkCamera* camera = getRenderer().GetActiveCamera();
-	
+
 	if (camera == nullptr) {
 		KRONOS_LOG_WARN("Camera was null while trying to update tile visibility.");
 		return;

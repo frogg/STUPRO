@@ -52,7 +52,7 @@ public:
 	/**
 	 * Returns the plane mapper with an appropriate level of detail for the terrain height range in
 	 * a tile.
-	 * 
+	 *
 	 * @param heightDifference The difference between the minimum and maximum height in a tile.
 	 * @return the mapper responsible for rendering the tiles at the specified level of detail.
 	 */
@@ -85,12 +85,11 @@ public:
 	 * @return the globe's vertical tile count in powers of two
 	 */
 	unsigned int getZoomLevel() const;
-	
+
 	/**
 	 * Enum holding the available display modes for the globe.
 	 */
-	enum DisplayMode
-	{
+	enum DisplayMode {
 		DisplayGlobe = 0, DisplayMap = 1
 	};
 
@@ -106,7 +105,7 @@ public:
 	 * @return the globe's current display mode.
 	 */
 	DisplayMode getDisplayMode() const;
-	
+
 	/**
 	 * @return the current animation state of the globe's display mode between 0.0 (globe) and 1.0
 	 *         (map).
@@ -166,12 +165,12 @@ private:
 	 * Changes the visibility of the specified tile.
 	 */
 	void setTileVisibility(int lon, int lat, bool visibility);
-	
+
 	/**
 	 * Sets the visibility of a tile to true.
 	 */
 	void showTile(int lon, int lat);
-	
+
 	/**
 	 * Sets the visibility of a tile to false.
 	 */
@@ -191,15 +190,15 @@ private:
 	 * Loads all fetched globe tiles.
 	 */
 	void loadGlobeTiles();
-	
+
 	/**
 	 * Loads a globe tile from an ImageTile.
 	 */
-	void loadGlobeTile(const ImageTile & tile);
-	
+	void loadGlobeTile(const ImageTile& tile);
+
 	/**
 	 * Updates the globe's display mode interpolation value for a smooth animation.
-	 * 
+	 *
 	 * @param instant If this is true, the display mode will be immediately adjusted to its target
 	 *                value.
 	 */
@@ -214,7 +213,7 @@ private:
 	 * Checks which globe tiles are invisible and need to be culled.
 	 */
 	void updateTileVisibility();
-	
+
 	/**
 	 * Generates the LOD table for height difference -> resolution mapping.
 	 */
@@ -231,27 +230,27 @@ private:
 	ImageDownloader myDownloader;
 	std::queue<ImageTile> myDownloadedTiles;
 	std::mutex myDownloadedTilesMutex;
-	
+
 	std::unique_ptr<QTimer> myTimer;
 	SlotCallback myTimerCallback;
-	
+
 	ResourcePool<GlobeTile> myTilePool;
-	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;	
+	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;
 
 	/**
 	 * Map from minimum terrain height difference to plane source resolution.
 	 */
 	struct LODSetting {
 		LODSetting(float heightRange, unsigned int lod);
-		
+
 		float heightRange;
 		unsigned int lod;
 		vtkSmartPointer<vtkPlaneSource> planeSource;
 		vtkSmartPointer<vtkPolyDataMapper> planeMapper;
 	};
-	
+
 	std::vector<LODSetting> myLODTable;
-	
+
 	unsigned int myZoomLevel;
 
 	DisplayMode myDisplayMode;

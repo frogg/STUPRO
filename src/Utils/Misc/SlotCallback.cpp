@@ -8,20 +8,16 @@
 #include <Utils/Misc/SlotCallback.hpp>
 
 SlotCallback::SlotCallback(std::function<void(void*)> callback) :
-	callback(callback)
-{
+	callback(callback) {
 }
 
-SlotCallback::~SlotCallback()
-{
+SlotCallback::~SlotCallback() {
 }
 
-void SlotCallback::callbackSlot()
-{
+void SlotCallback::callbackSlot() {
 	callback(nullptr);
 }
 
-void SlotCallback::callbackSlotWithUserData(void* userData)
-{
+void SlotCallback::callbackSlotWithUserData(void* userData) {
 	callback(userData);
 }

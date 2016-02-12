@@ -28,10 +28,10 @@ T interpolateLinear(T a, T b, T interpolation) {
 
 /**
  * Returns the next (nearest upper) power of 2 of the specified unsigned integer.
- * 
+ *
  * Bit-level explanation: subtracts 1, copies highest set bit to all lower bits, then adds 1.
  * This causes the number to be rounded up to the next power of 2.
- * 
+ *
  * @param value The value to round up to the next power of 2.
  */
 template <typename T>

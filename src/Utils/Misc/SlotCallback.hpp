@@ -11,21 +11,20 @@
 #include <functional>
 #include <qobject.h>
 
-class SlotCallback: public QObject
-{
-Q_OBJECT
+class SlotCallback: public QObject {
+	Q_OBJECT
 
 public:
 	SlotCallback(std::function<void(void*)> callback);
 	virtual ~SlotCallback();
-	
+
 public slots:
-	
+
 	void callbackSlot();
-	void callbackSlotWithUserData(void * userData);
-	
+	void callbackSlotWithUserData(void* userData);
+
 private:
-	
+
 	std::function<void(void*)> callback;
 };
 
