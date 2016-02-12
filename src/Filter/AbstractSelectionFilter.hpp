@@ -6,6 +6,9 @@
 #include <vtkPointSetAlgorithm.h>
 
 #include <qstring.h>
+#include <qlist.h>
+
+#include <Reader/DataReader/Data.hpp>
 
 /**
  * Abstract super class for filters that work on a Kronos point data set and extract some of those points.
@@ -24,6 +27,12 @@ public:
                     vtkInformationVector *outputVector) override;
 	int FillOutputPortInformation(int port, vtkInformation *info) override;
 	int FillInputPortInformation(int port, vtkInformation *info) override;
+    
+    /**
+     * Get a list of all data types this concrete filter is compatible with.
+     * @return A list of all compatible data types
+     */
+    virtual QList<Data::Type> getCompatibleDataTypes() = 0;
     
 protected:
     /**
