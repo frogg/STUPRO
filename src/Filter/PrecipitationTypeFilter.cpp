@@ -5,7 +5,12 @@
 #include <vtkObjectFactory.h>
 #include <vtkTypeInt32Array.h>
 
-PrecipitationTypeFilter::PrecipitationTypeFilter() { }
+PrecipitationTypeFilter::PrecipitationTypeFilter() {
+	// Display all precipitation types by default
+	for (int i = PrecipitationDataPoint::NONE; i <= PrecipitationDataPoint::HAIL; i++) {
+		this->precipitationTypeVisibilities.insert(static_cast<PrecipitationDataPoint::PrecipitationType>(i), true);
+	}
+}
 PrecipitationTypeFilter::~PrecipitationTypeFilter() { }
 
 vtkStandardNewMacro(PrecipitationTypeFilter);
