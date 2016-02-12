@@ -42,7 +42,11 @@ inline void kronos_log(const char* debugLevel, const char* function, const char*
                        const char* message, Args... args) {
 	char formatted[KRONOS_MAX_LOG_MSG_LENGTH];
 
+#ifndef _MSC_VER
 	snprintf(formatted, KRONOS_MAX_LOG_MSG_LENGTH, message, args...);
+#else
+	sprintf(formatted, message, args...);
+#endif
 
 	std::cout << debugLevel << " "
 	          << function
