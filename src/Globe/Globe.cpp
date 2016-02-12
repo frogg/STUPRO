@@ -276,7 +276,6 @@ void Globe::showTile(int lon, int lat) {
 		tile.updateUniforms();
 
 		// Give the tile a temporary loading texture.
-		tile.setTextureLoadState(GlobeTile::TEXTURE_LOADING);
 		tile.setTexture(myLoadingTexture);
 
 		// Start loading process.
@@ -376,7 +375,6 @@ void Globe::loadGlobeTile(const ImageTile & tile) {
 		const QImage& heightmap = heightmapIterator->getImage();
 
 		globeTile.loadTexture(rgb, heightmap);
-		globeTile.setTextureLoadState(GlobeTile::TEXTURE_LOADED);
 
 		globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
 		globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
@@ -406,10 +404,6 @@ void Globe::setDisplayModeInterpolation(float displayMode) {
 
 float Globe::getDisplayModeInterpolation() const {
 	return myDisplayModeInterpolation;
-}
-
-bool Globe::checkIfRepaintIsNeeded() {
-	return !myIsClean.test_and_set();
 }
 
 void Globe::onCameraChanged() {

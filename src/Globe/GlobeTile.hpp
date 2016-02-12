@@ -111,25 +111,6 @@ public:
 	void loadTexture(const QImage& rgb, const QImage& height);
 
 	/**
-	 * Possible states for the globe tile's texture.
-	 */
-	enum TextureLoadState {
-		TEXTURE_UNLOADED,
-		TEXTURE_LOADING,
-		TEXTURE_LOADED
-	};
-
-	/**
-	 * Sets the texture loading state for this globe tile.
-	 */
-	void setTextureLoadState(TextureLoadState textureLoadState);
-
-	/**
-	 * Returns the texture loading state for this globe tile.
-	 */
-	TextureLoadState getTextureLoadState() const;
-
-	/**
 	 * Assigns a combined color/heightmap texture to this tile.
 	 *
 	 * The RGB channels are interpreted as color information, the alpha channel is interpreted as
@@ -203,8 +184,6 @@ private:
 	vtkSmartPointer<vtkActor> myActor;
 	vtkSmartPointer<vtkShader2> myVertexShader;
 	vtkSmartPointer<vtkShader2> myFragmentShader;
-
-	TextureLoadState myTextureLoadState;
 
 	bool myIsVisible;
 

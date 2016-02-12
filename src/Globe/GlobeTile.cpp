@@ -53,7 +53,7 @@ Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const {
 }
 
 GlobeTile::GlobeTile(const Globe& globe) :
-	myGlobe(globe), myLocation(0, 0, 0), myTextureLoadState(TEXTURE_UNLOADED), myIsVisible(false) {
+	myGlobe(globe), myLocation(0, 0, 0), myIsVisible(false) {
 	// Initialize members.
 	myLowerHeight = 0.f;
 	myUpperHeight = 1.f;
@@ -110,14 +110,6 @@ float GlobeTile::getUpperHeight() const {
 
 vtkSmartPointer<vtkActor> GlobeTile::getActor() const {
 	return myActor;
-}
-
-void GlobeTile::setTextureLoadState(TextureLoadState textureLoadState) {
-	myTextureLoadState = textureLoadState;
-}
-
-GlobeTile::TextureLoadState GlobeTile::getTextureLoadState() const {
-	return myTextureLoadState;
 }
 
 void GlobeTile::initShaders() {
