@@ -16,3 +16,6 @@ scripts/data-conversion/*.config
 
 # Clang files
 .clang_complete
+
+# precompiled header files
+*.pch
