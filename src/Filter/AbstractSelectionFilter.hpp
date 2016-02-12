@@ -19,50 +19,50 @@
  */
 class AbstractSelectionFilter : public vtkDataObjectAlgorithm {
 public:
-    AbstractSelectionFilter();
-    ~AbstractSelectionFilter();
-    
-	void PrintSelf(ostream &os, vtkIndent indent) override;
+	AbstractSelectionFilter();
+	~AbstractSelectionFilter();
 
-	int RequestData(vtkInformation *info,
-					vtkInformationVector **inputVector,
-					vtkInformationVector *outputVector) override;
-    int RequestInformation(vtkInformation *request,
-                    vtkInformationVector **inputVector,
-                    vtkInformationVector *outputVector) override;
-	int FillOutputPortInformation(int port, vtkInformation *info) override;
-	int FillInputPortInformation(int port, vtkInformation *info) override;
-    
-    /**
-     * Get a list of all data types this concrete filter is compatible with.
-     * @return A list of all compatible data types
-     */
-    virtual QList<Data::Type> getCompatibleDataTypes() = 0;
-    
-    /**
-     * Decide whether a data point should be kept in the selection.
-     * @param pointIndex The index of the point to be checked
-     * @param coordinate The coordinate of the point
-     * @param pointData All scalar point data
-     * @return True if the point should be kept, false otherwise
-     */
-    virtual bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) = 0;
-    
+	void PrintSelf(ostream& os, vtkIndent indent) override;
+
+	int RequestData(vtkInformation* info,
+	                vtkInformationVector** inputVector,
+	                vtkInformationVector* outputVector) override;
+	int RequestInformation(vtkInformation* request,
+	                       vtkInformationVector** inputVector,
+	                       vtkInformationVector* outputVector) override;
+	int FillOutputPortInformation(int port, vtkInformation* info) override;
+	int FillInputPortInformation(int port, vtkInformation* info) override;
+
+	/**
+	 * Get a list of all data types this concrete filter is compatible with.
+	 * @return A list of all compatible data types
+	 */
+	virtual QList<Data::Type> getCompatibleDataTypes() = 0;
+
+	/**
+	 * Decide whether a data point should be kept in the selection.
+	 * @param pointIndex The index of the point to be checked
+	 * @param coordinate The coordinate of the point
+	 * @param pointData All scalar point data
+	 * @return True if the point should be kept, false otherwise
+	 */
+	virtual bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) = 0;
+
 protected:
-    /**
-     * Display an error message and remember that this filter does not hold valid data.
-     * @param message The error message to be shown to the user
-     */
-    void fail(QString message);
+	/**
+	 * Display an error message and remember that this filter does not hold valid data.
+	 * @param message The error message to be shown to the user
+	 */
+	void fail(QString message);
 
 private:
-	AbstractSelectionFilter(const AbstractSelectionFilter &); // Not implemented.
-    void operator=(const AbstractSelectionFilter &); // Not implemented.
+	AbstractSelectionFilter(const AbstractSelectionFilter&);  // Not implemented.
+	void operator=(const AbstractSelectionFilter&);  // Not implemented.
 
-    /**
-     * Boolean flag denoting whether there was an error.
-     */
-    bool error;
+	/**
+	 * Boolean flag denoting whether there was an error.
+	 */
+	bool error;
 };
 
 #endif

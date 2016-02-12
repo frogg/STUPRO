@@ -8,7 +8,8 @@
 PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	// Display all precipitation types by default
 	for (int i = PrecipitationDataPoint::NONE; i <= PrecipitationDataPoint::HAIL; i++) {
-		this->precipitationTypeVisibilities.insert(static_cast<PrecipitationDataPoint::PrecipitationType>(i), true);
+		this->precipitationTypeVisibilities.insert(static_cast<PrecipitationDataPoint::PrecipitationType>
+		        (i), true);
 	}
 }
 PrecipitationTypeFilter::~PrecipitationTypeFilter() { }
@@ -19,13 +20,16 @@ QList<Data::Type> PrecipitationTypeFilter::getCompatibleDataTypes() {
 	return (QList<Data::Type>() << Data::PRECIPITATION);
 }
 
-bool PrecipitationTypeFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) {
-	vtkSmartPointer<vtkTypeInt32Array> precipitationTypeArray = vtkTypeInt32Array::SafeDownCast(pointData->GetArray("precipitationTypes"));
-	
-	return this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>(precipitationTypeArray->GetTuple1(pointIndex))];
+bool PrecipitationTypeFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
+        vtkPointData* pointData) {
+	vtkSmartPointer<vtkTypeInt32Array> precipitationTypeArray = vtkTypeInt32Array::SafeDownCast(
+	            pointData->GetArray("precipitationTypes"));
+
+	return this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
+	        (precipitationTypeArray->GetTuple1(pointIndex))];
 }
 
-void PrecipitationTypeFilter::SetInputConnection(vtkAlgorithmOutput *input) {
+void PrecipitationTypeFilter::SetInputConnection(vtkAlgorithmOutput* input) {
 	this->Superclass::SetInputConnection(input);
 }
 
