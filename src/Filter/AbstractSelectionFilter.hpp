@@ -3,7 +3,9 @@
 
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
-#include <vtkPointSetAlgorithm.h>
+#include <vtkDataObjectAlgorithm.h>
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
 
 #include <qstring.h>
 #include <qlist.h>
@@ -13,10 +15,11 @@
 /**
  * Abstract super class for filters that work on a Kronos point data set and extract some of those points.
  */
-class AbstractSelectionFilter : public vtkPointSetAlgorithm {
+class AbstractSelectionFilter : public vtkDataObjectAlgorithm {
 public:
-    vtkTypeMacro(AbstractSelectionFilter, vtkPointSetAlgorithm)
-	static AbstractSelectionFilter *New();
+    AbstractSelectionFilter();
+    ~AbstractSelectionFilter();
+    
 	void PrintSelf(ostream &os, vtkIndent indent) override;
 
 	int RequestData(vtkInformation *info,
@@ -34,6 +37,9 @@ public:
      */
     virtual QList<Data::Type> getCompatibleDataTypes() = 0;
     
+    // TODO
+    // virtual bool evaluatePoint( ... ) = 0;
+    
 protected:
     /**
      * Display an error message and remember that this filter does not hold valid data.
@@ -42,9 +48,6 @@ protected:
     void fail(QString message);
 
 private:
-	AbstractSelectionFilter();
-	~AbstractSelectionFilter();
-
 	AbstractSelectionFilter(const AbstractSelectionFilter &); // Not implemented.
     void operator=(const AbstractSelectionFilter &); // Not implemented.
 

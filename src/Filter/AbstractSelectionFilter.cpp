@@ -1,5 +1,11 @@
 #include <Filter/AbstractSelectionFilter.hpp>
 
+#include <vtkPointSet.h>
+#include <vtkDataObject.h>
+#include <vtkAlgorithm.h>
+
+#include <iostream>
+
 AbstractSelectionFilter::AbstractSelectionFilter() : error(false) { }
 
 AbstractSelectionFilter::~AbstractSelectionFilter() { }
@@ -9,8 +15,6 @@ void AbstractSelectionFilter::fail(QString message) {
 	this->error = true;
 }
 
-vtkStandardNewMacro(AbstractSelectionFilter);
-
 int AbstractSelectionFilter::RequestData(vtkInformation* info,
         vtkInformationVector** inputVector,
         vtkInformationVector* outputVector) {
@@ -18,6 +22,7 @@ int AbstractSelectionFilter::RequestData(vtkInformation* info,
 		return 0;
 	}
     
+	std::cout << "request data called" << std::endl;
     // TODO: Loop through points and extract all valid ones
 
 	return 1;
@@ -28,7 +33,7 @@ int AbstractSelectionFilter::RequestInformation(vtkInformation* request,
         vtkInformationVector* outputVector) {
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	
-	// Create a human-readable string of all supported data types
+	// Create a human-readable string of all supported data types for potentially showing an error message
 	QString supportedTypes = "";
     int amountOfSupportedDataTypes = this->getCompatibleDataTypes().size();
     if (amountOfSupportedDataTypes == 1) {
@@ -46,7 +51,7 @@ int AbstractSelectionFilter::RequestInformation(vtkInformation* request,
 	// Check the meta information containing the data's type
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
 		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
-		if (this->getCompatibleDataTypes().contains(dataType)) {
+		if (!this->getCompatibleDataTypes().contains(dataType)) {
 			this->fail(
 			    QString("This filter only works with %1 data, but the input contains %2 data.").arg(supportedTypes,
 			        Data::getDataTypeName(dataType)));
@@ -67,16 +72,14 @@ void AbstractSelectionFilter::PrintSelf(ostream& os, vtkIndent indent) {
 }
 
 int AbstractSelectionFilter::FillOutputPortInformation(int port, vtkInformation* info) {
-    if (port == 0) {
-        info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPointSet");
-    }
+    info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
     
 	return 1;
 }
 
 int AbstractSelectionFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	if (port == 0) {
-		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
+		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
 		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
 	}
 
