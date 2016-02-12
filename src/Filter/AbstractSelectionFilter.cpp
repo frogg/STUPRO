@@ -3,8 +3,7 @@
 #include <vtkPolyData.h>
 #include <vtkDataObject.h>
 #include <vtkAlgorithm.h>
-
-#include <iostream>
+#include <vtkCellArray.h>
 
 AbstractSelectionFilter::AbstractSelectionFilter() : error(false) { }
 
@@ -22,18 +21,71 @@ int AbstractSelectionFilter::RequestData(vtkInformation* info,
 		return 0;
 	}
 	
+	// Get input and output data from the information vectors
 	vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
 	vtkPolyData* inputData = vtkPolyData::SafeDownCast(inputInformation->Get(vtkDataObject::DATA_OBJECT()));
 	
 	vtkInformation* outputInformation = outputVector->GetInformationObject(0);
 	vtkPolyData* output = vtkPolyData::SafeDownCast(outputInformation->Get(vtkDataObject::DATA_OBJECT()));
 	
+	// Create a list of the indices of all points that should be kept by evaluating each one
+	QList<int> selectedPoints;
+	
 	for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
 		double coordinates[3];
 		inputData->GetPoint(i, coordinates);
 		if (this->evaluatePoint(i, Coordinate(coordinates[0], coordinates[1]), inputData->GetPointData())) {
-			// TODO
+			selectedPoints.append(i);
 		}
+	}
+	
+	// Create the content of the output poly data object
+	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
+	vertices->Allocate(vertices->EstimateSize(1, selectedPoints.size()));
+	vertices->InsertNextCell(selectedPoints.size());
+	
+	// Create all arrays from the input data
+	QList<vtkSmartPointer<vtkAbstractArray>> inputArrays;
+	QList<vtkSmartPointer<vtkAbstractArray>> outputArrays;
+	
+	for (int i = 0; i < inputData->GetPointData()->GetNumberOfArrays(); i++) {
+		vtkSmartPointer<vtkAbstractArray> inputArray = inputData->GetPointData()->GetArray(i);
+		vtkSmartPointer<vtkAbstractArray> outputArray = vtkAbstractArray::CreateArray(inputArray->GetDataType());
+		
+		outputArray->SetNumberOfComponents(inputArray->GetNumberOfComponents());
+		outputArray->SetNumberOfTuples(selectedPoints.size());
+		outputArray->SetName(inputArray->GetName());
+		
+		inputArrays.append(inputArray);
+		outputArrays.append(outputArray);
+	}
+	
+	// Fill the output poly data object with the coordinates of all selected points
+	QList<int>::iterator i;
+	int tupleNumber = 0;
+	for (i = selectedPoints.begin(); i != selectedPoints.end(); ++i) {
+		double coordinates[3];
+		inputData->GetPoint(*i, coordinates);
+		
+		vertices->InsertCellPoint(points->InsertNextPoint(coordinates[0], coordinates[1], 0));
+		
+		// Copy over all scalars
+		for (int j = 0; j < inputArrays.size(); j++) {
+			outputArrays.at(j)->SetTuple(tupleNumber, *i, inputArrays.at(j));
+		}
+		
+		tupleNumber++;
+	}
+	
+	// Assign the created point set to the output object
+	output->SetPoints(points);
+	output->SetVerts(vertices);
+	
+	// Add the output arrays to the data set
+	QList<vtkSmartPointer<vtkAbstractArray>>::iterator j;
+	for (j = outputArrays.begin(); j != outputArrays.end(); ++j) {
+		output->GetPointData()->AddArray(*j);
 	}
 
 	return 1;
