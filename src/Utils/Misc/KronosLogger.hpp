@@ -2,6 +2,7 @@
 #define KRONOS_UTILS_KRONOS_LOGGER_HPP
 
 #include <iostream>
+#include <QString>
 
 // #define KRONOS_LOG_FILE_NAMES
 #define KRONOS_ENABLE_LOGGING
@@ -50,6 +51,12 @@ inline void kronos_log(const char* debugLevel, const char* function, const char*
 #endif
 	          << ": " << formatted
 	          << COLOR_DEFAULT << std::endl;
+};
+
+template<typename... Args>
+inline void kronos_log(const char* debugLevel, const char* function, const char* file, int line,
+                       const QString message, Args... args) {
+	kronos_log(debugLevel, function, file, line, message.toStdString().c_str(), args...);
 };
 
 #ifdef KRONOS_ENABLE_LOGGING
