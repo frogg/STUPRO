@@ -14,17 +14,18 @@
 #include <vtkCleanUnstructuredGrid.h>
 #include <vtkPointLocator.h>
 #include <vtkTransformFilter.h>
+#include <vtkSmartPointer.h>
 
-class TwitterHeatmapFilter : public vtkTransformFilter {
+class TwitterHeatmapFilter : public vtkCleanUnstructuredGrid {
 
 public:
-    vtkTypeMacro(TwitterHeatmapFilter, vtkTransformFilter)
+    vtkTypeMacro(TwitterHeatmapFilter, vtkCleanUnstructuredGrid)
     static TwitterHeatmapFilter *New();
     void PrintSelf(ostream &os, vtkIndent indent) override;
     
     
 protected:
-    vtkPointLocator *Locator;
+    vtkSmartPointer<vtkPointLocator> Locator;
     
     int RequestData(vtkInformation *info,
                     vtkInformationVector **inputVector,

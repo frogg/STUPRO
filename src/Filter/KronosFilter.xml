@@ -75,12 +75,40 @@
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
         </SourceProxy>
+        
+        
+        <SourceProxy name="TwitterHeatmapFilter" class="TwitterHeatmapFilter" label="Twitter Heatmap Filter">
+            <Documentation
+                long_help="This filter can interpolate group points and return the data."
+                short_help="This filter can interpolate group points and return the data">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkPointSet"/>
+                    <DataType value="vtkImageData"/>
+                </DataTypeDomain>
+            </InputProperty>
+	    <Hints>
+		<ShowInMenu category="Kronos" />
+	    </Hints>
+        </SourceProxy>
+        
+        
+        
         </ProxyGroup>
     
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
             <Filter name="PrecipitationTypeFilter" />
+            <Filter name="TwitterHeatmapFilter" />
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>
