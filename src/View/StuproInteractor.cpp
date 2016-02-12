@@ -98,7 +98,7 @@ void StuproInteractor::OnMiddleButtonDown() {
 		return;
 	}
 
-	if (myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayMap) {
+	if (myVtkPVStuproView->getDisplayMode() == Globe::DisplayMap) {
 		this->GrabFocus(this->EventCallbackCommand);
 		this->StartPan();
 	}
@@ -142,7 +142,7 @@ Vector2d StuproInteractor::calculateRotationParameters() {
 	                            *distanceFactor);
 
 	//Set the horizontal rotation only if in DisplayGlobe.
-	if (myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayGlobe) {
+	if (myVtkPVStuproView->getDisplayMode() == Globe::DisplayGlobe) {
 		rotationParameters.x = -(this->Interactor->GetEventPosition()[0] -
 		                         this->Interactor->GetLastEventPosition()[0]) * distanceFactor;
 	}

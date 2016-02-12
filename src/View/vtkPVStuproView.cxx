@@ -19,14 +19,13 @@ void vtkPVStuproView::Initialize(unsigned int id)
 
 	initParameters();
 	initRenderer();
-	registerTimerCallback();
 	initGlobe();
 }
 
 void vtkPVStuproView::initParameters()
 {
 	// Initialize parameters.
-	this->displayMode = DisplayGlobe;
+	this->displayMode = Globe::DisplayGlobe;
 }
 
 void vtkPVStuproView::initRenderer()
@@ -44,48 +43,6 @@ void vtkPVStuproView::initRenderer()
 	
 	this->GetRenderer()->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::InteractionEvent,
 		this->cameraModifiedCallback);
-}
-
-void vtkPVStuproView::registerTimerCallback()
-{
-    // Create callback function that updates the display mode interpolation value.
-    auto timerFunc = [](vtkObject* caller, unsigned long eventId, void* clientData, void* callData)
-    {
-        // Capture the client using the void* of the arguments-list.
-        vtkPVStuproView& client = *static_cast<vtkPVStuproView*>(clientData);
-
-        // Determine target interpolation based on display mode.
-        // If the current mode is the globe, try and switch to the map and vice versa.
-        float interpolationTarget = client.displayMode == DisplayGlobe ? static_cast<float>(DisplayMap) : static_cast<float>(DisplayMap);
-
-        // Check if change is significant enough to be re-rendered.
-        if(std::abs(interpolationTarget - client.displayModeInterpolation) > 0.000001f)
-        {
-            // Controls the speed of the globe-map transition.
-            float effectSpeed = Configuration::getInstance().getFloat("globe.transitionEffectSpeed");
-
-            // Smoothly transition interpolation value based on previous and target value.
-            client.globe->setDisplayModeInterpolation((interpolationTarget * effectSpeed +
-                                                       client.globe->getDisplayModeInterpolation()) / (effectSpeed + 1.f));
-
-            // Update renderer.
-            client.GetRenderWindow()->Render();
-        }
-    };
-
-    // Create and assign callback for the interpolation function.
-    vtkSmartPointer<vtkCallbackCommand> timerCallback = vtkSmartPointer<vtkCallbackCommand>::New();
-    timerCallback->SetCallback(timerFunc);
-    timerCallback->SetClientData(this);
-
-    // Workaround for a VTK bug involving a missing Xt App Context causing a segfault in
-    // CreateRepeatingTimer.
-    GetRenderWindow()->Render();
-
-    // Enable timer on the render window.
-    // TODO: Change this to a Qt-based timer system.
-    GetRenderWindow()->GetInteractor()->CreateRepeatingTimer(17);
-    GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::TimerEvent, timerCallback);
 }
 
 void vtkPVStuproView::initGlobe()
@@ -120,7 +77,7 @@ void vtkPVStuproView::moveCamera(float latitude, float longitude, float distance
 	// probably important for map view
 	Vector3d focus(0.0, 0.0, 0.0);
 
-	if (this->displayMode == DisplayGlobe) {
+	if (this->displayMode == Globe::DisplayGlobe) {
 		float lat = KRONOS_PI * latitude / 180;
 		float lon = KRONOS_PI * longitude / 180;
 		position.x = distance * cosf(lat) * sinf(lon);
@@ -154,14 +111,14 @@ float vtkPVStuproView::getCameraDistance()
 void vtkPVStuproView::switchCurrentDisplayMode()
 {
 	// Invert the display mode and set the interpolation using a static cast.
-	this->displayMode = this->displayMode == DisplayGlobe ? DisplayMap : DisplayGlobe;
-	this->globe->setDisplayModeInterpolation(static_cast<float>(this->displayMode));
+	this->displayMode = this->displayMode == Globe::DisplayGlobe ? Globe::DisplayMap : Globe::DisplayGlobe;
+	this->globe->setDisplayMode(this->displayMode);
 
 	// Render the view again.
-	GetRenderWindow()->Render();
+	// GetRenderWindow()->Render();
 }
 
-vtkPVStuproView::DisplayMode vtkPVStuproView::getDisplayMode() const
+Globe::DisplayMode vtkPVStuproView::getDisplayMode() const
 {
 	return this->displayMode;
 }

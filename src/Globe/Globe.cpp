@@ -9,6 +9,7 @@
 #include <qmap.h>
 #include <Utils/Config/Configuration.hpp>
 #include <Utils/Graphics/TextureLoad.hpp>
+#include <Utils/Math/Functions.hpp>
 #include <Utils/Math/Rect.hpp>
 #include <Utils/Math/Vector3.hpp>
 #include <Utils/Math/Vector4.hpp>
@@ -19,6 +20,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
+#include <pqApplicationCore.h>
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -33,37 +35,36 @@ Globe::Globe(vtkRenderer& renderer, GlobeConfig globeConfig) :
 myTilePool([this]() -> std::unique_ptr<GlobeTile> {
 	return makeUnique<GlobeTile>(*this);
 }),
-myTileLoadCallback([this](void * unused){
+myTimerCallback([this](void * unused){
 	loadGlobeTiles();
+	updateDisplayMode(false);
 }),
 myZoomLevel(3),
-myDisplayModeInterpolation(0) {
+myDisplayMode(DisplayGlobe),
+myDisplayModeInterpolation(0.f) {
 	// TODO: add config option for pool size.
 	myTilePool.setPoolSize(32);
 	
-	QObject::connect(&myTileLoadTimer, SIGNAL(timeout()), &myTileLoadCallback, SLOT(callbackSlot()));
-	
-	// TODO: add config option for texture load check interval.
-	myTileLoadTimer.start(50);
+	// Check if we have a ParaView application instance (and the Event Loop that comes with it).
+	if (pqApplicationCore::instance() != nullptr) {
+		
+		// Create timer.
+		myTimer = makeUnique<QTimer>();
+		
+		// Set timer callback.
+		QObject::connect(myTimer.get(), SIGNAL(timeout()), &myTimerCallback, SLOT(callbackSlot()));
 
-	setGlobeConfig(globeConfig);
-
-	myPlaneSource = vtkPlaneSource::New();
-
-	float planeSize = getGlobeConfig().internalPlaneSize;
-
-	myPlaneSource->SetOrigin(planeSize / 2.f, -planeSize / 2.f, 0.f);
-	myPlaneSource->SetPoint1(-planeSize / 2.f, -planeSize / 2.f, 0.f);
-	myPlaneSource->SetPoint2(planeSize / 2.f, planeSize / 2.f, 0.f);
-
-	myPlaneMapper = vtkPolyDataMapper::New();
-	myPlaneMapper->SetInputConnection(myPlaneSource->GetOutputPort());
+		// TODO: add config option for texture load check interval.
+		myTimer->start(17);
+	}
 
 	myLoadingTexture = loadTextureFromFile("./res/tiles/TileLoading.png");
-
-	setResolution(Vector2u(64, 64));
-
+	
+	setGlobeConfig(globeConfig);
+	generateLODTable();
 	createTileHandles();
+	
+	onCameraChanged();
 }
 
 Globe::~Globe() {
@@ -72,18 +73,18 @@ Globe::~Globe() {
 	eraseTileHandles();
 }
 
-void Globe::setResolution(Vector2u resolution) {
-	myPlaneSource->SetResolution(resolution.x, resolution.y);
-}
+vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper(float heightDifference) const {
 
-Vector2u Globe::getResolution() const {
-	Vector2i ret;
-	myPlaneSource->GetResolution(ret.x, ret.y);
-	return Vector2u(ret);
-}
-
-vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper() const {
-	return myPlaneMapper;
+	assert(!myLODTable.empty());
+	
+	// Iterate over LOD table.
+	for (auto it = myLODTable.begin(); it != myLODTable.end(); ++it) {
+		if (heightDifference < it->heightRange) {
+			return it->planeMapper;
+		}
+	}
+	
+	return myLODTable.back().planeMapper;
 }
 
 vtkRenderWindow& Globe::getRenderWindow() const {
@@ -175,7 +176,7 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 	static const RectF screenRect(-1.f, -1.f, 2.f, 2.f);
 
 	// TODO: Implement culling for flat map!
-	if (getDisplayModeInterpolation() > 0.5f) {
+	if (getDisplayMode() == DisplayMap) {
 		return true;
 	}
 
@@ -266,17 +267,19 @@ void Globe::showTile(int lon, int lat) {
 		// Get reference to underlying globe tile.
 		GlobeTile& tile = handle.getResource();
 
-		// Make the tile visible.
-		tile.setVisibile(true);
-
 		// Move the tile to its new position.
 		tile.setLocation(GlobeTile::Location(myZoomLevel, lon, lat));
+
+		// Give the tile a temporary loading texture (and temporary height settings).
+		tile.setTexture(myLoadingTexture);
+		tile.setLowerHeight(0.f);
+		tile.setUpperHeight(1.f);
 
 		// Update the tile's shader uniforms.
 		tile.updateUniforms();
 
-		// Give the tile a temporary loading texture.
-		tile.setTexture(myLoadingTexture);
+		// Make the tile visible.
+		tile.setVisibile(true);
 
 		// Start loading process.
 		myDownloader.fetchTile(myZoomLevel, lon, lat);
@@ -332,14 +335,20 @@ void Globe::eraseTileHandles() {
 }
 
 void Globe::loadGlobeTiles() {
-	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
 
-	while (!myDownloadedTiles.empty()) {
+	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
+	
+	if (!myDownloadedTiles.empty()) {
 		
-		ImageTile tile = std::move(myDownloadedTiles.front());
-		myDownloadedTiles.pop();
+		while (!myDownloadedTiles.empty()) {
 		
-		loadGlobeTile(tile);
+			ImageTile tile = std::move(myDownloadedTiles.front());
+			myDownloadedTiles.pop();
+			
+			loadGlobeTile(tile);
+		}
+		
+		getRenderWindow().Render();
 	}
 }
 
@@ -392,14 +401,42 @@ void Globe::loadGlobeTile(const ImageTile & tile) {
 	
 }
 
-void Globe::setDisplayModeInterpolation(float displayMode) {
-	myDisplayModeInterpolation = displayMode;
+void Globe::updateDisplayMode(bool instant) {
+	
+	float target = (float)myDisplayMode;
+	float animSpeed = Configuration::getInstance().getFloat("globe.transitionEffectSpeed");
+	
+	if (instant) {
+		myDisplayModeInterpolation = target;		
+	} else if (std::abs(myDisplayModeInterpolation - target) > 0.00001f) {
+		myDisplayModeInterpolation = (myDisplayModeInterpolation + target * animSpeed) / (1.f + animSpeed);
+	} else {
+		// No significant change: no need to update uniforms.
+		return;
+	}
 
 	for (const auto& tile : myTileHandles) {
 		if (tile.isActive()) {
 			tile.getResource().updateUniforms();
 		}
 	}
+	
+	getRenderWindow().Render();
+}
+
+void Globe::setDisplayMode(DisplayMode displayMode) {
+	myDisplayMode = displayMode;
+	
+	updateTileVisibility();
+	
+	// If the timer is disabled, update display mode instantly.
+	if (myTimer == nullptr) {
+		updateDisplayMode(true);
+	}
+}
+
+Globe::DisplayMode Globe::getDisplayMode() const {
+	return myDisplayMode;
 }
 
 float Globe::getDisplayModeInterpolation() const {
@@ -420,6 +457,38 @@ const GlobeConfig& Globe::getGlobeConfig() const {
 	return myGlobeConfig;
 }
 
+void Globe::generateLODTable() {
+	myLODTable.clear();
+	
+	unsigned int minLOD = Configuration::getInstance().getInteger("globe.lod.minimumResolution");
+	unsigned int maxLOD = Configuration::getInstance().getInteger("globe.lod.maximumResolution");
+	
+	float minDiff = Configuration::getInstance().getFloat("globe.lod.minimumHeightDifference");
+	float maxDiff = Configuration::getInstance().getFloat("globe.lod.maximumHeightDifference");
+	
+	// Convert LODs to powers of 2.
+	minLOD = getNextPowerOf2(minLOD);
+	maxLOD = getNextPowerOf2(maxLOD);
+	
+	// Iterate over all levels of detail, skipping the highest one.
+	for (unsigned int lod = minLOD; lod < maxLOD; lod *= 2) {
+		
+		// Perform reverse linear interpolation over level of detail value to get normalized 
+		// interpolation factor. MaxLOD is divided by 2 as the last LOD is skipped for now, since it
+		// is used as a fallback for too high terrain ranges.
+		float normalizedLOD = float(lod - minLOD) / float(maxLOD / 2 - minLOD);
+		
+		// Calculate the resulting height difference threshold.
+		float heightDifference = interpolateLinear(minDiff, maxDiff, normalizedLOD);
+		
+		// Add entry to table.
+		myLODTable.push_back(LODSetting(heightDifference, lod));
+	}
+	
+	// Add maximum LOD entry to table.
+	myLODTable.push_back(LODSetting(maxDiff, maxLOD));
+}
+
 void Globe::onTileLoad(ImageTile tile) {
 	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
 
@@ -429,6 +498,11 @@ void Globe::onTileLoad(ImageTile tile) {
 void Globe::updateZoomLevel() {
 	// Get current camera for distance calculations.
 	vtkCamera* camera = getRenderer().GetActiveCamera();
+	
+	if (camera == nullptr) {
+		KRONOS_LOG_WARN("Camera was null while trying to update zoom level.");
+		return;
+	}
 
 	// Get the camera's eye position.
 	Vector3d cameraPosition;
@@ -475,6 +549,11 @@ void Globe::updateZoomLevel() {
 void Globe::updateTileVisibility() {
 	// Get current camera for transformation matrix.
 	vtkCamera* camera = getRenderer().GetActiveCamera();
+	
+	if (camera == nullptr) {
+		KRONOS_LOG_WARN("Camera was null while trying to update tile visibility.");
+		return;
+	}
 
 	// Create a matrix for the normal vector transformation.
 	vtkSmartPointer<vtkMatrix4x4> normalTransform = vtkMatrix4x4::New();
@@ -504,8 +583,24 @@ void Globe::updateTileVisibility() {
 			// Perform tile visibility check.
 			bool visible = isTileInViewFrustum(lon, lat, normalTransform, fullTransform);
 
-			// Change tile visibility.
+			// Change tile visibility. Check if visibility actually changed.
 			setTileVisibility(lon, lat, visible);
 		}
 	}
+}
+
+Globe::LODSetting::LODSetting(float heightRange, unsigned int lod) :
+	heightRange(heightRange), lod(lod) {
+	planeSource = vtkPlaneSource::New();
+
+	float planeSize = Configuration::getInstance().getFloat("globe.internalPlaneSize");
+
+	planeSource->SetOrigin(planeSize / 2.f, -planeSize / 2.f, 0.f);
+	planeSource->SetPoint1(-planeSize / 2.f, -planeSize / 2.f, 0.f);
+	planeSource->SetPoint2(planeSize / 2.f, planeSize / 2.f, 0.f);
+
+	planeSource->SetResolution(lod, lod);
+
+	planeMapper = vtkPolyDataMapper::New();
+	planeMapper->SetInputConnection(planeSource->GetOutputPort());
 }

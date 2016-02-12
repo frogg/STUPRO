@@ -16,14 +16,6 @@
 class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView
 {
 public:
-	/**
-	 * Enum giving us all available, different display modes for the
-	 * globe.
-	 */
-	enum DisplayMode
-	{
-		DisplayGlobe, DisplayMap
-	};
 	
 	/**
 	 * A static new-method needed for any vtk-related initialization
@@ -78,7 +70,7 @@ public:
 	 *
 	 * @return the current display mode
 	 */
-	DisplayMode getDisplayMode() const;
+	Globe::DisplayMode getDisplayMode() const;
 	
 	Globe * getGlobe() const;
 
@@ -89,7 +81,7 @@ protected:
 	 * instantiated by a vtkSmartPointer.
 	 */
 	vtkPVStuproView() :
-		displayMode(DisplayGlobe), displayModeInterpolation(0.f)
+		displayMode(Globe::DisplayGlobe)
 	{
 	};
 
@@ -133,9 +125,8 @@ private:
 	void initGlobe();
 
 
-	DisplayMode displayMode;
+	Globe::DisplayMode displayMode;
 	std::unique_ptr<Globe> globe;
-	float displayModeInterpolation;
 	vtkSmartPointer<vtkCallbackCommand> clipCallback;
 	vtkSmartPointer<vtkCallbackCommand> activeCameraCallback;
 	vtkSmartPointer<vtkCallbackCommand> cameraModifiedCallback;

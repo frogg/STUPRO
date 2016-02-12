@@ -173,6 +173,11 @@ private:
 	 * Initializes the globe tile's shaders.
 	 */
 	void initShaders();
+	
+	/**
+	 * Updates the globe tile's LOD-based mapper.
+	 */
+	void updateMapper();
 
 	const Globe& myGlobe;
 

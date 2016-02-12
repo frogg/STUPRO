@@ -61,11 +61,10 @@ GlobeTile::GlobeTile(const Globe& globe) :
 	// Create and initialize actor.
 	myActor = vtkActor::New();
 
-	myActor->SetMapper(myGlobe.getPlaneMapper());
-
 	myGlobe.getRenderer().AddActor(myActor);
 
 	initShaders();
+	updateMapper();
 }
 
 GlobeTile::~GlobeTile() {
@@ -94,6 +93,8 @@ vtkSmartPointer<vtkTexture> GlobeTile::getTexture() const {
 
 void GlobeTile::setLowerHeight(float lower) {
 	myLowerHeight = lower;
+	
+	updateMapper();
 }
 
 float GlobeTile::getLowerHeight() const {
@@ -102,6 +103,8 @@ float GlobeTile::getLowerHeight() const {
 
 void GlobeTile::setUpperHeight(float upper) {
 	myUpperHeight = upper;
+
+	updateMapper();
 }
 
 float GlobeTile::getUpperHeight() const {
@@ -189,4 +192,9 @@ void GlobeTile::setVisibile(bool visible) {
 
 bool GlobeTile::isVisible() const {
 	return myIsVisible;
+}
+
+void GlobeTile::updateMapper()
+{
+	myActor->SetMapper(myGlobe.getPlaneMapper(myUpperHeight - myLowerHeight));
 }

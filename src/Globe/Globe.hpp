@@ -50,21 +50,13 @@ public:
 	const GlobeConfig& getGlobeConfig() const;
 
 	/**
-	 * Changes the globe's vertex/heightmap resolution per tile.
-	 *
-	 * @param resolution The globe's resolution in grid units.
+	 * Returns the plane mapper with an appropriate level of detail for the terrain height range in
+	 * a tile.
+	 * 
+	 * @param heightDifference The difference between the minimum and maximum height in a tile.
+	 * @return the mapper responsible for rendering the tiles at the specified level of detail.
 	 */
-	void setResolution(Vector2u resolution);
-
-	/**
-	 * @return the globe's vertex/heightmap resolution per tile.
-	 */
-	Vector2u getResolution() const;
-
-	/**
-	 * @return the plane mapper responsible for rendering the tiles.
-	 */
-	vtkSmartPointer<vtkPolyDataMapper> getPlaneMapper() const;
+	vtkSmartPointer<vtkPolyDataMapper> getPlaneMapper(float heightDifference) const;
 
 	/**
 	 * @return the render window associated with this globe
@@ -93,18 +85,31 @@ public:
 	 * @return the globe's vertical tile count in powers of two
 	 */
 	unsigned int getZoomLevel() const;
-
+	
 	/**
-	 * Changes the display mode interpolation between globe view and map view. A value of 0.0 means
-	 * globe, a value of 1.0 means map, and any values in-between result in a smooth animation
-	 * between the two display modes.
-	 *
-	 * @param displayMode The interpolation between globe and map
+	 * Enum holding the available display modes for the globe.
 	 */
-	void setDisplayModeInterpolation(float displayMode);
+	enum DisplayMode
+	{
+		DisplayGlobe = 0, DisplayMap = 1
+	};
 
 	/**
-	 * @return the current interpolation between globe and map.
+	 * Changes the globe's display mode. This changes the globe between a flat map view and a
+	 * spherical globe view.
+	 *
+	 * @param displayMode The display mode to use for the globe
+	 */
+	void setDisplayMode(DisplayMode displayMode);
+
+	/**
+	 * @return the globe's current display mode.
+	 */
+	DisplayMode getDisplayMode() const;
+	
+	/**
+	 * @return the current animation state of the globe's display mode between 0.0 (globe) and 1.0
+	 *         (map).
 	 */
 	float getDisplayModeInterpolation() const;
 
@@ -191,6 +196,14 @@ private:
 	 * Loads a globe tile from an ImageTile.
 	 */
 	void loadGlobeTile(const ImageTile & tile);
+	
+	/**
+	 * Updates the globe's display mode interpolation value for a smooth animation.
+	 * 
+	 * @param instant If this is true, the display mode will be immediately adjusted to its target
+	 *                value.
+	 */
+	void updateDisplayMode(bool instant);
 
 	/**
 	 * Checks which level of detail is required for globe tiles and reloads them with that LOD.
@@ -201,6 +214,11 @@ private:
 	 * Checks which globe tiles are invisible and need to be culled.
 	 */
 	void updateTileVisibility();
+	
+	/**
+	 * Generates the LOD table for height difference -> resolution mapping.
+	 */
+	void generateLODTable();
 
 	void onTileLoad(ImageTile tile);
 
@@ -208,23 +226,35 @@ private:
 
 	GlobeConfig myGlobeConfig;
 
-	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
-	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;
-
 	vtkSmartPointer<vtkOpenGLTexture> myLoadingTexture;
 
 	ImageDownloader myDownloader;
 	std::queue<ImageTile> myDownloadedTiles;
 	std::mutex myDownloadedTilesMutex;
 	
-	QTimer myTileLoadTimer;
-	SlotCallback myTileLoadCallback;
+	std::unique_ptr<QTimer> myTimer;
+	SlotCallback myTimerCallback;
 	
 	ResourcePool<GlobeTile> myTilePool;
 	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;	
 
+	/**
+	 * Map from minimum terrain height difference to plane source resolution.
+	 */
+	struct LODSetting {
+		LODSetting(float heightRange, unsigned int lod);
+		
+		float heightRange;
+		unsigned int lod;
+		vtkSmartPointer<vtkPlaneSource> planeSource;
+		vtkSmartPointer<vtkPolyDataMapper> planeMapper;
+	};
+	
+	std::vector<LODSetting> myLODTable;
+	
 	unsigned int myZoomLevel;
 
+	DisplayMode myDisplayMode;
 	float myDisplayModeInterpolation;
 
 	std::atomic_flag myIsClean;
