@@ -163,6 +163,16 @@ private:
 	 * Changes the visibility of the specified tile.
 	 */
 	void setTileVisibility(int lon, int lat, bool visibility);
+	
+	/**
+	 * Sets the visibility of a tile to true.
+	 */
+	void showTile(int lon, int lat);
+	
+	/**
+	 * Sets the visibility of a tile to false.
+	 */
+	void hideTile(int lon, int lat);
 
 	/**
 	 * Resizes the tile handle list to the current zoom level.

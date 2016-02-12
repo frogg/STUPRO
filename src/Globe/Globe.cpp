@@ -59,6 +59,9 @@ myDisplayModeInterpolation(0) {
 }
 
 Globe::~Globe() {
+	
+	// This is to abort all current tile downloads.
+	eraseTileHandles();
 }
 
 void Globe::setResolution(Vector2u resolution) {
@@ -234,52 +237,66 @@ void Globe::setTileVisibility(int lon, int lat, bool visibility) {
 	// Check if tile is already visible/active and is set to be disabled, or if the tile is set to
 	// be enabled from being inactive.
 	if (!visibility && handle.isActive()) {
+		showTile(lon, lat);
+	} else if (visibility && !handle.isActive()) {
+		hideTile(lon, lat);
+	}
+}
+
+void Globe::showTile(int lon, int lat) {
+	// Get handle to the globe tile.
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(lon, lat);
+	
+	// Check if the tile resource is already expired.
+	if (handle.isExpired()) {
+		// A new tile needs to be acquired from the resource pool.
+		handle = myTilePool.acquire();
+
+		// Reassign handle.
+		setTileHandleAt(lon, lat, handle);
+
 		// Get reference to underlying globe tile.
 		GlobeTile& tile = handle.getResource();
 
-		// Make tile invisible.
-		tile.setVisibile(false);
+		// Make the tile visible.
+		tile.setVisibile(true);
 
-		// Mark resource as inactive.
-		handle.setActive(false);
-	} else if (visibility && !handle.isActive()) {
-		// Check if the tile resource is already expired.
-		if (handle.isExpired()) {
-			// A new tile needs to be acquired from the resource pool.
-			handle = myTilePool.acquire();
+		// Move the tile to its new position.
+		tile.setLocation(GlobeTile::Location(myZoomLevel, lon, lat));
 
-			// Reassign handle.
-			setTileHandleAt(lon, lat, handle);
+		// Update the tile's shader uniforms.
+		tile.updateUniforms();
 
-			// Get reference to underlying globe tile.
-			GlobeTile& tile = handle.getResource();
+		// Give the tile a temporary loading texture.
+		tile.setTextureLoadState(GlobeTile::TEXTURE_LOADING);
+		tile.setTexture(myLoadingTexture);
 
-			// Make the tile visible.
-			tile.setVisibile(true);
+		// Start loading process.
+		myDownloader.fetchTile(myZoomLevel, lon, lat);
+	} else {
+		// Re-use existing tile resource by reactivating it.
+		handle.setActive(true);
 
-			// Move the tile to its new position.
-			tile.setLocation(GlobeTile::Location(myZoomLevel, lon, lat));
+		// Get reference to underlying globe tile.
+		GlobeTile& tile = handle.getResource();
 
-			// Update the tile's shader uniforms.
-			tile.updateUniforms();
-
-			// Give the tile a temporary loading texture.
-			tile.setTextureLoadState(GlobeTile::TEXTURE_LOADING);
-			tile.setTexture(myLoadingTexture);
-
-			// Start loading process.
-			myDownloader.fetchTile(myZoomLevel, lon, lat);
-		} else {
-			// Re-use existing tile resource by reactivating it.
-			handle.setActive(true);
-
-			// Get reference to underlying globe tile.
-			GlobeTile& tile = handle.getResource();
-
-			// Make tile visible.
-			tile.setVisibile(true);
-		}
+		// Make tile visible.
+		tile.setVisibile(true);
 	}
+}
+
+void Globe::hideTile(int lon, int lat) {
+	// Get handle to the globe tile.
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(lon, lat);
+	
+	// Get reference to underlying globe tile.
+	GlobeTile& tile = handle.getResource();
+
+	// Make tile invisible.
+	tile.setVisibile(false);
+
+	// Mark resource as inactive.
+	handle.setActive(false);
 }
 
 void Globe::createTileHandles() {
@@ -290,16 +307,13 @@ void Globe::createTileHandles() {
 }
 
 void Globe::eraseTileHandles() {
+	
+	// Cancel all pending downloads.
+	myDownloader.abortAllDownloads();
+	
 	for (auto& handle : myTileHandles) {
 		if (handle.isActive()) {
-			// Get reference to underlying globe tile.
-			GlobeTile& tile = handle.getResource();
-
-			// Make tile invisible.
-			tile.setVisibile(false);
-
-			// Mark resource as inactive.
-			handle.setActive(false);
+			hideTile(handle.getResource().getLocation().longitude, handle.getResource().getLocation().latitude);
 		}
 
 		// Clear handle.
