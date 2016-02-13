@@ -12,7 +12,7 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 
 /**
- * This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point.
+ * This filter can extract data from twitter point sets read by a Kronos reader depending on the twitter type of each point.
  */
 class TwitterFilter : public vtkExtractSelection {
 public:
