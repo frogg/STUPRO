@@ -70,8 +70,7 @@ int AbstractSelectionFilter::RequestData(vtkInformation* info,
 	for (i = selectedPoints.begin(); i != selectedPoints.end(); ++i) {
 		double coordinates[3];
 		inputData->GetPoint(*i, coordinates);
-                //if the height of the data points is considered, consider it here too (for adaptation on globe/map height field)
-		vertices->InsertCellPoint(points->InsertNextPoint(coordinates[0], coordinates[1], 0));
+		vertices->InsertCellPoint(points->InsertNextPoint(coordinates[0], coordinates[1], coordinates[2]));
 
 		// Copy over all scalars
 		for (int j = 0; j < inputArrays.size(); j++) {
