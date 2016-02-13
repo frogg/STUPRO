@@ -3,7 +3,7 @@
 #include <Reader/DataReader/Data.hpp>
 
 #include <vtkObjectFactory.h>
-#include <vtkTypeInt32Array.h>
+#include <vtkIntArray.h>
 
 PrecipitationTypeFilter::PrecipitationTypeFilter() {
 	// Display all precipitation types by default
@@ -22,7 +22,7 @@ QList<Data::Type> PrecipitationTypeFilter::getCompatibleDataTypes() {
 
 bool PrecipitationTypeFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
         vtkPointData* pointData) {
-	vtkSmartPointer<vtkTypeInt32Array> precipitationTypeArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(
 	            pointData->GetArray("precipitationTypes"));
 
 	// For the point that should be checked, get its data type from the VTK data array and look up
