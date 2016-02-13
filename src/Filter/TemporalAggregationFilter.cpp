@@ -1,19 +1,11 @@
 #include <Filter/TemporalAggregationFilter.h>
 
-#include "vtkCellData.h"
-#include "vtkCompositeDataIterator.h"
-#include "vtkDataSet.h"
-#include "vtkDoubleArray.h"
-#include "vtkFloatArray.h"
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
-#include "vtkObjectFactory.h"
-#include "vtkPointData.h"
-#include "vtkPointSet.h"
-#include "vtkSmartPointer.h"
-#include "vtkStreamingDemandDrivenPipeline.h"
-#include "vtkCompositeDataPipeline.h"
-#include "vtkMultiBlockDataSet.h"
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
+#include <vtkObjectFactory.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
 
 #include <algorithm>
 #include <vector>
@@ -22,7 +14,7 @@ vtkStandardNewMacro(TemporalAggregationFilter);
 
 const QList<Data::Type> TemporalAggregationFilter::SUPPORTED_DATA_TYPES = QList<Data::Type>() << Data::PRECIPITATION << Data::TEMPERATURE << Data::WIND << Data::CLOUD_COVERAGE;
 
-TemporalAggregationFilter::TemporalAggregationFilter() : currentTimeStep(0) {
+TemporalAggregationFilter::TemporalAggregationFilter() : currentTimeStep(0), error(false) {
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(1);
 }
@@ -42,7 +34,7 @@ void TemporalAggregationFilter::PrintSelf(ostream& os, vtkIndent indent) {
 
 int TemporalAggregationFilter::FillInputPortInformation(int port, vtkInformation* info) {
     if (port == 0) {
-		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
+		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
 		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
 	}
     
@@ -50,7 +42,7 @@ int TemporalAggregationFilter::FillInputPortInformation(int port, vtkInformation
 }
 
 int TemporalAggregationFilter::FillOutputPortInformation(int port, vtkInformation* info) {
-    info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPointSet");
+    info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
     return 1;
 }
 
@@ -59,7 +51,7 @@ int TemporalAggregationFilter::RequestInformation (
   vtkInformationVector **inputVector,
   vtkInformationVector *outputVector) {
     if (this->error) {
-      return 0;
+        return 0;
     }
 
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
@@ -104,14 +96,36 @@ int TemporalAggregationFilter::RequestData(
   vtkInformationVector **inputVector,
   vtkInformationVector *outputVector) {
     if (this->error) {
-      return 0;
+        return 0;
     }
     
     vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
-    // TODO: Step through the whole array and aggregate the data
+    vtkDataObject *input = vtkDataObject::GetData(inInfo);
+    vtkDataObject *output = vtkDataObject::GetData(outInfo);
+    
+    std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
 
+    if (this->currentTimeStep == 0) {
+        // TODO: First execution, initialize stuff
+    } else {
+        // TODO: Subsequent execution, accumulate new data
+    }
+
+    this->currentTimeStep++;
+
+    if (this->currentTimeStep < inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())) {
+        // There are still time steps left, continue on
+        request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
+    } else {
+        // Everything has been accumulated
+        // TODO: Finish up and output data
+        
+        request->Remove(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING());
+        this->currentTimeStep = 0;
+    }
+    
     return 1;
 }
 
@@ -122,6 +136,8 @@ int TemporalAggregationFilter::RequestUpdateExtent (
     if (this->error) {
         return 0;
     }
+    
+    // TODO: Update progress
     
     vtkInformation *inputInformation = inputVector[0]->GetInformationObject(0);
 

@@ -3,18 +3,18 @@
 
 #include <Reader/DataReader/Data.hpp>
 
-#include <vtkFiltersHybridModule.h>
-#include <vtkMultiTimeStepAlgorithm.h>
+#include <vtkFiltersGeneralModule.h>
+#include <vtkPassInputTypeAlgorithm.h>
 #include <vtkDataSet.h>
 
 #include <qstring.h>
 #include <qlist.h>
 
-class VTKFILTERSHYBRID_EXPORT TemporalAggregationFilter : public vtkMultiTimeStepAlgorithm {
+class VTKFILTERSGENERAL_EXPORT TemporalAggregationFilter : public vtkPassInputTypeAlgorithm {
 public:
     static TemporalAggregationFilter *New();
 
-    vtkTypeMacro(TemporalAggregationFilter, vtkMultiTimeStepAlgorithm);
+    vtkTypeMacro(TemporalAggregationFilter, vtkPassInputTypeAlgorithm);
     void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
