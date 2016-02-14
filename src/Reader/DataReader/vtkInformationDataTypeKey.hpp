@@ -10,7 +10,7 @@
  * propagated down the pipeline.
  * This class needs to have this name to work with VTK's information key macro.
  */
-class VTKCOMMONEXECUTIONMODEL_EXPORT vtkInformationDataTypeKey : public vtkInformationIntegerKey {
+class vtkInformationDataTypeKey : public vtkInformationIntegerKey {
 public:
 	vtkTypeMacro(vtkInformationDataTypeKey, vtkInformationIntegerKey);
 	void PrintSelf(ostream& os, vtkIndent indent);
