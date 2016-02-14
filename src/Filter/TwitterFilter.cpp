@@ -15,151 +15,35 @@
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
 
-TwitterFilter::TwitterFilter() : error(false) {
-    /*
-	// Initialize the selection
-	this->selection = vtkSmartPointer<vtkSelection>::New();
-	vtkSmartPointer<vtkSelectionNode> selectionNode = vtkSmartPointer<vtkSelectionNode>::New();
-	this->selection->AddNode(selectionNode);
-
-	// Make the only selection node filter points by value
-	selectionNode->Initialize();
-	selectionNode->GetProperties()->Set(vtkSelectionNode::CONTENT_TYPE(), vtkSelectionNode::VALUES);
-	selectionNode->GetProperties()->Set(vtkSelectionNode::FIELD_TYPE(), vtkSelectionNode::POINT);
-
-	// Create a list that will store all precipitation types that should be kept
-	vtkSmartPointer<vtkIntArray> precipitationTypes = vtkSmartPointer<vtkIntArray>::New();
-	precipitationTypes->SetName("precipitationTypes");
-	precipitationTypes->SetNumberOfComponents(1);
-	precipitationTypes->SetNumberOfTuples(5);
-
-	// Display all precipitation types by default
-	for (int i = PrecipitationDataPoint::NONE; i <= PrecipitationDataPoint::HAIL; i++) {
-		precipitationTypes->SetTuple1(i - 1, i);
-		this->precipitationTypeVisibilities.insert(static_cast<PrecipitationDataPoint::PrecipitationType>
-		        (i), true);
-	}
-
-	selectionNode->SetSelectionList(precipitationTypes);
-     */
+TwitterFilter::TwitterFilter() {
+    
 }
 
 TwitterFilter::~TwitterFilter() { }
-/*
-void TwitterFilter::displayPrecipitationType(PrecipitationDataPoint::PrecipitationType
-        type, bool display) {
-	if (this->error) {
-		return;
-	}
-
-	this->precipitationTypeVisibilities[type] = display;
-
-	// Create the updated selection list this filter uses
-	vtkSmartPointer<vtkIntArray> precipitationTypes = vtkSmartPointer<vtkIntArray>::New();
-	precipitationTypes->SetName("precipitationTypes");
-	precipitationTypes->SetNumberOfComponents(1);
-	precipitationTypes->SetNumberOfTuples(5);
-
-	// Refresh the selection list with the updated visibility values
-	for (int i = PrecipitationDataPoint::NONE; i <= PrecipitationDataPoint::HAIL; i++) {
-		if (this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
-		                                        (i)]) {
-			precipitationTypes->SetTuple1(i - 1, i);
-		}
-	}
-
-	this->selection->GetNode(0)->SetSelectionList(precipitationTypes);
-
- //wichtig, dass das neu angefragt wird
-	this->Modified();
-}
- */
-/*
-void TwitterFilter::enableUndefined(int enabled) {
-	this->displayPrecipitationType(PrecipitationDataPoint::NONE, enabled);
-}
- */
 
 
-void TwitterFilter::fail(QString message) {
-	vtkErrorMacro( << message.toStdString());
-	this->error = true;
-}
 
 vtkStandardNewMacro(TwitterFilter);
 
-int TwitterFilter::RequestData(vtkInformation* info,
-        vtkInformationVector** inputVector,
-        vtkInformationVector* outputVector) {
-	if (this->error) {
-		return 0;
-	}
-
-	// Get output information from the request vectors
-	vtkInformation* outInfo = outputVector->GetInformationObject(0);
-
-	// Get the actual objects from the obtained information
-	vtkDataObject* input = vtkDataObject::GetData(inputVector[0]);
-	vtkDataObject* output = vtkDataObject::GetData(outputVector);
-
-	// Check the input for compatibility
-	if (!input->IsA("vtkPointSet")) {
-		this->fail("The input should be a vtkPointSet.");
-		return 0;
-	}
-
-    //copys the data but not any of the pipeline connection
-    output -> ShallowCopy(input);
-    /*
-	// Actually perform the extraction
-	vtkSmartPointer<vtkDataObject> extractedOutput = this->RequestDataFromBlock(input,
-	        this->selection->GetNode(0), outInfo);
-	if (extractedOutput) {
-		output->ShallowCopy(extractedOutput);
-	}
-*/
-	return 1;
+QList<Data::Type> TwitterFilter::getCompatibleDataTypes() {
+    return (QList<Data::Type>() << Data::TWEETS);
 }
 
-int TwitterFilter::RequestInformation(vtkInformation* request,
-        vtkInformationVector** inputVector,
-        vtkInformationVector* outputVector) {
-	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-
-	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
-		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
-		if (dataType != Data::TWEETS) {
-			this->fail(
-			    QString("This filter only works with Twitter data, but the input contains %1 data.").arg(
-			        Data::getDataTypeName(dataType)));
-			return 0;
-		}
-	} else {
-		this->fail("This filter only works with data read by the Kronos reader.");
-		return 0;
-	}
-
-	return 1;
+bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
+                                            vtkPointData* pointData) {
+   /* vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(
+                                                                                    pointData->GetArray("precipitationTypes"));
+    
+    // For the point that should be checked, get its data type from the VTK data array and look up
+    // in the QMap `precipitationTypeVisibilities` whether points with this data type should be
+    // visible or not.
+    return this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
+                                               (precipitationTypeArray->GetTuple1(pointIndex))];
+    */
+    return true;
 }
 
-void TwitterFilter::PrintSelf(ostream& os, vtkIndent indent) {
-	this->Superclass::PrintSelf(os, indent);
-	os << indent << "Twitter data point extraction based on author name or hashtag, Kronos Project" <<
-	   endl;
+void TwitterFilter::SetInputConnection(vtkAlgorithmOutput* input) {
+    this->Superclass::SetInputConnection(input);
 }
 
-int TwitterFilter::FillOutputPortInformation(int port, vtkInformation* info) {
-	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPointSet");
-	return 1;
-}
-
-int TwitterFilter::FillInputPortInformation(int port, vtkInformation* info) {
-	if (port == 0) {
-		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
-		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
-	} else {
-		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
-	}
-
-	return 1;
-}

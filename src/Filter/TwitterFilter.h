@@ -1,12 +1,11 @@
 #ifndef KRONOS_TWITTER_TYPE_FILTER_HPP
 #define KRONOS_TWITTER_TYPE_FILTER_HPP
 
-#include <vtkExtractSelection.h>
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
 #include <iostream>
 
-
+#include <Filter/AbstractSelectionFilter.hpp>
 #include <QMap>
 
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
@@ -14,27 +13,20 @@
 /**
  * This filter can extract data from twitter point sets read by a Kronos reader depending on the twitter type of each point.
  */
-class TwitterFilter : public vtkExtractSelection {
+class TwitterFilter : public AbstractSelectionFilter {
 public:
-    vtkTypeMacro(TwitterFilter, vtkExtractSelection)
+    vtkTypeMacro(TwitterFilter, vtkDataObjectAlgorithm)
 	static TwitterFilter *New();
-	void PrintSelf(ostream &os, vtkIndent indent) override;
-
-	int RequestData(vtkInformation *info,
-					vtkInformationVector **inputVector,
-					vtkInformationVector *outputVector) override;
-    int RequestInformation(vtkInformation *request,
-                    vtkInformationVector **inputVector,
-                    vtkInformationVector *outputVector) override;
-	int FillOutputPortInformation(int port, vtkInformation *info) override;
-	int FillInputPortInformation(int port, vtkInformation *info) override;
     
+    void SetInputConnection(vtkAlgorithmOutput *input);
+
     /**
       * Callback method for setting the name of the author(s) of the visible tweets.
       * @param authorName
      */
     void setAuthorName(const char* authorName){
         std::cout << "test12345566" << authorName;
+        this->Modified();
     }
 
 
@@ -49,38 +41,15 @@ private:
 	TwitterFilter(const TwitterFilter &); // Not implemented.
     void operator=(const TwitterFilter &); // Not implemented.
     
-    /**
-     * Display an error message and remember that this filter does not hold valid data.
-     * @param message The error message to be shown to the user
-     */
-    void fail(QString message);
-
-    /**
-     * Boolean flag denoting whether there was an error.
-     */
-    bool error;
-    
-    
-    
-    
-    
-    /**
-     * Internal method that handles VTK-related mechanics to set a specific precipitation type's visibility.
-     * @param type The precipitation type whose visibility should be changed
-     * @param display True if the precipitation type should be displayed, false otherwise
-     */
-    void displayPrecipitationType(PrecipitationDataPoint::PrecipitationType type, bool display);
-	
-    /**
-     * The `vtkSelection` that is being used internally to prune the data set.
-     */
-	vtkSmartPointer<vtkSelection> selection;
+    QList<Data::Type> getCompatibleDataTypes();
+    bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
 	
     /**
      * An internal data structure that maps each precipitation type to a boolean value that denotes its visibility.
      * This will be updated on callbacks and used to build necessary VTK structures.
      */
-	QMap<PrecipitationDataPoint::PrecipitationType, bool> precipitationTypeVisibilities;
+	//QMap<PrecipitationDataPoint::PrecipitationType, bool> precipitationTypeVisibilities;
+    //need a QList with authors, whose tweets should be printed
 };
 
 #endif
