@@ -61,10 +61,6 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 		                     destinationPoints->GetTuple(flight)[1],
 		                     0);
 
-		vtkWarningMacro( << "Next Point:"
-		                 << QString("  (%1|%2|%3)").arg(start.x).arg(start.y).arg(start.z).toStdString()
-		                 << QString("  (%1|%2|%3)").arg(destination.x).arg(destination.y).arg(destination.z).toStdString());
-
 		numberOfPointsPerFlight[flight] = calculateFlightPoints(start, destination, points);
 	}
 	output->SetPoints(points);

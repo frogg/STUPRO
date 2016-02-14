@@ -85,7 +85,7 @@ template<typename T> T abs(const Vector3<T>& gps) {
  * @return the scaled position
  */
 template<typename T> Vector3<T> scaleTo(const Vector3<T>& gps, const T targetLength) {
-    return Vector3<T>(gps.x, gps.y, targetLength - getGlobeRadius());
+    return Vector3<T>(gps.x, gps.y, targetLength);
 }
 
 /**
