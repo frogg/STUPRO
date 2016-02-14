@@ -4,6 +4,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 project(kronos)
 
 set(KRONOS_QT_VERSION "4" CACHE STRING "Qt Version to use when building Kronos")
+# set Paraview's Qt version to the same used for Kronos
+set(PARAVIEW_QT_VERSION ${KRONOS_QT_VERSION})
 
 set(KRONOS_BIN_DIR ${CMAKE_BINARY_DIR}/src CACHE PATH "Output path of Kronos binaries")
 set(TEST_BIN_DIR ${CMAKE_BINARY_DIR}/test CACHE PATH "Output path of Unit Test binaries")

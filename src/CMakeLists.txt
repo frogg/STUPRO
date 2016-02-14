@@ -35,8 +35,9 @@ if("${KRONOS_QT_VERSION}" STREQUAL "5")
     find_package(Qt5Gui REQUIRED)
     find_package(Qt5Network REQUIRED)
     find_package(Qt5Widgets REQUIRED)
+	find_package(Qt5Sql REQUIRED)
 else()
-	find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
+	find_package(Qt4 REQUIRED QtCore QtGui QtNetwork QtSql)
 	include(${QT_USE_FILE})
 endif()
 
@@ -156,7 +157,7 @@ add_paraview_plugin(
 # link against Qt libraries
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
 	target_link_libraries(KronosPlugin PRIVATE
-		Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets
+		Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets Qt5::Sql
 	)
 else()
 	target_link_libraries(KronosPlugin PRIVATE ${QT_LIBRARIES})
