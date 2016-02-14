@@ -26,15 +26,16 @@
             <Documentation>
                 Representation to visualize Input from Kronos Reader.
             </Documentation>
-            <!--
-             Not working???
-             <IntVectorProperty name="SwitchDepthBuffer"
-             command="switchDepthBuffer"
-             number_of_elements="1"
-             default_values="1">
-             <BooleanDomain name="bool"/>
-             </IntVectorProperty> -->
-            <!-- Adds a new Representation to visualize Cityes, Twitter and Geodesics  -->
+             <PropertyGroup label="Miscellaneous">
+                 <IntVectorProperty name="SwitchDepthBuffer"
+                     command="switchDepthBuffer"
+                     number_of_elements="1"
+                     default_values="1">
+                     <BooleanDomain name="bool"
+                     panel_visibility="always"/>
+                 </IntVectorProperty>
+             </PropertyGroup>
+
         </RepresentationProxy>
         
         <Extension name="GeometryRepresentation">

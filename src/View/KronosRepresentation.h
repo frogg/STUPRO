@@ -1,6 +1,6 @@
 #ifndef __KronosRepresentation_h
 #define __KronosRepresentation_h
-
+#include <Reader/DataReader/Data.hpp>
 #include "vtkGeometryRepresentationWithFaces.h"
 #include "vtkPVClientServerCoreRenderingModule.h" //needed for exports
 #include "vtkInformation.h"
@@ -54,8 +54,14 @@ protected:
      * Called on close, removes actors of this representation from the view
      */
     virtual bool RemoveFromView(vtkView* view) override;
-
-
+    /**
+     *  Reprentation for the Cities Data
+     */
+    void CitiesRepresentation(vtkPolyData *input);
+    /**
+     *  Reprentation for the Tweet Data
+     */
+    void TweetRepresentation(vtkPolyData *input);
 
 private:
     KronosRepresentation(const KronosRepresentation&); // Not implemented
@@ -79,6 +85,8 @@ private:
     bool useDepthBuffer;
     //Boolean flag denoting whether there was an error.
     bool error;
+    //Holds the current DataType
+    Data::Type currentDataType;
 };
 
 #endif
