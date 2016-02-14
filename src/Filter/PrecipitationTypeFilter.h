@@ -1,31 +1,23 @@
 #ifndef KRONOS_PRECIPITATION_TYPE_FILTER_HPP
 #define KRONOS_PRECIPITATION_TYPE_FILTER_HPP
 
-#include <vtkExtractSelection.h>
-#include <vtkPoints.h>
-#include <vtkSmartPointer.h>
+#include <qmap.h>
+#include <qlist.h>
 
-#include <QMap>
-
+#include <Filter/AbstractSelectionFilter.hpp>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
+
+#include <vtkAlgorithmOutput.h>
 
 /**
  * This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point.
  */
-class PrecipitationTypeFilter : public vtkExtractSelection {
+class PrecipitationTypeFilter : public AbstractSelectionFilter {
 public:
-    vtkTypeMacro(PrecipitationTypeFilter, vtkExtractSelection)
+    vtkTypeMacro(PrecipitationTypeFilter, vtkDataObjectAlgorithm);
 	static PrecipitationTypeFilter *New();
-	void PrintSelf(ostream &os, vtkIndent indent) override;
-
-	int RequestData(vtkInformation *info,
-					vtkInformationVector **inputVector,
-					vtkInformationVector *outputVector) override;
-    int RequestInformation(vtkInformation *request,
-                    vtkInformationVector **inputVector,
-                    vtkInformationVector *outputVector) override;
-	int FillOutputPortInformation(int port, vtkInformation *info) override;
-	int FillInputPortInformation(int port, vtkInformation *info) override;
+    
+    void SetInputConnection(vtkAlgorithmOutput *input);
 	
     /**
      * Callback method for setting the visibility of precipitation of undefined type.
@@ -67,16 +59,8 @@ private:
 	PrecipitationTypeFilter(const PrecipitationTypeFilter &); // Not implemented.
     void operator=(const PrecipitationTypeFilter &); // Not implemented.
     
-    /**
-     * Display an error message and remember that this filter does not hold valid data.
-     * @param message The error message to be shown to the user
-     */
-    void fail(QString message);
-
-    /**
-     * Boolean flag denoting whether there was an error.
-     */
-    bool error;
+    QList<Data::Type> getCompatibleDataTypes();
+    bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
     
     /**
      * Internal method that handles VTK-related mechanics to set a specific precipitation type's visibility.
@@ -84,11 +68,6 @@ private:
      * @param display True if the precipitation type should be displayed, false otherwise
      */
     void displayPrecipitationType(PrecipitationDataPoint::PrecipitationType type, bool display);
-	
-    /**
-     * The `vtkSelection` that is being used internally to prune the data set.
-     */
-	vtkSmartPointer<vtkSelection> selection;
 	
     /**
      * An internal data structure that maps each precipitation type to a boolean value that denotes its visibility.

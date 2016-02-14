@@ -36,11 +36,21 @@ void ImageTileFetcher::run() {
 			break;
 		}
 
+		bool fetchedFromCache = false;
 		if (cache.isImageCached(layer, this->zoomLevel, this->tileX, this->tileY)) {
 			// load the image from the cache
-			MetaImage image = cache.getCachedImage(layer, this->zoomLevel, this->tileX, this->tileY);
-			images.insert(std::pair<QString, MetaImage>(layer, image));
-		} else {
+			try {
+				MetaImage image = cache.getCachedImage(layer, this->zoomLevel, this->tileX, this->tileY);
+				images.insert(std::pair<QString, MetaImage>(layer, image));
+
+				fetchedFromCache = true;
+			} catch (ImageCorruptedException const& e) {
+				// if the image is corrupted, delete it
+				cache.deleteCachedImage(layer, this->zoomLevel, this->tileX, this->tileY);
+			}
+		}
+
+		if (!fetchedFromCache) {
 			// kick off an ImageDownloadWorker
 			QUrl imageUrl = this->buildTileDownloadUrl(layer);
 			int tileSize = this->availableLayers[layer].getTileSize();
