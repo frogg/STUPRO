@@ -137,7 +137,6 @@ add_paraview_plugin(
 	REQUIRED_ON_CLIENT
 
     SERVER_MANAGER_SOURCES
-	Filter/SciVisFilter.cpp
         ${CUSTOM_VIEW}
         ${CUSTOM_FILTER}
         ${CUSTOM_SOURCE}
