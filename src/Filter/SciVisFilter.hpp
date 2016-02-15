@@ -11,14 +11,20 @@ class SciVisFilter  : public vtkDataSetAlgorithm
 {
 	public:
 		static SciVisFilter *New();
-		void PrintSelf();
-		void SetInputConnection();
+		vtkTypeMacro(SciVisFilter,vtkDataSetAlgorithm);
+		void PrintSelf(ostream& os, vtkIndent indent);
 
+
+		void chooseDate();
 
 
 	protected:
+		SciVisFilter();
+		~SciVisFilter();
 
 	private:
+		SciVisFilter(const SciVisFilter&); //Not implemented
+		void operator=(const SciVisFilter&); //Not implemented
 
 };
 

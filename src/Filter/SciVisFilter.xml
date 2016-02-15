@@ -14,7 +14,7 @@
           <Group name="filters"/>
         </ProxyGroupDomain>
         <DataTypeDomain name="input_type">
-          <DataType value="vtkDataSet"/>
+          <DataType value="vtkPolyData"/>
         </DataTypeDomain>
       </InputProperty>
 
@@ -27,7 +27,7 @@
           <Group name="filters"/>
         </ProxyGroupDomain>
         <DataTypeDomain name="input_type">
-          <DataType value="vtkDataSet"/>
+          <DataType value="vtkPolyData"/>
         </DataTypeDomain>
       </InputProperty>
 
@@ -40,17 +40,17 @@
           <Group name="filters"/>
         </ProxyGroupDomain>
         <DataTypeDomain name="input_type">
-          <DataType value="vtkDataSet"/>
+          <DataType value="vtkPolyData"/>
         </DataTypeDomain>
       </InputProperty>
 
       <Hints>
-        <ShowInMenu category="Extensions"/>
+        <ShowInMenu category="Kronos"/>
 
       </Hints>
 
       <DoubleVectorProperty name="SciVis Slider"
-                            command="SetInputConnection"
+                            command="chooseDate"
                             number_of_elements="1"
                             default_values="0.1">
       <DoubleRangeDomain name="range" min="0.0" max="1.0" />
