@@ -29,7 +29,7 @@ bool PrecipitationTypeFilter::evaluatePoint(int pointIndex, Coordinate coordinat
 	// in the QMap `precipitationTypeVisibilities` whether points with this data type should be
 	// visible or not.
 	return this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
-	        (precipitationTypeArray->GetTuple1(pointIndex))];
+	        (static_cast<int>(precipitationTypeArray->GetTuple1(pointIndex)))];
 }
 
 void PrecipitationTypeFilter::SetInputConnection(vtkAlgorithmOutput* input) {
