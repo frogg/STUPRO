@@ -24,7 +24,10 @@ TemporalAggregationFilter::TemporalAggregationFilter() : error(false), currentTi
     this->SetNumberOfOutputPorts(1);
 }
 
-TemporalAggregationFilter::~TemporalAggregationFilter() { }
+TemporalAggregationFilter::~TemporalAggregationFilter() {
+    qDeleteAll(this->aggregatedData);
+    this->aggregatedData.clear();
+}
 
 void TemporalAggregationFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());
