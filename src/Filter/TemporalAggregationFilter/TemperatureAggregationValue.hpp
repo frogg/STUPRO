@@ -6,7 +6,7 @@
 /**
  * Holds a temperature data point's aggregated values.
  */
-class TemperatureAggregationValue : AggregationValue {
+class TemperatureAggregationValue : public AggregationValue {
 
 public:
 	/**

@@ -6,7 +6,7 @@
 /**
  * Holds a cloud coverage data point's aggregated values.
  */
-class CloudCoverageAggregationValue : AggregationValue {
+class CloudCoverageAggregationValue : public AggregationValue {
 
 public:
 	/**

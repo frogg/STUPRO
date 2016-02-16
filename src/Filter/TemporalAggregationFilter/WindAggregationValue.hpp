@@ -6,7 +6,7 @@
 /**
  * Holds a wind data point's aggregated values.
  */
-class WindAggregationValue : AggregationValue {
+class WindAggregationValue : public AggregationValue {
 
 public:
 	/**

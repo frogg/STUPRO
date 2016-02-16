@@ -6,7 +6,7 @@
 /**
  * Holds a precipitation data point's aggregated values.
  */
-class PrecipitationAggregationValue : AggregationValue {
+class PrecipitationAggregationValue : public AggregationValue {
 
 public:
 	/**
