@@ -53,12 +53,12 @@ int AbstractSelectionFilter::RequestData(vtkInformation* info,
 
 	for (int i = 0; i < inputData->GetPointData()->GetNumberOfArrays(); i++) {
 		vtkSmartPointer<vtkAbstractArray> inputArray = inputData->GetPointData()->GetAbstractArray(i);
-		
+
 		if (!inputArray) {
 			this->fail("An input array could not be read.");
 			return 0;
 		}
-		
+
 		vtkSmartPointer<vtkAbstractArray> outputArray = vtkAbstractArray::CreateArray(
 		            inputArray->GetDataType());
 
