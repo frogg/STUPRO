@@ -2,7 +2,10 @@
 #ifndef KRONOS_UTILS_MISC_EXCEPTIONS_HPP
 #define KRONOS_UTILS_MISC_EXCEPTIONS_HPP
 
+#include <QString>
 #include <Utils/Misc/Macros.hpp>
+#include <exception>
+#include <string>
 
 struct KronosException : public std::exception {
 	std::string reason;
