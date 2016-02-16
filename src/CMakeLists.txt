@@ -35,16 +35,11 @@ if("${KRONOS_QT_VERSION}" STREQUAL "5")
     find_package(Qt5Gui REQUIRED)
     find_package(Qt5Network REQUIRED)
     find_package(Qt5Widgets REQUIRED)
+	find_package(Qt5Sql REQUIRED)
 else()
-	find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
+	find_package(Qt4 REQUIRED QtCore QtGui QtNetwork QtSql)
 	include(${QT_USE_FILE})
 endif()
-
-# find and include PostgreSQL libraries
-find_library(PQXX_LIB NAMES pqxx libpqxx DOC "PostgreSQL libpqxx library")
-find_library(PQ_LIB NAMES pq libpq DOC "PostgreSQL libpq library")
-find_path(PQXX_HEADERS pqxx DOC "PostgreSQL header files")
-include_directories(${PQXX_HEADERS})
 
 # wrap classes inheriting from QObject
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
@@ -159,13 +154,10 @@ add_paraview_plugin(
 		${Kronos_Main_Interfaces_SRCS}
 )
 
-# link against PostgreSQL libraries
-target_link_libraries(KronosPlugin PRIVATE ${PQXX_LIB} ${PQ_LIB})
-
 # link against Qt libraries
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
 	target_link_libraries(KronosPlugin PRIVATE
-		Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets
+		Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets Qt5::Sql
 	)
 else()
 	target_link_libraries(KronosPlugin PRIVATE ${QT_LIBRARIES})

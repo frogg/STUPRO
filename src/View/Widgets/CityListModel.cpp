@@ -1,8 +1,6 @@
 #include <CityListModel.hpp>
 
-CityListModel::CityListModel(QObject* parent) {
-	this->cities = cities;
-}
+CityListModel::CityListModel(QObject* parent) { }
 
 int CityListModel::rowCount(const QModelIndex& parent) const {
 	return this->cities.size();
@@ -16,8 +14,8 @@ QVariant CityListModel::data(const QModelIndex& index, int role) const {
 	if (role == Qt::DisplayRole) {
 		City city = this->cities.at(index.row());
 		return QVariant(
-		           QString::fromUtf8(city.name.c_str())
-		           + " [" + QString::fromStdString(city.countryCode) + "] "
+		           city.name
+		           + " [" + city.countryCode + "] "
 		           + QString::number(city.latitude) + QString::fromUtf8("\u00b0 N ")
 		           + QString::number(city.longitude) + QString::fromUtf8("\u00b0 E")
 		       );
@@ -41,9 +39,13 @@ void CityListModel::endAdd() {
 }
 
 void CityListModel::add(City city) {
-	this->cities.push_back(city);
+	this->cities.append(city);
 }
 
-const std::vector<City> CityListModel::getAll() const {
+void CityListModel::add(QList<City> cities) {
+	this->cities.append(cities);
+}
+
+const QList<City> CityListModel::getAll() const {
 	return this->cities;
 }
