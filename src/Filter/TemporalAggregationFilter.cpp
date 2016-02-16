@@ -1,14 +1,16 @@
 #include <Filter/TemporalAggregationFilter.h>
 
+#include <Filter/TemporalAggregationFilter/PrecipitationAggregationValue.hpp>
+#include <Filter/TemporalAggregationFilter/TemperatureAggregationValue.hpp>
+#include <Filter/TemporalAggregationFilter/WindAggregationValue.hpp>
+#include <Filter/TemporalAggregationFilter/CloudCoverageAggregationValue.hpp>
+
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
-
-#include <algorithm>
-#include <vector>
 
 vtkStandardNewMacro(TemporalAggregationFilter);
 
@@ -102,15 +104,27 @@ int TemporalAggregationFilter::RequestData(
     vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
-    vtkDataObject *input = vtkDataObject::GetData(inInfo);
-    vtkDataObject *output = vtkDataObject::GetData(outInfo);
+    vtkPolyData *input = vtkPolyData::GetData(inInfo);
+    vtkPolyData *output = vtkPolyData::GetData(outInfo);
     
     std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
-
-    if (this->currentTimeStep == 0) {
-        // TODO: First execution, initialize stuff
-    } else {
-        // TODO: Subsequent execution, accumulate new data
+    
+    // Add the data from the current timestep to the accumulation
+    for (int i = 0; i < input->GetNumberOfPoints(); i++) {
+        double coordinates[3];
+        input->GetPoint(i, coordinates);
+        PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
+        
+        switch (this->dataType) {
+            case Data::PRECIPITATION:
+                break;
+            case Data::TEMPERATURE:
+                break;
+            case Data::WIND:
+                break;
+            case Data::CLOUD_COVERAGE:
+                break;
+        }
     }
 
     this->currentTimeStep++;
