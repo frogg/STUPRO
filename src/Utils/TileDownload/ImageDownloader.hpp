@@ -10,7 +10,7 @@
 #include <Utils/TileDownload/ImageLayerDescription.hpp>
 #include <Utils/TileDownload/ImageTile.hpp>
 #include <Utils/TileDownload/ImageTileFetcher.hpp>
-
+#include <Utils/TileDownload/ConfigUtil.hpp>
 
 class ImageDownloader {
 public:
@@ -25,28 +25,26 @@ public:
 	typedef ImageTileFetcher::OnTileFetchFailed OnTileFetchFailed;
 
 	/**
-	 * Creates a new ImageDownloader using the default configuration.
+	 * Creates a new ImageDownloader using the default callback for aborted downloads.
 	 *
 	 * @param onTileFetched the callback to call whenever a tile has finished loading.
-	 * @param onTileFetchFailed callback to call whenever a tile download was aborted or failed
-	 */
-	ImageDownloader(OnTileFetched onTileFetched,
-	OnTileFetchFailed onTileFetchFailed = [](std::exception const& e) {
-		KRONOS_LOG_WARN("%s", e.what());
-	});
-
-	/**
-	 * Creates a new ImageDownloader using the given configuration.
-	 *
 	 * @param imageLayers       a map containing layername - layerdescription objects to be used for
 	 *                          loading the tiles.
-	 * @param onTileFetched     the callback to call whenever a tile has finished loading.
-	 * @param onTileFetchFailed the callback to call when a tile download was aborted or failed
 	 */
-	ImageDownloader(QMap<QString, ImageLayerDescription> imageLayers, OnTileFetched onTileFetched,
-	OnTileFetchFailed onTileFetchFailed = [](std::exception const& e) {
-		KRONOS_LOG_WARN("%s", e.what());
-	});
+	ImageDownloader(OnTileFetched onTileFetched,
+	                QMap<QString, ImageLayerDescription> imageLayers = ConfigUtil::loadConfigFile("./res/layers.json"));
+
+	/**
+	 * Creates a new ImageDownloader using different callbacks for finished downloads and aborted ones.
+	 *
+	 * @param onTileFetched the callback to call whenever a tile has finished loading.
+	 * @param onTileFetchFailed the callback to call when a tile download was aborted or failed
+	 * @param imageLayers       a map containing layername - layerdescription objects to be used for
+	 *                          loading the tiles.
+	 */
+	ImageDownloader(OnTileFetched onTileFetched,
+	                OnTileFetchFailed onTileFetchFailed,
+	                QMap<QString, ImageLayerDescription> imageLayers = ConfigUtil::loadConfigFile("./res/layers.json"));
 
 	/**
 	 * Fetches images of all layers at the given location.

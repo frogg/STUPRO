@@ -2,14 +2,14 @@
 #define KRONOS_VIEW_WIDGETS_CITY_LIST_MODEL_HPP
 
 #include <QAbstractListModel>
+#include <QList>
 #include <Utils/Misc/City.hpp>
-#include <vector>
 
 class CityListModel : public QAbstractListModel {
 	Q_OBJECT
 
 public:
-	explicit CityListModel(QObject* parent = 0);
+	CityListModel(QObject* parent = 0);
 
 	int rowCount(const QModelIndex& parent = QModelIndex()) const;
 	QVariant data(const QModelIndex& index, int role) const;
@@ -17,11 +17,12 @@ public:
 	void clear();
 	void beginAdd(int count);
 	void add(City city);
+	void add(QList<City> cities);
 	void endAdd();
-	const std::vector<City> getAll() const;
+	const QList<City> getAll() const;
 
 private:
-	std::vector<City> cities;
+	QList<City> cities;
 };
 
 #endif

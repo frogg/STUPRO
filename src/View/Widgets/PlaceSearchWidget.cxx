@@ -70,7 +70,7 @@ PlaceSearchWidget::PlaceSearchWidget(QWidget * parent, Qt::WindowFlags flags)
 
     // try to open a database connection
     try {
-        this->citiesDatabase = new CitiesDatabase("kronos","stuproUser","weloveparaview","127.0.0.1","5432");
+        this->citiesDatabase = new CitiesDatabase("kronos","stuproUser","weloveparaview","127.0.0.1",5432);
         this->citiesDatabase->openDatabase();
     } catch (std::exception const & e) {
         KRONOS_LOG_WARN("Error opening a connection to the cities database: '%s'", e.what());
@@ -104,15 +104,17 @@ void PlaceSearchWidget::startSearch() {
         return;
     }
 
-    std::vector<City> result;
-    this->citiesDatabase->getCity(this->searchBar->text().toStdString(), &result);
+    KRONOS_LOG_DEBUG("Querying cities");
+    QList<City> cities = this->citiesDatabase->getCity(this->searchBar->text());
+    KRONOS_LOG_DEBUG("Queried cities, count: %d", cities.size());
 
-    if (result.size() > 0) {
-        this->resultListModel->beginAdd(result.size());
-        for (int i = 0; i < result.size(); i++) {
-            this->resultListModel->add(result[i]);
+    if (cities.size() > 0) {
+        this->resultListModel->beginAdd(cities.size());
+        for (int i = 0; i < cities.size(); i++) {
+            this->resultListModel->add(cities[i]);
         }
         this->resultListModel->endAdd();
+        KRONOS_LOG_DEBUG("Added cities");
 
         QModelIndex index = this->resultListModel->index(0);
         this->resultList->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);

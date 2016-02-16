@@ -19,8 +19,8 @@ struct FileOpenException : public KronosException {
 /**
  * Exception thrown when an error occurred trying to parse JSON data.
  */
-struct JsonParseException : public KronosException {
-	JsonParseException(QString message) : KronosException(message) { }
+struct JsonDataParseException : public KronosException {
+	JsonDataParseException(QString message) : KronosException(message) { }
 };
 
 class ConfigUtil {
