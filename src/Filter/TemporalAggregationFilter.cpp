@@ -6,17 +6,20 @@
 #include <Filter/TemporalAggregationFilter/CloudCoverageAggregationValue.hpp>
 
 #include <vtkPolyData.h>
+#include <vtkPointData.h>
 #include <vtkSmartPointer.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkDataArray.h>
+#include <vtkTypeFloat32Array.h>
 
 vtkStandardNewMacro(TemporalAggregationFilter);
 
 const QList<Data::Type> TemporalAggregationFilter::SUPPORTED_DATA_TYPES = QList<Data::Type>() << Data::PRECIPITATION << Data::TEMPERATURE << Data::WIND << Data::CLOUD_COVERAGE;
 
-TemporalAggregationFilter::TemporalAggregationFilter() : currentTimeStep(0), error(false) {
+TemporalAggregationFilter::TemporalAggregationFilter() : error(false), currentTimeStep(0) {
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(1);
 }
@@ -102,10 +105,10 @@ int TemporalAggregationFilter::RequestData(
     }
     
     vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    // vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
     vtkPolyData *input = vtkPolyData::GetData(inInfo);
-    vtkPolyData *output = vtkPolyData::GetData(outInfo);
+    // vtkPolyData *output = vtkPolyData::GetData(outInfo);
     
     std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
     
@@ -116,13 +119,33 @@ int TemporalAggregationFilter::RequestData(
         PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
         
         switch (this->dataType) {
-            case Data::PRECIPITATION:
-                break;
-            case Data::TEMPERATURE:
-                break;
-            case Data::WIND:
-                break;
-            case Data::CLOUD_COVERAGE:
+            case Data::PRECIPITATION: {
+                break; }
+            case Data::TEMPERATURE: {
+                vtkSmartPointer<vtkDataArray> abstractTemperatureArray = input->GetPointData()->GetArray("temperatures");
+            	vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(abstractTemperatureArray);
+                double currentTemperature = temperatureArray->GetValue(i);
+            
+                if (this->aggregatedData.contains(currentCoordinates)) {
+                    // The point has already been looked at before
+                    TemperatureAggregationValue* currentValue = static_cast<TemperatureAggregationValue*>(this->aggregatedData.value(currentCoordinates));
+                
+                    // Calculate the arithmetric mean with the cumulative moving average method.
+                    // This is a bit more costly than the naive way to calculate the average but prevents huge numbers from showing up while summing up all values.
+                    currentValue->setAverageTemperature((currentTemperature + (currentValue->getTimeIndex() * currentValue->getAverageTemperature())) / (currentValue->getTimeIndex() * 1.0 + 1));
+                    currentValue->setTimeIndex(currentValue->getTimeIndex() + 1);
+                } else {
+                    // This is the first time a point with these coordinates shows up
+                    TemperatureAggregationValue* newValue = new TemperatureAggregationValue();
+                    newValue->setAverageTemperature(currentTemperature);
+                    this->aggregatedData.insert(currentCoordinates, newValue);
+                }
+                break; }
+            case Data::WIND: {
+                break; }
+            case Data::CLOUD_COVERAGE: {
+                break; }
+            default:
                 break;
         }
     }
