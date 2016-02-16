@@ -145,6 +145,30 @@ int TemporalAggregationFilter::RequestData(
                 }
                 break; }
             case Data::WIND: {
+                vtkSmartPointer<vtkDataArray> abstractVelocitiesArray = input->GetPointData()->GetArray("speeds");
+            	vtkSmartPointer<vtkTypeFloat32Array> velocitiesArray = vtkTypeFloat32Array::SafeDownCast(abstractVelocitiesArray);
+                double currentVelocity = velocitiesArray->GetValue(i);
+                
+                vtkSmartPointer<vtkDataArray> abstractBearingsArray = input->GetPointData()->GetArray("directions");
+                vtkSmartPointer<vtkTypeFloat32Array> bearingsArray = vtkTypeFloat32Array::SafeDownCast(abstractBearingsArray);
+                double currentBearing = bearingsArray->GetValue(i);
+            
+                if (this->aggregatedData.contains(currentCoordinates)) {
+                    // The point has already been looked at before
+                    WindAggregationValue* currentValue = static_cast<WindAggregationValue*>(this->aggregatedData.value(currentCoordinates));
+                
+                    // Calculate the arithmetric mean with the cumulative moving average method.
+                    // This is a bit more costly than the naive way to calculate the average but prevents huge numbers from showing up while summing up all values.
+                    currentValue->setAverageVelocity((currentVelocity + (currentValue->getTimeIndex() * currentValue->getAverageVelocity())) / (currentValue->getTimeIndex() * 1.0 + 1));                
+                    currentValue->setAverageBearing((currentBearing + (currentValue->getTimeIndex() * currentValue->getAverageBearing())) / (currentValue->getTimeIndex() * 1.0 + 1));
+                    currentValue->setTimeIndex(currentValue->getTimeIndex() + 1);
+                } else {
+                    // This is the first time a point with these coordinates shows up
+                    WindAggregationValue* newValue = new WindAggregationValue();
+                    newValue->setAverageVelocity(currentVelocity);
+                    newValue->setAverageBearing(currentBearing);
+                    this->aggregatedData.insert(currentCoordinates, newValue);
+                }
                 break; }
             case Data::CLOUD_COVERAGE: {
                 vtkSmartPointer<vtkDataArray> abstractCoverageArray = input->GetPointData()->GetArray("cloudCovers");
