@@ -206,6 +206,29 @@ public:
 private:
 
 	struct ResourceInfo {
+		ResourceInfo() :
+			data(nullptr),
+			active(true),
+			handleCount(0)
+		{
+		}
+		
+		ResourceInfo(ResourceInfo && resInfo) :
+			data(std::move(resInfo.data)),
+			active(std::move(resInfo.active)),
+			handleCount(std::move(resInfo.handleCount))
+		{
+		}
+		
+		ResourceInfo & operator=(ResourceInfo && resInfo)
+		{
+			data = std::move(resInfo.data);
+			active = std::move(resInfo.active);
+			handleCount = std::move(resInfo.handleCount);
+			
+			return *this;
+		}
+		
 		bool isActive() const {
 			return active && handleCount != 0;
 		}
