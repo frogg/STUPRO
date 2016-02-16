@@ -1,16 +1,16 @@
-#include <Utils/TileDownload/ConfigUtil.hpp>
 #include <Utils/TileDownload/ImageDownloader.hpp>
 #include <thread>
 
-ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed)
-	: ImageDownloader(ConfigUtil::loadConfigFile("./res/layers.json"), onTileFetched,
-	                  onTileFetchFailed) { }
+ImageDownloader::ImageDownloader(OnTileFetched onTileFetched,
+                                 QMap<QString, ImageLayerDescription> imageLayers)
+	: ImageDownloader(onTileFetched, [](std::exception const & e) {
+	KRONOS_LOG_WARN("%s", e.what());
+}, imageLayers) { }
 
-ImageDownloader::ImageDownloader(QMap<QString, ImageLayerDescription> imageLayers,
-                                 OnTileFetched onTileFetched,
-                                 OnTileFetchFailed onTileFetchFailed)
-	: onTileFetched(onTileFetched), imageLayers(imageLayers),
-	  onTileFetchFailed(onTileFetchFailed) { }
+ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed,
+                                 QMap<QString, ImageLayerDescription> imageLayers)
+	: onTileFetched(onTileFetched), onTileFetchFailed(onTileFetchFailed), imageLayers(imageLayers) { }
+
 
 void ImageDownloader::fetchTile(int zoomLevel, int tileX, int tileY) {
 	this->fetchTile(this->getAvailableLayers(), zoomLevel, tileX, tileY);

@@ -25,12 +25,6 @@ else()
     include(${QT_USE_FILE})
 endif()
 
-# find and include PostgreSQL libraries
-find_library(PQXX_LIB NAMES pqxx libpqxx DOC "PostgreSQL libpqxx library")
-find_library(PQ_LIB NAMES pq libpq DOC "PostgreSQL libpq library")
-find_path(PQXX_HEADERS pqxx DOC "PostgreSQL header files")
-include_directories(${PQXX_HEADERS})
-
 # find GTest headers and libraries
 find_package(GoogleTest REQUIRED)
 
@@ -58,9 +52,6 @@ target_link_libraries(UnitTester
   ${GTEST_BOTH_LIBRARIES}
 )
 
-# link against PostgreSQL libraries
-target_link_libraries(UnitTester ${PQXX_LIB} ${PQ_LIB})
-
 # link against Qt libraries
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
     target_link_libraries(UnitTester
@@ -82,8 +73,12 @@ set_target_properties(UnitTester
 
 # make sure not to copy or delete the resource folder if we are doing an in-source build
 if(NOT ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${TEST_BIN_DIR}"))
-    # copy over test resource folder
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res DESTINATION ${TEST_BIN_DIR})
+    # copy over test resource folder after each build
+    add_custom_command(
+        TARGET UnitTester
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/res ${TEST_BIN_DIR}/res
+    )
     # delete the resource folder when executing make clean
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${TEST_BIN_DIR}/res")
 endif()
