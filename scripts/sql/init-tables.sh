@@ -10,4 +10,4 @@ else
 fi
 
 # load the sql dump containing all kronos related tables
-PGPQSSWORD=weloveparaview psql --username=stuproUser --host=localhost --dbname=template1 --file="./kronos.sql"
+PGPASSWORD=weloveparaview psql --username=stuproUser --host=localhost --dbname=template1 --file="./kronos.sql"
