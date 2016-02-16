@@ -7,6 +7,7 @@
 
 #include "TextureLoad.hpp"
 
+#include <Utils/Graphics/vtkOpaqueOpenGLTexture.h>
 #include <qimage.h>
 #include <qrgb.h>
 #include <vtkImageData.h>
@@ -71,7 +72,7 @@ vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QIma
 	}
 
 	// Load texture from combined image data.
-	vtkSmartPointer<vtkOpenGLTexture> texture = vtkOpenGLTexture::New();
+	vtkSmartPointer<vtkOpenGLTexture> texture = vtkOpaqueOpenGLTexture::New();
 	texture->SetInputData(vtkimage);
 	return texture;
 }
