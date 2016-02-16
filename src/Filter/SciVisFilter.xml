@@ -1,59 +1,35 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="filters">
-    <SourceProxy name="SciVisSliderFilter" class="SciVisFilter" label="SciVisSliderFilter">
+    <SourceProxy name="SciVisFilter" class="SciVisFilter" label="SciVisFilter">
       <Documentation
         long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014"
         short_help="Solve SciVis-Contest with this filter">
       </Documentation>
-      <InputProperty
-        name="AIRS Input"
-        port_index="0"
-        command="SetInputConnection">
-        <ProxyGroupDomain name="groups">
-          <Group name="sources"/>
-          <Group name="filters"/>
-        </ProxyGroupDomain>
-        <DataTypeDomain name="input_type">
-          <DataType value="vtkPolyData"/>
-        </DataTypeDomain>
-      </InputProperty>
+
 
       <InputProperty
         name="MIPAS Input"
-        port_index="1"
         command="SetInputConnection">
         <ProxyGroupDomain name="groups">
           <Group name="sources"/>
           <Group name="filters"/>
         </ProxyGroupDomain>
         <DataTypeDomain name="input_type">
-          <DataType value="vtkPolyData"/>
+          <DataType value="Polygonal Mesh"/>
         </DataTypeDomain>
       </InputProperty>
 
-      <InputProperty
-        name="CLaMS Input"
-        port_index="2"
-        command="SetInputConnection">
-        <ProxyGroupDomain name="groups">
-          <Group name="sources"/>
-          <Group name="filters"/>
-        </ProxyGroupDomain>
-        <DataTypeDomain name="input_type">
-          <DataType value="vtkPolyData"/>
-        </DataTypeDomain>
-      </InputProperty>
+
 
       <Hints>
-        <ShowInMenu category="Kronos"/>
-
+        <ShowInMenu category="SciVis"/>
       </Hints>
 
       <DoubleVectorProperty name="SciVis Slider"
                             command="chooseDate"
                             number_of_elements="1"
-                            default_values="0.1">
-      <DoubleRangeDomain name="range" min="0.0" max="1.0" />
+                            default_values="360201600">
+      <DoubleRangeDomain name="range" min="360201600" max="361238400" />
     </DoubleVectorProperty>
     </SourceProxy>
   </ProxyGroup>
