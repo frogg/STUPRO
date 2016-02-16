@@ -147,6 +147,24 @@ int TemporalAggregationFilter::RequestData(
             case Data::WIND: {
                 break; }
             case Data::CLOUD_COVERAGE: {
+                vtkSmartPointer<vtkDataArray> abstractCoverageArray = input->GetPointData()->GetArray("cloudCovers");
+            	vtkSmartPointer<vtkTypeFloat32Array> coverageArray = vtkTypeFloat32Array::SafeDownCast(abstractCoverageArray);
+                double currentCoverage = coverageArray->GetValue(i);
+            
+                if (this->aggregatedData.contains(currentCoordinates)) {
+                    // The point has already been looked at before
+                    CloudCoverageAggregationValue* currentValue = static_cast<CloudCoverageAggregationValue*>(this->aggregatedData.value(currentCoordinates));
+                
+                    // Calculate the arithmetric mean with the cumulative moving average method.
+                    // This is a bit more costly than the naive way to calculate the average but prevents huge numbers from showing up while summing up all values.
+                    currentValue->setAverageCloudCoverage((currentCoverage + (currentValue->getTimeIndex() * currentValue->getAverageCloudCoverage())) / (currentValue->getTimeIndex() * 1.0 + 1));
+                    currentValue->setTimeIndex(currentValue->getTimeIndex() + 1);
+                } else {
+                    // This is the first time a point with these coordinates shows up
+                    CloudCoverageAggregationValue* newValue = new CloudCoverageAggregationValue();
+                    newValue->setAverageCloudCoverage(currentCoverage);
+                    this->aggregatedData.insert(currentCoordinates, newValue);
+                }
                 break; }
             default:
                 break;
