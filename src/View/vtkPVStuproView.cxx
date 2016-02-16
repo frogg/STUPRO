@@ -51,7 +51,7 @@ void vtkPVStuproView::initGlobe()
 	
 	GlobeConfig globeConfig;
 	
-	globeConfig.globeRadius = config.getFloat("globe.globeRadius");
+	globeConfig.globeRadius = config.getFloat("globe.radius");
 	globeConfig.flatMapSize.x = config.getFloat("globe.flatMapSize.width");
 	globeConfig.flatMapSize.y = config.getFloat("globe.flatMapSize.height");
 	globeConfig.internalPlaneSize = config.getFloat("globe.internalPlaneSize");
