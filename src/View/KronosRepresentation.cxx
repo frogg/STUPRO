@@ -10,9 +10,10 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkIntArray.h>
+#include <vtkCamera.h>
 vtkStandardNewMacro(KronosRepresentation);
 //----------------------------------------------------------------------------
-KronosRepresentation::KronosRepresentation()
+KronosRepresentation::KronosRepresentation() : error(false)
 {
     //Set nummber of input connections.
     this->SetNumberOfInputPorts(1);
@@ -20,7 +21,7 @@ KronosRepresentation::KronosRepresentation()
     //Create Object of Everything used;
     this->labelActor = vtkSmartPointer<vtkActor2D>::New();
     this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-    this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
+    this->labelMapper = vtkSmartPointer<KronosLabelMapper>::New();
     this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
     //Set visibility to false so its not shown on load
     this->SetVisibility(false);
@@ -36,7 +37,7 @@ int KronosRepresentation::RequestInformation(vtkInformation* request,
                                                 vtkInformationVector** inputVector,
                                                 vtkInformationVector* outputVector) {
     vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-    inputVector[0]->PrintSelf(std::cout,vtkIndent(1));
+   
     
     if (inInfo->Has(Data::VTK_DATA_TYPE())) {
         Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
@@ -83,9 +84,6 @@ int KronosRepresentation::RequestData(vtkInformation* request,
 }
 //----------------------------------------------------------------------------
 void KronosRepresentation::CitiesRepresentation(vtkPolyData *input){
-    //Mapper for the points
-    this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-    this->pointMapper->SetInputData(input);
     
     //Generate the label hierarchy and filter the points according to the priorities.
     this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
@@ -95,26 +93,16 @@ void KronosRepresentation::CitiesRepresentation(vtkPolyData *input){
     this->pointSetToLabelHierarchyFilter->Update();
     
     //Create the labelmapper
-    this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
+    this->labelMapper = vtkSmartPointer<KronosLabelMapper>::New();
     this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
-    this->labelMapper->UseUnicodeStringsOn();
-    //Use depth buffer
-    if(this->useDepthBuffer){
-        this->labelMapper->UseDepthBufferOn();
-    }else{
-        this->labelMapper->UseDepthBufferOff();
-    }
+    this->labelMapper->SetUseDepthBuffer(true);
+  
     //Add the mappers to the actors.
-    this->pointActor->SetMapper(this->pointMapper);
-    this->pointActor->SetVisibility(false);
     this->labelActor->SetMapper(labelMapper);
-
 }
 //----------------------------------------------------------------------------
 void KronosRepresentation::TweetRepresentation(vtkPolyData *input){
-    //Mapper for the points
-    this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-    this->pointMapper->SetInputData(input);
+
     
     //Generate the label hierarchy and filter the points according to the priorities.
     this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
@@ -124,7 +112,7 @@ void KronosRepresentation::TweetRepresentation(vtkPolyData *input){
     this->pointSetToLabelHierarchyFilter->Update();
     
     //Create the labelmapper
-    this->labelMapper = vtkSmartPointer<vtkLabelPlacementMapper>::New();
+    this->labelMapper = vtkSmartPointer<KronosLabelMapper>::New();
     this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
     this->labelMapper->UseUnicodeStringsOn();
     //Use depth buffer
@@ -134,7 +122,6 @@ void KronosRepresentation::TweetRepresentation(vtkPolyData *input){
         this->labelMapper->UseDepthBufferOff();
     }
     //Add the mappers to the actors.
-    this->pointActor->SetMapper(this->pointMapper);
     this->labelActor->SetMapper(labelMapper);
     
 }
@@ -161,8 +148,8 @@ bool KronosRepresentation::AddToView(vtkView* view)
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
-        //rview->GetRenderer()->AddActor(this->pointActor);
         rview->GetRenderer()->AddActor(this->labelActor);
+
     }
     return this->Superclass::AddToView(view);
 }
@@ -177,7 +164,6 @@ bool KronosRepresentation::RemoveFromView(vtkView* view)
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
-        //rview->GetRenderer()->RemoveActor(this->pointActor);
         rview->GetRenderer()->RemoveActor(this->labelActor);
     }
     return this->Superclass::RemoveFromView(view);

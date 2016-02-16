@@ -11,11 +11,12 @@
 #include "vtkActor.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkPointSource.h"
-#include "vtkLabelPlacementMapper.h"
+#include "KronosLabelMapper.h"
 #include "vtkActor2D.h"
 #include "vtkLabelPlacementMapper.h"
 #include "vtkPointSetToLabelHierarchy.h"
 #include <qstring.h>
+
 
 class VTK_EXPORT KronosRepresentation : public vtkGeometryRepresentationWithFaces
 {
@@ -39,7 +40,7 @@ protected:
     //constructor and destructor
     KronosRepresentation();
     ~KronosRepresentation();
-    
+
     virtual int RequestInformation(vtkInformation *request,
                            vtkInformationVector **inputVector,
                            vtkInformationVector *outputVector) override;
@@ -74,7 +75,7 @@ private:
     //Mapper for the points
     vtkSmartPointer<vtkPolyDataMapper> pointMapper;
     //Mapper for the labels
-    vtkSmartPointer<vtkLabelPlacementMapper> labelMapper;
+    vtkSmartPointer<KronosLabelMapper> labelMapper;
     //Actor which adds the Points to the view
     vtkSmartPointer<vtkActor> pointActor;
     //Actor which adds the Lables to the view
