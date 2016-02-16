@@ -34,6 +34,16 @@ public:
     VectorType::ValueType getZ() const {
         return z;
     }
+	
+	bool operator< (const PointCoordinates &other) const {
+		return (this->getX() < other.getX()) || 
+				(this->getX() == other.getX() && this->getY() < other.getY()) || 
+				(this->getX() == other.getX() && this->getY() == other.getY() && this->getZ() < other.getZ());
+    }
+ 
+    bool operator== (const PointCoordinates &other) const {
+        return (this->getX() == other.getX() && this->getY() == other.getY() && this->getZ() == other.getZ());
+    }
 };
 
 #endif
