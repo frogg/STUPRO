@@ -65,11 +65,6 @@ private:
      */
     const static QList<Data::Type> SUPPORTED_DATA_TYPES;
     
-    /**
-     * A map storing the running averages of all points.
-     */
-    const QMap<PointCoordinates, double> averages;
-    
     TemporalAggregationFilter(const TemporalAggregationFilter&); // Not implemented.
     void operator=(const TemporalAggregationFilter&); // Not implemented.
 };
