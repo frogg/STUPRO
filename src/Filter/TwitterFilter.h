@@ -8,8 +8,6 @@
 #include <Filter/AbstractSelectionFilter.hpp>
 #include <QMap>
 
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
-
 /**
  * This filter can extract data from twitter point sets read by a Kronos reader depending on the twitter type of each point.
  */
@@ -24,12 +22,14 @@ public:
       * Callback method for setting the name of the author(s) of the visible tweets.
       * @param authorName
      */
-    void setAuthorName(const char* authorName){
-        std::cout << "test12345566" << authorName;
-        this->Modified();
-    }
-
-
+    void setAuthorName(const char* authorName);
+    
+    /**
+     * Callback method for setting the matching mode
+     * @param mode (0 stands for containing, 1 for matching)
+     */
+    void setMatchingMode(int mode);
+    
 
 private:
     /**
@@ -44,6 +44,8 @@ private:
     QList<Data::Type> getCompatibleDataTypes();
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
 	
+    QList<QString> visibleAuthorName;
+    
     /**
      * An internal data structure that maps each precipitation type to a boolean value that denotes its visibility.
      * This will be updated on callbacks and used to build necessary VTK structures.

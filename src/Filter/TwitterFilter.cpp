@@ -16,7 +16,7 @@
 #include <vtkPointSet.h>
 
 TwitterFilter::TwitterFilter() {
-    
+    std::cout << "mama" << this->visibleAuthorName.count();
 }
 
 TwitterFilter::~TwitterFilter() { }
@@ -40,7 +40,27 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
     return this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
                                                (precipitationTypeArray->GetTuple1(pointIndex))];
     */
-    return true;
+    
+    if(this->visibleAuthorName.count() == 0){
+        return true;
+    }else{
+        //adapt it
+        return true;
+    }
+}
+
+void TwitterFilter::setAuthorName(const char* authorName){
+    std::cout << "nana" << authorName;
+    QString str = QString::fromStdString(authorName);
+    std::cout << "lala" << str.toLatin1().data();
+    QStringList pieces = str.split( ";" );
+    this->Modified();
+}
+
+
+void TwitterFilter::setMatchingMode(int mode){
+    std::cout << "test12345566" << mode;
+    this->Modified();
 }
 
 void TwitterFilter::SetInputConnection(vtkAlgorithmOutput* input) {
