@@ -2,6 +2,7 @@
 #define KRONOS_TEMPORAL_AGGREGATION_FILTER_HPP
 
 #include <Reader/DataReader/Data.hpp>
+#include <Utils/Misc/PointCoordinates.hpp>
 
 #include <vtkFiltersGeneralModule.h>
 #include <vtkPassInputTypeAlgorithm.h>
@@ -9,6 +10,7 @@
 
 #include <qstring.h>
 #include <qlist.h>
+#include <qmap.h>
 
 class VTKFILTERSGENERAL_EXPORT TemporalAggregationFilter : public vtkPassInputTypeAlgorithm {
 public:
@@ -62,6 +64,11 @@ private:
      * This list contains all data types that are supported by this filter.
      */
     const static QList<Data::Type> SUPPORTED_DATA_TYPES;
+    
+    /**
+     * A map storing the running averages of all points.
+     */
+    const QMap<PointCoordinates, double> averages;
     
     TemporalAggregationFilter(const TemporalAggregationFilter&); // Not implemented.
     void operator=(const TemporalAggregationFilter&); // Not implemented.
