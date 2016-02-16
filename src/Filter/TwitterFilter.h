@@ -44,7 +44,7 @@ private:
     QList<Data::Type> getCompatibleDataTypes();
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
 	
-    QList<QString> visibleAuthorName;
+    QStringList visibleAuthorName;
     
     /**
      * An internal data structure that maps each precipitation type to a boolean value that denotes its visibility.

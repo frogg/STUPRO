@@ -15,6 +15,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
 
+
 TwitterFilter::TwitterFilter() {
     std::cout << "mama" << this->visibleAuthorName.count();
 }
@@ -42,8 +43,11 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
     */
     
     if(this->visibleAuthorName.count() == 0){
+        //vielleicht auch count == 1, weil leerer string auch reingespeichert wird
         return true;
     }else{
+        vtkSmartPointer<vtkIntArray> twitterArray = vtkStringArray::SafeDownCast(pointData->GetArray("authors"));
+        std::cout << twitterArray->GetTuple1(pointIndex);
         //adapt it
         return true;
     }
@@ -52,8 +56,11 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 void TwitterFilter::setAuthorName(const char* authorName){
     std::cout << "nana" << authorName;
     QString str = QString::fromStdString(authorName);
-    std::cout << "lala" << str.toLatin1().data();
-    QStringList pieces = str.split( ";" );
+    str.remove(' ');
+    
+    visibleAuthorName = str.split( ";" );
+    std::cout << "lala" << str.toLatin1().data() << ": " << visibleAuthorName.count();
+//    std::cout << "hi" << QString::compare(str, "", Qt::CaseInsensitive) << "bla" << QString::compare(str, " ",Qt::CaseInsensitive);
     this->Modified();
 }
 
