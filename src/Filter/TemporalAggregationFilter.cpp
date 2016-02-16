@@ -123,6 +123,7 @@ int TemporalAggregationFilter::RequestData(
         
         switch (this->dataType) {
             case Data::PRECIPITATION: {
+                // TODO
                 break; }
             case Data::TEMPERATURE: {
                 vtkSmartPointer<vtkDataArray> abstractTemperatureArray = input->GetPointData()->GetArray("temperatures");
@@ -191,6 +192,8 @@ int TemporalAggregationFilter::RequestData(
                 }
                 break; }
             default:
+                this->fail("The input's data type is not supported. This should never happen.");
+                return 0;
                 break;
         }
     }
