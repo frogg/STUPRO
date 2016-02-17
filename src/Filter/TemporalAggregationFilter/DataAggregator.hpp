@@ -33,10 +33,9 @@ public:
      * Add the data of a point to the aggregation.
      * @param pointIndex The index of the current point in the data arrays
      * @param coordinates The coordinates of the current point
-     * @param currentTimeStep The current time step
      * @param pointData A pointer to the point data in the current time step
      */
-    void addPointData(int pointIndex, PointCoordinates coordinates, int currentTimeStep, vtkSmartPointer<vtkPointData> pointData);
+    void addPointData(int pointIndex, PointCoordinates coordinates, vtkSmartPointer<vtkPointData> pointData);
 
 private:
     /**
@@ -53,6 +52,11 @@ private:
      * Stores the time resolution of the input data.
      */
     int timeResolution;
+	
+	/**
+	 * Stores the highest time index this aggregator used.
+	 */
+	int lastTimeIndex;
 };
 
 #endif

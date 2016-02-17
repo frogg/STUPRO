@@ -125,7 +125,7 @@ int TemporalAggregationFilter::RequestData(
         input->GetPoint(i, coordinates);
         PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
         
-        this->dataAggregator.addPointData(i, currentCoordinates, this->currentTimeStep, input->GetPointData());
+        this->dataAggregator.addPointData(i, currentCoordinates, input->GetPointData());
     }
 
     this->currentTimeStep++;

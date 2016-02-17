@@ -8,7 +8,7 @@
 #include <vtkDataArray.h>
 #include <vtkTypeFloat32Array.h>
 
-DataAggregator::DataAggregator() { }
+DataAggregator::DataAggregator() : lastTimeIndex(0) { }
 
 DataAggregator::~DataAggregator() {
     qDeleteAll(this->aggregatedData);
@@ -20,7 +20,9 @@ void DataAggregator::setDataSetAttributes(Data::Type dataType, int timeResolutio
     this->timeResolution = timeResolution;
 }
 
-void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, int currentTimeStep, vtkSmartPointer<vtkPointData> pointData) {
+void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, vtkSmartPointer<vtkPointData> pointData) {
+    int currentTimeStep = this->lastTimeIndex;
+    
     switch (this->dataType) {
         case Data::PRECIPITATION: {
             vtkSmartPointer<vtkDataArray> abstractPrecipitationRateArray = pointData->GetArray("precipitationRates");
@@ -115,4 +117,6 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
         default:
             break;
     }
+    
+    this->lastTimeIndex++;
 }
