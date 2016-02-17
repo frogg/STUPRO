@@ -16,7 +16,7 @@ public:
 	 * through the pipeline.
 	 */
 	static vtkInformationDataTypeKey* VTK_DATA_TYPE();
-	
+
 	/**
 	 * A VTK information key for storing the time resolution of temporal data in an object that will be passed
 	 * through the pipeline.

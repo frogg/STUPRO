@@ -13,19 +13,19 @@ public:
 	 * Create a new TemperatureAggregationValue.
 	 */
 	TemperatureAggregationValue();
-    ~TemperatureAggregationValue();
+	~TemperatureAggregationValue();
 
 	/**
 	* Set the average temperature of the data point.
 	* @param averageTemperature The new average temperature
 	*/
 	void setAverageTemperature(double averageTemperature);
-    
-    /**
-    * Get the average temperature of the data point.
-    * @return The current average temperature
-    */
-    double getAverageTemperature() const;
+
+	/**
+	* Get the average temperature of the data point.
+	* @return The current average temperature
+	*/
+	double getAverageTemperature() const;
 
 private:
 	double averageTemperature;

@@ -4,17 +4,17 @@ PrecipitationAggregationValue::PrecipitationAggregationValue() : accumulatedPrec
 PrecipitationAggregationValue::~PrecipitationAggregationValue() { }
 
 void PrecipitationAggregationValue::setAccumulatedPrecipitation(double accumulatedPrecipitation) {
-    this->accumulatedPrecipitation = accumulatedPrecipitation;
+	this->accumulatedPrecipitation = accumulatedPrecipitation;
 }
 
 double PrecipitationAggregationValue::getAccumulatedPrecipitation() const {
-    return this->accumulatedPrecipitation;
+	return this->accumulatedPrecipitation;
 }
 
 void PrecipitationAggregationValue::setLastPrecipitationRate(double lastPrecipitationRate) {
-    this->lastPrecipitationRate = lastPrecipitationRate;
+	this->lastPrecipitationRate = lastPrecipitationRate;
 }
 
 double PrecipitationAggregationValue::getLastPrecipitationRate() const {
-    return this->lastPrecipitationRate;
+	return this->lastPrecipitationRate;
 }

@@ -4,9 +4,9 @@ TemperatureAggregationValue::TemperatureAggregationValue() : averageTemperature(
 TemperatureAggregationValue::~TemperatureAggregationValue() { }
 
 void TemperatureAggregationValue::setAverageTemperature(double averageTemperature) {
-    this->averageTemperature = averageTemperature;
+	this->averageTemperature = averageTemperature;
 }
 
 double TemperatureAggregationValue::getAverageTemperature() const {
-    return this->averageTemperature;
+	return this->averageTemperature;
 }

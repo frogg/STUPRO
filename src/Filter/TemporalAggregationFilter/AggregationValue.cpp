@@ -4,9 +4,9 @@ AggregationValue::AggregationValue() : timeIndex(0) { }
 AggregationValue::~AggregationValue() { }
 
 void AggregationValue::setTimeIndex(int timeIndex) {
-    this->timeIndex = timeIndex;
+	this->timeIndex = timeIndex;
 }
 
 int AggregationValue::getTimeIndex() const {
-    return this->timeIndex;
+	return this->timeIndex;
 }

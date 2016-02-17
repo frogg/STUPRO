@@ -13,26 +13,26 @@ public:
 	 * Create a new PrecipitationAggregationValue.
 	 */
 	PrecipitationAggregationValue();
-    ~PrecipitationAggregationValue();
+	~PrecipitationAggregationValue();
 
 	/**
 	* Set the accumulated precipitation of the data point.
 	* @param accumulatedPrecipitation The new accumulated precipitation
 	*/
 	void setAccumulatedPrecipitation(double accumulatedPrecipitation);
-    
-    /**
-    * Get the accumulated precipitation of the data point.
-    * @return The current accumulated precipitation
-    */
-    double getAccumulatedPrecipitation() const;
-	
+
+	/**
+	* Get the accumulated precipitation of the data point.
+	* @return The current accumulated precipitation
+	*/
+	double getAccumulatedPrecipitation() const;
+
 	/**
 	* Set the last precipitation rate of the data point.
 	* @param lastPrecipitationRate The last precipitation rate
 	*/
 	void setLastPrecipitationRate(double lastPrecipitationRate);
-	
+
 	/**
 	* Get the last precipitation rate of the data point.
 	* @return The last precipitation rate

@@ -13,19 +13,19 @@ public:
 	 * Create a new CloudCoverageAggregationValue.
 	 */
 	CloudCoverageAggregationValue();
-    ~CloudCoverageAggregationValue();
+	~CloudCoverageAggregationValue();
 
 	/**
 	* Set the average cloud coverage of the data point.
 	* @param averageCloudCoverage The new average cloud coverage
 	*/
 	void setAverageCloudCoverage(double averageCloudCoverage);
-    
-    /**
-    * Get the average cloud coverage of the data point.
-    * @return The current average cloud coverage
-    */
-    double getAverageCloudCoverage() const;
+
+	/**
+	* Get the average cloud coverage of the data point.
+	* @return The current average cloud coverage
+	*/
+	double getAverageCloudCoverage() const;
 
 private:
 	double averageCloudCoverage;

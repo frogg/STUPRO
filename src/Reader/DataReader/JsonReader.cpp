@@ -187,11 +187,11 @@ int JsonReader::getAmountOfTimeSteps() const {
 }
 
 int JsonReader::getTimeResolution() const {
-    if (this->hasTemporalData()) {
-        return this->timeResolution;
-    } else {
-        return 0;
-    }
+	if (this->hasTemporalData()) {
+		return this->timeResolution;
+	} else {
+		return 0;
+	}
 }
 
 void JsonReader::setCachingEnabled(bool cachingEnabled) {

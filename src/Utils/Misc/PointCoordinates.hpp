@@ -17,33 +17,35 @@ public:
 
 	/**
 	 * Create new point coordinates.
-     * @param x The x coordinates of the point
-     * @param y The y coordinates of the point
-     * @param z The z coordinates of the point
+	 * @param x The x coordinates of the point
+	 * @param y The y coordinates of the point
+	 * @param z The z coordinates of the point
 	 */
-	PointCoordinates(VectorType::ValueType x, VectorType::ValueType y, VectorType::ValueType z) : Vector3d(x, y, z) { }
+	PointCoordinates(VectorType::ValueType x, VectorType::ValueType y,
+	                 VectorType::ValueType z) : Vector3d(x, y, z) { }
 
 	VectorType::ValueType getX() const {
 		return x;
 	}
-    
-    VectorType::ValueType getY() const {
-        return y;
-    }
-    
-    VectorType::ValueType getZ() const {
-        return z;
-    }
-	
-	bool operator< (const PointCoordinates &other) const {
-		return (this->getX() < other.getX()) || 
-				(this->getX() == other.getX() && this->getY() < other.getY()) || 
-				(this->getX() == other.getX() && this->getY() == other.getY() && this->getZ() < other.getZ());
-    }
- 
-    bool operator== (const PointCoordinates &other) const {
-        return (this->getX() == other.getX() && this->getY() == other.getY() && this->getZ() == other.getZ());
-    }
+
+	VectorType::ValueType getY() const {
+		return y;
+	}
+
+	VectorType::ValueType getZ() const {
+		return z;
+	}
+
+	bool operator< (const PointCoordinates& other) const {
+		return (this->getX() < other.getX()) ||
+		       (this->getX() == other.getX() && this->getY() < other.getY()) ||
+		       (this->getX() == other.getX() && this->getY() == other.getY() && this->getZ() < other.getZ());
+	}
+
+	bool operator== (const PointCoordinates& other) const {
+		return (this->getX() == other.getX() && this->getY() == other.getY()
+		        && this->getZ() == other.getZ());
+	}
 };
 
 #endif

@@ -46,7 +46,7 @@ public:
 	 * @return The amount of time steps this reader exports
 	 */
 	int getAmountOfTimeSteps() const;
-	
+
 	/**
 	 * Get the amount of seconds in a time step. This will return 0 for non-temporal data.
 	 * @return The amount of seconds in a time step
