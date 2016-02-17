@@ -26,9 +26,22 @@ public:
     * @return The current accumulated precipitation
     */
     double getAccumulatedPrecipitation() const;
+	
+	/**
+	* Set the last precipitation rate of the data point.
+	* @param lastPrecipitationRate The last precipitation rate
+	*/
+	void setLastPrecipitationRate(double lastPrecipitationRate);
+	
+	/**
+	* Get the last precipitation rate of the data point.
+	* @return The last precipitation rate
+	*/
+	double getLastPrecipitationRate() const;
 
 private:
 	double accumulatedPrecipitation;
+	double lastPrecipitationRate;
 };
 
 #endif
