@@ -4,6 +4,7 @@
 #include <Filter/TemporalAggregationFilter/TemperatureAggregationValue.hpp>
 #include <Filter/TemporalAggregationFilter/WindAggregationValue.hpp>
 #include <Filter/TemporalAggregationFilter/CloudCoverageAggregationValue.hpp>
+#include <Utils/Misc/Macros.hpp>
 
 #include <vtkPoints.h>
 #include <vtkCellArray.h>
@@ -186,7 +187,58 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
             break;
         }
         case Data::WIND: {
-
+            // Create the array that will hold the aggregated wind speeds
+            vtkSmartPointer<vtkTypeFloat32Array> aggregatedSpeeds = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            aggregatedSpeeds->SetNumberOfComponents(1);
+            aggregatedSpeeds->SetNumberOfTuples(this->aggregatedData.size());
+            aggregatedSpeeds->SetName("Average Wind Speeds");
+            
+            // Create the array that will hold the aggregated wind bearings
+            vtkSmartPointer<vtkTypeFloat32Array> aggregatedDirections = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            aggregatedDirections->SetNumberOfComponents(1);
+            aggregatedDirections->SetNumberOfTuples(this->aggregatedData.size());
+            aggregatedDirections->SetName("Average Wind Directions");
+            
+            // Create the array that will hold the aggregated wind velocity vectors
+            vtkSmartPointer<vtkTypeFloat32Array> aggregatedVelocities = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            aggregatedVelocities->SetNumberOfComponents(3);
+            aggregatedVelocities->SetNumberOfTuples(this->aggregatedData.size());
+            aggregatedVelocities->SetName("velocity");
+            
+            // Iterate over all points in the aggregated data
+            QMap<PointCoordinates, AggregationValue*>::iterator i;
+            int tupleNumber = 0;
+            for (i = this->aggregatedData.begin(); i != this->aggregatedData.end(); ++i) {
+                WindAggregationValue* currentValue = static_cast<WindAggregationValue*>(i.value());
+                
+                // Add the point's coordinates
+                vertices->InsertCellPoint(points->InsertNextPoint(i.key().getX(), i.key().getY(), i.key().getZ()));
+                
+                // Add the point's average speed
+                double aggregatedSpeed[1] = {
+    				(double) currentValue->getAverageVelocity()
+    			};
+                aggregatedSpeeds->SetTuple(tupleNumber, aggregatedSpeed);
+                
+                // Add the point's average direction
+                double aggregatedBearing[1] = {
+    				(double) currentValue->getAverageBearing()
+    			};
+                aggregatedDirections->SetTuple(tupleNumber, aggregatedBearing);
+                
+                // Calculate and add the point's average velocity vector
+                float windBearingRadian = currentValue->getAverageBearing() * (float) (KRONOS_PI / 180);
+    			double aggregatedVelocity[3] = {
+    				(double) currentValue->getAverageVelocity() * sin(windBearingRadian),
+    				(double) currentValue->getAverageVelocity() * cos(windBearingRadian),
+    				0.0
+    			};
+    			aggregatedVelocities->SetTuple(tupleNumber, aggregatedVelocity);
+            }
+            
+            dataSet->GetPointData()->AddArray(aggregatedSpeeds);
+            dataSet->GetPointData()->AddArray(aggregatedDirections);
+            dataSet->GetPointData()->AddArray(aggregatedVelocities);
             break;
         }
         case Data::CLOUD_COVERAGE: {
