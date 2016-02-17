@@ -160,7 +160,29 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
             break;
         }
         case Data::TEMPERATURE: {
-
+            // Create the array that will hold the aggregated temperatures
+            vtkSmartPointer<vtkTypeFloat32Array> aggregatedTemperatures = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            aggregatedTemperatures->SetNumberOfComponents(1);
+            aggregatedTemperatures->SetNumberOfTuples(this->aggregatedData.size());
+            aggregatedTemperatures->SetName("Average Temperatures");
+            
+            // Iterate over all points in the aggregated data
+            QMap<PointCoordinates, AggregationValue*>::iterator i;
+            int tupleNumber = 0;
+            for (i = this->aggregatedData.begin(); i != this->aggregatedData.end(); ++i) {
+                TemperatureAggregationValue* currentValue = static_cast<TemperatureAggregationValue*>(i.value());
+                
+                // Add the point's coordinates
+                vertices->InsertCellPoint(points->InsertNextPoint(i.key().getX(), i.key().getY(), i.key().getZ()));
+                
+                // Add the point's accumulated precipitation amounts
+                double aggregatedTemperature[1] = {
+    				(double) currentValue->getAverageTemperature()
+    			};
+                aggregatedTemperatures->SetTuple(tupleNumber, aggregatedTemperature);
+            }
+            
+            dataSet->GetPointData()->AddArray(aggregatedTemperatures);
             break;
         }
         case Data::WIND: {
