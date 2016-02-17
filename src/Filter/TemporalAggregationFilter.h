@@ -62,6 +62,11 @@ private:
     Data::Type dataType;
     
     /**
+     * Stores the number of seconds in a time step in the input data.
+     */
+    int timeResolution;
+    
+    /**
      * This list contains all data types that are supported by this filter.
      */
     const static QList<Data::Type> SUPPORTED_DATA_TYPES;

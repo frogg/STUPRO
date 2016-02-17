@@ -92,6 +92,17 @@ int TemporalAggregationFilter::RequestInformation (
         return 0;
     }
     
+    // Extract the time resolution from the input data's meta data
+    if (inInfo->Has(Data::VTK_TIME_RESOLUTION())) {
+        this->timeResolution = inInfo->Get(Data::VTK_TIME_RESOLUTION());
+    } else {
+        if (this->dataType == Data::PRECIPITATION) {
+            // Currently, the time resolution is only really critical for the accumulation of precipitation data
+            this->fail("To correctly accumulate precipitation data, this filter needs the data's time resolution.");
+            return 0;
+        }
+    }
+    
     // This filter's output is an aggregation of values over time and therefore has no time information
     outInfo->Remove(vtkStreamingDemandDrivenPipeline::TIME_STEPS());
     outInfo->Remove(vtkStreamingDemandDrivenPipeline::TIME_RANGE());
