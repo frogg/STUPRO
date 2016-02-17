@@ -1,10 +1,5 @@
 #include <Filter/TemporalAggregationFilter.h>
 
-#include <Filter/TemporalAggregationFilter/PrecipitationAggregationValue.hpp>
-#include <Filter/TemporalAggregationFilter/TemperatureAggregationValue.hpp>
-#include <Filter/TemporalAggregationFilter/WindAggregationValue.hpp>
-#include <Filter/TemporalAggregationFilter/CloudCoverageAggregationValue.hpp>
-
 #include <vtkPolyData.h>
 #include <vtkPointData.h>
 #include <vtkSmartPointer.h>
@@ -12,22 +7,17 @@
 #include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
-#include <vtkDataArray.h>
-#include <vtkTypeFloat32Array.h>
 
 vtkStandardNewMacro(TemporalAggregationFilter);
 
 const QList<Data::Type> TemporalAggregationFilter::SUPPORTED_DATA_TYPES = QList<Data::Type>() << Data::PRECIPITATION << Data::TEMPERATURE << Data::WIND << Data::CLOUD_COVERAGE;
 
-TemporalAggregationFilter::TemporalAggregationFilter() : error(false), currentTimeStep(0) {
+TemporalAggregationFilter::TemporalAggregationFilter() : error(false), currentTimeStep(0), dataAggregator() {
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(1);
 }
 
-TemporalAggregationFilter::~TemporalAggregationFilter() {
-    qDeleteAll(this->aggregatedData);
-    this->aggregatedData.clear();
-}
+TemporalAggregationFilter::~TemporalAggregationFilter() { }
 
 void TemporalAggregationFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());
@@ -103,6 +93,9 @@ int TemporalAggregationFilter::RequestInformation (
         }
     }
     
+    // Pass all data set information to the aggregator
+    this->dataAggregator.setDataSetAttributes(this->dataType, this->timeResolution);
+    
     // This filter's output is an aggregation of values over time and therefore has no time information
     outInfo->Remove(vtkStreamingDemandDrivenPipeline::TIME_STEPS());
     outInfo->Remove(vtkStreamingDemandDrivenPipeline::TIME_RANGE());
@@ -132,102 +125,7 @@ int TemporalAggregationFilter::RequestData(
         input->GetPoint(i, coordinates);
         PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
         
-        switch (this->dataType) {
-            case Data::PRECIPITATION: {
-                vtkSmartPointer<vtkDataArray> abstractPrecipitationRateArray = input->GetPointData()->GetArray("precipitationRates");
-            	vtkSmartPointer<vtkTypeFloat32Array> precipitationRateArray = vtkTypeFloat32Array::SafeDownCast(abstractPrecipitationRateArray);
-                double currentPrecipitationRate = precipitationRateArray->GetValue(i);
-            
-                if (this->aggregatedData.contains(currentCoordinates)) {
-                    // The point has already been looked at before
-                    PrecipitationAggregationValue* currentValue = static_cast<PrecipitationAggregationValue*>(this->aggregatedData.value(currentCoordinates));
-                
-                    // Accumulate the precipitation rates over time, therefore getting the total amount of precipitation.
-                    // To do this, two assumptions are made:
-                    // 1. The precipitation amount at the beginning of the accumulation is zero.
-                    // 2. A data point constantly emits precipitation with its precipitation rate until new precipitation rate data is available.
-                    currentValue->setAccumulatedPrecipitation(currentValue->getAccumulatedPrecipitation() + ((1.0 * (this->currentTimeStep - currentValue->getTimeIndex()) * this->timeResolution) * currentValue->getLastPrecipitationRate()));
-                    currentValue->setTimeIndex(this->currentTimeStep);
-                    currentValue->setLastPrecipitationRate(currentPrecipitationRate);
-                } else {
-                    // This is the first time a point with these coordinates shows up
-                    PrecipitationAggregationValue* newValue = new PrecipitationAggregationValue();
-                    newValue->setTimeIndex(this->currentTimeStep);
-                    newValue->setLastPrecipitationRate(currentPrecipitationRate);
-                    this->aggregatedData.insert(currentCoordinates, newValue);
-                }
-                break; }
-            case Data::TEMPERATURE: {
-                vtkSmartPointer<vtkDataArray> abstractTemperatureArray = input->GetPointData()->GetArray("temperatures");
-            	vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(abstractTemperatureArray);
-                double currentTemperature = temperatureArray->GetValue(i);
-            
-                if (this->aggregatedData.contains(currentCoordinates)) {
-                    // The point has already been looked at before
-                    TemperatureAggregationValue* currentValue = static_cast<TemperatureAggregationValue*>(this->aggregatedData.value(currentCoordinates));
-                
-                    // Calculate the arithmetric mean with the cumulative moving average method.
-                    // This is a bit more costly than the naive way to calculate the average but prevents huge numbers from showing up while summing up all values.
-                    currentValue->setAverageTemperature((currentTemperature + (currentValue->getTimeIndex() * currentValue->getAverageTemperature())) / (currentValue->getTimeIndex() * 1.0 + 1));
-                    currentValue->setTimeIndex(currentValue->getTimeIndex() + 1);
-                } else {
-                    // This is the first time a point with these coordinates shows up
-                    TemperatureAggregationValue* newValue = new TemperatureAggregationValue();
-                    newValue->setAverageTemperature(currentTemperature);
-                    this->aggregatedData.insert(currentCoordinates, newValue);
-                }
-                break; }
-            case Data::WIND: {
-                vtkSmartPointer<vtkDataArray> abstractVelocitiesArray = input->GetPointData()->GetArray("speeds");
-            	vtkSmartPointer<vtkTypeFloat32Array> velocitiesArray = vtkTypeFloat32Array::SafeDownCast(abstractVelocitiesArray);
-                double currentVelocity = velocitiesArray->GetValue(i);
-                
-                vtkSmartPointer<vtkDataArray> abstractBearingsArray = input->GetPointData()->GetArray("directions");
-                vtkSmartPointer<vtkTypeFloat32Array> bearingsArray = vtkTypeFloat32Array::SafeDownCast(abstractBearingsArray);
-                double currentBearing = bearingsArray->GetValue(i);
-            
-                if (this->aggregatedData.contains(currentCoordinates)) {
-                    // The point has already been looked at before
-                    WindAggregationValue* currentValue = static_cast<WindAggregationValue*>(this->aggregatedData.value(currentCoordinates));
-                
-                    // Calculate the arithmetric mean with the cumulative moving average method.
-                    // This is a bit more costly than the naive way to calculate the average but prevents huge numbers from showing up while summing up all values.
-                    currentValue->setAverageVelocity((currentVelocity + (currentValue->getTimeIndex() * currentValue->getAverageVelocity())) / (currentValue->getTimeIndex() * 1.0 + 1));                
-                    currentValue->setAverageBearing((currentBearing + (currentValue->getTimeIndex() * currentValue->getAverageBearing())) / (currentValue->getTimeIndex() * 1.0 + 1));
-                    currentValue->setTimeIndex(currentValue->getTimeIndex() + 1);
-                } else {
-                    // This is the first time a point with these coordinates shows up
-                    WindAggregationValue* newValue = new WindAggregationValue();
-                    newValue->setAverageVelocity(currentVelocity);
-                    newValue->setAverageBearing(currentBearing);
-                    this->aggregatedData.insert(currentCoordinates, newValue);
-                }
-                break; }
-            case Data::CLOUD_COVERAGE: {
-                vtkSmartPointer<vtkDataArray> abstractCoverageArray = input->GetPointData()->GetArray("cloudCovers");
-            	vtkSmartPointer<vtkTypeFloat32Array> coverageArray = vtkTypeFloat32Array::SafeDownCast(abstractCoverageArray);
-                double currentCoverage = coverageArray->GetValue(i);
-            
-                if (this->aggregatedData.contains(currentCoordinates)) {
-                    // The point has already been looked at before
-                    CloudCoverageAggregationValue* currentValue = static_cast<CloudCoverageAggregationValue*>(this->aggregatedData.value(currentCoordinates));
-                
-                    // Calculate the arithmetric mean with the cumulative moving average method.
-                    // This is a bit more costly than the naive way to calculate the average but prevents huge numbers from showing up while summing up all values.
-                    currentValue->setAverageCloudCoverage((currentCoverage + (currentValue->getTimeIndex() * currentValue->getAverageCloudCoverage())) / (currentValue->getTimeIndex() * 1.0 + 1));
-                    currentValue->setTimeIndex(currentValue->getTimeIndex() + 1);
-                } else {
-                    // This is the first time a point with these coordinates shows up
-                    CloudCoverageAggregationValue* newValue = new CloudCoverageAggregationValue();
-                    newValue->setAverageCloudCoverage(currentCoverage);
-                    this->aggregatedData.insert(currentCoordinates, newValue);
-                }
-                break; }
-            default:
-                this->fail("The input's data type is not supported. This should never happen.");
-                return 0;
-                break;
-        }
+        this->dataAggregator.addPointData(i, currentCoordinates, this->currentTimeStep, input->GetPointData());
     }
 
     this->currentTimeStep++;

@@ -3,7 +3,7 @@
 
 #include <Reader/DataReader/Data.hpp>
 #include <Utils/Misc/PointCoordinates.hpp>
-#include <Filter/TemporalAggregationFilter/AggregationValue.hpp>
+#include <Filter/TemporalAggregationFilter/DataAggregator.hpp>
 
 #include <vtkFiltersGeneralModule.h>
 #include <vtkPassInputTypeAlgorithm.h>
@@ -72,9 +72,9 @@ private:
     const static QList<Data::Type> SUPPORTED_DATA_TYPES;
     
     /**
-     * This data structure identifies a point by its point coordinates and maps it to its aggregated data. The value will be a specialised subclass of AggregationValue depending on the type of input data. In each iteration over the time steps new data will be added to the aggregation.
+     * An object that will handle all the actual aggregation.
      */
-    QMap<PointCoordinates, AggregationValue*> aggregatedData;
+    DataAggregator dataAggregator;
     
     TemporalAggregationFilter(const TemporalAggregationFilter&); // Not implemented.
     void operator=(const TemporalAggregationFilter&); // Not implemented.
