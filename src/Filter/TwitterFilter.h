@@ -9,7 +9,7 @@
 #include <QMap>
 
 /**
- * This filter can extract data from twitter point sets read by a Kronos reader depending on the twitter type of each point.
+ * This filter can extract data from twitter point sets read by a Kronos reader depending on the tweet author and tweet content.
  */
 class TwitterFilter : public AbstractSelectionFilter {
 public:
@@ -31,7 +31,7 @@ public:
     void setMatchingMode(int mode);
     
     /**
-     * Callback method for setting the content mode
+     * Callback method for setting the content key words of visible tweets.
      * @param mode content
      */
     void setContent(const char* content);
@@ -55,8 +55,11 @@ private:
     };
     bool shouldDisplayTweetContent(QString content);
 
+    //contains visible author names
     QStringList visibleAuthorName;
+    //determines the mode how author names are filtered
     TwitterFilter::Mode mode;
+    //contains the key words that should be contained in the visible tweets
     QStringList visibleContent;
 
 };
