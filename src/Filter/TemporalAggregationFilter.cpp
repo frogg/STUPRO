@@ -123,8 +123,6 @@ int TemporalAggregationFilter::RequestData(
 	vtkPolyData* input = vtkPolyData::GetData(inInfo);
 	vtkPolyData* output = vtkPolyData::GetData(outInfo);
 
-	std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
-
 	// Add the data from the current timestep to the accumulation
 	for (int i = 0; i < input->GetNumberOfPoints(); i++) {
 		double coordinates[3];
