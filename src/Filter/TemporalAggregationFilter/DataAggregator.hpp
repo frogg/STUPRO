@@ -42,6 +42,11 @@ public:
 	 * @return A poly data object of the aggregated data
 	 */
 	vtkSmartPointer<vtkPolyData> getPolyData();
+	
+	/**
+	 * Clear all aggregated values.
+	 */
+	void clearAggregationData();
 
 private:
 	/**

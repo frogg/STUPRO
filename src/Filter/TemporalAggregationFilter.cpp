@@ -135,9 +135,10 @@ int TemporalAggregationFilter::RequestData(
         request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
     } else {
         // Everything has been accumulated
-        output->ShallowCopy(this->dataAggregator.getPolyData());
+        output->DeepCopy(this->dataAggregator.getPolyData());
         request->Remove(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING());
         this->currentTimeStep = 0;
+        this->dataAggregator.clearAggregationData();
     }
     
     return 1;

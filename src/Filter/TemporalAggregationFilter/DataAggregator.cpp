@@ -14,13 +14,17 @@
 DataAggregator::DataAggregator() : lastTimeIndex(0) { }
 
 DataAggregator::~DataAggregator() {
-    qDeleteAll(this->aggregatedData);
-    this->aggregatedData.clear();
+    this->clearAggregationData();
 }
 
 void DataAggregator::setDataSetAttributes(Data::Type dataType, int timeResolution) {
     this->dataType = dataType;
     this->timeResolution = timeResolution;
+}
+
+void DataAggregator::clearAggregationData() {
+    qDeleteAll(this->aggregatedData);
+    this->aggregatedData.clear();
 }
 
 void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, vtkSmartPointer<vtkPointData> pointData) {
