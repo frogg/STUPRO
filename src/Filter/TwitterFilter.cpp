@@ -38,30 +38,49 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                             vtkPointData* pointData) {
 
     //if no author is in visibleAuthorName, return this point to be visible
-    if(this->visibleAuthorName.count() == 0){
+    if(this->visibleAuthorName.count() == 0 && this->visibleContent.count() == 0){
         return true;
     }else{
         vtkSmartPointer<vtkStringArray> twitterArray = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("authors"));
             QString author = QString::fromStdString(twitterArray->GetValue(pointIndex));
         author.remove(' ');
-        for(int i=0; i<visibleAuthorName.length();i++){
+        
+        
+        vtkSmartPointer<vtkStringArray> contents = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("contents"));
+        QString content = QString::fromStdString(contents->GetValue(pointIndex));
+        
+        
+        for(int i=0; i<visibleAuthorName.count();i++){
             QString temp = visibleAuthorName.at(i);
             //check author contains substring temp
             
             if(this->mode == CONTAINING){
                 //containing Mode
-                if(author.contains(temp,Qt::CaseInsensitive)){
+                if(author.contains(temp,Qt::CaseInsensitive) && this->shouldDisplayTweetContent(content)){
                     return true;
                 }
             }else if(this->mode == MATCHING){
                 //exact match
-                if(QString::compare(author, "", Qt::CaseInsensitive) == 0){
+                if(QString::compare(author, "", Qt::CaseInsensitive) == 0 && shouldDisplayTweetContent(content)){
                     return true;
                 }
             }
             }
         return false;
     }
+}
+       
+bool TwitterFilter::shouldDisplayTweetContent(QString content){
+    if(this->visibleContent.count() == 0){
+        return true;
+    }
+        for(int i=0; i<visibleContent.count();i++){
+            QString temp = visibleContent.at(i);
+            if(content.contains(temp,Qt::CaseInsensitive)){
+                return true;
+            }
+        }
+    return false;
 }
 
 void TwitterFilter::setAuthorName(const char* authorNames){
@@ -85,6 +104,19 @@ void TwitterFilter::setAuthorName(const char* authorNames){
     
     //std::cout << "Content" << authors.toLatin1().data() << " ,number of elements: " << visibleAuthorName.count() << std::endl;
    // std::cout << "visibleAuthorName1 " << visibleAuthorName.count() << std::endl;
+    this->Modified();
+}
+
+void TwitterFilter::setContent(const char* content){
+    QString contentKeyWords = QString::fromStdString(content);
+    contentKeyWords.remove(' ');
+
+    if(QString::compare(contentKeyWords, "", Qt::CaseInsensitive) == 0){
+        //evtl ueberarbeiten
+        this->visibleContent = QStringList();
+    }else{
+        this->visibleContent = contentKeyWords.split( ";" );
+    }
     this->Modified();
 }
 

@@ -94,14 +94,8 @@
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
-            <StringVectorProperty name="Select Author"
-                command="setAuthorName"
-                number_of_elements="1"
-                default_values=""
-                information_property="Author name">
-            </StringVectorProperty>
             <IntVectorProperty
-                name="Matching Mode"
+                name="Author matching mode"
                 command="setMatchingMode"
                 number_of_elements="1"
                 default_values="0">
@@ -113,6 +107,18 @@
                     This property indicates which transform mode will be used.
                 </Documentation>
             </IntVectorProperty>
+            <StringVectorProperty name="Select Author"
+                command="setAuthorName"
+                number_of_elements="1"
+                default_values=""
+                information_property="Author name">
+            </StringVectorProperty>
+            <StringVectorProperty name="Select Content"
+                command="setContent"
+                number_of_elements="1"
+                default_values=""
+                information_property="Content">
+            </StringVectorProperty>
             <Hints>
                 <ShowInMenu category="Kronos" />
             </Hints>

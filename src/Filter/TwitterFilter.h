@@ -30,6 +30,12 @@ public:
      */
     void setMatchingMode(int mode);
     
+    /**
+     * Callback method for setting the content mode
+     * @param mode content
+     */
+    void setContent(const char* content);
+    
 
 private:
     /**
@@ -47,9 +53,12 @@ private:
     enum Mode {
         CONTAINING, MATCHING
     };
-    
+    bool shouldDisplayTweetContent(QString content);
+
     QStringList visibleAuthorName;
     TwitterFilter::Mode mode;
+    QStringList visibleContent;
+
 };
 
 #endif
