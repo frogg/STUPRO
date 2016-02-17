@@ -128,11 +128,10 @@ int TemporalAggregationFilter::RequestData(
         this->dataAggregator.addPointData(i, currentCoordinates, input->GetPointData());
     }
 
-    this->currentTimeStep++;
-
     if (this->currentTimeStep < inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())) {
         // There are still time steps left, continue on
         request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
+        this->currentTimeStep++;
     } else {
         // Everything has been accumulated
         output->DeepCopy(this->dataAggregator.getPolyData());
@@ -159,7 +158,7 @@ int TemporalAggregationFilter::RequestUpdateExtent (
     // Make the pipeline executive iterate the upstream pipeline time steps by setting the update time step appropiately
     double *inputTimeSteps = inputInformation->Get(vtkStreamingDemandDrivenPipeline::TIME_STEPS());
     if (inputTimeSteps) {
-        inputInformation->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), inputTimeSteps[this->currentTimeStep]);
+        inputInformation->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), this->currentTimeStep);
     }
 
     return 1;

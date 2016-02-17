@@ -50,8 +50,8 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
             } else {
                 // This is the first time a point with these coordinates shows up
                 PrecipitationAggregationValue* newValue = new PrecipitationAggregationValue();
-                newValue->setTimeIndex(currentTimeStep);
                 newValue->setLastPrecipitationRate(currentPrecipitationRate);
+                newValue->setTimeIndex(currentTimeStep);
                 this->aggregatedData.insert(coordinates, newValue);
             }
             break; }
@@ -72,6 +72,7 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
                 // This is the first time a point with these coordinates shows up
                 TemperatureAggregationValue* newValue = new TemperatureAggregationValue();
                 newValue->setAverageTemperature(currentTemperature);
+                newValue->setTimeIndex(1);
                 this->aggregatedData.insert(coordinates, newValue);
             }
             break; }
@@ -98,6 +99,7 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
                 WindAggregationValue* newValue = new WindAggregationValue();
                 newValue->setAverageVelocity(currentVelocity);
                 newValue->setAverageBearing(currentBearing);
+                newValue->setTimeIndex(1);
                 this->aggregatedData.insert(coordinates, newValue);
             }
             break; }
@@ -118,6 +120,7 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
                 // This is the first time a point with these coordinates shows up
                 CloudCoverageAggregationValue* newValue = new CloudCoverageAggregationValue();
                 newValue->setAverageCloudCoverage(currentCoverage);
+                newValue->setTimeIndex(1);
                 this->aggregatedData.insert(coordinates, newValue);
             }
             break; }
@@ -159,6 +162,8 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
     				(double) currentValue->getAccumulatedPrecipitation()
     			};
                 aggregatedPrecipitationAmounts->SetTuple(tupleNumber, aggregatedPrecipitationAmount);
+                
+                tupleNumber++;
             }
             
             dataSet->GetPointData()->AddArray(aggregatedPrecipitationAmounts);
@@ -185,6 +190,8 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
     				(double) currentValue->getAverageTemperature()
     			};
                 aggregatedTemperatures->SetTuple(tupleNumber, aggregatedTemperature);
+                
+                tupleNumber++;
             }
             
             dataSet->GetPointData()->AddArray(aggregatedTemperatures);
@@ -238,6 +245,8 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
     				0.0
     			};
     			aggregatedVelocities->SetTuple(tupleNumber, aggregatedVelocity);
+                
+                tupleNumber++;
             }
             
             dataSet->GetPointData()->AddArray(aggregatedSpeeds);
@@ -266,6 +275,8 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
     				(double) currentValue->getAverageCloudCoverage()
     			};
                 aggregatedCoverageValues->SetTuple(tupleNumber, aggregatedCoverageValue);
+                
+                tupleNumber++;
             }
             
             dataSet->GetPointData()->AddArray(aggregatedCoverageValues);
