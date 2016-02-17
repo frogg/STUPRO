@@ -190,7 +190,29 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
             break;
         }
         case Data::CLOUD_COVERAGE: {
-
+            // Create the array that will hold the aggregated cloud coverage values
+            vtkSmartPointer<vtkTypeFloat32Array> aggregatedCoverageValues = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            aggregatedCoverageValues->SetNumberOfComponents(1);
+            aggregatedCoverageValues->SetNumberOfTuples(this->aggregatedData.size());
+            aggregatedCoverageValues->SetName("Average Cloud Coverage Values");
+            
+            // Iterate over all points in the aggregated data
+            QMap<PointCoordinates, AggregationValue*>::iterator i;
+            int tupleNumber = 0;
+            for (i = this->aggregatedData.begin(); i != this->aggregatedData.end(); ++i) {
+                CloudCoverageAggregationValue* currentValue = static_cast<CloudCoverageAggregationValue*>(i.value());
+                
+                // Add the point's coordinates
+                vertices->InsertCellPoint(points->InsertNextPoint(i.key().getX(), i.key().getY(), i.key().getZ()));
+                
+                // Add the point's average cloud coverage
+                double aggregatedCoverageValue[1] = {
+    				(double) currentValue->getAverageCloudCoverage()
+    			};
+                aggregatedCoverageValues->SetTuple(tupleNumber, aggregatedCoverageValue);
+            }
+            
+            dataSet->GetPointData()->AddArray(aggregatedCoverageValues);
             break;
         }
         default:
