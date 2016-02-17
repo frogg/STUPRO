@@ -5,6 +5,8 @@
 #include <Filter/TemporalAggregationFilter/WindAggregationValue.hpp>
 #include <Filter/TemporalAggregationFilter/CloudCoverageAggregationValue.hpp>
 
+#include <vtkPoints.h>
+#include <vtkCellArray.h>
 #include <vtkDataArray.h>
 #include <vtkTypeFloat32Array.h>
 
@@ -119,6 +121,65 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
     }
     
     this->lastTimeIndex++;
+}
+
+vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
+    vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
+    
+    // Create the content of the output poly data object
+	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
+	vertices->Allocate(vertices->EstimateSize(1, this->aggregatedData.size()));
+	vertices->InsertNextCell(this->aggregatedData.size());
+    
+    switch (this->dataType) {
+        case Data::PRECIPITATION: {
+            // Create the array that will hold the aggregated precipitation amounts
+            vtkSmartPointer<vtkTypeFloat32Array> aggregatedPrecipitationAmounts = vtkSmartPointer<vtkTypeFloat32Array>::New();
+            aggregatedPrecipitationAmounts->SetNumberOfComponents(1);
+            aggregatedPrecipitationAmounts->SetNumberOfTuples(this->aggregatedData.size());
+            aggregatedPrecipitationAmounts->SetName("Accumulated Precipitation Amounts");
+            
+            // Iterate over all points in the aggregated data
+            QMap<PointCoordinates, AggregationValue*>::iterator i;
+            int tupleNumber = 0;
+            for (i = this->aggregatedData.begin(); i != this->aggregatedData.end(); ++i) {
+                PrecipitationAggregationValue* currentValue = static_cast<PrecipitationAggregationValue*>(i.value());
+                
+                // Add the point's coordinates
+                vertices->InsertCellPoint(points->InsertNextPoint(i.key().getX(), i.key().getY(), i.key().getZ()));
+                
+                // Add the point's accumulated precipitation amounts
+                double aggregatedPrecipitationAmount[1] = {
+    				(double) currentValue->getAccumulatedPrecipitation()
+    			};
+                aggregatedPrecipitationAmounts->SetTuple(tupleNumber, aggregatedPrecipitationAmount);
+            }
+            
+            dataSet->GetPointData()->AddArray(aggregatedPrecipitationAmounts);
+            break;
+        }
+        case Data::TEMPERATURE: {
+
+            break;
+        }
+        case Data::WIND: {
+
+            break;
+        }
+        case Data::CLOUD_COVERAGE: {
+
+            break;
+        }
+        default:
+            break;
+    }
+
+	// Assign the created point set to the output object
+	dataSet->SetPoints(points);
+	dataSet->SetVerts(vertices);
+    
+    return dataSet;
 }
 
 void DataAggregator::finishAggregation() {

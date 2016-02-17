@@ -36,6 +36,12 @@ public:
      * @param pointData A pointer to the point data in the current time step
      */
     void addPointData(int pointIndex, PointCoordinates coordinates, vtkSmartPointer<vtkPointData> pointData);
+	
+	/**
+	 * Generate a poly data object which contains all points that have been aggregated along with an array containing each point's aggregated value.
+	 * @return A poly data object of the aggregated data
+	 */
+	vtkSmartPointer<vtkPolyData> getPolyData();
 
 private:
 	/**
