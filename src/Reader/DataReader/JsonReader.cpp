@@ -90,7 +90,8 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    Coordinate(
 			        jsonValue[i]["endPosition"]["latitude"].GetDouble(),
 			        jsonValue[i]["endPosition"]["longitude"].GetDouble()
-			    )
+			    ),
+                jsonValue[i]["airline"].GetString()
 			);
 			break;
 		case Data::TWEETS:
