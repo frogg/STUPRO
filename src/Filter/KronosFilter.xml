@@ -94,30 +94,17 @@
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
-            <IntVectorProperty
-                name="Author matching mode"
-                command="setMatchingMode"
-                number_of_elements="1"
-                default_values="0">
-                <EnumerationDomain name="enum">
-                    <Entry value="0" text="Containing"/>
-                    <Entry value="1" text="Matching"/>
-                </EnumerationDomain>
-                <Documentation>
-                    This property indicates which transform mode will be used.
-                </Documentation>
-            </IntVectorProperty>
-            <StringVectorProperty name="Select Author"
-                command="setAuthorName"
+            <StringVectorProperty name="Authors (comma-separated)"
+                command="setAuthors"
                 number_of_elements="1"
                 default_values=""
-                information_property="Author name">
+                information_property="Authors whose tweets should be extracted">
             </StringVectorProperty>
-            <StringVectorProperty name="Select Content"
-                command="setContent"
+            <StringVectorProperty name="Hashtags (comma-separated)"
+                command="setHashtags"
                 number_of_elements="1"
                 default_values=""
-                information_property="Content">
+                information_property="All tweets containing at least one of these hashtags will be extracted">
             </StringVectorProperty>
             <Hints>
                 <ShowInMenu category="Kronos" />

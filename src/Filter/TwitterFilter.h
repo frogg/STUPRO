@@ -1,15 +1,16 @@
-#ifndef KRONOS_TWITTER_TYPE_FILTER_HPP
-#define KRONOS_TWITTER_TYPE_FILTER_HPP
+#ifndef KRONOS_TWITTER_FILTER_HPP
+#define KRONOS_TWITTER_FILTER_HPP
+
+#include <Filter/AbstractSelectionFilter.hpp>
 
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
-#include <iostream>
 
-#include <Filter/AbstractSelectionFilter.hpp>
-#include <QMap>
+#include <qmap.h>
+#include <qstringlist.h>
 
 /**
- * This filter can extract data from twitter point sets read by a Kronos reader depending on the tweet author and tweet content.
+ * This filter can extract data from Twitter point sets read by a Kronos reader depending on the tweet author and tweet content.
  */
 class TwitterFilter : public AbstractSelectionFilter {
 public:
@@ -19,27 +20,20 @@ public:
     void SetInputConnection(vtkAlgorithmOutput *input);
 
     /**
-      * Callback method for setting the name of the author(s) of the visible tweets.
-      * @param authorName
+      * Callback method for setting the authors whose tweets should be visible.
+      * @param authors Comma-separated string of all author names
      */
-    void setAuthorName(const char* authorNames);
+    void setAuthors(const char* authors);
     
     /**
-     * Callback method for setting the matching mode
-     * @param mode (0 stands for containing, 1 for matching)
+     * Callback method for setting the hashtags of visible tweets.
+     * @param hashtags Comma-separated string of all hashtags
      */
-    void setMatchingMode(int mode);
-    
-    /**
-     * Callback method for setting the content key words of visible tweets.
-     * @param mode content
-     */
-    void setContent(const char* content);
-    
+    void setHashtags(const char* hashtags);
 
 private:
     /**
-     * Initialize a new instance of the twitter filter.
+     * Initialize a new instance of the Twitter filter.
      */
 	TwitterFilter();
 	~TwitterFilter();
@@ -49,19 +43,16 @@ private:
     
     QList<Data::Type> getCompatibleDataTypes();
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
-	
-    enum Mode {
-        CONTAINING, MATCHING
-    };
-    bool shouldDisplayTweetContent(QString content);
 
-    //contains visible author names
-    QStringList visibleAuthorName;
-    //determines the mode how author names are filtered
-    TwitterFilter::Mode mode;
-    //contains the key words that should be contained in the visible tweets
-    QStringList visibleContent;
-
+    /**
+     * Contains all author names whose tweets should be extracted.
+     */
+    QStringList authors;
+    
+    /**
+     * Contains all hashtags of visible tweets.
+     */
+    QStringList hashtags;
 };
 
 #endif

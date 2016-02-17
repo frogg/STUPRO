@@ -2,125 +2,78 @@
 
 #include <Reader/DataReader/Data.hpp>
 
-#include <vtkSelection.h>
-#include <vtkSelectionNode.h>
-#include <vtkIntArray.h>
-#include <vtkCompositeDataSet.h>
-#include <vtkCompositeDataIterator.h>
-#include <vtkHierarchicalBoxDataIterator.h>
-#include <vtkTable.h>
-#include <vtkGraph.h>
-#include <vtkInformation.h>
-#include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
-#include <vtkPointSet.h>
 #include <vtkStringArray.h>
 
-
-
-TwitterFilter::TwitterFilter() {
-    //std::cout << "contains 0 elements:" << this->visibleAuthorName.count();
-    this->mode = CONTAINING;
-}
-
+TwitterFilter::TwitterFilter() { }
 TwitterFilter::~TwitterFilter() { }
-
-
 
 vtkStandardNewMacro(TwitterFilter);
 
 QList<Data::Type> TwitterFilter::getCompatibleDataTypes() {
-    return (QList<Data::Type>() << Data::TWEETS);
+	return (QList<Data::Type>() << Data::TWEETS);
 }
 
-bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
-                                            vtkPointData* pointData) {
-
-    //if no author is in visibleAuthorName and no content is in visibleContent (everything should be visible by default), return this point to be visible
-    if(this->visibleAuthorName.count() == 0 && this->visibleContent.count() == 0){
-        return true;
-    }else{
-        vtkSmartPointer<vtkStringArray> twitterArray = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("authors"));
-            QString author = QString::fromStdString(twitterArray->GetValue(pointIndex));
-        author.remove(' ');
-        
-        vtkSmartPointer<vtkStringArray> contents = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("contents"));
-        QString content = QString::fromStdString(contents->GetValue(pointIndex));
-        
-        
-        for(int i=0; i<visibleAuthorName.count();i++){
-            QString temp = visibleAuthorName.at(i);
-            //check author contains substring temp
+bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) {
+    vtkSmartPointer<vtkStringArray> contents = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("contents"));
+    vtkSmartPointer<vtkStringArray> authors = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("authors"));
+    
+    if (!contents || !authors) {
+        this->fail("The string arrays containing tweet contents or authors seem to be invalid.");
+        return false;
+    }
+    
+    // Extract the actual content and author of the tweet we are currently looking at
+    QString content = QString::fromStdString(contents->GetValue(pointIndex));
+    QString author = QString::fromStdString(authors->GetValue(pointIndex));
+    
+    // Decide whether to display this tweet depending on the user's input
+    if (this->authors.contains(author) || this->authors.size() == 0) {
+        if (this->hashtags.size() == 0) {
+            return true;
+        } else {
+            for (int i = 0; i < this->hashtags.size(); i++) {
+                if (content.contains(QString("#%1").arg(this->hashtags[i]))) {
+                    return true;
+                }
+            }
             
-            if(this->mode == CONTAINING){
-                //containing Mode
-                if(author.contains(temp,Qt::CaseInsensitive) && this->shouldDisplayTweetContent(content)){
-                    return true;
-                }
-            }else if(this->mode == MATCHING){
-                //exact match
-                if(QString::compare(author, "", Qt::CaseInsensitive) == 0 && shouldDisplayTweetContent(content)){
-                    return true;
-                }
-            }
-            }
+            return false;
+        }
+    } else {
         return false;
     }
 }
-       
-bool TwitterFilter::shouldDisplayTweetContent(QString content){
-    if(this->visibleContent.count() == 0){
-        return true;
+
+void TwitterFilter::setAuthors(const char* authors) {
+    if (QString::fromStdString(authors).trimmed() == "") {
+        this->authors.clear();
+    } else {
+        this->authors = QString::fromStdString(authors).split(",");
+        
+        for (int i = 0; i < this->authors.size(); i++) {
+            this->authors[i] = this->authors[i].trimmed();
+        }
     }
-        for(int i=0; i<visibleContent.count();i++){
-            QString temp = visibleContent.at(i);
-            if(content.contains(temp,Qt::CaseInsensitive)){
-                return true;
+
+    this->Modified();
+}
+
+void TwitterFilter::setHashtags(const char* hashtags) {
+    if (QString::fromStdString(hashtags).replace("#", "").trimmed() == "") {
+        this->hashtags.clear();
+    } else {
+        this->hashtags = QString::fromStdString(hashtags).split(",");
+        
+        for (int i = 0; i < this->hashtags.size(); i++) {
+            this->hashtags[i] = this->hashtags[i].trimmed();
+            // Remove trailing hashtag symbols if necessary
+            if (this->hashtags[i].startsWith("#")) {
+                this->hashtags[i] = this->hashtags[i].remove(0, 1).trimmed();
             }
         }
-    return false;
-}
-
-void TwitterFilter::setAuthorName(const char* authorNames){
-
-    QString authors = QString::fromStdString(authorNames);
-    authors.remove(' ');
-  //  std::cout << "Value " << QString::compare(authors, "", Qt::CaseInsensitive) << std::endl;
-  //  std::cout << "visibleAuthorName " << visibleAuthorName.count() << std::endl;
-    
-    //nothing is entered or just a whitespace -> empty QList
-    if(QString::compare(authors, "", Qt::CaseInsensitive) == 0){
-        //doesn't seem to work fine, after this, there are object left in list sometimes
-        /* for(int i=0; i<visibleAuthorName.count();i++){
-            visibleAuthorName.removeAt(0);
-        }
-        */
-        visibleAuthorName = QStringList();
-    }else{
-        visibleAuthorName = authors.split( ";" );
     }
-    
-    //std::cout << "Content" << authors.toLatin1().data() << " ,number of elements: " << visibleAuthorName.count() << std::endl;
-   // std::cout << "visibleAuthorName1 " << visibleAuthorName.count() << std::endl;
-    this->Modified();
-}
 
-void TwitterFilter::setContent(const char* content){
-    QString contentKeyWords = QString::fromStdString(content);
-    contentKeyWords.remove(' ');
-
-    if(QString::compare(contentKeyWords, "", Qt::CaseInsensitive) == 0){
-        //might be improved later
-        this->visibleContent = QStringList();
-    }else{
-        this->visibleContent = contentKeyWords.split( ";" );
-    }
-    this->Modified();
-}
-
-
-void TwitterFilter::setMatchingMode(int matchingMode){
-    this->mode = static_cast<Mode>(matchingMode);
     this->Modified();
 }
 
