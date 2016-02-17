@@ -19,7 +19,7 @@
 
 vtkStandardNewMacro(vtkKronosReader);
 
-vtkKronosReader::vtkKronosReader() : cameraPosition(), zoomLevel(0), error(false) {
+vtkKronosReader::vtkKronosReader() : error(false), zoomLevel(0) {
     // Initialize values that are read from the program configuration
     try {
         this->globeRadius = Configuration::getInstance().getDouble("globe.radius");
@@ -106,6 +106,12 @@ int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationV
     // Append the data type as an entry to the output information
     outInfo->Set(Data::VTK_DATA_TYPE(), this->jsonReader->getDataType());
     request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TYPE());
+    
+    // If applicable, append the time resolution as an entry to the output information
+    if (this->jsonReader->hasTemporalData()) {
+        outInfo->Set(Data::VTK_TIME_RESOLUTION(), this->jsonReader->getTimeResolution());
+        request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_TIME_RESOLUTION());
+    }
 
     return 1;
 }
