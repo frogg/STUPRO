@@ -59,7 +59,7 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                 }
             }else if(this->mode == MATCHING){
                 //exact match
-                if(QString::compare(author, "", Qt::CaseInsensitive) == 0 && shouldDisplayTweetContent(content)){
+                if(QString::compare(author,temp, Qt::CaseInsensitive) == 0 && shouldDisplayTweetContent(content)){
                     return true;
                 }
             }
