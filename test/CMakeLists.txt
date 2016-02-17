@@ -25,12 +25,6 @@ else()
     include(${QT_USE_FILE})
 endif()
 
-# find and include PostgreSQL libraries
-find_library(PQXX_LIB NAMES pqxx libpqxx DOC "PostgreSQL libpqxx library")
-find_library(PQ_LIB NAMES pq libpq DOC "PostgreSQL libpq library")
-find_path(PQXX_HEADERS pqxx DOC "PostgreSQL header files")
-include_directories(${PQXX_HEADERS})
-
 # find GTest headers and libraries
 find_package(GoogleTest REQUIRED)
 
@@ -57,9 +51,6 @@ target_link_libraries(UnitTester
   KronosPlugin
   ${GTEST_BOTH_LIBRARIES}
 )
-
-# link against PostgreSQL libraries
-target_link_libraries(UnitTester ${PQXX_LIB} ${PQ_LIB})
 
 # link against Qt libraries
 if("${KRONOS_QT_VERSION}" STREQUAL "5")

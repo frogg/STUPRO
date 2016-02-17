@@ -44,7 +44,7 @@ ImageCache::ImageCache() {
 }
 
 void ImageCache::cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX,
-                                  int tileY) {
+                            int tileY) {
 	/* If necessary, create the cache directory of the specified layer */
 	QDir layerDirectory(ImageCache::LAYER_DIRECTORY_PATH.arg(layer));
 	if (!layerDirectory.exists()) {
@@ -125,7 +125,7 @@ const MetaImage ImageCache::getCachedImage(QString layer, int zoomLevel, int til
 
 	/* Ensure that both values in the meta tag can be converted to integers */
 	bool firstConversionSuccess = false;
-    bool secondConversionSuccess = false;
+	bool secondConversionSuccess = false;
 	imageSize.at(0).toInt(&firstConversionSuccess);
 	imageSize.at(1).toInt(&secondConversionSuccess);
 	if (!firstConversionSuccess || !secondConversionSuccess) {
