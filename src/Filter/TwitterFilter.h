@@ -22,7 +22,7 @@ public:
       * Callback method for setting the name of the author(s) of the visible tweets.
       * @param authorName
      */
-    void setAuthorName(const char* authorName);
+    void setAuthorName(const char* authorNames);
     
     /**
      * Callback method for setting the matching mode

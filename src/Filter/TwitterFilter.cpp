@@ -14,6 +14,8 @@
 #include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
+#include <vtkStringArray.h>
+
 
 
 TwitterFilter::TwitterFilter() {
@@ -41,32 +43,45 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
     return this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
                                                (precipitationTypeArray->GetTuple1(pointIndex))];
     */
-    
+    //if no author is in visibleAuthorName, return this point to be visible
     if(this->visibleAuthorName.count() == 0){
-        //vielleicht auch count == 1, weil leerer string auch reingespeichert wird
         return true;
     }else{
-        vtkSmartPointer<vtkIntArray> twitterArray = vtkStringArray::SafeDownCast(pointData->GetArray("authors"));
-        std::cout << twitterArray->GetTuple1(pointIndex);
-        //adapt it
-        return true;
+        vtkSmartPointer<vtkStringArray> twitterArray = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("authors"));
+            QString author = QString::fromStdString(twitterArray->GetValue(pointIndex));
+        author.remove(' ');
+        for(int i=0; i<visibleAuthorName.length();i++){
+            QString temp = visibleAuthorName.at(i);
+            if(author.contains(temp,Qt::CaseInsensitive)){ //mit indexOf machen, falls Ergebnis -1, oder 0
+                return true;
+            }
+        }
+        return false;
     }
 }
 
-void TwitterFilter::setAuthorName(const char* authorName){
-    std::cout << "nana" << authorName;
-    QString str = QString::fromStdString(authorName);
-    str.remove(' ');
+void TwitterFilter::setAuthorName(const char* authorNames){
+
+    QString authors = QString::fromStdString(authorNames);
+    authors.remove(' ');
+    //nothing is entered or just a whitespace -> empty QList
+    if(QString::compare(authors, "", Qt::CaseInsensitive) == 0){
+        for(int i=0; i<visibleAuthorName.length();i++){
+            visibleAuthorName.removeFirst();
+        }
+    }else{
+        visibleAuthorName = authors.split( ";" );
+    }
     
-    visibleAuthorName = str.split( ";" );
-    std::cout << "lala" << str.toLatin1().data() << ": " << visibleAuthorName.count();
-//    std::cout << "hi" << QString::compare(str, "", Qt::CaseInsensitive) << "bla" << QString::compare(str, " ",Qt::CaseInsensitive);
+    //std::cout << "Content" << authors.toLatin1().data() << " ,number of elements: " << visibleAuthorName.count() << std::endl;
+    //std::cout << "compare" << QString::compare(authorNames, "", Qt::CaseInsensitive) << std::endl;
+
     this->Modified();
 }
 
 
 void TwitterFilter::setMatchingMode(int mode){
-    std::cout << "test12345566" << mode;
+    //std::cout << "test12345566" << mode;
     this->Modified();
 }
 
