@@ -21,7 +21,7 @@
 TwitterFilter::TwitterFilter() {
     //std::cout << "contains 0 elements:" << this->visibleAuthorName.count();
     //default is containingMode
-    this->matchingMode = 0;
+    this->mode = CONTAINING;
 }
 
 TwitterFilter::~TwitterFilter() { }
@@ -48,12 +48,12 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
             QString temp = visibleAuthorName.at(i);
             //check author contains substring temp
             
-            if(matchingMode == 0){
+            if(this->mode == CONTAINING){
                 //containing Mode
                 if(author.contains(temp,Qt::CaseInsensitive)){
                     return true;
                 }
-            }else if(matchingMode == 1){
+            }else if(this->mode == MATCHING){
                 //exact match
                 if(QString::compare(author, "", Qt::CaseInsensitive) == 0){
                     return true;
@@ -69,21 +69,28 @@ void TwitterFilter::setAuthorName(const char* authorNames){
     QString authors = QString::fromStdString(authorNames);
     authors.remove(' ');
     //nothing is entered or just a whitespace -> empty QList
+  //  std::cout << "Value " << QString::compare(authors, "", Qt::CaseInsensitive) << std::endl;
+  //  std::cout << "visibleAuthorName " << visibleAuthorName.count() << std::endl;
+
     if(QString::compare(authors, "", Qt::CaseInsensitive) == 0){
-        for(int i=0; i<visibleAuthorName.length();i++){
-            visibleAuthorName.removeFirst();
+        //funktionert irgendwie nicht richtig, da sind noch Reste drin
+       /* for(int i=0; i<visibleAuthorName.count();i++){
+            visibleAuthorName.removeAt(0);
         }
+        */
+        visibleAuthorName = QStringList();
     }else{
         visibleAuthorName = authors.split( ";" );
     }
     
     //std::cout << "Content" << authors.toLatin1().data() << " ,number of elements: " << visibleAuthorName.count() << std::endl;
+   // std::cout << "visibleAuthorName1 " << visibleAuthorName.count() << std::endl;
     this->Modified();
 }
 
 
-void TwitterFilter::setMatchingMode(int mode){
-    matchingMode = mode;
+void TwitterFilter::setMatchingMode(int matchingMode){
+    this->mode = static_cast<Mode>(matchingMode);
     this->Modified();
 }
 

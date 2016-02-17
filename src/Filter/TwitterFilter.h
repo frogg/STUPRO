@@ -44,15 +44,12 @@ private:
     QList<Data::Type> getCompatibleDataTypes();
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
 	
-    QStringList visibleAuthorName;
-    int matchingMode;
+    enum Mode {
+        CONTAINING, MATCHING
+    };
     
-    /**
-     * An internal data structure that maps each precipitation type to a boolean value that denotes its visibility.
-     * This will be updated on callbacks and used to build necessary VTK structures.
-     */
-	//QMap<PrecipitationDataPoint::PrecipitationType, bool> precipitationTypeVisibilities;
-    //need a QList with authors, whose tweets should be printed
+    QStringList visibleAuthorName;
+    TwitterFilter::Mode mode;
 };
 
 #endif
