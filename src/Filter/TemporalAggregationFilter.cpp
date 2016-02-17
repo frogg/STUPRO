@@ -134,7 +134,28 @@ int TemporalAggregationFilter::RequestData(
         
         switch (this->dataType) {
             case Data::PRECIPITATION: {
-                // TODO
+                vtkSmartPointer<vtkDataArray> abstractPrecipitationRateArray = input->GetPointData()->GetArray("precipitationRates");
+            	vtkSmartPointer<vtkTypeFloat32Array> precipitationRateArray = vtkTypeFloat32Array::SafeDownCast(abstractPrecipitationRateArray);
+                double currentPrecipitationRate = precipitationRateArray->GetValue(i);
+            
+                if (this->aggregatedData.contains(currentCoordinates)) {
+                    // The point has already been looked at before
+                    PrecipitationAggregationValue* currentValue = static_cast<PrecipitationAggregationValue*>(this->aggregatedData.value(currentCoordinates));
+                
+                    // Accumulate the precipitation rates over time, therefore getting the total amount of precipitation.
+                    // To do this, two assumptions are made:
+                    // 1. The precipitation amount at the beginning of the accumulation is zero.
+                    // 2. A data point constantly emits precipitation with its precipitation rate until new precipitation rate data is available.
+                    currentValue->setAccumulatedPrecipitation(currentValue->getAccumulatedPrecipitation() + ((1.0 * (this->currentTimeStep - currentValue->getTimeIndex()) * this->timeResolution) * currentValue->getLastPrecipitationRate()));
+                    currentValue->setTimeIndex(this->currentTimeStep);
+                    currentValue->setLastPrecipitationRate(currentPrecipitationRate);
+                } else {
+                    // This is the first time a point with these coordinates shows up
+                    PrecipitationAggregationValue* newValue = new PrecipitationAggregationValue();
+                    newValue->setTimeIndex(this->currentTimeStep);
+                    newValue->setLastPrecipitationRate(currentPrecipitationRate);
+                    this->aggregatedData.insert(currentCoordinates, newValue);
+                }
                 break; }
             case Data::TEMPERATURE: {
                 vtkSmartPointer<vtkDataArray> abstractTemperatureArray = input->GetPointData()->GetArray("temperatures");
