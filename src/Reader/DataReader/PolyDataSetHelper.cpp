@@ -127,7 +127,7 @@ QList<DataPoint*> PolyDataSetHelper::extractRelevantDataPoints(
 
 			if (
 			    dataPoint->getTimestamp() >= timeSpanStart &&
-			    dataPoint->getTimestamp() <= timeSpanEnd
+			    dataPoint->getTimestamp() < timeSpanEnd
 			) {
 				relevantDataPoints.append(point);
 			}
