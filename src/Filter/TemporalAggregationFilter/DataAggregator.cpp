@@ -175,7 +175,7 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
                 // Add the point's coordinates
                 vertices->InsertCellPoint(points->InsertNextPoint(i.key().getX(), i.key().getY(), i.key().getZ()));
                 
-                // Add the point's accumulated precipitation amounts
+                // Add the point's average temperatures
                 double aggregatedTemperature[1] = {
     				(double) currentValue->getAverageTemperature()
     			};
