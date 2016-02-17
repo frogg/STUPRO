@@ -2,6 +2,7 @@
 #define KRONOS_READER_DATA_HPP
 
 #include <Reader/DataReader/vtkInformationDataTypeKey.hpp>
+#include <Reader/DataReader/vtkInformationTimeResolutionKey.hpp>
 
 #include <vtkInformationDataObjectMetaDataKey.h>
 
@@ -15,6 +16,12 @@ public:
 	 * through the pipeline.
 	 */
 	static vtkInformationDataTypeKey* VTK_DATA_TYPE();
+	
+	/**
+	 * A VTK information key for storing the time resolution of temporal data in an object that will be passed
+	 * through the pipeline.
+	 */
+	static vtkInformationTimeResolutionKey* VTK_TIME_RESOLUTION();
 
 	/**
 	 * Enum that denotes a data type. Do not assign values to these. Adding a new data type here
