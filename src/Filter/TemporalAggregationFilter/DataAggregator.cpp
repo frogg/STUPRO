@@ -120,3 +120,16 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
     
     this->lastTimeIndex++;
 }
+
+void DataAggregator::finishAggregation() {
+    if (this->dataType == Data::PRECIPITATION) {
+        // The accumulation of precipitation amount must be finished for data points that had no new data available in the time step last accumulated
+        QMap<PointCoordinates, AggregationValue*>::iterator i;
+        for (i = this->aggregatedData.begin(); i != this->aggregatedData.end(); ++i) {
+            PrecipitationAggregationValue* currentValue = static_cast<PrecipitationAggregationValue*>(i.value());
+            
+            currentValue->setAccumulatedPrecipitation(currentValue->getAccumulatedPrecipitation() + ((1.0 * (this->lastTimeIndex - currentValue->getTimeIndex()) * this->timeResolution) * currentValue->getLastPrecipitationRate()));
+            currentValue->setTimeIndex(this->lastTimeIndex);
+        }
+    }
+}

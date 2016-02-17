@@ -38,6 +38,11 @@ public:
     void addPointData(int pointIndex, PointCoordinates coordinates, vtkSmartPointer<vtkPointData> pointData);
 
 private:
+	/**
+	 * Finish the aggregation of all data.
+	 */
+	void finishAggregation();
+	
     /**
      * This data structure identifies a point by its point coordinates and maps it to its aggregated data. The value will be a specialised subclass of AggregationValue depending on the type of input data. In each iteration over the time steps new data will be added to the aggregation.
      */
