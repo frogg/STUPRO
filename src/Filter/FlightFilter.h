@@ -48,12 +48,12 @@ private:
         CONTAINING, MATCHING
     };
 
-    //contains visible author names
-//    QStringList visibleAuthorName;
+
     //determines the mode how airlines names are filtered
-    FlightFilter::Mode mode;
-    //contains the key words that should be contained in the visible tweets
-  //  QStringList visibleContent;
+    FlightFilter::Mode modeAirline;
+    //contains visible airlines names
+    QStringList visibleAirlines;
+
 
 };
 

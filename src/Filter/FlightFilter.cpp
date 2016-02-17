@@ -20,7 +20,7 @@
 
 FlightFilter::FlightFilter() {
     //std::cout << "contains 0 elements:" << this->visibleAuthorName.count();
-    this->mode = CONTAINING;
+    this->modeAirline = CONTAINING;
 }
 
 FlightFilter::~FlightFilter() { }
@@ -36,47 +36,48 @@ QList<Data::Type> FlightFilter::getCompatibleDataTypes() {
 
 bool FlightFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                             vtkPointData* pointData) {
-    return true;
-    /*
-    //if no author is in visibleAuthorName and no content is in visibleContent (everything should be visible by default), return this point to be visible
-    if(this->visibleAuthorName.count() == 0 && this->visibleContent.count() == 0){
-        return true;
+    if(this->visibleAirlines.count() == 0){
+      return true;
     }else{
-        vtkSmartPointer<vtkStringArray> twitterArray = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("authors"));
-            QString author = QString::fromStdString(twitterArray->GetValue(pointIndex));
-        author.remove(' ');
+        vtkSmartPointer<vtkStringArray> airlines = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("airlines"));
+        QString airline = QString::fromStdString(airlines->GetValue(pointIndex));
+        airline.remove(' ');
         
-        vtkSmartPointer<vtkStringArray> contents = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("contents"));
-        QString content = QString::fromStdString(contents->GetValue(pointIndex));
-        
-        
-        for(int i=0; i<visibleAuthorName.count();i++){
-            QString temp = visibleAuthorName.at(i);
-            //check author contains substring temp
-            
-            if(this->mode == CONTAINING){
+        for(int i=0; i<visibleAirlines.count();i++){
+            QString temp = visibleAirlines.at(i);
+            //check airline contains substring temp
+            if(this->modeAirline == CONTAINING){
                 //containing Mode
-                if(author.contains(temp,Qt::CaseInsensitive) && this->shouldDisplayTweetContent(content)){
+                if(airline.contains(temp,Qt::CaseInsensitive)){
                     return true;
                 }
-            }else if(this->mode == MATCHING){
+            }else if(this->modeAirline == MATCHING){
                 //exact match
-                if(QString::compare(author, "", Qt::CaseInsensitive) == 0 && shouldDisplayTweetContent(content)){
+                if(QString::compare(airline, temp, Qt::CaseInsensitive) == 0){
                     return true;
                 }
             }
-            }
+        }
         return false;
     }
- */
+    
 }
 
 void FlightFilter::setMatchingMode(int matchingMode){
-    this->mode = static_cast<Mode>(matchingMode);
+    this->modeAirline = static_cast<Mode>(matchingMode);
     this->Modified();
 }
 
 void FlightFilter::setAirline(const char* airline){
+    QString airlines = QString::fromStdString(airline);
+    airlines.remove(' ');
+    
+    if(QString::compare(airlines, "", Qt::CaseInsensitive) == 0){
+        //might be improved later
+        this->visibleAirlines = QStringList();
+    }else{
+        this->visibleAirlines = airlines.split( ";" );
+    }
     this->Modified();
 }
 
