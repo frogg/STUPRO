@@ -241,6 +241,10 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	}
 
 	case Data::FLIGHTS: {
+        vtkSmartPointer<vtkStringArray> airlines = vtkSmartPointer<vtkStringArray>::New();
+        airlines->SetNumberOfComponents(relevantDataPoints.size());
+        airlines->SetName("airlines");
+        
 		vtkSmartPointer<vtkDoubleArray> destinations = vtkSmartPointer<vtkDoubleArray>::New();
 		vtkIdType numberOfTuples[1];
 		numberOfTuples[0] = relevantDataPoints.size();
@@ -261,11 +265,15 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 				dataPoint->getDestination().lon()
 			};
 			destinations->SetTuple(tupleNumber, coordinates);
+            
+            airlines->InsertNextValue(dataPoint->getAirlineName().toStdString());
 
 			tupleNumber++;
 		}
 
 		dataSet->GetPointData()->AddArray(destinations);
+        dataSet->GetPointData()->AddArray(airlines);
+        
 		break;
 	}
 
