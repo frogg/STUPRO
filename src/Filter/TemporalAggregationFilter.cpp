@@ -112,10 +112,10 @@ int TemporalAggregationFilter::RequestData(
     }
     
     vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
-    // vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
     vtkPolyData *input = vtkPolyData::GetData(inInfo);
-    // vtkPolyData *output = vtkPolyData::GetData(outInfo);
+    vtkPolyData *output = vtkPolyData::GetData(outInfo);
     
     std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
     
@@ -135,8 +135,7 @@ int TemporalAggregationFilter::RequestData(
         request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
     } else {
         // Everything has been accumulated
-        // TODO: Finish up and output data
-        
+        output->ShallowCopy(this->dataAggregator.getPolyData());
         request->Remove(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING());
         this->currentTimeStep = 0;
     }
