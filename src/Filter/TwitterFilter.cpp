@@ -19,7 +19,9 @@
 
 
 TwitterFilter::TwitterFilter() {
-    std::cout << "mama" << this->visibleAuthorName.count();
+    //std::cout << "contains 0 elements:" << this->visibleAuthorName.count();
+    //default is containingMode
+    this->matchingMode = 0;
 }
 
 TwitterFilter::~TwitterFilter() { }
@@ -34,15 +36,7 @@ QList<Data::Type> TwitterFilter::getCompatibleDataTypes() {
 
 bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                             vtkPointData* pointData) {
-   /* vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(
-                                                                                    pointData->GetArray("precipitationTypes"));
-    
-    // For the point that should be checked, get its data type from the VTK data array and look up
-    // in the QMap `precipitationTypeVisibilities` whether points with this data type should be
-    // visible or not.
-    return this->precipitationTypeVisibilities[static_cast<PrecipitationDataPoint::PrecipitationType>
-                                               (precipitationTypeArray->GetTuple1(pointIndex))];
-    */
+
     //if no author is in visibleAuthorName, return this point to be visible
     if(this->visibleAuthorName.count() == 0){
         return true;
@@ -52,10 +46,20 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
         author.remove(' ');
         for(int i=0; i<visibleAuthorName.length();i++){
             QString temp = visibleAuthorName.at(i);
-            if(author.contains(temp,Qt::CaseInsensitive)){ //mit indexOf machen, falls Ergebnis -1, oder 0
-                return true;
+            //check author contains substring temp
+            
+            if(matchingMode == 0){
+                //containing Mode
+                if(author.contains(temp,Qt::CaseInsensitive)){
+                    return true;
+                }
+            }else if(matchingMode == 1){
+                //exact match
+                if(QString::compare(author, "", Qt::CaseInsensitive) == 0){
+                    return true;
+                }
             }
-        }
+            }
         return false;
     }
 }
@@ -74,14 +78,12 @@ void TwitterFilter::setAuthorName(const char* authorNames){
     }
     
     //std::cout << "Content" << authors.toLatin1().data() << " ,number of elements: " << visibleAuthorName.count() << std::endl;
-    //std::cout << "compare" << QString::compare(authorNames, "", Qt::CaseInsensitive) << std::endl;
-
     this->Modified();
 }
 
 
 void TwitterFilter::setMatchingMode(int mode){
-    //std::cout << "test12345566" << mode;
+    matchingMode = mode;
     this->Modified();
 }
 

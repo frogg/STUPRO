@@ -45,6 +45,7 @@ private:
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
 	
     QStringList visibleAuthorName;
+    int matchingMode;
     
     /**
      * An internal data structure that maps each precipitation type to a boolean value that denotes its visibility.
