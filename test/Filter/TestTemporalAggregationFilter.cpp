@@ -26,6 +26,7 @@ TEST(TestTemporalAggregationFilter, TestTemperatureData) {
 
     ASSERT_TRUE(outputDataSet);
     
+	// Extract the filter's output
     vtkSmartPointer<vtkDataArray> abstractTemperatureArray = outputDataSet->GetPointData()
             ->GetArray("Average Temperatures");
     vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(
@@ -36,4 +37,35 @@ TEST(TestTemporalAggregationFilter, TestTemperatureData) {
 	EXPECT_EQ(2, temperatureArray->GetNumberOfTuples());
 	EXPECT_FLOAT_EQ(8.874, *temperatureArray->GetTuple(0));
 	EXPECT_FLOAT_EQ(16.42, *temperatureArray->GetTuple(1));
+}
+
+TEST(TestTemporalAggregationFilter, TestCloudCoverageData) {
+    // Read some test data
+	std::unique_ptr<JsonReader> jsonReader = JsonReaderFactory::createReader("res/test-data/temporal-aggregation-test/cloud-coverage-test-data.kJson");
+	vtkSmartPointer<vtkPolyData> inputDataSet = jsonReader->getVtkDataSet(0);
+    
+    // Set up the filter and its input
+    vtkSmartPointer<TemporalAggregationFilter> filter = TemporalAggregationFilter::New();
+    filter->SetInputData(0, inputDataSet);
+    filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::CLOUD_COVERAGE);
+    filter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
+    filter->Update();
+
+    // Run the filter on the input data
+    vtkSmartPointer<vtkPolyData> outputDataSet = vtkSmartPointer<vtkPolyData>::New();
+    outputDataSet->ShallowCopy(filter->GetPolyDataOutput());
+
+    ASSERT_TRUE(outputDataSet);
+    
+	// Extract the filter's output
+    vtkSmartPointer<vtkDataArray> abstractCloudCoverageArray = outputDataSet->GetPointData()
+            ->GetArray("Average Cloud Coverage Values");
+    vtkSmartPointer<vtkTypeFloat32Array> cloudCoverageArray = vtkTypeFloat32Array::SafeDownCast(
+                abstractCloudCoverageArray);
+    ASSERT_TRUE(cloudCoverageArray);
+    
+	// Test the data that the filter has produced
+	EXPECT_EQ(2, cloudCoverageArray->GetNumberOfTuples());
+	EXPECT_FLOAT_EQ(0.626, *cloudCoverageArray->GetTuple(0));
+	EXPECT_FLOAT_EQ(0.17, *cloudCoverageArray->GetTuple(1));
 }
