@@ -244,7 +244,7 @@ private:
 		vtkSmartPointer<vtkPlaneSource> planeSource;
 		vtkSmartPointer<vtkPolyDataMapper> planeMapper;
 	};
-	
+
 	std::array<double, 16> myCachedCameraMatrix;
 
 	std::vector<LODSetting> myLODTable;

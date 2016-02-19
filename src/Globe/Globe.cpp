@@ -44,9 +44,9 @@ myTimerCallback([this](void* unused) {
 myZoomLevel(0),
 myDisplayMode(DisplayGlobe),
 myDisplayModeInterpolation(0.f) {
-	
+
 	myCachedCameraMatrix.fill(0.0);
-	
+
 	myTilePool.setPoolSize(Configuration::getInstance().getInteger("globe.tilePoolSize"));
 
 	// Check if we have a ParaView application instance (and the Event Loop that comes with it).
@@ -57,7 +57,7 @@ myDisplayModeInterpolation(0.f) {
 
 		// Set timer callback.
 		QObject::connect(myTimer.get(), SIGNAL(timeout()), &myTimerCallback, SLOT(callbackSlot()));
-		
+
 		myTimer->start(Configuration::getInstance().getInteger("globe.timerDelay"));
 	}
 
@@ -505,7 +505,8 @@ void Globe::updateZoomLevel() {
 	camera->GetPosition(cameraPosition.array());
 
 	// The distance between the camera and the globe's center in globe radius units.
-	float cameraDistance = cameraPosition.length() / Configuration::getInstance().getFloat("globe.radius");
+	float cameraDistance = cameraPosition.length() /
+	                       Configuration::getInstance().getFloat("globe.radius");
 
 	// Get the near and far distance limits from the configuration file.
 	float nearDistance = Configuration::getInstance().getFloat("globe.zoom.nearDistance");
@@ -542,13 +543,11 @@ void Globe::updateZoomLevel() {
 	this->setZoomLevel(zoomResult);
 }
 
-void Globe::updateTileVisibilityIfNeeded()
-{
+void Globe::updateTileVisibilityIfNeeded() {
 	updateTileVisibilityImpl(false);
 }
 
-void Globe::updateTileVisibility()
-{
+void Globe::updateTileVisibility() {
 	updateTileVisibilityImpl(true);
 }
 
@@ -568,22 +567,19 @@ void Globe::updateTileVisibilityImpl(bool forceUpdate) {
 	vtkMatrix4x4* fullTransform = camera->GetCompositeProjectionTransformMatrix(
 	                                  (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
 	                                  clipFar);
-	
+
 	// Check if matrix is different from last time this function was called.
 	bool isMatrixSame = true;
-	for (std::size_t i = 0; i < myCachedCameraMatrix.size(); ++i)
-	{
+	for (std::size_t i = 0; i < myCachedCameraMatrix.size(); ++i) {
 		// Compare matrix elements to cached matrix. Copy elements to cache if they are different.
-		if (myCachedCameraMatrix[i] != (*(*fullTransform)[i]))
-		{
+		if (myCachedCameraMatrix[i] != (*(*fullTransform)[i])) {
 			isMatrixSame = false;
 			myCachedCameraMatrix[i] = (*(*fullTransform)[i]);
 		}
 	}
-	
+
 	// Matrix was not changed and force update is false: abort without recomputing tile visibility.
-	if (isMatrixSame && !forceUpdate)
-	{
+	if (isMatrixSame && !forceUpdate) {
 		return;
 	}
 
