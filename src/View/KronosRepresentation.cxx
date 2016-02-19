@@ -78,7 +78,7 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         };
         
     }
-    //Call superclass to prevent warnings.
+    // Call superclass to draw points.
     return this->Superclass::RequestData(request, inputVector, outputVector);
 
 }
@@ -107,20 +107,15 @@ void KronosRepresentation::TweetRepresentation(vtkPolyData *input){
     //Generate the label hierarchy and filter the points according to the priorities.
     this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
     this->pointSetToLabelHierarchyFilter->SetInputData(input);
-    this->pointSetToLabelHierarchyFilter->SetLabelArrayName("content");
+    this->pointSetToLabelHierarchyFilter->SetLabelArrayName("author");
     this->pointSetToLabelHierarchyFilter->SetPriorityArrayName("priorities");
     this->pointSetToLabelHierarchyFilter->Update();
     
     //Create the labelmapper
     this->labelMapper = vtkSmartPointer<KronosLabelMapper>::New();
     this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
-    this->labelMapper->UseUnicodeStringsOn();
     //Use depth buffer
-    if(this->useDepthBuffer){
-        this->labelMapper->UseDepthBufferOn();
-    }else{
-        this->labelMapper->UseDepthBufferOff();
-    }
+    this->labelMapper->SetUseDepthBuffer(this->useDepthBuffer);
     //Add the mappers to the actors.
     this->labelActor->SetMapper(labelMapper);
     
@@ -140,10 +135,6 @@ void KronosRepresentation::SetDepthBuffer(bool val)
 //----------------------------------------------------------------------------
 bool KronosRepresentation::AddToView(vtkView* view)
 {
-    //Quit if an error occured.
-    if (this->error) {
-        return false;
-    }
     //Adds the actors to the view.
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
@@ -155,11 +146,6 @@ bool KronosRepresentation::AddToView(vtkView* view)
 }
 bool KronosRepresentation::RemoveFromView(vtkView* view)
 {
-    //Quit if an error occured.
-    if (this->error) {
-        return false;
-    }
-    std::cout << "Remove from View" << std::endl;
     //Removes the actors from the view.
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)

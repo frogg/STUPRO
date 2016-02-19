@@ -1,6 +1,8 @@
 #ifndef __KronosRepresentation_h
 #define __KronosRepresentation_h
 #include <Reader/DataReader/Data.hpp>
+#include <View/KronosRepresentation/KronosLabelMapper.h>
+
 #include "vtkGeometryRepresentationWithFaces.h"
 #include "vtkPVClientServerCoreRenderingModule.h" //needed for exports
 #include "vtkInformation.h"
@@ -11,7 +13,7 @@
 #include "vtkActor.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkPointSource.h"
-#include "KronosLabelMapper.h"
+
 #include "vtkActor2D.h"
 #include "vtkLabelPlacementMapper.h"
 #include "vtkPointSetToLabelHierarchy.h"
