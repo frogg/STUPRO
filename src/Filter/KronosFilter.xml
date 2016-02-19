@@ -122,7 +122,13 @@
             default_values=""
             information_property="Set the airport code of the destination airport">
         </StringVectorProperty>
-        <Hints>
+        <DoubleVectorProperty name="Flight length"
+            command="setMinMaxFlightLength"
+            number_of_elements="1"
+            default_values="15000.0">
+            <DoubleRangeDomain name="range" min="0.0" max="15000.0" />
+        </DoubleVectorProperty>
+          <Hints>
             <ShowInMenu category="Kronos" />
         </Hints>
     </SourceProxy>

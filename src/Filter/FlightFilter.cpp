@@ -63,12 +63,16 @@ bool FlightFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
     
 }
 
-void setAirportCodeOrigin(const char* airportCodeOrigin){
+void FlightFilter::setAirportCodeOrigin(const char* airportCodeOrigin){
     this->Modified();
 }
 
 
-void setAirportCodeDestination(const char* airportCodeDestinatioin){
+void FlightFilter::setAirportCodeDestination(const char* airportCodeDestinatioin){
+    this->Modified();
+}
+
+void FlightFilter::setMinMaxFlightLength(double test){
     this->Modified();
 }
 
