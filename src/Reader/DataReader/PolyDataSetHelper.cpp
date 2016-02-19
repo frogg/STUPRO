@@ -254,6 +254,12 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
         destinationAirportCodes->SetNumberOfComponents(relevantDataPoints.size());
         destinationAirportCodes->SetName("destinationAirportCodes");
         
+        vtkSmartPointer<vtkTypeFloat32Array> flightLengths
+		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		flightLengths->SetNumberOfComponents(1);
+		flightLengths->SetNumberOfTuples(relevantDataPoints.size());
+		flightLengths->SetName("flightLengths");
+        
 		vtkSmartPointer<vtkDoubleArray> destinations = vtkSmartPointer<vtkDoubleArray>::New();
 		vtkIdType numberOfTuples[1];
 		numberOfTuples[0] = relevantDataPoints.size();
@@ -275,6 +281,11 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			};
 			destinations->SetTuple(tupleNumber, coordinates);
             
+            double flightLength[1] = {
+				(double) dataPoint->getFlightLength()
+			};
+			flightLengths->SetTuple(tupleNumber, flightLength);
+            
             airlines->InsertNextValue(dataPoint->getAirlineName().toStdString());
             originAirportCodes->InsertNextValue(dataPoint->getOriginAirportCode().toStdString());
             destinationAirportCodes->InsertNextValue(dataPoint->getDestinationAirportCode().toStdString());
@@ -286,6 +297,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
         dataSet->GetPointData()->AddArray(airlines);
         dataSet->GetPointData()->AddArray(originAirportCodes);
         dataSet->GetPointData()->AddArray(destinationAirportCodes);
+        dataSet->GetPointData()->AddArray(flightLengths);
         
 		break;
 	}
