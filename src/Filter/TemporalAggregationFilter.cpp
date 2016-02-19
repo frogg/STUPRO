@@ -122,6 +122,11 @@ int TemporalAggregationFilter::RequestData(
 
 	vtkPolyData* input = vtkPolyData::GetData(inInfo);
 	vtkPolyData* output = vtkPolyData::GetData(outInfo);
+    
+    if (this->currentTimeStep == 0) {
+        this->SetProgressText("Aggregating data...");
+        this->SetProgress(0.0);
+    }
 
 	// Add the data from the current timestep to the accumulation
 	for (int i = 0; i < input->GetNumberOfPoints(); i++) {
@@ -137,9 +142,9 @@ int TemporalAggregationFilter::RequestData(
 		request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
         this->currentTimeStep++;
         
-        // Update te progress
-        this->SetProgressText("Aggregating data...");
-        this->UpdateProgress(this->currentTimeStep / (1.0 * inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())));
+        // Update the progress
+        double progress = (double) (this->currentTimeStep / (1.0 * inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())));
+        this->UpdateProgress(progress);
 	} else {
 		// Everything has been accumulated
 		output->DeepCopy(this->dataAggregator.getPolyData());
@@ -147,7 +152,7 @@ int TemporalAggregationFilter::RequestData(
 		this->currentTimeStep = 0;
 		this->dataAggregator.clearAggregationData();
         this->SetProgressText("");
-        this->UpdateProgress(1.0);
+        this->SetProgress(1.0);
 	}
 
 	return 1;
