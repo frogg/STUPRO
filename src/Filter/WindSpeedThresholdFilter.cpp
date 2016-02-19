@@ -15,11 +15,11 @@ QList<Data::Type> WindSpeedThresholdFilter::getCompatibleDataTypes() {
 }
 
 bool WindSpeedThresholdFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
-        vtkPointData* pointData) {		
+        vtkPointData* pointData) {
 	vtkSmartPointer<vtkTypeFloat32Array> speedArray = vtkTypeFloat32Array::SafeDownCast(
 	            pointData->GetArray("speeds"));
 	float speed = speedArray->GetTuple1(pointIndex);
-				
+
 	return speed >= this->lowerLimit && speed <= this->upperLimit;
 }
 

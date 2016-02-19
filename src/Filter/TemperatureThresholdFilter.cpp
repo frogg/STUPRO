@@ -15,11 +15,11 @@ QList<Data::Type> TemperatureThresholdFilter::getCompatibleDataTypes() {
 }
 
 bool TemperatureThresholdFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
-        vtkPointData* pointData) {		
+        vtkPointData* pointData) {
 	vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(
 	            pointData->GetArray("temperatures"));
 	float temperature = temperatureArray->GetTuple1(pointIndex);
-				
+
 	return temperature >= this->lowerLimit && temperature <= this->upperLimit;
 }
 
