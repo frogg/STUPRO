@@ -19,12 +19,23 @@ public:
 
 	int FillInputPortInformation(int, vtkInformation* info) override;
 
+    /**
+     * @brief setArcSize set the arc size.
+     * The arc size is a measurement of how much the flights will be displayed above the earth surface.
+     * In detail the geodesic arc is drawn as a circle sector from a point m, which is aequidistant to
+     * both the start and target airport. The arc size is the difference of the (real) earth radius and
+     * the radius of the geodesics.
+     * @param value the arc size
+     */
+    void setArcSize(double value);
+
 private:
 	GenerateGeodesics();
 	GenerateGeodesics(const GenerateGeodesics&); // not implemented
 	void operator =(const GenerateGeodesics&); // not implemented
 
 	double maxLenOfLineSegment = 0.9;
+    double arcSize = 0.0;
 
 	/**
 	 * @brief calculateFlightPoints calculate the neccessary points between start and end airport and insert them into a data set

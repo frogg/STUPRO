@@ -39,6 +39,12 @@
                     <DataType value="vtkPolyData"/>
                 </DataTypeDomain>
             </InputProperty>
+            <DoubleVectorProperty name="ArcSize"
+            			command="setArcSize"
+            			number_of_elements="1"
+            			default_values="0.0">
+            	<DoubleRangeDomain name="arc" min="0.0" max="1.0" />
+	    	</DoubleVectorProperty>
         </SourceProxy>
         <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Type Filter">
             <Documentation

@@ -80,6 +80,16 @@ template<typename T> T abs(const Vector3<T>& gps) {
 }
 
 /**
+ * Get the (cartesian) distance of two given points (spherical)
+ * @param point1 the first point
+ * @param point1 the second point
+ * @return the distance of the two points
+ */
+template<typename T> float distance(const Vector3<T>& point1, const Vector3<T>& point2) {
+    return (sphericalToCartesian(point1) - sphericalToCartesian(point2)).length();
+}
+
+/**
  * Scale a spherical coordinate to a given (cartesian) length
  * @param gps the position to scale
  * @return the scaled position

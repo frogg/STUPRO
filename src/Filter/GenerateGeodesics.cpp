@@ -66,13 +66,15 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	output->SetPoints(points);
 
 	// draw lines between the points
-	for (int flight = 0, index = 0; flight < numberOfFlights; flight++, index++) {
-		int flightStartIdx = index;
+	int currentPointIndex = 0;
+	for (int flight = 0; flight < numberOfFlights; flight++) {
+		int flightStartIdx = currentPointIndex;
 
 		lines->InsertNextCell(numberOfPointsPerFlight[flight]);
 		// for each point of a flight
-		for (index; index < flightStartIdx + numberOfPointsPerFlight[flight]; index++) {
-			lines->InsertCellPoint(index);
+		while (currentPointIndex < flightStartIdx + numberOfPointsPerFlight[flight]) {
+			lines->InsertCellPoint(currentPointIndex);
+			currentPointIndex++;
 		}
 	}
 
@@ -92,6 +94,10 @@ int GenerateGeodesics::FillInputPortInformation(int, vtkInformation* info) {
 	return 1;
 }
 
+void GenerateGeodesics::setArcSize(double value) {
+	this->arcSize = value;
+}
+
 GenerateGeodesics::GenerateGeodesics() {
 }
 
@@ -103,15 +109,24 @@ int GenerateGeodesics::calculateFlightPoints(const Vector3d& start, const Vector
 
 	// calculate points between if necessary
 	int index = 1;
+	int treeDepth = 0;
 	while (index < points.size()) {
-		if ((points.at(index) - points.at(index - 1)).length() > maxLenOfLineSegment) {
+		if (distance(points.at(index), points.at(index - 1)) > maxLenOfLineSegment) {
 			points.insert(index, calculateCenter(points.at(index), points.at(index - 1)));
+			treeDepth++;
 		} else {
 			index++;
+			treeDepth--;
+		}
+		if (treeDepth > 20) {
+			vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point")
+			index++;
+			treeDepth--;
 		}
 	}
 
-	for (QVectorIterator<Vector3d> it (points); it.hasNext();) {
+	QVectorIterator<Vector3d> it (points);
+	while ( it.hasNext()) {
 		dataSet->InsertNextPoint(it.next().array());
 	}
 
