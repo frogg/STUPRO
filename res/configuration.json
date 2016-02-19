@@ -9,6 +9,8 @@
     "internalPlaneSize": 1.0,
     "heightFactor": 10.0,
     "transitionEffectSpeed": 0.125,
+    "tilePoolSize": 64,
+    "timerDelay": 17,
     "zoom": {
       "nearDistance": 1.05,
       "nearZoom": 5,
