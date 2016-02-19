@@ -6,50 +6,86 @@
  */
 
 #include <Globe/Globe.hpp>
-#include <Utils/TileDownload/ImageTile.hpp>
-#include <Utils/TileDownload/MetaImage.hpp>
-#include <qimage.h>
 #include <qmap.h>
+#include <Utils/Config/Configuration.hpp>
+#include <Utils/Graphics/TextureLoad.hpp>
+#include <Utils/Math/Functions.hpp>
+#include <Utils/Math/Rect.hpp>
+#include <Utils/Math/Vector3.hpp>
+#include <Utils/Math/Vector4.hpp>
+#include <Utils/Misc/MakeUnique.hpp>
+#include <Utils/TileDownload/ImageTile.hpp>
 #include <vtkAlgorithm.h>
+#include <vtkCamera.h>
+#include <vtkMatrix4x4.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <vtkSphereSource.h>
-#include <View/vtkPVStuproView.h>
-#include <Globe/GlobeTile.hpp>
-#include <Utils/Misc/MakeUnique.hpp>
-#include <Utils/Misc/Macros.hpp>
-#include <Eigen-v3.2.6/Dense>
+#include <pqApplicationCore.h>
+#include <array>
+#include <cassert>
 #include <cmath>
+#include <cstddef>
+#include <memory>
 
 Globe::Globe(vtkRenderer& renderer) :
-	myRenderer(renderer), myDownloader([ = ](ImageTile tile) {
+	myRenderer(renderer),
+	myDownloader([ = ](ImageTile tile) {
 	onTileLoad(tile);
-}), myZoomLevel(1), myDisplayModeInterpolation(0) {
+}),
+myTilePool([this]() -> std::unique_ptr<GlobeTile> {
+	return makeUnique<GlobeTile>(*this);
+}),
+myTimerCallback([this](void* unused) {
+	updateZoomLevel();
+	updateTileVisibility();
+	loadGlobeTiles();
+	updateDisplayMode(false);
+}),
+myZoomLevel(0),
+myDisplayMode(DisplayGlobe),
+myDisplayModeInterpolation(0.f) {
 
-	createOBBTrees();
-	setResolution(Vector2u(128, 128));
+	myCachedCameraMatrix.fill(0.0);
 
-	myPlaneMapper = vtkPolyDataMapper::New();
-	myPlaneMapper->SetInputConnection(myPlaneSource->GetOutputPort());
+	myTilePool.setPoolSize(Configuration::getInstance().getInteger("globe.tilePoolSize"));
 
-	createTiles();
+	// Check if we have a ParaView application instance (and the Event Loop that comes with it).
+	if (pqApplicationCore::instance() != nullptr) {
+
+		// Create timer.
+		myTimer = makeUnique<QTimer>();
+
+		// Set timer callback.
+		QObject::connect(myTimer.get(), SIGNAL(timeout()), &myTimerCallback, SLOT(callbackSlot()));
+
+		myTimer->start(Configuration::getInstance().getInteger("globe.timerDelay"));
+	}
+
+	myLoadingTexture = loadTextureFromFile("./res/tiles/TileLoading.png");
+
+	generateLODTable();
+	createTileHandles();
+	updateTileVisibility();
 }
 
 Globe::~Globe() {
+
+	// This is to abort all current tile downloads.
+	eraseTileHandles();
 }
 
-void Globe::setResolution(Vector2u resolution) {
-	myPlaneSource->SetResolution(resolution.x, resolution.y);
-}
+vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper(float heightDifference) const {
 
-Vector2u Globe::getResolution() const {
-	Vector2i ret;
-	myPlaneSource->GetResolution(ret.x, ret.y);
-	return Vector2u(ret);
-}
+	assert(!myLODTable.empty());
 
-vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper() const {
-	return myPlaneMapper;
+	// Iterate over LOD table.
+	for (auto it = myLODTable.begin(); it != myLODTable.end(); ++it) {
+		if (heightDifference < it->heightRange) {
+			return it->planeMapper;
+		}
+	}
+
+	return myLODTable.back().planeMapper;
 }
 
 vtkRenderWindow& Globe::getRenderWindow() const {
@@ -61,7 +97,11 @@ vtkRenderer& Globe::getRenderer() const {
 }
 
 void Globe::setZoomLevel(unsigned int zoomLevel) {
-	myZoomLevel = zoomLevel;
+	if (myZoomLevel != zoomLevel) {
+		eraseTileHandles();
+		myZoomLevel = zoomLevel;
+		createTileHandles();
+	}
 }
 
 unsigned int Globe::getZoomLevel() const {
@@ -69,240 +109,518 @@ unsigned int Globe::getZoomLevel() const {
 }
 
 GlobeTile& Globe::getTileAt(int lon, int lat) const {
-	return *myTiles[getTileIndex(lon, lat)];
+	return getTileHandleAt(lon, lat).getResource();
+}
+
+ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat) const {
+	unsigned int index = getTileIndex(lon, lat);
+
+	assert(index < myTileHandles.size());
+
+	return myTileHandles[index];
+}
+
+void Globe::setTileHandleAt(int lon, int lat, ResourcePool<GlobeTile>::Handle handle) {
+	unsigned int index = getTileIndex(lon, lat);
+
+	assert(index < myTileHandles.size());
+
+	myTileHandles[index] = handle;
 }
 
 unsigned int Globe::getTileIndex(int lon, int lat) const {
-	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getNormalized();
+	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getWrappedLocation();
 
-	return (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
+	unsigned int index = (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
+	return index;
 }
 
-void Globe::createOBBTrees() {
-	myPlaneSource = vtkPlaneSource::New();
+namespace priv {
+	/**
+	 * Returns the bounding box of the specified vectors.
+	 */
+	template<typename T, int arraySize>
+	Rect<T> getBoundingBox(const std::array<Vector4<T>, arraySize>& vectors) {
+		float left, right, top, bottom;
 
-	//Vertices of the map
-	myPlaneSource->SetOrigin(PLANE_SIZE / 2.f, -PLANE_SIZE / 2.f, 0.f);
-	myPlaneSource->SetPoint1(-PLANE_SIZE / 2.f, -PLANE_SIZE / 2.f, 0.f);
-	myPlaneSource->SetPoint2(PLANE_SIZE / 2.f, PLANE_SIZE / 2.f, 0.f);
+		for (std::size_t i = 0; i < arraySize; ++i) {
+			Vector2f pos = vectors[i].xy();
 
-	// create an additional plane and sphere to evaluate the tiles that are visible
-	vtkSmartPointer<vtkSphereSource> sphereSource = vtkSmartPointer<vtkSphereSource>::New();
-	sphereSource->SetRadius(GLOBE_RADIUS);
-	sphereSource->SetThetaResolution(100);
-	sphereSource->SetPhiResolution(100);
-	sphereSource->Update();
+			if (i == 0 || pos.x < left) {
+				left = pos.x;
+			}
 
-	// the OBBTree allows us to simulate a single raycast inbetween two given points as seen in the clipFunc
-	mySphereTree = vtkSmartPointer<vtkOBBTree>::New();
-	mySphereTree->SetDataSet(sphereSource->GetOutput());
-	mySphereTree->BuildLocator();
+			if (i == 0 || pos.x > right) {
+				right = pos.x;
+			}
 
-	// an artificial Plane to calculate raycasting coordinates
-	vtkSmartPointer<vtkPlaneSource> planeSource = vtkSmartPointer<vtkPlaneSource>::New();
-	planeSource->SetOrigin(-PLANE_WIDTH / 2, -PLANE_HEIGHT / 2, 0);
-	planeSource->SetPoint1(PLANE_WIDTH / 2, -PLANE_HEIGHT / 2, 0);
-	planeSource->SetPoint2(-PLANE_WIDTH / 2, PLANE_HEIGHT / 2, 0);
-	planeSource->Update();
+			if (i == 0 || pos.y < top) {
+				top = pos.y;
+			}
 
-	myPlaneTree = vtkSmartPointer<vtkOBBTree>::New();
-	myPlaneTree->SetDataSet(planeSource->GetOutput());
-	myPlaneTree->BuildLocator();
+			if (i == 0 || pos.y > bottom) {
+				bottom = pos.y;
+			}
+		}
+
+		return RectF(left, top, right - left, bottom - top);
+	}
+
 }
 
-void Globe::createTiles() {
+bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
+                                vtkMatrix4x4* compositeTransform) const {
+	// Define normalized viewer direction: in screenspace, the camera points in the -Z direction.
+	static const Vector3f cameraDirection(0.f, 0.f, -1.f);
+
+	// Define viewport rectangle in screenspace coordinates.
+	static const RectF screenRect(-1.f, -1.f, 2.f, 2.f);
+
+	// TODO: Implement culling for flat map!
+	if (getDisplayMode() == DisplayMap) {
+		return true;
+	}
+
+	// Get location of current tile.
+	GlobeTile::Location loc(myZoomLevel, lon, lat);
+
+	// Assume that the current tile is not visible.
+	bool visible = false;
+
+	// Calculate surface normals of the current tile's corners.
+	std::array<Vector4f, 4> tileCornerNormals;
+	tileCornerNormals[0] = Vector4f(loc.getNormalVector(Vector2f(0.f, 0.f)), 0.f);
+	tileCornerNormals[1] = Vector4f(loc.getNormalVector(Vector2f(0.f, 1.f)), 0.f);
+	tileCornerNormals[2] = Vector4f(loc.getNormalVector(Vector2f(1.f, 0.f)), 0.f);
+	tileCornerNormals[3] = Vector4f(loc.getNormalVector(Vector2f(1.f, 1.f)), 0.f);
+
+	// Copy array in case it is needed for position calculations later.
+	std::array<Vector4f, 4> tileCornerPositions = tileCornerNormals;
+
+	for (auto& tileNormal : tileCornerNormals) {
+		// Transform the surface normal by the normal transformation matrix calculated earlier.
+		normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
+
+		// Check if normal points away from the camera.
+		if (tileNormal.xyz().dot(cameraDirection) < 0.f) {
+			// Other direction? Tile is facing towards viewer, disallow backface culling.
+			visible = true;
+			break;
+		}
+	}
+
+	// If tile is facing away from camera, it can not possibly be visible.
+	if (!visible) {
+		return false;
+	}
+
+	// Transform tile position to screenspace.
+	for (auto& tilePosition : tileCornerPositions) {
+
+		// Convert normal to position by multiplication with radius.
+		tilePosition *= Configuration::getInstance().getFloat("globe.radius");
+
+		// Set homogeneous component to 1 for correct projection calculation.
+		tilePosition.w = 1.f;
+
+		// Transform point by view-projection matrix.
+		compositeTransform->MultiplyPoint(tilePosition.array(), tilePosition.array());
+
+		// Divide by homogeneous component to complete transformation.
+		tilePosition /= tilePosition.w;
+	}
+
+	// Calculate the bounding box of the tile's corners.
+	RectF boundingBox = priv::getBoundingBox<float, 4>(tileCornerPositions);
+
+	// Intersect the bounding box with the screenspace boundaries.
+	visible = boundingBox.intersects(screenRect);
+
+	// Return final visibility state.
+	return visible;
+}
+
+void Globe::setTileVisibility(int lon, int lat, bool visibility) {
+	// Get handle to the globe tile.
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(lon, lat);
+
+	// Check if tile is already visible/active and is set to be disabled, or if the tile is set to
+	// be enabled from being inactive.
+	if (!visibility && handle.isActive()) {
+		hideTile(lon, lat);
+	} else if (visibility && !handle.isActive()) {
+		showTile(lon, lat);
+	}
+}
+
+void Globe::showTile(int lon, int lat) {
+	// Get handle to the globe tile.
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(lon, lat);
+
+	// Check if the tile resource is already expired.
+	if (handle.isExpired()) {
+		// A new tile needs to be acquired from the resource pool.
+		handle = myTilePool.acquire();
+
+		// Reassign handle.
+		setTileHandleAt(lon, lat, handle);
+
+		// Get reference to underlying globe tile.
+		GlobeTile& tile = handle.getResource();
+
+		// Move the tile to its new position.
+		tile.setLocation(GlobeTile::Location(myZoomLevel, lon, lat));
+
+		// Give the tile a temporary loading texture (and temporary height settings).
+		tile.setTexture(myLoadingTexture);
+		tile.setLowerHeight(0.f);
+		tile.setUpperHeight(1.f);
+
+		// Update the tile's shader uniforms.
+		tile.updateUniforms();
+
+		// Make the tile visible.
+		tile.setVisibile(true);
+
+		// Start loading process.
+		myDownloader.fetchTile(myZoomLevel, lon, lat);
+
+		KRONOS_LOG_DEBUG("fetching tile %d/%d", lon, lat);
+	} else {
+		// Re-use existing tile resource by reactivating it.
+		handle.setActive(true);
+
+		// Get reference to underlying globe tile.
+		GlobeTile& tile = handle.getResource();
+
+		// Make tile visible.
+		tile.setVisibile(true);
+	}
+}
+
+void Globe::hideTile(int lon, int lat) {
+	// Get handle to the globe tile.
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(lon, lat);
+
+	// Check if handle is currently active.
+	if (handle.isActive()) {
+		// Get reference to underlying globe tile.
+		GlobeTile& tile = handle.getResource();
+
+		// Make tile invisible.
+		tile.setVisibile(false);
+
+		// Mark resource as inactive.
+		handle.setActive(false);
+	}
+}
+
+void Globe::createTileHandles() {
 	unsigned int height = 1 << myZoomLevel;
 	unsigned int width = height * 2;
 
-	myTiles.resize(width * height);
+	myTileHandles.resize(width * height);
+}
 
-	for (unsigned int lat = 0; lat < height; ++lat) {
-		for (unsigned int lon = 0; lon < width; ++lon) {
-			myTiles[getTileIndex(lon, lat)] = makeUnique<GlobeTile>(*this,
-			                                  GlobeTile::Location(myZoomLevel, lon, lat));
+void Globe::eraseTileHandles() {
 
-			myDownloader.fetchTile(myZoomLevel, lon, lat);
+	// Cancel all pending downloads.
+	myDownloader.abortAllDownloads();
+
+	for (auto& handle : myTileHandles) {
+		if (handle.isActive()) {
+			hideTile(handle.getResource().getLocation().longitude, handle.getResource().getLocation().latitude);
 		}
+
+		// Clear handle.
+		handle = ResourcePool<GlobeTile>::Handle();
 	}
 }
 
-void Globe::setDisplayModeInterpolation(float displayMode) {
-	myDisplayModeInterpolation = displayMode;
+void Globe::loadGlobeTiles() {
 
-	for (const auto& tile : myTiles) {
-		if (tile) {
-			tile->updateUniforms();
+	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
+
+	if (!myDownloadedTiles.empty()) {
+
+		while (!myDownloadedTiles.empty()) {
+
+			ImageTile tile = std::move(myDownloadedTiles.front());
+			myDownloadedTiles.pop();
+
+			loadGlobeTile(tile);
+		}
+
+		getRenderWindow().Render();
+	}
+}
+
+void Globe::loadGlobeTile(const ImageTile& tile) {
+
+	if (myZoomLevel != tile.getZoomLevel()) {
+		KRONOS_LOG_WARN("Attempt to load zoom-mismatched tile %d,%d", tile.getTileX(), tile.getTileY());
+		return;
+	}
+
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY());
+
+	bool handleIsActive = handle.isActive();
+
+	if (!handleIsActive) {
+		if (handle.isExpired()) {
+			KRONOS_LOG_WARN("Attempt to load expired tile %d,%d", tile.getTileX(), tile.getTileY());
+			return;
+		}
+
+		// Temporarily activate globe tile to load texture, deactivate again after loading.
+		handle.setActive(true);
+	}
+
+	GlobeTile& globeTile = handle.getResource();
+
+	auto rgbIterator = tile.getLayers().find("satelliteImagery");
+	auto heightmapIterator = tile.getLayers().find("heightmap");
+
+	if (rgbIterator != tile.getLayers().end() && heightmapIterator != tile.getLayers().end()) {
+
+		const QImage& rgb = rgbIterator->getImage();
+		const QImage& heightmap = heightmapIterator->getImage();
+
+		globeTile.loadTexture(rgb, heightmap);
+
+		globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
+		globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
+
+		globeTile.updateUniforms();
+
+	} else {
+		KRONOS_LOG_WARN("Missing or incomplete image data for tile %d,%d", tile.getTileX(),
+		                tile.getTileY());
+	}
+
+	if (!handleIsActive) {
+		// Disable globe tile again.
+		handle.setActive(false);
+	}
+
+}
+
+void Globe::updateDisplayMode(bool instant) {
+
+	float target = (float)myDisplayMode;
+	float animSpeed = Configuration::getInstance().getFloat("globe.transitionEffectSpeed");
+
+	if (instant) {
+		myDisplayModeInterpolation = target;
+	} else if (std::abs(myDisplayModeInterpolation - target) > 0.00001f) {
+		myDisplayModeInterpolation = (myDisplayModeInterpolation + target * animSpeed) / (1.f + animSpeed);
+	} else {
+		// No significant change: no need to update uniforms.
+		return;
+	}
+
+	for (const auto& tile : myTileHandles) {
+		if (tile.isActive()) {
+			tile.getResource().updateUniforms();
 		}
 	}
+
+	getRenderWindow().Render();
+}
+
+void Globe::setDisplayMode(DisplayMode displayMode) {
+	myDisplayMode = displayMode;
+
+	updateTileVisibility();
+
+	// If the timer is disabled, update display mode instantly.
+	if (myTimer == nullptr) {
+		updateDisplayMode(true);
+	}
+}
+
+Globe::DisplayMode Globe::getDisplayMode() const {
+	return myDisplayMode;
 }
 
 float Globe::getDisplayModeInterpolation() const {
 	return myDisplayModeInterpolation;
 }
 
-bool Globe::checkIfRepaintIsNeeded() {
-	return !myIsClean.test_and_set();
+void Globe::onCameraChanged() {
+	updateZoomLevel();
+	updateTileVisibilityIfNeeded();
+	loadGlobeTiles();
 }
 
-void Globe::updateGlobeTileVisibility() {
-	// TODO: Update globe tile visibility based on camera position!
-	unsigned int height = 1 << myZoomLevel;
-	unsigned int width = height * 2;
+void Globe::generateLODTable() {
+	myLODTable.clear();
 
-	for (unsigned int lat = 0; lat < height; ++lat) {
-		for (unsigned int lon = 0; lon < width; ++lon) {
-			std::size_t index = getTileIndex(lon, lat);
+	unsigned int minLOD = Configuration::getInstance().getInteger("globe.lod.minimumResolution");
+	unsigned int maxLOD = Configuration::getInstance().getInteger("globe.lod.maximumResolution");
 
-			if (index >= myTiles.size()) {
-				continue;
-			}
+	float minDiff = Configuration::getInstance().getFloat("globe.lod.minimumHeightDifference");
+	float maxDiff = Configuration::getInstance().getFloat("globe.lod.maximumHeightDifference");
 
-			//myTiles[index]->setVisibility(false);
-		}
+	// Convert LODs to powers of 2.
+	minLOD = getNextPowerOf2(minLOD);
+	maxLOD = getNextPowerOf2(maxLOD);
+
+	// Iterate over all levels of detail, skipping the highest one.
+	for (unsigned int lod = minLOD; lod < maxLOD; lod *= 2) {
+
+		// Perform reverse linear interpolation over level of detail value to get normalized
+		// interpolation factor. MaxLOD is divided by 2 as the last LOD is skipped for now, since it
+		// is used as a fallback for too high terrain ranges.
+		float normalizedLOD = float(lod - minLOD) / float(maxLOD / 2 - minLOD);
+
+		// Calculate the resulting height difference threshold.
+		float heightDifference = interpolateLinear(minDiff, maxDiff, normalizedLOD);
+
+		// Add entry to table.
+		myLODTable.push_back(LODSetting(heightDifference, lod));
 	}
+
+	// Add maximum LOD entry to table.
+	myLODTable.push_back(LODSetting(maxDiff, maxLOD));
 }
 
 void Globe::onTileLoad(ImageTile tile) {
-	if (myZoomLevel != tile.getZoomLevel()) {
+	std::lock_guard<std::mutex> lock(myDownloadedTilesMutex);
+
+	myDownloadedTiles.push(tile);
+}
+
+void Globe::updateZoomLevel() {
+	// Get current camera for distance calculations.
+	vtkCamera* camera = getRenderer().GetActiveCamera();
+
+	if (camera == nullptr) {
+		KRONOS_LOG_WARN("Camera was null while trying to update zoom level.");
 		return;
 	}
 
-	GlobeTile& globeTile = *myTiles[getTileIndex(tile.getTileX(), tile.getTileY())];
+	// Get the camera's eye position.
+	Vector3d cameraPosition;
+	camera->GetPosition(cameraPosition.array());
 
-	auto rgbIterator = tile.getLayers().find("satelliteImagery");
-	auto heightmapIterator = tile.getLayers().find("heightmap");
+	// The distance between the camera and the globe's center in globe radius units.
+	float cameraDistance = cameraPosition.length() /
+	                       Configuration::getInstance().getFloat("globe.radius");
 
-	if (rgbIterator == tile.getLayers().end() || heightmapIterator == tile.getLayers().end()) {
+	// Get the near and far distance limits from the configuration file.
+	float nearDistance = Configuration::getInstance().getFloat("globe.zoom.nearDistance");
+	float farDistance = Configuration::getInstance().getFloat("globe.zoom.farDistance");
+
+	// Get the near and far zoom values from the configuration file.
+	unsigned int nearZoom = Configuration::getInstance().getInteger("globe.zoom.nearZoom");
+	unsigned int farZoom = Configuration::getInstance().getInteger("globe.zoom.farZoom");
+
+	// Normalize the distance between 0.0 and 1.0 for the far and near distances, respectively.
+	float normalizedDistance = 1.f - (cameraDistance - nearDistance) / (farDistance - nearDistance);
+
+	// Create variable for resulting zoom level.
+	unsigned int zoomResult = 0;
+
+	// Check minimum/maximum cases.
+	if (normalizedDistance > 1.f) {
+		zoomResult = nearZoom;
+	} else if (normalizedDistance < 0.f) {
+		zoomResult = farZoom;
+	} else {
+		// Get the exponential scaling factor.
+		float expScale = Configuration::getInstance().getFloat("globe.zoom.expScale");
+
+		// Calculate the exponential normalized distance.
+		float exponentialDistance = (std::pow(expScale, normalizedDistance) - 1.f)
+		                            / (expScale - 1.f);
+
+		// Interpolate the integer zoom levels based on the exponential normalized distance.
+		zoomResult = exponentialDistance * nearZoom + (1.f - exponentialDistance) * farZoom;
+	}
+
+	// Assign the zoom level.
+	this->setZoomLevel(zoomResult);
+}
+
+void Globe::updateTileVisibilityIfNeeded() {
+	updateTileVisibilityImpl(false);
+}
+
+void Globe::updateTileVisibility() {
+	updateTileVisibilityImpl(true);
+}
+
+void Globe::updateTileVisibilityImpl(bool forceUpdate) {
+	// Get current camera for transformation matrix.
+	vtkCamera* camera = getRenderer().GetActiveCamera();
+
+	if (camera == nullptr) {
+		KRONOS_LOG_WARN("Camera was null while trying to update tile visibility.");
 		return;
 	}
 
-	const QImage& rgb = rgbIterator->getImage();
-	const QImage& heightmap = heightmapIterator->getImage();
+	// Assign clipping planes in screenspace (consistency with X/Y coordinate limits).
+	double clipNear = -1.f, clipFar = 1.f;
 
-	globeTile.setLowerHeight(heightmapIterator->getMinimumHeight());
-	globeTile.setUpperHeight(heightmapIterator->getMaximumHeight());
+	// Get Model-View-Projection transformation matrix for globe tile position transformation.
+	vtkMatrix4x4* fullTransform = camera->GetCompositeProjectionTransformMatrix(
+	                                  (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
+	                                  clipFar);
 
-	globeTile.loadTexture(rgb, heightmap);
-	globeTile.updateUniforms();
-
-	myIsClean.clear();
-}
-
-Vector3d Globe::cutPlanes(double planes[3][4]) {
-	Eigen::Matrix3d planeMatrix;
-	Eigen::Vector3d offset;
-	// fill planeMatrix and offset with content
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			planeMatrix(i, j) = planes[i][j];
-		}
-		offset(i) = -planes[i][3];
-	}
-
-	// solve LGS. colPivHouseholderQr is an algorithm by Eigen (very fast, see doc:
-	// http://eigen.tuxfamily.org/dox/group__TopicLinearAlgebraDecompositions.html)
-	// if there are still performance problems, call this method not so often
-	Eigen::Vector3d cutPoint = planeMatrix.colPivHouseholderQr().solve(offset);
-
-	return Vector3d(cutPoint(0), cutPoint(1), cutPoint(2));
-}
-
-Vector3d Globe::getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4],
-                                     Vector3d cameraPosition) {
-	Vector3d intersection;
-
-	double planes[3][4];
-	// store them into one array for easier access
-	for (int i = 0; i < 4; i++) {
-		planes[0][i] = plane1[i];
-		planes[1][i] = plane2[i];
-		planes[2][i] = plane3[i];
-	}
-
-	//calculate intersection of planes and store result in intersectionOfPlanes
-	Vector3d intersectionOfPlanes = cutPlanes(planes);
-
-	// get intersection with world
-	vtkSmartPointer<vtkPoints> intersectPoint = vtkSmartPointer<vtkPoints>::New();
-	this->getOBBTree()->IntersectWithLine(cameraPosition.array(), intersectionOfPlanes.array(),
-	                                      intersectPoint, nullptr);
-
-	if (intersectPoint->GetNumberOfPoints() > 0) {
-		intersectPoint->GetPoint(0, intersection.array());
-	} else {
-		// no intersection
-		intersection = Vector3d(0, 0, 0);
-	}
-	return intersection;
-}
-
-std::vector<Vector3d> Globe::getIntersectionPoints(double planes[], Vector3d cameraPosition) {
-	// left, right, bottom, top, near, far
-	double planeArray[6][4];
-	for (int i = 0; i < 6; i++) {
-		for (int j = 0; j < 4; j++) {
-			planeArray[i][j] = planes[4 * i + j];
+	// Check if matrix is different from last time this function was called.
+	bool isMatrixSame = true;
+	for (std::size_t i = 0; i < myCachedCameraMatrix.size(); ++i) {
+		// Compare matrix elements to cached matrix. Copy elements to cache if they are different.
+		if (myCachedCameraMatrix[i] != (*(*fullTransform)[i])) {
+			isMatrixSame = false;
+			myCachedCameraMatrix[i] = (*(*fullTransform)[i]);
 		}
 	}
 
-	// calculate intersection points for each edge of the viewing frustum
-	std::vector<Vector3d> worldIntersectionPoints;
-	for (int j = 0; j < 4; j++) {
-		// some math to get the right planes (l/r/l/r and b/b/t/t, the last plane is the far clipping)
-		Vector3d intersection = getIntersectionPoint(planeArray[j % 2], planeArray[j / 2 + 2],
-		                        planeArray[5], cameraPosition);
-		worldIntersectionPoints.push_back(intersection);
+	// Matrix was not changed and force update is false: abort without recomputing tile visibility.
+	if (isMatrixSame && !forceUpdate) {
+		return;
 	}
 
-	return worldIntersectionPoints;
-}
+	// Create a matrix for the normal vector transformation.
+	vtkSmartPointer<vtkMatrix4x4> normalTransform = vtkMatrix4x4::New();
 
-std::vector<Coordinate> Globe::getGlobeCoordinates(std::vector<Vector3d> worldPoints) {
-	std::vector<Coordinate> globeCoordinates;
-	for (Vector3d worldCoordinate : worldPoints) {
-		globeCoordinates.push_back(getCoordinatesFromGlobePoint(worldCoordinate.array()));
-	}
-	return globeCoordinates;
-}
+	// Copy the eye coordinate transformation matrix from the active camera.
+	normalTransform->DeepCopy(camera->GetModelViewTransformMatrix());
 
-std::vector<Coordinate> Globe::getPlaneCoordinates(std::vector<Vector3d> worldPoints) {
-	std::vector<Coordinate> globeCoordinates;
-	for (Vector3d worldCoordinate : worldPoints) {
-		Vector2d point(worldCoordinate.x, worldCoordinate.y);
-		globeCoordinates.push_back(getCoordinatesFromPlanePoint(point));
-	}
-	return globeCoordinates;
-}
+	// Invert & transpose to allow correctly transforming globe tile surface normals.
+	normalTransform->Invert();
+	normalTransform->Transpose();
 
-Coordinate Globe::getCenterGlobeCoordinate(Vector3d cameraPosition) {
-	Vector3d globeOrigin(0, 0, 0);
+	// Get number of tiles (vertically and horizontally).
+	unsigned int height = 1 << myZoomLevel;
+	unsigned int width = height * 2;
 
-	vtkSmartPointer<vtkPoints> intersectPoints = vtkSmartPointer<vtkPoints>::New();
-	this->getOBBTree()->IntersectWithLine(cameraPosition.array(), globeOrigin.array(),
-	                                      intersectPoints, nullptr);
-	Vector3d centerPoint;
-	intersectPoints->GetPoint(0, centerPoint.array());
-	return getCoordinatesFromGlobePoint(centerPoint.array());
-}
+	// Iterate over all tiles.
+	for (unsigned int lat = 0; lat < height; ++lat) {
+		for (unsigned int lon = 0; lon < width; ++lon) {
+			// Perform tile visibility check.
+			bool visible = isTileInViewFrustum(lon, lat, normalTransform, fullTransform);
 
-vtkSmartPointer<vtkOBBTree> Globe::getOBBTree() {
-	//Map
-	if (this->getDisplayModeInterpolation() > 0.9) {
-		return myPlaneTree;
-	} else {
-		//Globe
-		return mySphereTree;
+			// Change tile visibility. Check if visibility actually changed.
+			setTileVisibility(lon, lat, visible);
+		}
 	}
 }
 
-Coordinate Globe::getCoordinatesFromGlobePoint(Vector3d point) {
-	return Coordinate(asin(point.z / GLOBE_RADIUS) * 180 / KRONOS_PI,
-	                  atan2(point.x, point.y) * 180 / KRONOS_PI);
-}
+Globe::LODSetting::LODSetting(float heightRange, unsigned int lod) :
+	heightRange(heightRange), lod(lod) {
+	planeSource = vtkPlaneSource::New();
 
-Coordinate Globe::getCoordinatesFromPlanePoint(Vector2d point) {
-	double latitude = point.x / (PLANE_WIDTH / 2) * 180;
-	double longitude = point.y / (PLANE_HEIGHT / 2) * 90;
+	float planeSize = Configuration::getInstance().getFloat("globe.internalPlaneSize");
 
-	return Coordinate(latitude, longitude);
+	planeSource->SetOrigin(planeSize / 2.f, -planeSize / 2.f, 0.f);
+	planeSource->SetPoint1(-planeSize / 2.f, -planeSize / 2.f, 0.f);
+	planeSource->SetPoint2(planeSize / 2.f, planeSize / 2.f, 0.f);
+
+	planeSource->SetResolution(lod, lod);
+
+	planeMapper = vtkPolyDataMapper::New();
+	planeMapper->SetInputConnection(planeSource->GetOutputPort());
 }

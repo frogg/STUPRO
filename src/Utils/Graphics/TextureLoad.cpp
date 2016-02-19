@@ -5,13 +5,16 @@
  *      Author: bbq
  */
 
+#include "TextureLoad.hpp"
+
+#include <Utils/Graphics/vtkOpaqueOpenGLTexture.h>
 #include <qimage.h>
 #include <qrgb.h>
 #include <vtkImageData.h>
 #include <vtkOpenGLTexture.h>
+#include <vtkPNGReader.h>
 #include <vtkSmartPointer.h>
 #include <vtkType.h>
-#include "TextureLoad.hpp"
 #include <stdexcept>
 #include <string>
 
@@ -69,7 +72,20 @@ vtkSmartPointer<vtkOpenGLTexture> loadAlphaTexture(const QImage& rgb, const QIma
 	}
 
 	// Load texture from combined image data.
-	vtkSmartPointer<vtkOpenGLTexture> texture = vtkOpenGLTexture::New();
+	vtkSmartPointer<vtkOpenGLTexture> texture = vtkOpaqueOpenGLTexture::New();
 	texture->SetInputData(vtkimage);
+	return texture;
+}
+
+vtkSmartPointer<vtkOpenGLTexture> loadTextureFromFile(const std::string& filename) {
+	// Load image data from PNG file.
+	vtkSmartPointer<vtkPNGReader> pngReader = vtkSmartPointer<vtkPNGReader>::New();
+	pngReader->SetFileName(filename.c_str());
+	pngReader->Update();
+
+	// Create texture from loaded image data.
+	vtkSmartPointer<vtkOpenGLTexture> texture = vtkSmartPointer<vtkOpenGLTexture>::New();
+	texture->SetInputConnection(pngReader->GetOutputPort());
+
 	return texture;
 }
