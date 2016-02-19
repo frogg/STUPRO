@@ -115,7 +115,6 @@ private:
 	
 	/**
 	 * Registers all callback functions used later during runtime.
-	 * FIXME: Doesn't work in PV as of 18-11-2015.
 	 */
 	void registerTimerCallback();
 

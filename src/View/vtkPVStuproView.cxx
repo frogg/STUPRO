@@ -48,19 +48,10 @@ void vtkPVStuproView::initRenderer()
 void vtkPVStuproView::initGlobe()
 {
 	const Configuration & config = Configuration::getInstance();
-	
-	GlobeConfig globeConfig;
-	
-	globeConfig.globeRadius = config.getFloat("globe.radius");
-	globeConfig.flatMapSize.x = config.getFloat("globe.flatMapSize.width");
-	globeConfig.flatMapSize.y = config.getFloat("globe.flatMapSize.height");
-	globeConfig.internalPlaneSize = config.getFloat("globe.internalPlaneSize");
-	globeConfig.earthRadius = config.getFloat("globe.earthRadius");
-	globeConfig.heightFactor = config.getFloat("globe.heightFactor");
-	
+
 	// Initialize a unique pointer with a new instance of the Globe
 	// using the current renderer.
-	this->globe = makeUnique<Globe>(*this->GetRenderer(), globeConfig);
+	this->globe = makeUnique<Globe>(*this->GetRenderer());
 }
 
 
@@ -73,7 +64,7 @@ void vtkPVStuproView::moveCamera(float latitude, float longitude, float distance
 {
 	// left-right, up-down, close-far
 	Vector3d position(0.0, 0.0, 2.6);
-	
+
 	// probably important for map view
 	Vector3d focus(0.0, 0.0, 0.0);
 
