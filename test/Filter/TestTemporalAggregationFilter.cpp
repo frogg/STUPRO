@@ -7,6 +7,7 @@
 #include <Reader/DataReader/Data.hpp>
 
 #include <vtkTypeFloat32Array.h>
+#include <vtkInformation.h>
 
 TEST(TestTemporalAggregationFilter, TestTemperatureData) {
 	// Read some test data
