@@ -136,12 +136,18 @@ int TemporalAggregationFilter::RequestData(
 		// There are still time steps left, continue on
 		request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
         this->currentTimeStep++;
+        
+        // Update te progress
+        this->SetProgressText("Aggregating data...");
+        this->UpdateProgress(this->currentTimeStep / (1.0 * inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())));
 	} else {
 		// Everything has been accumulated
 		output->DeepCopy(this->dataAggregator.getPolyData());
 		request->Remove(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING());
 		this->currentTimeStep = 0;
 		this->dataAggregator.clearAggregationData();
+        this->SetProgressText("");
+        this->UpdateProgress(1.0);
 	}
 
 	return 1;
@@ -154,9 +160,7 @@ int TemporalAggregationFilter::RequestUpdateExtent (
 	if (this->error) {
 		return 0;
 	}
-
-	// TODO: Update progress
-
+    
 	vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
 
 	// Make the pipeline executive iterate the upstream pipeline time steps by setting the update time step appropiately
