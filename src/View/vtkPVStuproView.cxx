@@ -36,9 +36,8 @@ void vtkPVStuproView::initRenderer()
 		[](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
 		{
 			vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
-			KRONOS_LOG_DEBUG("EVENT: %lu", eid);
 			if (view->getGlobe()) {
-				//view->getGlobe()->onCameraChanged();
+				view->getGlobe()->onCameraChanged();
 			}
 		});
 
