@@ -126,8 +126,6 @@ private:
 
 	Globe::DisplayMode displayMode;
 	std::unique_ptr<Globe> globe;
-	vtkSmartPointer<vtkCallbackCommand> clipCallback;
-	vtkSmartPointer<vtkCallbackCommand> activeCameraCallback;
 	vtkSmartPointer<vtkCallbackCommand> cameraModifiedCallback;
 };
 

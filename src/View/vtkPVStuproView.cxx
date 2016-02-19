@@ -31,25 +31,20 @@ void vtkPVStuproView::initParameters()
 void vtkPVStuproView::initRenderer()
 {
 	this->cameraModifiedCallback = vtkCallbackCommand::New();
-	
-    this->cameraModifiedCallback->SetCallback(
-		[](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
-		{
-			vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
-			view->getGlobe()->onCameraChanged();
-		});
-    
-    this->cameraModifiedCallback->SetClientData(this);
-	
-	//this->GetRenderer()->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::InteractionEvent,
-	//	this->cameraModifiedCallback);
 
     this->cameraModifiedCallback->SetCallback(
 		[](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
 		{
-    		KRONOS_LOG_DEBUG("Event fired! EID=%lu", eid);
+			vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
+			KRONOS_LOG_DEBUG("EVENT: %lu", eid);
+			if (view->getGlobe()) {
+				//view->getGlobe()->onCameraChanged();
+			}
 		});
-    this->GetRenderer()->AddObserver(vtkCommand::AnyEvent, this->cameraModifiedCallback);
+
+    this->cameraModifiedCallback->SetClientData(this);
+
+	this->GetRenderer()->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, this->cameraModifiedCallback);
 }
 
 void vtkPVStuproView::initGlobe()
