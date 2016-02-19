@@ -16,8 +16,6 @@ T absoluteModulo(T a, T b) {
 	return (a % b + b) % b;
 }
 
-double toRadians(double degrees) {
-	return degrees * (double) (KRONOS_PI / 180);
-}
+double toRadians(double degrees);
 
 #endif
