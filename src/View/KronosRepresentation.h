@@ -33,11 +33,7 @@ public:
    * @param val visibility variable
    */
   void SetVisibility(bool val) override;
-  /**
-   * Sets the depthbuffer to prevent rendering if obstruced.
-   * @param val depthbuffer setter
-   */
-  void SetDepthBuffer(bool val);
+    
 protected:
     //constructor and destructor
     KronosRepresentation();

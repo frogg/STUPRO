@@ -1,3 +1,4 @@
+#include <Utils/Config/Configuration.hpp>
 #include "KronosRepresentation.h"
 #include "vtkObjectFactory.h"
 #include <vtkPointSetToLabelHierarchy.h>
@@ -25,7 +26,14 @@ KronosRepresentation::KronosRepresentation() : error(false)
     this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
     //Set visibility to false so its not shown on load
     this->SetVisibility(false);
-    this->useDepthBuffer=false;
+    //Get DepthBuffer Option from Config
+    QString key = "representation.useCulling";
+    if(Configuration::getInstance().hasKey(key)){
+        this->useDepthBuffer= Configuration::getInstance().getBoolean(key);
+    }else{
+        this->useDepthBuffer=true;
+    }
+        
 }
 
 //----------------------------------------------------------------------------
@@ -95,7 +103,7 @@ void KronosRepresentation::CitiesRepresentation(vtkPolyData *input){
     //Create the labelmapper
     this->labelMapper = vtkSmartPointer<KronosLabelMapper>::New();
     this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
-    this->labelMapper->SetUseDepthBuffer(true);
+    this->labelMapper->SetUseDepthBuffer(this->useDepthBuffer);
   
     //Add the mappers to the actors.
     this->labelActor->SetMapper(labelMapper);
@@ -127,11 +135,6 @@ void KronosRepresentation::SetVisibility(bool val)
     this->Superclass::SetVisibility(val);
     this->labelActor->SetVisibility(val?  1 : 0);
 }
-void KronosRepresentation::SetDepthBuffer(bool val)
-{
-    this->useDepthBuffer=val;
-}
-
 //----------------------------------------------------------------------------
 bool KronosRepresentation::AddToView(vtkView* view)
 {

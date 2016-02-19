@@ -1,5 +1,5 @@
 #include "KronosLabelMapper.h"
-
+#include <Utils/Config/Configuration.hpp>
 #include "vtkActor2D.h"
 #include "vtkCamera.h"
 #include "vtkCellArray.h"
@@ -435,7 +435,12 @@ KronosLabelMapper::KronosLabelMapper()
   this->PositionsAsNormals = false;
   this->IteratorType = vtkLabelHierarchy::QUEUE;
   this->VisiblePoints = KronosSelectPoints::New();
-  this->VisiblePoints->SetTolerance(0.1);
+  QString key = "representation.cullingTolerance";
+  if(Configuration::getInstance().hasKey(key)){
+      this->VisiblePoints->SetTolerance(Configuration::getInstance().getFloat(key));
+    }else{
+      this->VisiblePoints->SetTolerance(0.05);
+    }
   this->UseUnicodeStrings = false;
   this->PlaceAllLabels = false;
   this->OutputTraversedBounds = false;
