@@ -14,7 +14,7 @@
 
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
                        bool temporal,
-                       int timeResolution) : dataType(dataType), filePath(path), temporal(temporal),
+                       int timeResolution) : filePath(path), temporal(temporal), dataType(dataType),
 	timeResolution(timeResolution) {
 	this->cachingEnabled = true;
 	this->pointDataSet = PointDataSet();
@@ -91,7 +91,9 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			        jsonValue[i]["endPosition"]["latitude"].GetDouble(),
 			        jsonValue[i]["endPosition"]["longitude"].GetDouble()
 			    ),
-                jsonValue[i]["airline"].GetString()
+                jsonValue[i]["airline"].GetString(),
+                jsonValue[i]["startPosition"]["airportCode"].GetString(),
+                jsonValue[i]["endPosition"]["airportCode"].GetString()
 			);
 			break;
 		case Data::TWEETS:
