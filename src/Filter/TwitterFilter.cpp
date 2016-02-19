@@ -62,6 +62,7 @@ bool TwitterFilter::shouldDisplayTweetContent(QString content){
     }
     for(int i=0; i<hashtags.count();i++){
         if(content.contains(QString("#%1").arg(this->hashtags[i],Qt::CaseInsensitive))){
+        //if(content.contains(this->hashtags[i],Qt::CaseInsensitive)){
             return true;
         }
     }
@@ -85,7 +86,7 @@ void TwitterFilter::setAuthors(const char* authors) {
 		for (int i = 0; i < this->authors.size(); i++) {
             // Remove trailing @ symbols if necessary
             if (this->authors[i].startsWith("@")) {
-                this->authors[i] = this->authors[i].remove(0, 1).trimmed();
+                this->authors[i] = this->authors[i].remove(0, 1);
             }
 		}
 	}
@@ -107,7 +108,6 @@ void TwitterFilter::setHashtags(const char* hashtags) {
 			}
 		}
 	}
-
 	this->Modified();
 }
 
