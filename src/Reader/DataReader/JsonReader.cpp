@@ -14,7 +14,7 @@
 
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
                        bool temporal,
-                       int timeResolution) : dataType(dataType), filePath(path), temporal(temporal),
+                       int timeResolution) : filePath(path), temporal(temporal), dataType(dataType),
 	timeResolution(timeResolution) {
 	this->cachingEnabled = true;
 	this->pointDataSet = PointDataSet();
@@ -184,6 +184,14 @@ bool JsonReader::hasTemporalData() const {
 
 int JsonReader::getAmountOfTimeSteps() const {
 	return (this->endTime - this->startTime) / this->timeResolution;
+}
+
+int JsonReader::getTimeResolution() const {
+	if (this->hasTemporalData()) {
+		return this->timeResolution;
+	} else {
+		return 0;
+	}
 }
 
 void JsonReader::setCachingEnabled(bool cachingEnabled) {

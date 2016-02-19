@@ -126,7 +126,7 @@ QList<DataPoint*> PolyDataSetHelper::extractRelevantDataPoints(
 			    = dynamic_cast<const TemporalDataPoint*>(point);
 
 			if (
-			    dataPoint->getTimestamp() >= timeSpanStart &&
+			    dataPoint->getTimestamp() > timeSpanStart &&
 			    dataPoint->getTimestamp() <= timeSpanEnd
 			) {
 				relevantDataPoints.append(point);
