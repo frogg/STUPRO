@@ -41,8 +41,8 @@ void vtkPVStuproView::initRenderer()
     
     this->cameraModifiedCallback->SetClientData(this);
 	
-	this->GetRenderer()->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::InteractionEvent,
-		this->cameraModifiedCallback);
+	//this->GetRenderer()->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::InteractionEvent,
+	//	this->cameraModifiedCallback);
 }
 
 void vtkPVStuproView::initGlobe()

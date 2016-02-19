@@ -36,6 +36,7 @@ myTilePool([this]() -> std::unique_ptr<GlobeTile> {
 	return makeUnique<GlobeTile>(*this);
 }),
 myTimerCallback([this](void* unused) {
+	updateZoomLevel();
 	updateTileVisibility();
 	loadGlobeTiles();
 	updateDisplayMode(false);
