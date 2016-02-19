@@ -43,6 +43,13 @@ void vtkPVStuproView::initRenderer()
 	
 	//this->GetRenderer()->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::InteractionEvent,
 	//	this->cameraModifiedCallback);
+
+    this->cameraModifiedCallback->SetCallback(
+		[](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
+		{
+    		KRONOS_LOG_DEBUG("Event fired! EID=%lu", eid);
+		});
+    this->GetRenderer()->AddObserver(vtkCommand::AnyEvent, this->cameraModifiedCallback);
 }
 
 void vtkPVStuproView::initGlobe()
