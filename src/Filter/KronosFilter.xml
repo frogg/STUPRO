@@ -136,6 +136,13 @@
                 default_values=""
                 information_property="All tweets containing at least one of these hashtags will be extracted">
             </StringVectorProperty>
+            <PropertyGroup label="Authors">
+                <Property name="Authors (comma-separated)" />
+                <Property name="Author matching mode" />
+            </PropertyGroup>
+            <PropertyGroup label="Hashtags">
+                <Property name="Hashtags (comma-separated)" />
+            </PropertyGroup>
             <Hints>
                 <ShowInMenu category="Kronos" />
             </Hints>
