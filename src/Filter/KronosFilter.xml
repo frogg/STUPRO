@@ -75,12 +75,30 @@
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
         </SourceProxy>
+        <SourceProxy name="TemporalAggregationFilter" class="TemporalAggregationFilter" label="Kronos Temporal Aggregation Filter">
+            <Documentation
+                long_help="This filter can accumulate weather data over time by either accumulating values or calculating their average."
+                short_help="Accumulate weather data over time">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+        </SourceProxy>
         </ProxyGroup>
     
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
             <Filter name="PrecipitationTypeFilter" />
+            <Filter name="TemporalAggregationFilter" />
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>
