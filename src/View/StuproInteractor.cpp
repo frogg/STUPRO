@@ -45,7 +45,8 @@ void StuproInteractor::OnMouseWheelForward() {
 	float minDistance = 2.75f;
 	vtkCamera* camera = this->CurrentRenderer->GetActiveCamera();
 	// TODO: Set better min-distance.
-	if (camera->GetDistance() >= myVtkPVStuproView->getGlobeRadius() * minDistance) {
+	//if (camera->GetDistance() >= myVtkPVStuproView->getGlobeRadius() * minDistance)
+	{
 		zoomWithFactor(zoomFactor);
 	}
 }
@@ -54,7 +55,8 @@ void StuproInteractor::OnMouseWheelBackward() {
 	setCurrentRendererViaPosition();
 	float maxDistance = 8.0f;
 	vtkCamera* camera = this->CurrentRenderer->GetActiveCamera();
-	if (camera->GetDistance() <= myVtkPVStuproView->getGlobeRadius() * maxDistance) {
+	//if (camera->GetDistance() <= myVtkPVStuproView->getGlobeRadius() * maxDistance)
+	{
 		zoomWithFactor(-(zoomFactor));
 	}
 }
@@ -83,7 +85,7 @@ void StuproInteractor::zoomWithFactor(float factor) {
 
 
 	if (this->myVtkPVStuproView->getGlobe()) {
-		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
+		this->myVtkPVStuproView->getGlobe()->onCameraChanged();
 	}
 	renderWindowInteractor->Render();
 
@@ -96,7 +98,7 @@ void StuproInteractor::OnMiddleButtonDown() {
 		return;
 	}
 
-	if (myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayMap) {
+	if (myVtkPVStuproView->getDisplayMode() == Globe::DisplayMap) {
 		this->GrabFocus(this->EventCallbackCommand);
 		this->StartPan();
 	}
@@ -140,7 +142,7 @@ Vector2d StuproInteractor::calculateRotationParameters() {
 	                            *distanceFactor);
 
 	//Set the horizontal rotation only if in DisplayGlobe.
-	if (myVtkPVStuproView->getDisplayMode() == vtkPVStuproView::DisplayMode::DisplayGlobe) {
+	if (myVtkPVStuproView->getDisplayMode() == Globe::DisplayGlobe) {
 		rotationParameters.x = -(this->Interactor->GetEventPosition()[0] -
 		                         this->Interactor->GetLastEventPosition()[0]) * distanceFactor;
 	}
@@ -192,7 +194,7 @@ void StuproInteractor::Rotate() {
 	}
 
 	if (this->myVtkPVStuproView->getGlobe()) {
-		this->myVtkPVStuproView->getGlobe()->updateGlobeTileVisibility();
+		this->myVtkPVStuproView->getGlobe()->onCameraChanged();
 	}
 
 	this->Interactor->Render();
