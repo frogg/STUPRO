@@ -41,6 +41,7 @@ TwitterHeatmapFilter::TwitterHeatmapFilter() {
 	Locator = vtkSmartPointer<vtkPointLocator>::New();
 	Locator->SetTolerance(toleranceValue);
 
+
 }
 
 void TwitterHeatmapFilter::setToleranceValue(int newTolerance) {
@@ -54,10 +55,7 @@ void TwitterHeatmapFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	os << indent << "Twitter Filter, Kronos Project" << endl;
 }
 
-TwitterHeatmapFilter::~TwitterHeatmapFilter() {
-	this->Locator->Delete();
-	this->Locator = NULL;
-}
+TwitterHeatmapFilter::~TwitterHeatmapFilter() {}
 
 vtkStandardNewMacro(TwitterHeatmapFilter)
 
@@ -182,6 +180,9 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
 	output->Squeeze();
 
 	this->Locator->InitPointInsertion(newPts, input->GetBounds(), num);
+
+	cout << "numberOfPoints" << Locator->GetNumberOfPointsPerBucket() << endl;
+
 
 	return 1;
 }
