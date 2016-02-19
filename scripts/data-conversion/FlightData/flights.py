@@ -34,7 +34,7 @@ d = DataUtility()
 
 print 'Reading the csv file...'
 
-csv_content = d.read_csv_file('flightJsonConverter/Flightroutes.csv')
+csv_content = d.read_csv_file('Flightroutes.csv')
 
 print 'Read {0} lines of data.'.format(len(csv_content))
 
