@@ -30,6 +30,12 @@ public:
      * @param hashtags Comma-separated string of all hashtags
      */
     void setHashtags(const char* hashtags);
+    
+    /**
+      * Callback method for setting the matching mode for authors
+      * @param mode (0 stands for containing, 1 for matching)
+     */
+    void setAuthorMatchingMode(int mode);
 
 private:
     /**
@@ -40,6 +46,15 @@ private:
 
 	TwitterFilter(const TwitterFilter &); // Not implemented.
     void operator=(const TwitterFilter &); // Not implemented.
+    
+    enum Mode {
+        CONTAINING, MATCHING
+    };
+    
+    //determines the mode how author names are filtered
+    TwitterFilter::Mode authorMatchingMode;
+    
+    bool shouldDisplayTweetContent(QString content);
     
     QList<Data::Type> getCompatibleDataTypes();
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
