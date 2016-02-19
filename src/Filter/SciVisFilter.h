@@ -21,12 +21,12 @@ class SciVisFilter  : public vtkThreshold
 		void PrintSelf(ostream& os, vtkIndent indent) override;
 
 
-		void chooseDate();
+		double chooseDate(double initTime);
 
 
 		int	RequestData (vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
-		int FillInputPortInformation (int port, vtkInformation *info) override;
-		int FillOutputPortInformation(int port, vtkInformation* info) override;
+		//int FillInputPortInformation (int port, vtkInformation *info) override;
+		//int FillOutputPortInformation(int port, vtkInformation* info) override;
 
 	protected:
 		SciVisFilter();

@@ -74,13 +74,45 @@
              default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
+            <Hints>
+              <ShowInMenu category="SciVis"/>
+            </Hints>
+        </SourceProxy>
+        <SourceProxy name="SciVisFilter" class="SciVisFilter" label="SciVisFilter">
+          <Documentation
+            long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014"
+            short_help="Solve SciVis-Contest with this filter">
+          </Documentation>
+          <InputProperty
+            name="MIPAS Input"
+            command="SetInputConnection">
+            <ProxyGroupDomain name="groups">
+              <Group name="sources"/>
+              <Group name="filters"/>
+            </ProxyGroupDomain>
+            <DataTypeDomain name="input_type">
+              <DataType value="vtkPolyData"/>
+              <DataType value="vtkCellData"/>
+              <DataType value="vtkUnstructuredGrid">
+            </DataTypeDomain>
+          </InputProperty>
+          <DoubleVectorProperty name="PercentToRemove"
+                      command="SetPercentToRemove"
+                      number_of_elements="1"
+                      default_values="0.1">
+  <DoubleRangeDomain name="range" min="0.0" max="1.0" />
+</DoubleVectorProperty>
+          <DoubleVectorProperty name="SciVisFilter"
+                                command="chooseDate"
+                                number_of_elements="1"
+                                default_values="3.60205e+08">
+          <DoubleRangeDomain name="range" min="3.60205e+08" max="3.68156e+08" />
+        </DoubleVectorProperty>
+          <Hints>
+            <ShowInMenu category="SciVis"/>
+          </Hints>
         </SourceProxy>
         </ProxyGroup>
-    
-    <ParaViewFilters>
-        <Category name="Kronos" menu_label="Kronos">
-            <Filter name="SphericalToCartesianFilter" />
-            <Filter name="PrecipitationTypeFilter" />
-        </Category>
-    </ParaViewFilters>
+
+
 </ServerManagerConfiguration>

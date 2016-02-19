@@ -5,8 +5,6 @@
         long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014"
         short_help="Solve SciVis-Contest with this filter">
       </Documentation>
-
-
       <InputProperty
         name="MIPAS Input"
         command="SetInputConnection">
@@ -15,22 +13,19 @@
           <Group name="filters"/>
         </ProxyGroupDomain>
         <DataTypeDomain name="input_type">
-          <DataType value="Polygonal Mesh"/>
+          <DataType value="vtkPolygon"/>
+          <DataType value="vtkcelldata"/>
         </DataTypeDomain>
       </InputProperty>
-
-
-
-      <Hints>
-        <ShowInMenu category="SciVis"/>
-      </Hints>
-
       <DoubleVectorProperty name="SciVis Slider"
                             command="chooseDate"
                             number_of_elements="1"
-                            default_values="360201600">
-      <DoubleRangeDomain name="range" min="360201600" max="361238400" />
+                            default_values="3.60205e+08">
+      <DoubleRangeDomain name="range" min="3.60205e+08" max="3.68156e+08" />
     </DoubleVectorProperty>
+      <Hints>
+        <ShowInMenu category="SciVis"/>
+      </Hints>
     </SourceProxy>
   </ProxyGroup>
 </ServerManagerConfiguration>

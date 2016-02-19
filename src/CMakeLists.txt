@@ -137,7 +137,6 @@ add_paraview_plugin(
 	REQUIRED_ON_CLIENT
 
     SERVER_MANAGER_SOURCES
-	Filter/SciVisFilter.cpp
         ${CUSTOM_VIEW}
         ${CUSTOM_FILTER}
         ${CUSTOM_SOURCE}
@@ -147,7 +146,6 @@ add_paraview_plugin(
 		Filter/KronosFilter.xml
 		Sources/KronosSources.xml
 		Reader/KronosReader.xml
-		Filter/SciVisFilter.xml
 	GUI_INTERFACES
 		${PLACE_SEARCH_WIDGET_OUTIFACES}
 		${Kronos_Main_Interfaces}
