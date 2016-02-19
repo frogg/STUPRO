@@ -122,11 +122,11 @@ int TemporalAggregationFilter::RequestData(
 
 	vtkPolyData* input = vtkPolyData::GetData(inInfo);
 	vtkPolyData* output = vtkPolyData::GetData(outInfo);
-    
-    if (this->currentTimeStep == 0) {
-        this->SetProgressText("Aggregating data...");
-        this->SetProgress(0.0);
-    }
+
+	if (this->currentTimeStep == 0) {
+		this->SetProgressText("Aggregating data...");
+		this->SetProgress(0.0);
+	}
 
 	// Add the data from the current timestep to the accumulation
 	for (int i = 0; i < input->GetNumberOfPoints(); i++) {
@@ -134,25 +134,27 @@ int TemporalAggregationFilter::RequestData(
 		input->GetPoint(i, coordinates);
 		PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
 
-		this->dataAggregator.addPointData(i, currentCoordinates, this->currentTimeStep, input->GetPointData());
+		this->dataAggregator.addPointData(i, currentCoordinates, this->currentTimeStep,
+		                                  input->GetPointData());
 	}
 
 	if (this->currentTimeStep < inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())) {
 		// There are still time steps left, continue on
 		request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
-        this->currentTimeStep++;
-        
-        // Update the progress
-        double progress = (double) (this->currentTimeStep / (1.0 * inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())));
-        this->UpdateProgress(progress);
+		this->currentTimeStep++;
+
+		// Update the progress
+		double progress = (double) (this->currentTimeStep / (1.0 * inInfo->Length(
+		                                vtkStreamingDemandDrivenPipeline::TIME_STEPS())));
+		this->UpdateProgress(progress);
 	} else {
 		// Everything has been accumulated
 		output->DeepCopy(this->dataAggregator.getPolyData());
 		request->Remove(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING());
 		this->currentTimeStep = 0;
 		this->dataAggregator.clearAggregationData();
-        this->SetProgressText("");
-        this->SetProgress(1.0);
+		this->SetProgressText("");
+		this->SetProgress(1.0);
 	}
 
 	return 1;
@@ -165,7 +167,7 @@ int TemporalAggregationFilter::RequestUpdateExtent (
 	if (this->error) {
 		return 0;
 	}
-    
+
 	vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
 
 	// Make the pipeline executive iterate the upstream pipeline time steps by setting the update time step appropiately

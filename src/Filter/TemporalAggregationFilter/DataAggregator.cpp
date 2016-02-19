@@ -152,7 +152,7 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 
 vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
 	this->finishAggregation();
-	
+
 	vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
 
 	// Create the content of the output poly data object
