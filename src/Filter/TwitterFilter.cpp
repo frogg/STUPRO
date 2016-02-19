@@ -69,8 +69,8 @@ bool TwitterFilter::shouldDisplayTweetContent(QString content) {
 	}
 	for (int i = 0; i < hashtags.count(); i++) {
 		//only filter for hashtags
-		//if (content.contains(QString("#%1").arg(this->hashtags[i]), Qt::CaseInsensitive)) {
-		if (content.contains(this->hashtags[i], Qt::CaseInsensitive)) {
+		if (content.contains(QString("#%1").arg(this->hashtags[i]), Qt::CaseInsensitive)) {
+		//if (content.contains(this->hashtags[i], Qt::CaseInsensitive)) {
 			return true;
 		}
 	}
