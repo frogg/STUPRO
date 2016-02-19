@@ -122,12 +122,30 @@
             default_values=""
             information_property="Set the airport code of the destination airport">
         </StringVectorProperty>
-        <DoubleVectorProperty name="Flight length"
-            command="setMinMaxFlightLength"
+        <DoubleVectorProperty name="Minimum flight length"
+            command="setMinFlightLength"
             number_of_elements="1"
             default_values="15000.0">
             <DoubleRangeDomain name="range" min="0.0" max="15000.0" />
         </DoubleVectorProperty>
+        <DoubleVectorProperty name="Maximum flight length"
+            command="setMaxFlightLength"
+            number_of_elements="1"
+            default_values="15000.0">
+            <DoubleRangeDomain name="range" min="0.0" max="15000.0" />
+        </DoubleVectorProperty>
+        <PropertyGroup label="Airline">
+            <Property name="Select Airline (seperated by comma)" />
+            <Property name="Airline Matching mode" />
+        </PropertyGroup>
+        <PropertyGroup label="Airport Codes">
+            <Property name="Select airport code (Origin) (seperated by comma)" />
+            <Property name="Select airport code (Destination) (seperated by comma)" />
+        </PropertyGroup>
+        <PropertyGroup label="Flight Length">
+            <Property name="Minimum flight length" />
+            <Property name="Maximum flight length" />
+        </PropertyGroup>
           <Hints>
             <ShowInMenu category="Kronos" />
         </Hints>

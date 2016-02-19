@@ -72,11 +72,13 @@ void FlightFilter::setAirportCodeDestination(const char* airportCodeDestinatioin
     this->Modified();
 }
 
-void FlightFilter::setMinMaxFlightLength(double test){
+void FlightFilter::setMinFlightLength(double test){
     this->Modified();
 }
 
-
+void FlightFilter::setMaxFlightLength(double test){
+    this->Modified();
+}
 
 
 void FlightFilter::setAirlineMatchingMode(int matchingMode){

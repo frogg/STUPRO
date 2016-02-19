@@ -42,7 +42,9 @@ public:
      */
     void setAirportCodeDestination(const char* airportCodeDestinatioin);
 
-    void setMinMaxFlightLength(double test);
+    void setMinFlightLength(double test);
+    
+    void setMaxFlightLength(double test);
     
 private:
     /**
