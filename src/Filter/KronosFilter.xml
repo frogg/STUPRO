@@ -93,7 +93,8 @@
             <DataTypeDomain name="input_type">
               <DataType value="vtkPolyData"/>
               <DataType value="vtkCellData"/>
-              <DataType value="vtkUnstructuredGrid">
+              <DataType value="vtkUnstructuredGrid"/>
+              <DataType value="vtkPointSet"/>
             </DataTypeDomain>
           </InputProperty>
           <DoubleVectorProperty name="PercentToRemove"
