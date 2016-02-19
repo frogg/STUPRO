@@ -129,13 +129,13 @@ int TemporalAggregationFilter::RequestData(
 		input->GetPoint(i, coordinates);
 		PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
 
-		this->dataAggregator.addPointData(i, currentCoordinates, input->GetPointData());
+		this->dataAggregator.addPointData(i, currentCoordinates, this->currentTimeStep, input->GetPointData());
 	}
 
 	if (this->currentTimeStep < inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())) {
 		// There are still time steps left, continue on
 		request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
-		this->currentTimeStep++;
+        this->currentTimeStep++;
 	} else {
 		// Everything has been accumulated
 		output->DeepCopy(this->dataAggregator.getPolyData());

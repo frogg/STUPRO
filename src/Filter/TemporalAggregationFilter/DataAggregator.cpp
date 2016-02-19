@@ -27,9 +27,9 @@ void DataAggregator::clearAggregationData() {
 	this->aggregatedData.clear();
 }
 
-void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates,
+void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, int currentTimeStep,
                                   vtkSmartPointer<vtkPointData> pointData) {
-	int currentTimeStep = this->lastTimeIndex;
+	this->lastTimeIndex = currentTimeStep;
 
 	switch (this->dataType) {
 	case Data::PRECIPITATION: {
@@ -148,11 +148,11 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates,
 	default:
 		break;
 	}
-
-	this->lastTimeIndex++;
 }
 
 vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
+	this->finishAggregation();
+	
 	vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
 
 	// Create the content of the output poly data object
@@ -330,7 +330,7 @@ void DataAggregator::finishAggregation() {
 			        (i.value());
 
 			currentValue->setAccumulatedPrecipitation(currentValue->getAccumulatedPrecipitation() + ((1.0 *
-			        (this->lastTimeIndex - currentValue->getTimeIndex()) * this->timeResolution) *
+			        (this->lastTimeIndex - currentValue->getTimeIndex() + 1) * this->timeResolution) *
 			        currentValue->getLastPrecipitationRate()));
 			currentValue->setTimeIndex(this->lastTimeIndex);
 		}
