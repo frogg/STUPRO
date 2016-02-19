@@ -97,7 +97,12 @@
               <DataType value="vtkPointSet"/>
             </DataTypeDomain>
           </InputProperty>
-
+          <DoubleVectorProperty name="Zeit"
+           command="chooseDate"
+           number_of_elements="1"
+           default_values="3.3">
+          <DoubleRangeDomain name="range" min="0.0" max="15000.0" />
+          </DoubleVectorProperty>
           <Hints>
             <ShowInMenu category="SciVis"/>
           </Hints>
