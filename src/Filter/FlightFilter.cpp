@@ -63,7 +63,19 @@ bool FlightFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
     
 }
 
-void FlightFilter::setMatchingMode(int matchingMode){
+void setAirportCodeOrigin(const char* airportCodeOrigin){
+    this->Modified();
+}
+
+
+void setAirportCodeDestination(const char* airportCodeDestinatioin){
+    this->Modified();
+}
+
+
+
+
+void FlightFilter::setAirlineMatchingMode(int matchingMode){
     this->modeAirline = static_cast<Mode>(matchingMode);
     this->Modified();
 }
@@ -74,9 +86,9 @@ void FlightFilter::setAirline(const char* airline){
     
     if(QString::compare(airlines, "", Qt::CaseInsensitive) == 0){
         //might be improved later
-        this->visibleAirlines = QStringList();
+        this->visibleAirlines.clear();
     }else{
-        this->visibleAirlines = airlines.split( ";" );
+        this->visibleAirlines = airlines.split( "," );
     }
     this->Modified();
 }

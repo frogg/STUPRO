@@ -93,7 +93,7 @@
         </InputProperty>
         <IntVectorProperty
             name="Airline Matching mode"
-            command="setMatchingMode"
+            command="setAirlineMatchingMode"
             number_of_elements="1"
             default_values="0">
             <EnumerationDomain name="enum">
@@ -104,11 +104,23 @@
                 This property sets the matching mode for the airlines.
             </Documentation>
         </IntVectorProperty>
-        <StringVectorProperty name="Select Airline"
+        <StringVectorProperty name="Select Airline (seperated by comma)"
             command="setAirline"
             number_of_elements="1"
             default_values=""
             information_property="Airline name">
+        </StringVectorProperty>
+        <StringVectorProperty name="Select airport code (Origin) (seperated by comma)"
+            command="setAirportCodeOrigin"
+            number_of_elements="1"
+            default_values=""
+            information_property="Set the airport code of the origin airport">
+        </StringVectorProperty>
+        <StringVectorProperty name="Select airport code (Destination) (seperated by comma)"
+            command="setAirportCodeDestination"
+            number_of_elements="1"
+            default_values=""
+            information_property="Set the airport code of the destination airport">
         </StringVectorProperty>
         <Hints>
             <ShowInMenu category="Kronos" />

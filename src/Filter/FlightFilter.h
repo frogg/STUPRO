@@ -28,9 +28,22 @@ public:
      * Callback method for setting the matching mode
      * @param mode (0 stands for containing, 1 for matching)
      */
-    void setMatchingMode(int mode);
+    void setAirlineMatchingMode(int mode);
     
+    /**
+     * Callback method for setting the airport codes of the origin airport.
+     * @param airport codes of the origin airports seperated by comma
+     */
+    void setAirportCodeOrigin(const char* airportCodeOrigin);
 
+    /**
+     * Callback method for setting the airport codes of the destination airport.
+     * @param airport codes of the destination airports seperated by comma
+     */
+    void setAirportCodeDestination(const char* airportCodeDestinatioin);
+
+    
+    
 private:
     /**
      * Initialize a new instance of the flight filter.
