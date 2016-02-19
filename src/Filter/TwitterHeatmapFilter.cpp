@@ -47,6 +47,7 @@ TwitterHeatmapFilter::TwitterHeatmapFilter() {
 void TwitterHeatmapFilter::setToleranceValue(int newTolerance) {
 	toleranceValue = newTolerance;
 	Locator->SetTolerance(toleranceValue);
+	this->Modified();
 }
 
 
