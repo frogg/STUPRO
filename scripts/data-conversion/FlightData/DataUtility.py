@@ -10,11 +10,13 @@ class DataUtility:
         """
         with open(filename, 'rb') as csv_file:
             return [row for row in csv.DictReader(csv_file, delimiter=',', quotechar='"')]
-    """
+    
     def read_xml_file(self, filename):
+        """
         Read the contents of an XML file and return it as a nested dictionary.
+        """
         return xmltodict.parse(open(filename, 'rb').read(), attr_prefix='')
-    """
+    
     def read_json_file(self, filename):
         """
         Read the contents of a JSON file and return it as a nested dictionary.
