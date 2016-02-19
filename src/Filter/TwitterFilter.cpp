@@ -28,16 +28,21 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 		this->fail("The string arrays containing tweet contents or authors seem to be invalid.");
 		return false;
 	}
+    
+    // Extract the actual content and author of the tweet we are currently looking at
+    QString author = QString::fromStdString(authorData->GetValue(pointIndex));
+    author.remove(' ');
+    QString content = QString::fromStdString(contentData->GetValue(pointIndex));
 
 	//if no author is in authors and no content is in visibleContent (everything should be visible by default), return this point to be visible
-	if (this->authors.count() == 0 && this->hashtags.count() == 0) {
-		return true;
+	if (this->authors.count() == 0) {
+        if(this->hashtags.count() == 0){
+            return true;
+        }else{
+            return this->shouldDisplayTweetContent(content);
+        }
 	} else {
-		// Extract the actual content and author of the tweet we are currently looking at
-		QString author = QString::fromStdString(authorData->GetValue(pointIndex));
-		author.remove(' ');
-		QString content = QString::fromStdString(contentData->GetValue(pointIndex));
-
+        
 		for (int i = 0; i < this->authors.count(); i++) {
 
 			if (this->authorMatchingMode == CONTAINING) {
@@ -64,8 +69,8 @@ bool TwitterFilter::shouldDisplayTweetContent(QString content) {
 	}
 	for (int i = 0; i < hashtags.count(); i++) {
         //only filter for hashtags
-		if (content.contains(QString("#%1").arg(this->hashtags[i], Qt::CaseInsensitive))) {
-			//if(content.contains(this->hashtags[i],Qt::CaseInsensitive)){
+		//if (content.contains(QString("#%1").arg(this->hashtags[i]), Qt::CaseInsensitive)) {
+			if(content.contains(this->hashtags[i],Qt::CaseInsensitive)){
 			return true;
 		}
 	}
