@@ -17,8 +17,9 @@ public:
 	 * @param airlineName The name of the airline operating this flight
 	 * @param originAirportCode The code of the airport that is the origin of this flight
 	 * @param destinationAirportCode The code of the airport that is the destination of this flight
+	 * @param flightLength The length of this flight in kilometres
 	 */
-	FlightDataPoint(Coordinate coordinate, int priority, Coordinate destination, QString airlineName, QString originAirportCode, QString destinationAirportCode);
+	FlightDataPoint(Coordinate coordinate, int priority, Coordinate destination, QString airlineName, QString originAirportCode, QString destinationAirportCode, double flightLength);
 
 	/**
 	 * Get the destination of the flight this data point describes.
@@ -43,12 +44,19 @@ public:
 	 * @return The code of the airport that is the destination of this flight
 	 */
 	QString getDestinationAirportCode() const;
+	
+	/**
+	 * Get the length of this flight.
+	 * @return The length of this flight
+	 */
+	double getFlightLength() const;
 
 private:
 	Coordinate destination;
     QString airlineName;
 	QString originAirportCode;
 	QString destinationAirportCode;
+	double flightLength;
 };
 
 #endif
