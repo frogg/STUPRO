@@ -48,6 +48,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 	vtkDataSet* input = vtkDataSet::SafeDownCast(
 	                        inInfo->Get(vtkDataObject::DATA_OBJECT()));
+
 	//-------------------------------------------------------
 	// Get the actual objects from the obtained information
 	//vtkDataObject* input = vtkDataObject::GetData(inputVector[0]);
@@ -67,20 +68,20 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
 	vtkUnstructuredGrid* output = vtkUnstructuredGrid::SafeDownCast(
 	                                  outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-	if (input->GetNumberOfCells() == 0) {
-		// set up a ugrid with same data arrays as input, but
-		// no points, cells or data.
-		output->Allocate(1);
-		//output->GetPointData()->CopyAllocate(input->GetPointData(), VTK_CELL_SIZE);
-		output->GetPointData()->CopyAllocate(input->GetPointData());
-		output->GetCellData()->CopyAllocate(input->GetCellData(), 1);
-		vtkPoints* pts = vtkPoints::New();
-		output->SetPoints(pts);
-		pts->Delete();
-		return 1;
-	}
+	//if (input->GetNumberOfCells() == 0) {
+	//	// set up a ugrid with same data arrays as input, but
+	//	// no points, cells or data.
+	//	output->Allocate(1);
+	//	//output->GetPointData()->CopyAllocate(input->GetPointData(), VTK_CELL_SIZE);
+	//	output->GetPointData()->CopyAllocate(input->GetPointData());
+	//	output->GetCellData()->CopyAllocate(input->GetCellData(), 1);
+	//	vtkPoints* pts = vtkPoints::New();
+	//	output->SetPoints(pts);
+	//	pts->Delete();
+	//	return 1;
+	//}
 
-	output->GetPointData()->CopyAllocate(input->GetPointData());
+	//output->GetPointData()->CopyAllocate(input->GetPointData());
 	output->GetCellData()->PassData(input->GetCellData());
 
 	// First, create a new points array that eliminate duplicate points.
@@ -119,7 +120,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
 		if (id % progressStep == 0) {
 			this->UpdateProgress(0.8 + 0.2 * ((float)id / num));
 		}
-		// special handling for polyhedron cells
+		//// special handling for polyhedron cells
 		if (vtkUnstructuredGrid::SafeDownCast(input) &&
 		        input->GetCellType(id) == VTK_POLYHEDRON) {
 			vtkUnstructuredGrid::SafeDownCast(input)->GetFaceStream(id, cellPoints);
