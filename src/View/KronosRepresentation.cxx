@@ -31,6 +31,14 @@ KronosRepresentation::KronosRepresentation() {
 
 //----------------------------------------------------------------------------
 KronosRepresentation::~KronosRepresentation() {
+
+	//Delete everything
+	//this->pointMapper->Delete();
+	//this->pointActor->Delete();
+	//this->labelMapper->Delete();
+	//this->labelActor->Delete();
+	//this->pointSetToLabelHierarchyFilter->Delete();
+
 }
 //---------------------------------------------------------------------------
 int KronosRepresentation::RequestInformation(vtkInformation* request,

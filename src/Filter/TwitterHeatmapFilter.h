@@ -19,29 +19,31 @@
 class TwitterHeatmapFilter : public vtkCleanUnstructuredGrid {
 
 public:
-    vtkTypeMacro(TwitterHeatmapFilter, vtkCleanUnstructuredGrid)
-    static TwitterHeatmapFilter *New();
-    void PrintSelf(ostream &os, vtkIndent indent) override;
-    
-    
-protected:
-    vtkSmartPointer<vtkPointLocator> Locator;
-    
-    int RequestData(vtkInformation *info,
-                    vtkInformationVector **inputVector,
-                    vtkInformationVector *outputVector) override;
+	vtkTypeMacro(TwitterHeatmapFilter, vtkCleanUnstructuredGrid)
+	static TwitterHeatmapFilter* New();
+	void PrintSelf(ostream& os, vtkIndent indent) override;
 
-    
-    virtual int FillInputPortInformation(int port, vtkInformation *info) override;
-    
-    
+	int toleranceValue = 0;
+	void setToleranceValue(int newTolerance);
+
+protected:
+	vtkSmartPointer<vtkPointLocator> Locator;
+
+	int RequestData(vtkInformation* info,
+	                vtkInformationVector** inputVector,
+	                vtkInformationVector* outputVector) override;
+
+
+	virtual int FillInputPortInformation(int port, vtkInformation* info) override;
+
+
 private:
-    TwitterHeatmapFilter();
-    ~TwitterHeatmapFilter();
-    
-    
-    TwitterHeatmapFilter(const TwitterHeatmapFilter &); // Not implemented.
-    void operator=(const TwitterHeatmapFilter &); // Not implemented.
+	TwitterHeatmapFilter();
+	~TwitterHeatmapFilter();
+
+
+	TwitterHeatmapFilter(const TwitterHeatmapFilter&);  // Not implemented.
+	void operator=(const TwitterHeatmapFilter&);  // Not implemented.
 
 };
 
