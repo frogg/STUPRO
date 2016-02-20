@@ -42,9 +42,9 @@ public:
      */
     void setAirportCodeDestination(const char* airportCodeDestinatioin);
 
-    void setMinFlightLength(double test);
+    void setMinFlightLength(double minLength);
     
-    void setMaxFlightLength(double test);
+    void setMaxFlightLength(double maxLength);
     
 private:
     /**
@@ -58,7 +58,16 @@ private:
     
     QList<Data::Type> getCompatibleDataTypes();
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
-	
+    
+    //returns true, if data point is visible (based on airline filter)
+    bool visibleAirline(int pointIndex, vtkPointData* pointData);
+    //returns true, if data point is visible (based on airport code origin)
+    bool visibleAirportCodeOrigin(int pointIndex, vtkPointData* pointData);
+    //returns true, if data point is visible (based on airport code destination)
+    bool visibleAirportCodeDestination(int pointIndex, vtkPointData* pointData);
+    //returns true, if data point is visible (based on flight length)
+    bool visibleLength(int pointIndex, vtkPointData* pointData);
+    
     enum Mode {
         CONTAINING, MATCHING
     };
@@ -68,6 +77,13 @@ private:
     FlightFilter::Mode modeAirline;
     //contains visible airlines names
     QStringList visibleAirlines;
+    
+    QStringList visibleAirportCodesOrigin;
+    QStringList visibleAirportCodesDestination;
+
+
+    double minFlightLength;
+    double maxFlightLength;
 
 
 };

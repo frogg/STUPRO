@@ -125,14 +125,14 @@
         <DoubleVectorProperty name="Minimum flight length"
             command="setMinFlightLength"
             number_of_elements="1"
-            default_values="15000.0">
-            <DoubleRangeDomain name="range" min="0.0" max="15000.0" />
+            default_values="0.0">
+            <DoubleRangeDomain name="range" min="0.0" max="20000.0" />
         </DoubleVectorProperty>
         <DoubleVectorProperty name="Maximum flight length"
             command="setMaxFlightLength"
             number_of_elements="1"
-            default_values="15000.0">
-            <DoubleRangeDomain name="range" min="0.0" max="15000.0" />
+            default_values="20000.0">
+            <DoubleRangeDomain name="range" min="0.0" max="20000.0" />
         </DoubleVectorProperty>
         <PropertyGroup label="Airline">
             <Property name="Select Airline (seperated by comma)" />

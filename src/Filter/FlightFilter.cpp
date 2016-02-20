@@ -14,6 +14,7 @@
 #include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
+#include <vtkTypeFloat32Array.h>
 #include <vtkStringArray.h>
 
 
@@ -21,6 +22,8 @@
 FlightFilter::FlightFilter() {
     //std::cout << "contains 0 elements:" << this->visibleAuthorName.count();
     this->modeAirline = CONTAINING;
+    this->minFlightLength = 0;
+    this->maxFlightLength = 20000.0;
 }
 
 FlightFilter::~FlightFilter() { }
@@ -36,47 +39,104 @@ QList<Data::Type> FlightFilter::getCompatibleDataTypes() {
 
 bool FlightFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                             vtkPointData* pointData) {
+    return this->visibleAirline(pointIndex, pointData) && this->visibleAirportCodeOrigin(pointIndex, pointData) && this->visibleAirportCodeDestination(pointIndex, pointData) && this->visibleLength(pointIndex, pointData);
+}
+
+bool FlightFilter::visibleAirline(int pointIndex, vtkPointData* pointData){
     if(this->visibleAirlines.count() == 0){
-      return true;
+        return true;
     }else{
         vtkSmartPointer<vtkStringArray> airlines = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("airlines"));
         QString airline = QString::fromStdString(airlines->GetValue(pointIndex));
         airline.remove(' ');
         
         for(int i=0; i<visibleAirlines.count();i++){
-            QString temp = visibleAirlines.at(i);
             //check airline contains substring temp
             if(this->modeAirline == CONTAINING){
                 //containing Mode
-                if(airline.contains(temp,Qt::CaseInsensitive)){
+                if(airline.contains(visibleAirlines.at(i),Qt::CaseInsensitive)){
                     return true;
                 }
             }else if(this->modeAirline == MATCHING){
                 //exact match
-                if(QString::compare(airline, temp, Qt::CaseInsensitive) == 0){
+                if(QString::compare(airline, visibleAirlines.at(i), Qt::CaseInsensitive) == 0){
                     return true;
                 }
             }
         }
         return false;
     }
+}
+
+bool FlightFilter::visibleAirportCodeOrigin(int pointIndex, vtkPointData* pointData){
+    vtkSmartPointer<vtkStringArray> airportCodesOrigin = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("originAirportCodes"));
+    QString airportCodeOrigin = QString::fromStdString(airportCodesOrigin->GetValue(pointIndex));
     
+    if(this->visibleAirportCodesOrigin.count() == 0){
+        return true;
+    }else{
+        for(int i=0; i<visibleAirportCodesOrigin.count();i++){
+            
+            if(QString::compare(airportCodeOrigin, visibleAirportCodesOrigin.at(i), Qt::CaseInsensitive) == 0){
+                    return true;
+                }
+        }
+        return false;
+    }
+}
+
+bool FlightFilter::visibleAirportCodeDestination(int pointIndex, vtkPointData* pointData){
+    vtkSmartPointer<vtkStringArray> airportCodesDestination = vtkStringArray::SafeDownCast(pointData->GetAbstractArray("destinationAirportCodes"));
+    QString airportCodeDestination = QString::fromStdString(airportCodesDestination->GetValue(pointIndex));
+    if(this->visibleAirportCodesDestination.count() == 0){
+        return true;
+    }else{
+        for(int i=0; i<visibleAirportCodesDestination.count();i++){
+            if(QString::compare(airportCodeDestination, visibleAirportCodesDestination.at(i), Qt::CaseInsensitive) == 0){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+bool FlightFilter::visibleLength(int pointIndex, vtkPointData* pointData){
+    vtkSmartPointer<vtkTypeFloat32Array> flightLengths = vtkTypeFloat32Array::SafeDownCast(pointData->GetAbstractArray("flightLengths"));
+    double flightLength = flightLengths->GetTuple1(pointIndex);
+    return this->minFlightLength <= flightLength && flightLength <= this->maxFlightLength;
 }
 
 void FlightFilter::setAirportCodeOrigin(const char* airportCodeOrigin){
+    QString airportCodesOrigin = QString::fromStdString(airportCodeOrigin);
+    airportCodesOrigin.remove(' ');
+    
+    if(QString::compare(airportCodesOrigin, "", Qt::CaseInsensitive) == 0){
+        this->visibleAirportCodesOrigin.clear();
+    }else{
+        this->visibleAirportCodesOrigin = airportCodesOrigin.split( "," );
+    }
     this->Modified();
 }
 
 
 void FlightFilter::setAirportCodeDestination(const char* airportCodeDestinatioin){
+    QString airportCodesDestination = QString::fromStdString(airportCodeDestinatioin);
+    airportCodesDestination.remove(' ');
+    if(QString::compare(airportCodesDestination, "", Qt::CaseInsensitive) == 0){
+        this->visibleAirportCodesDestination.clear();
+    }else{
+        this->visibleAirportCodesDestination = airportCodesDestination.split( "," );
+    }
     this->Modified();
 }
 
-void FlightFilter::setMinFlightLength(double test){
+void FlightFilter::setMinFlightLength(double minLength){
+    this->minFlightLength = minLength;
     this->Modified();
 }
 
-void FlightFilter::setMaxFlightLength(double test){
+void FlightFilter::setMaxFlightLength(double maxLength){
+    this->maxFlightLength = maxLength;
     this->Modified();
 }
 
@@ -91,7 +151,6 @@ void FlightFilter::setAirline(const char* airline){
     airlines.remove(' ');
     
     if(QString::compare(airlines, "", Qt::CaseInsensitive) == 0){
-        //might be improved later
         this->visibleAirlines.clear();
     }else{
         this->visibleAirlines = airlines.split( "," );
@@ -103,18 +162,4 @@ void FlightFilter::SetInputConnection(vtkAlgorithmOutput* input) {
     this->Superclass::SetInputConnection(input);
 }
 
-/*
-void TwitterFilter::setContent(const char* content){
-    QString contentKeyWords = QString::fromStdString(content);
-    contentKeyWords.remove(' ');
-
-    if(QString::compare(contentKeyWords, "", Qt::CaseInsensitive) == 0){
-        //might be improved later
-        this->visibleContent = QStringList();
-    }else{
-        this->visibleContent = contentKeyWords.split( ";" );
-    }
-    this->Modified();
-}
- */
 
