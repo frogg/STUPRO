@@ -82,21 +82,23 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			);
 			break;
 		case Data::FLIGHTS: {
-            Coordinate startPosition(jsonValue[i]["startPosition"]["latitude"].GetDouble(), jsonValue[i]["startPosition"]["longitude"].GetDouble());
-            Coordinate endPosition(jsonValue[i]["endPosition"]["latitude"].GetDouble(), jsonValue[i]["endPosition"]["longitude"].GetDouble());
-            double flightLength = calculateDistance(startPosition, endPosition);
-            
+			Coordinate startPosition(jsonValue[i]["startPosition"]["latitude"].GetDouble(),
+			                         jsonValue[i]["startPosition"]["longitude"].GetDouble());
+			Coordinate endPosition(jsonValue[i]["endPosition"]["latitude"].GetDouble(),
+			                       jsonValue[i]["endPosition"]["longitude"].GetDouble());
+			double flightLength = calculateDistance(startPosition, endPosition);
+
 			dataPoint = new FlightDataPoint(
 			    startPosition,
 			    depth,
 			    endPosition,
-                jsonValue[i]["airline"].GetString(),
-                jsonValue[i]["startPosition"]["airportCode"].GetString(),
-                jsonValue[i]["endPosition"]["airportCode"].GetString(),
-                flightLength
+			    jsonValue[i]["airline"].GetString(),
+			    jsonValue[i]["startPosition"]["airportCode"].GetString(),
+			    jsonValue[i]["endPosition"]["airportCode"].GetString(),
+			    flightLength
 			);
 			break;
-        }
+		}
 		case Data::TWEETS:
 			dataPoint = new TweetDataPoint(
 			    Coordinate(

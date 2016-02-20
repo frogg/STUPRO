@@ -27,7 +27,7 @@ double toRadians(double degrees);
  */
 template<typename T>
 T interpolateLinear(T a, T b, T interpolation) {
-    return interpolation * b + (1.f - interpolation) * a;
+	return interpolation * b + (1.f - interpolation) * a;
 }
 
 /**
@@ -40,11 +40,11 @@ T interpolateLinear(T a, T b, T interpolation) {
  */
 template <typename T>
 T getNextPowerOf2(T value) {
-    value--;
-    for (unsigned int i = 1; i < sizeof(T) * 8; i <<= 1) {
-        value |= value >> i;
-    }
-    return value + 1;
+	value--;
+	for (unsigned int i = 1; i < sizeof(T) * 8; i <<= 1) {
+		value |= value >> i;
+	}
+	return value + 1;
 }
 
 
