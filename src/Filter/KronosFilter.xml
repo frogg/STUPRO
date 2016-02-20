@@ -28,7 +28,7 @@
 		<ShowInMenu category="Kronos" />
 	    </Hints>
         </SourceProxy>
-        <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Type Filter">
+        <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Filter">
             <Documentation
                 long_help="This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point."
                 short_help="Extract data based on the type of precipitation">
@@ -74,6 +74,9 @@
              default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
+            <Hints>
+                <ShowInMenu category="Kronos" />
+            </Hints>
         </SourceProxy>
         <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
             <Documentation
@@ -216,8 +219,59 @@
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>
+        <SourceProxy name="TwitterFilter" class="TwitterFilter" label="Kronos Twitter Filter">
+            <Documentation
+                long_help="This filter can extract data from twitter point sets read by a Kronos reader depending on the author and hashtags."
+                short_help="Extract data based on the author or hashtags">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <IntVectorProperty
+              name="Author matching mode"
+              command="setAuthorMatchingMode"
+              number_of_elements="1"
+              default_values="0">
+              <EnumerationDomain name="enum">
+                <Entry value="0" text="Containing"/>
+                <Entry value="1" text="Matching"/>
+                </EnumerationDomain>
+                <Documentation>
+                This property indicates the matching mode for authors.
+                 </Documentation>
+             </IntVectorProperty>
+            <StringVectorProperty name="Authors (comma-separated)"
+                command="setAuthors"
+                number_of_elements="1"
+                default_values=""
+                information_property="Authors whose tweets should be extracted">
+            </StringVectorProperty>
+            <StringVectorProperty name="Hashtags (comma-separated)"
+                command="setHashtags"
+                number_of_elements="1"
+                default_values=""
+                information_property="All tweets containing at least one of these hashtags will be extracted">
+            </StringVectorProperty>
+            <PropertyGroup label="Authors">
+                <Property name="Authors (comma-separated)" />
+                <Property name="Author matching mode" />
+            </PropertyGroup>
+            <PropertyGroup label="Hashtags">
+                <Property name="Hashtags (comma-separated)" />
+            </PropertyGroup>
+            <Hints>
+                <ShowInMenu category="Kronos" />
+            </Hints>
+        </SourceProxy>
         </ProxyGroup>
-    
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
