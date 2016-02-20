@@ -20,7 +20,6 @@
 
 
 FlightFilter::FlightFilter() {
-    //std::cout << "contains 0 elements:" << this->visibleAuthorName.count();
     this->modeAirline = CONTAINING;
     this->minFlightLength = 0;
     this->maxFlightLength = 20000.0;
@@ -50,8 +49,8 @@ bool FlightFilter::visibleAirline(int pointIndex, vtkPointData* pointData){
         QString airline = QString::fromStdString(airlines->GetValue(pointIndex));
         airline.remove(' ');
         
+        //check if the given airline is contained in a airline in visibleAirlines
         for(int i=0; i<visibleAirlines.count();i++){
-            //check airline contains substring temp
             if(this->modeAirline == CONTAINING){
                 //containing Mode
                 if(airline.contains(visibleAirlines.at(i),Qt::CaseInsensitive)){
@@ -76,7 +75,7 @@ bool FlightFilter::visibleAirportCodeOrigin(int pointIndex, vtkPointData* pointD
         return true;
     }else{
         for(int i=0; i<visibleAirportCodesOrigin.count();i++){
-            
+            //accept only exact match
             if(QString::compare(airportCodeOrigin, visibleAirportCodesOrigin.at(i), Qt::CaseInsensitive) == 0){
                     return true;
                 }
@@ -92,6 +91,7 @@ bool FlightFilter::visibleAirportCodeDestination(int pointIndex, vtkPointData* p
         return true;
     }else{
         for(int i=0; i<visibleAirportCodesDestination.count();i++){
+            //accept only exact match
             if(QString::compare(airportCodeDestination, visibleAirportCodesDestination.at(i), Qt::CaseInsensitive) == 0){
                 return true;
             }

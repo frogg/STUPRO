@@ -42,8 +42,16 @@ public:
      */
     void setAirportCodeDestination(const char* airportCodeDestinatioin);
 
+    /**
+     * Callback method for setting miniumum flight length.
+     * @param minimum flight length in km
+     */
     void setMinFlightLength(double minLength);
     
+    /**
+     * Callback method for setting maximum flight length.
+     * @param maximum flight length in km
+     */
     void setMaxFlightLength(double maxLength);
     
 private:
@@ -77,12 +85,13 @@ private:
     FlightFilter::Mode modeAirline;
     //contains visible airlines names
     QStringList visibleAirlines;
-    
+    //contains visible airport codes of the origin airports
     QStringList visibleAirportCodesOrigin;
+    //contains visible airport codes of the destination airports
     QStringList visibleAirportCodesDestination;
-
-
+    //minimum flight length in km
     double minFlightLength;
+    //maximum flight length in km
     double maxFlightLength;
 
 
