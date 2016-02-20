@@ -12,6 +12,7 @@ set(PLUGIN_MOC_SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/PlaceSearchDockWidget.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/PlaceSearchWidget.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Kronos.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Utils/Misc/SlotCallback.hpp"
 )
 
 # files to be moced for the paraview part
@@ -100,6 +101,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/Filter/
 	${CMAKE_CURRENT_SOURCE_DIR}/Sources/
 	${CMAKE_CURRENT_SOURCE_DIR}/Reader/
+	${CMAKE_CURRENT_SOURCE_DIR}/Utils/Misc/
 )
 
 # load the glsl-shaders to use in code:

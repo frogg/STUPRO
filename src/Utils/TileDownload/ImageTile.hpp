@@ -26,7 +26,7 @@ public:
 	 * Get the map of layers saved in this image tile.
 	 * @return A map of layer identifiers and corresponding images
 	 */
-	QMap<QString, MetaImage>& getLayers();
+	const QMap<QString, MetaImage>& getLayers() const;
 
 	/**
 	 * Set the map of layers saved in this image tile.
@@ -38,7 +38,7 @@ public:
 	 * Get the zoom level of this image tile.
 	 * @return The zoom level of this image tile
 	 */
-	int getZoomLevel();
+	int getZoomLevel() const;
 
 	/**
 	 * Set the zoom level of this image tile.
@@ -50,7 +50,7 @@ public:
 	 * Get the horizontal coordinate of this image tile in this zoom level.
 	 * @return The horizontal position of this image tile
 	 */
-	int getTileX();
+	int getTileX() const;
 
 	/**
 	 * Set the horizontal coordinate of this image tile in this zoom level.
@@ -62,7 +62,7 @@ public:
 	 * Get the vertical coordinate of this image tile in this zoom level.
 	 * @return The vertical position of this image tile
 	 */
-	int getTileY();
+	int getTileY() const;
 
 	/**
 	 * Set the vertical coordinate of this image tile in this zoom level.

@@ -1,24 +1,23 @@
 #ifndef STUPRO_GLOBE_HPP
 #define STUPRO_GLOBE_HPP
 
+#include <Globe/GlobeTile.hpp>
+#include <Utils/Graphics/ResourcePool.hpp>
 #include <Utils/Math/Vector2.hpp>
-#include <Utils/Math/Vector3.hpp>
+#include <Utils/Misc/SlotCallback.hpp>
 #include <Utils/TileDownload/ImageDownloader.hpp>
-#include <Utils/Math/IncludeEigen.hpp>
-#include <Globe/Coordinate.hpp>
-#include <vtkOBBTree.h>
+#include <Utils/TileDownload/ImageTile.hpp>
+#include <vtkOpenGLTexture.h>
 #include <vtkPlaneSource.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
+#include <QEventLoop>
+#include <QTimer>
 #include <atomic>
-#include <memory>
+#include <mutex>
+#include <queue>
+#include <array>
 #include <vector>
-
-//TODO Configuration file
-#define GLOBE_RADIUS 0.5
-#define PLANE_WIDTH 4
-#define PLANE_HEIGHT 2
-#define PLANE_SIZE 1
 
 class GlobeTile;
 
@@ -29,7 +28,7 @@ class Globe {
 public:
 
 	/**
-	 * Creates the globe using the specified renderer.
+	 * Creates the globe using the specified renderer and configuration.
 	 */
 	Globe(vtkRenderer& renderer);
 
@@ -39,21 +38,13 @@ public:
 	virtual ~Globe();
 
 	/**
-	 * Changes the globe's vertex/heightmap resolution per tile.
+	 * Returns the plane mapper with an appropriate level of detail for the terrain height range in
+	 * a tile.
 	 *
-	 * @param resolution The globe's resolution in grid units.
+	 * @param heightDifference The difference between the minimum and maximum height in a tile.
+	 * @return the mapper responsible for rendering the tiles at the specified level of detail.
 	 */
-	void setResolution(Vector2u resolution);
-
-	/**
-	 * @return the globe's vertex/heightmap resolution per tile.
-	 */
-	Vector2u getResolution() const;
-
-	/**
-	 * @return the plane mapper responsible for rendering the tiles.
-	 */
-	vtkSmartPointer<vtkPolyDataMapper> getPlaneMapper() const;
+	vtkSmartPointer<vtkPolyDataMapper> getPlaneMapper(float heightDifference) const;
 
 	/**
 	 * @return the render window associated with this globe
@@ -84,6 +75,43 @@ public:
 	unsigned int getZoomLevel() const;
 
 	/**
+	 * Enum holding the available display modes for the globe.
+	 */
+	enum DisplayMode {
+		DisplayGlobe = 0, DisplayMap = 1
+	};
+
+	/**
+	 * Changes the globe's display mode. This changes the globe between a flat map view and a
+	 * spherical globe view.
+	 *
+	 * @param displayMode The display mode to use for the globe
+	 */
+	void setDisplayMode(DisplayMode displayMode);
+
+	/**
+	 * @return the globe's current display mode.
+	 */
+	DisplayMode getDisplayMode() const;
+
+	/**
+	 * @return the current animation state of the globe's display mode between 0.0 (globe) and 1.0
+	 *         (map).
+	 */
+	float getDisplayModeInterpolation() const;
+
+	/**
+	 * Checks which globe tiles are invisible and need to be culled.
+	 */
+	void onCameraChanged();
+
+private:
+	/**
+	 * Returns the index of the specified tile within the tile array.
+	 */
+	unsigned int getTileIndex(int lon, int lat) const;
+
+	/**
 	 * Returns a specific tile from the globe. The lon/lat pair is given in tile indices starting
 	 * from 0 and is normalized/wrapped around the world before selecting the tile.
 	 *
@@ -95,114 +123,136 @@ public:
 	GlobeTile& getTileAt(int lon, int lat) const;
 
 	/**
-	 * Changes the display mode interpolation between globe view and map view. A value of 0.0 means
-	 * globe, a value of 1.0 means map, and any values in-between result in a smooth animation
-	 * between the two display modes.
+	 * Returns a resource pool handle to a specific tile from the globe. The lon/lat pair is given
+	 * in tile indices starting from 0 and is normalized/wrapped around the world before selecting
+	 * the tile.
 	 *
-	 * @param displayMode The interpolation between globe and map
+	 * @param lon The integer longitude to get the tile at
+	 * @param lat The integer latitiude to get the tile at
+	 *
+	 * @return a handle to the globe tile at the specified longitude/latitude index
 	 */
-	void setDisplayModeInterpolation(float displayMode);
+	ResourcePool<GlobeTile>::Handle getTileHandleAt(int lon, int lat) const;
 
 	/**
-	 * @return the current interpolation between globe and map.
+	 * Assigns the globe tile handle at the specified tile coordinate.
+	 *
+	 * @param lon The integer longitude to set the tile at
+	 * @param lat The integer latitiude to set the tile at
+	 * @param handle The tile handle to assign
 	 */
-	float getDisplayModeInterpolation() const;
+	void setTileHandleAt(int lon, int lat, ResourcePool<GlobeTile>::Handle handle);
 
 	/**
-	 * Returns true if a texture was loaded and a renderer re-paint is needed and resets the flag.
+	 * Checks if the specified tile is facing towards the camera and within the camera's view frustum.
 	 */
-	bool checkIfRepaintIsNeeded();
+	bool isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
+	                         vtkMatrix4x4* compositeTransform) const;
+
+	/**
+	 * Changes the visibility of the specified tile.
+	 */
+	void setTileVisibility(int lon, int lat, bool visibility);
+
+	/**
+	 * Sets the visibility of a tile to true.
+	 */
+	void showTile(int lon, int lat);
+
+	/**
+	 * Sets the visibility of a tile to false.
+	 */
+	void hideTile(int lon, int lat);
+
+	/**
+	 * Resizes the tile handle list to the current zoom level.
+	 */
+	void createTileHandles();
+
+	/**
+	 * Hides all currently visible globe tiles and erases the handles.
+	 */
+	void eraseTileHandles();
+
+	/**
+	 * Loads all fetched globe tiles.
+	 */
+	void loadGlobeTiles();
+
+	/**
+	 * Loads a globe tile from an ImageTile.
+	 */
+	void loadGlobeTile(const ImageTile& tile);
+
+	/**
+	 * Updates the globe's display mode interpolation value for a smooth animation.
+	 *
+	 * @param instant If this is true, the display mode will be immediately adjusted to its target
+	 *                value.
+	 */
+	void updateDisplayMode(bool instant);
+
+	/**
+	 * Checks which level of detail is required for globe tiles and reloads them with that LOD.
+	 */
+	void updateZoomLevel();
+
+	/**
+	 * Checks if the camera has changed since the last call to this function. If this is the case,
+	 * checks which globe tiles are invisible and need to be culled.
+	 */
+	void updateTileVisibilityIfNeeded();
 
 	/**
 	 * Checks which globe tiles are invisible and need to be culled.
 	 */
-	void updateGlobeTileVisibility();
+	void updateTileVisibility();
 
 	/**
-	 * Returns the Coordinates (lat, long) from multipe worldPoints of the Globe.
-	 *
-	 * @param world points are the points in world coordinates (that is: 3D-Space) that should be converted to Coordinates
-	 * @return Coordinates (lat, long)
+	 * Checks which globe tiles are invisible and need to be culled (implementation function).
 	 */
-	std::vector<Coordinate> getGlobeCoordinates(std::vector<Vector3d> worldPoints);
-	/**
-	 * get Coordinates from multipe worldPoints of the Map
-	 * @param world points (that is: 3D-Space) are the points in world coordinates that should be converted to Coordinates
-	 * @return Coordinates in latitude and longitude
-	 */
-	std::vector<Coordinate> getPlaneCoordinates(std::vector<Vector3d> worldPoints);
+	void updateTileVisibilityImpl(bool forceUpdate);
 
 	/**
-	 * get the visible center of the globe/map
-	 * @param carmeraPosition actual position of the camera
-	 * @return Coordinate in latitude and longitude at the centre of the view
+	 * Generates the LOD table for height difference -> resolution mapping.
 	 */
-	Coordinate getCenterGlobeCoordinate(Vector3d cameraPosition);
-	/**
-	 * get intersection points of the view frustum with the visible globe/map
-	 * @param planes of the view frustum as you can get them from VTK
-	 * @param carmeraPosition actual position of the camera
-	 * @return the four intersection points with the far plane in world coodinates
-	 */
-	std::vector<Vector3d> getIntersectionPoints(double planes[24], Vector3d cameraPosition);
-
-private:
-	///SphereTree to caluclate Intersection points with map
-	vtkSmartPointer<vtkOBBTree> mySphereTree;
-	///PlaneTree to caluclate Intersection points with globe
-	vtkSmartPointer<vtkOBBTree> myPlaneTree;
-
-	/**
-	 * get intersection point of the view frustum with the visible globe/map
-	 * @param 3 planes of the view frustum that should be cut (intersection point)
-	 * @param carmeraPosition actual position of the camera
-	 * @return returns the cut point in world coodinates
-	 */
-	Vector3d getIntersectionPoint(double plane1[4], double plane2[4], double plane3[4],
-	                              Vector3d cameraPosition);
-	/**
-	 * calculate intersection point of three planes
-	 * @param 3 planes of the view frustum that should be cut (intersection point)
-	 *          planes must be given as ax + by + cz + d = 0
-	 * @return return the intersection point
-	 */
-	Vector3d cutPlanes(double planes[3][4]);
-	vtkSmartPointer<vtkOBBTree> getOBBTree();
-
-	/**
-	 * Get the Coordinate from a point at the globe (in world coordinates)
-	 * @param point globe point in world coordinates
-	 * @return Coordinate in latitude and longitude
-	 */
-	Coordinate getCoordinatesFromGlobePoint(Vector3d point);
-	/**
-	 * Get the Coordinate from a point at the map (in world coordinates)
-	 * @param point map point in world coordinates
-	 * @return Coordinate in latitude and longitude
-	 */
-	Coordinate getCoordinatesFromPlanePoint(Vector2d point);
-
-	/**
-	 * Returns the index of the specified tile within the tile array.
-	 */
-	unsigned int getTileIndex(int lon, int lat) const;
-
-	void createTiles();
-	void createOBBTrees();
+	void generateLODTable();
 
 	void onTileLoad(ImageTile tile);
 
 	vtkRenderer& myRenderer;
 
-	vtkSmartPointer<vtkPlaneSource> myPlaneSource;
-	vtkSmartPointer<vtkPolyDataMapper> myPlaneMapper;
+	vtkSmartPointer<vtkOpenGLTexture> myLoadingTexture;
 
 	ImageDownloader myDownloader;
+	std::queue<ImageTile> myDownloadedTiles;
+	std::mutex myDownloadedTilesMutex;
 
-	std::vector<std::unique_ptr<GlobeTile> > myTiles;
+	std::unique_ptr<QTimer> myTimer;
+	SlotCallback myTimerCallback;
+
+	ResourcePool<GlobeTile> myTilePool;
+	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;
+
+	/**
+	 * Map from minimum terrain height difference to plane source resolution.
+	 */
+	struct LODSetting {
+		LODSetting(float heightRange, unsigned int lod);
+
+		float heightRange;
+		unsigned int lod;
+		vtkSmartPointer<vtkPlaneSource> planeSource;
+		vtkSmartPointer<vtkPolyDataMapper> planeMapper;
+	};
+
+	std::array<double, 16> myCachedCameraMatrix;
+
+	std::vector<LODSetting> myLODTable;
 
 	unsigned int myZoomLevel;
 
+	DisplayMode myDisplayMode;
 	float myDisplayModeInterpolation;
 
 	std::atomic_flag myIsClean;

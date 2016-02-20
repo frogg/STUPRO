@@ -190,6 +190,14 @@ int JsonReader::getAmountOfTimeSteps() const {
 	return (this->endTime - this->startTime) / this->timeResolution;
 }
 
+int JsonReader::getTimeResolution() const {
+	if (this->hasTemporalData()) {
+		return this->timeResolution;
+	} else {
+		return 0;
+	}
+}
+
 void JsonReader::setCachingEnabled(bool cachingEnabled) {
 	this->cachingEnabled = cachingEnabled;
 }
