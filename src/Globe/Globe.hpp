@@ -16,6 +16,7 @@
 #include <atomic>
 #include <mutex>
 #include <queue>
+#include <array>
 #include <vector>
 
 class GlobeTile;
