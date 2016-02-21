@@ -201,7 +201,7 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 	    -118.242775,
 	    destinationArray->GetTuple2(0)[1]
 	);
-	
+
 	// Test the associated array of origin airport codes
 	vtkSmartPointer<vtkAbstractArray> abstractOriginAirportCodesArray = polyData->GetPointData()
 	        ->GetAbstractArray("originAirportCodes");
@@ -220,45 +220,45 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 	    "DXB",
 	    originAirportCodesArray->GetValue(0)
 	);
-	
+
 	// Test the associated array of destination airport codes
 	vtkSmartPointer<vtkAbstractArray> abstractDestinationAirportCodesArray = polyData->GetPointData()
-			->GetAbstractArray("destinationAirportCodes");
+	        ->GetAbstractArray("destinationAirportCodes");
 	ASSERT_TRUE(abstractDestinationAirportCodesArray);
 	vtkSmartPointer<vtkStringArray> destinationAirportCodesArray = vtkStringArray::SafeDownCast(
-				abstractDestinationAirportCodesArray
-			);
+	            abstractDestinationAirportCodesArray
+	        );
 	ASSERT_TRUE(destinationAirportCodesArray);
 
 	EXPECT_EQ(
-		1,
-		destinationAirportCodesArray->GetNumberOfValues()
+	    1,
+	    destinationAirportCodesArray->GetNumberOfValues()
 	);
 
 	EXPECT_EQ(
-		"LAX",
-		destinationAirportCodesArray->GetValue(0)
+	    "LAX",
+	    destinationAirportCodesArray->GetValue(0)
 	);
-	
+
 	// Test the associated array of airline names
 	vtkSmartPointer<vtkAbstractArray> abstractAirlineArray = polyData->GetPointData()
-			->GetAbstractArray("airlines");
+	        ->GetAbstractArray("airlines");
 	ASSERT_TRUE(abstractAirlineArray);
 	vtkSmartPointer<vtkStringArray> airlineArray = vtkStringArray::SafeDownCast(
-				abstractAirlineArray
-			);
+	            abstractAirlineArray
+	        );
 	ASSERT_TRUE(airlineArray);
 
 	EXPECT_EQ(
-		1,
-		airlineArray->GetNumberOfValues()
+	    1,
+	    airlineArray->GetNumberOfValues()
 	);
 
 	EXPECT_EQ(
-		"Lufthansa",
-		airlineArray->GetValue(0)
+	    "Lufthansa",
+	    airlineArray->GetValue(0)
 	);
-	
+
 	// Test the associated array of flight lengths
 	vtkSmartPointer<vtkDataArray> abstractFlightLengthArray = polyData->GetPointData()
 	        ->GetArray("flightLengths");
