@@ -15,36 +15,37 @@
 #include <vtkPointLocator.h>
 #include <vtkTransformFilter.h>
 #include <vtkSmartPointer.h>
+#include <vtkPolyDataAlgorithm.h>
 
-class TwitterHeatmapFilter : public vtkCleanUnstructuredGrid {
-
+class TwitterHeatmapFilter : public vtkPolyDataAlgorithm {
+    
 public:
-	vtkTypeMacro(TwitterHeatmapFilter, vtkCleanUnstructuredGrid)
-	static TwitterHeatmapFilter* New();
-	void PrintSelf(ostream& os, vtkIndent indent) override;
-
-	int toleranceValue = 0;
-	void setToleranceValue(int newTolerance);
-
+    vtkTypeMacro(TwitterHeatmapFilter, vtkPolyDataAlgorithm)
+    static TwitterHeatmapFilter* New();
+    void PrintSelf(ostream& os, vtkIndent indent) override;
+    
+    int toleranceValue = 0;
+    void setToleranceValue(int newTolerance);
+    
 protected:
-	vtkSmartPointer<vtkPointLocator> Locator;
-
-	int RequestData(vtkInformation* info,
-	                vtkInformationVector** inputVector,
-	                vtkInformationVector* outputVector) override;
-
-
-	virtual int FillInputPortInformation(int port, vtkInformation* info) override;
-
-
+    vtkSmartPointer<vtkPointLocator> Locator;
+    
+    int RequestData(vtkInformation* info,
+                    vtkInformationVector** inputVector,
+                    vtkInformationVector* outputVector) override;
+    
+    
+    virtual int FillInputPortInformation(int port, vtkInformation* info) override;
+    
+    
 private:
-	TwitterHeatmapFilter();
-	~TwitterHeatmapFilter();
-
-
-	TwitterHeatmapFilter(const TwitterHeatmapFilter&);  // Not implemented.
-	void operator=(const TwitterHeatmapFilter&);  // Not implemented.
-
+    TwitterHeatmapFilter();
+    ~TwitterHeatmapFilter();
+    
+    
+    TwitterHeatmapFilter(const TwitterHeatmapFilter&);  // Not implemented.
+    void operator=(const TwitterHeatmapFilter&);  // Not implemented.
+    
 };
 
 
