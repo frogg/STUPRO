@@ -163,8 +163,8 @@
                 <DataType value="vtkPointSet"/>
             </DataTypeDomain>
         </InputProperty>
-        <IntVectorProperty
-            name="Airline Matching mode"
+        <IntVectorProperty name="AirlineMatchingMode"
+            label="Airline Matching Mode"
             command="setAirlineMatchingMode"
             number_of_elements="1"
             default_values="0">
@@ -176,47 +176,78 @@
                 This property sets the matching mode for the airlines.
             </Documentation>
         </IntVectorProperty>
-        <StringVectorProperty name="Select Airline (seperated by comma)"
+        <StringVectorProperty name="AirlineNames"
+            label="Airline names (comma-separated)"
             command="setAirline"
             number_of_elements="1"
             default_values=""
-            information_property="Airline name">
+            information_property="Airline names">
         </StringVectorProperty>
-        <StringVectorProperty name="Select airport code (Origin) (seperated by comma)"
+        <StringVectorProperty name="OriginAirportCodes"
+            label="Origin airport codes (comma-separated)"
             command="setOriginAirportCode"
             number_of_elements="1"
             default_values=""
-            information_property="Set the airport code of the origin airport">
+            information_property="Set the airport code of the origin airports">
         </StringVectorProperty>
-        <StringVectorProperty name="Select airport code (Destination) (seperated by comma)"
+        <StringVectorProperty name="DestinationAirportCodes"
+            label="Destination airport codes (comma-separated)"
             command="setDestinationAirportCode"
             number_of_elements="1"
             default_values=""
-            information_property="Set the airport code of the destination airport">
+            information_property="Set the airport code of the destination airports">
         </StringVectorProperty>
-        <DoubleVectorProperty name="Minimum flight length (in km)"
-            command="setMinFlightLength"
-            number_of_elements="1"
-            default_values="0.0">
-            <DoubleRangeDomain name="range" min="0.0" max="20000.0" />
-        </DoubleVectorProperty>
-        <DoubleVectorProperty name="Maximum flight length (in km)"
-            command="setMaxFlightLength"
-            number_of_elements="1"
-            default_values="20000.0">
-            <DoubleRangeDomain name="range" min="0.0" max="20000.0" />
+        <StringVectorProperty command="ignore"
+            element_types="0 0 0 0 2"
+            label="Scalars"
+            name="SelectFlightInputScalars"
+            number_of_elements="5"
+            default_values="flightLengths">
+            <ArrayListDomain attribute_type="Scalars"
+                name="array_list">
+                <RequiredProperties>
+                    <Property function="Input"
+                        name="Input" />
+                </RequiredProperties>
+            </ArrayListDomain>
+            <FieldDataDomain name="field_list">
+                <RequiredProperties>
+                    <Property function="Input"
+                        name="Input" />
+                </RequiredProperties>
+            </FieldDataDomain>
+        </StringVectorProperty>
+        <Hints>
+            <Property name="SelectFlightInputScalars" show="0"/>
+        </Hints>
+        <DoubleVectorProperty command="setFlightLengthThreshold"
+            default_values="0 0"
+            label="Flight Length Range"
+            name="FlightLengthRange"
+            number_of_elements="2"
+            panel_widget="double_range">
+            <ArrayRangeDomain name="range">
+                <RequiredProperties>
+                    <Property function="Input"
+                    name="Input" />
+                    <Property function="ArraySelection"
+                    name="SelectFlightInputScalars" />
+                </RequiredProperties>
+            </ArrayRangeDomain>
+            <Documentation>
+                The upper and lower flight length limits respectively
+            </Documentation>
         </DoubleVectorProperty>
         <PropertyGroup label="Airline">
-            <Property name="Select Airline (seperated by comma)" />
-            <Property name="Airline Matching mode" />
+            <Property name="AirlineMatchingMode" />
+            <Property name="AirlineNames" />
         </PropertyGroup>
-        <PropertyGroup label="Airport Codes">
-            <Property name="Select airport code (Origin) (seperated by comma)" />
-            <Property name="Select airport code (Destination) (seperated by comma)" />
+        <PropertyGroup label="Airports">
+            <Property name="OriginAirportCodes" />
+            <Property name="DestinationAirportCodes" />
         </PropertyGroup>
-        <PropertyGroup label="Flight Length">
-            <Property name="Minimum flight length (in km)" />
-            <Property name="Maximum flight length (in km)" />
+        <PropertyGroup label="Flight Length Threshold">
+            <Property name="FlightLengthRange" />
         </PropertyGroup>
           <Hints>
             <ShowInMenu category="Kronos" />
