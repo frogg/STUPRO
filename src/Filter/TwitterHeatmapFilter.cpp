@@ -35,6 +35,8 @@
 #include "vtkInformationVector.h"
 
 #include <vtkPolyData.h>
+#include <vtkTypeFloat32Array.h>
+#include <QList>
 
 
 TwitterHeatmapFilter::TwitterHeatmapFilter() {
@@ -71,8 +73,10 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     int numberOfXComponents = 10;
     int numberOfYComponents = 10;
     
-    float widthX;
-    float widthY;
+    
+    
+    
+
     
     int minX;
     int maxX;
@@ -81,12 +85,12 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     // get the input data
     vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0],0);
-    
-    int numberOfDataInputPoints = dataInput->GetPoints()->GetNumberOfPoints();
-    
+
     vtkPoints* intputDataPoints = dataInput->GetPoints();
     
-    for(int i=0; i<intputDataPoints->GetNumberOfPoints(); i++) {
+    int numberOfDataInputPoints = intputDataPoints->GetNumberOfPoints();
+    
+    for(int i=0; i<numberOfDataInputPoints; i++) {
         double point[3];
         intputDataPoints->GetPoint(i,point);
         std::cout << "Coodrinaten" << point[0] << "," << point[1] << "," << point[2] << std::endl;
@@ -109,8 +113,33 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
         
     }
     
+    double density[numberOfXComponents * numberOfYComponents];
     
+    double stepWidthX = (maxX-minX) / numberOfXComponents;
+    double stepWidthY = (maxY-minY) / numberOfYComponents;
+    
+    
+
     vtkPolyData* output = vtkPolyData::GetData(outputVector,0);
+    
+    
+    
+    vtkSmartPointer<vtkTypeFloat32Array> coverageValues = vtkSmartPointer<vtkTypeFloat32Array>::New();
+    coverageValues->SetNumberOfComponents(1);
+    coverageValues->SetNumberOfTuples(numberOfXComponents * numberOfYComponents);
+    coverageValues->SetName("density");
+    
+
+
+    
+    output->GetPointData()->AddArray(coverageValues);
+    
+    
+    
+    
+    
+    
+    
     
     dataInput->GetPoints()->InsertNextPoint(1.0, 1.0, 1.0);
     
