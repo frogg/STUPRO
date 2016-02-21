@@ -36,6 +36,7 @@
 
 #include <vtkPolyData.h>
 #include <vtkTypeFloat32Array.h>
+#include <vtkTypeInt16Array.h>
 #include <QList>
 
 
@@ -76,7 +77,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     
     
-
+    
     
     double minX;
     double maxX;
@@ -87,7 +88,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     // get the input data
     vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0],0);
-
+    
     vtkPoints* intputDataPoints = dataInput->GetPoints();
     
     int numberOfDataInputPoints = intputDataPoints->GetNumberOfPoints();
@@ -127,6 +128,9 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     for(int x = 0; x < numberOfXComponents; x++) {
         for(int y = 0; y < numberOfYComponents; y++) {
             
+            
+            
+            
             int pointID = y*numberOfXComponents + x;
             
             for(int i=0; i<numberOfDataInputPoints; i++) {
@@ -141,7 +145,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
                     
                     if(relativeY < y + stepWidthY && relativeY > y - stepWidthY) {
                         //within x & y range of this point!
-
+                        
                         density[pointID] = density[pointID] + 1;
                     }
                     
@@ -153,21 +157,32 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     
     
-
-    vtkPolyData* output = vtkPolyData::GetData(outputVector,0);
+    
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    vtkSmartPointer<vtkPolyData> output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
     
     
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     
-    vtkSmartPointer<vtkTypeFloat32Array> coverageValues = vtkSmartPointer<vtkTypeFloat32Array>::New();
+    //we could also use the upper for loops to insert these values, but we use a second one to make it more clear. we trust the compiler to optimize this code.
+    for(double x = minX; x < maxX; x+=stepWidthX) {
+        for(double y = minY; y < maxY; y+=stepWidthY) {
+            
+            points->InsertNextPoint(x,y,0);
+        }
+    }
+    
+    output->SetPoints(points);
+    
+    vtkSmartPointer<vtkTypeInt16Array> coverageValues = vtkSmartPointer<vtkTypeInt16Array>::New();
     coverageValues->SetNumberOfComponents(1);
     coverageValues->SetNumberOfTuples(numberOfXComponents * numberOfYComponents);
     coverageValues->SetName("density");
     
-
-
+    
+    
     
     output->GetPointData()->AddArray(coverageValues);
-    
     
     
     
@@ -178,7 +193,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     //dataInput->GetPoints()->InsertNextPoint(1.0, 1.0, 1.0);
     
     
-    output->ShallowCopy(dataInput);
+    
     
     
     return 1;
