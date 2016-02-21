@@ -38,6 +38,7 @@
 #include <vtkTypeFloat32Array.h>
 #include <vtkTypeInt16Array.h>
 #include <QList>
+#include <vtkCellArray.h>
 
 
 TwitterHeatmapFilter::TwitterHeatmapFilter() {
@@ -164,15 +165,28 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     
+    vtkCellArray* verts = vtkCellArray::New();
+    
+    // Add a cell containing all points
+    verts->Allocate(verts->EstimateSize(1, numberOfXComponents*numberOfYComponents));
+    verts->InsertNextCell(numberOfXComponents*numberOfYComponents);
+
+    
     //we could also use the upper for loops to insert these values, but we use a second one to make it more clear. we trust the compiler to optimize this code.
     for(double x = minX; x < maxX; x+=stepWidthX) {
         for(double y = minY; y < maxY; y+=stepWidthY) {
             
-            points->InsertNextPoint(x,y,0);
+            
+            
+            verts->InsertCellPoint(points->InsertNextPoint(x,y,0));
+
+            
         }
     }
     
+    
     output->SetPoints(points);
+    output->SetVerts(verts);
     
     vtkSmartPointer<vtkTypeInt16Array> coverageValues = vtkSmartPointer<vtkTypeInt16Array>::New();
     coverageValues->SetNumberOfComponents(1);
