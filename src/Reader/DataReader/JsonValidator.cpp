@@ -191,6 +191,7 @@ void JsonValidator::validateChildElement(rapidjson::Value& childDocument, Data::
 		JsonValidator::checkChildTag(childDocument["endPosition"], "longitude", 6, path);
 		JsonValidator::checkChildTag(childDocument["startPosition"], "airportCode", 4, path);
 		JsonValidator::checkChildTag(childDocument["endPosition"], "airportCode", 4, path);
+		JsonValidator::checkChildTag(childDocument, "airline", 4, path);
 		break;
 	}
 	case Data::TWEETS: {
