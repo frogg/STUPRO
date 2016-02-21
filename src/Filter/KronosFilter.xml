@@ -183,13 +183,13 @@
             information_property="Airline name">
         </StringVectorProperty>
         <StringVectorProperty name="Select airport code (Origin) (seperated by comma)"
-            command="setAirportCodeOrigin"
+            command="setOriginAirportCode"
             number_of_elements="1"
             default_values=""
             information_property="Set the airport code of the origin airport">
         </StringVectorProperty>
         <StringVectorProperty name="Select airport code (Destination) (seperated by comma)"
-            command="setAirportCodeDestination"
+            command="setDestinationAirportCode"
             number_of_elements="1"
             default_values=""
             information_property="Set the airport code of the destination airport">

@@ -107,7 +107,7 @@ bool FlightFilter::isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* po
 	return this->minFlightLength <= flightLength && flightLength <= this->maxFlightLength;
 }
 
-void FlightFilter::updateStringList(QString inputString, QStringList list){
+void FlightFilter::updateStringList(QString inputString, QStringList &list){
     inputString.remove(' ');
     if (QString::compare(inputString, "") == 0) {
         list.clear();
