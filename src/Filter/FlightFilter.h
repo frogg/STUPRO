@@ -102,6 +102,13 @@ private:
     enum Mode {
         CONTAINING, MATCHING
     };
+    
+    /**
+     * extracts comma-seperated content and save it in string list
+     * @param inputString comma-seperated string
+     * @param list in which elements should be stored
+     */
+    void changeStringList(QString inputString, QStringList list);
 
 
     //determines the mode how airlines names are filtered

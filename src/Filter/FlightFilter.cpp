@@ -107,6 +107,17 @@ bool FlightFilter::isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* po
 	return this->minFlightLength <= flightLength && flightLength <= this->maxFlightLength;
 }
 
+void FlightFilter::changeStringList(QString inputString, QStringList list){
+    inputString.remove(' ');
+    
+    if (QString::compare(inputString, "") == 0) {
+        list.clear();
+    } else {
+        list = inputString.split( "," );
+    }
+}
+
+
 void FlightFilter::setOriginAirportCode(const char* originAirportCode) {
 	QString airportCodesOrigin = QString::fromStdString(originAirportCode);
 	airportCodesOrigin.remove(' ');
