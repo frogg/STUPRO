@@ -36,13 +36,13 @@ public:
      * Callback method for setting the airport codes of the origin airport.
      * @param airport codes of the origin airports seperated by comma
      */
-    void setAirportCodeOrigin(const char* airportCodeOrigin);
+    void setOriginAirportCode(const char* originAirportCode);
 
     /**
      * Callback method for setting the airport codes of the destination airport.
      * @param airport codes of the destination airports seperated by comma
      */
-    void setAirportCodeDestination(const char* airportCodeDestinatioin);
+    void setDestinationAirportCode(const char* destinationAirportCode);
 
     /**
      * Callback method for setting miniumum flight length.
@@ -82,14 +82,14 @@ private:
      * @param pointData contains all information about flight
      * @return true, if data point is visible (based on origin airport code)
      */
-    bool isVisibleBasedOnAirportCodeOrigin(int pointIndex, vtkPointData* pointData);
+    bool isVisibleBasedOnOriginAirportCode(int pointIndex, vtkPointData* pointData);
     /**
      * check if data point is visible (based on destination airport code filter)
      * @param pointIndex index of the point whose visiblity is checked
      * @param pointData contains all information about flight
      * @return true, if data point is visible (based on destination airport code)
      */
-    bool isVisibleBasedOnAirportCodeDestination(int pointIndex, vtkPointData* pointData);
+    bool isVisibleBasedOnDestinationAirportCode(int pointIndex, vtkPointData* pointData);
     /**
      * check if data point is visible (based on flight length)
      * @param pointIndex index of the point whose visiblity is checked
@@ -98,19 +98,20 @@ private:
      */
     bool isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* pointData);
     
+    ///enum Mode determines the string matching mode
     enum Mode {
         CONTAINING, MATCHING
     };
 
 
     //determines the mode how airlines names are filtered
-    FlightFilter::Mode modeAirline;
+    FlightFilter::Mode airlineMatchingMode;
     //contains visible airlines names
     QStringList visibleAirlines;
     //contains visible airport codes of the origin airports
-    QStringList visibleAirportCodesOrigin;
+    QStringList visibleOriginAirportCodes;
     //contains visible airport codes of the destination airports
-    QStringList visibleAirportCodesDestination;
+    QStringList visibleDestinationAirportCodes;
     //minimum flight length in km
     double minFlightLength;
     //maximum flight length in km

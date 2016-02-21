@@ -11,7 +11,7 @@
 
 
 FlightFilter::FlightFilter() {
-	this->modeAirline = CONTAINING;
+	this->airlineMatchingMode = FlightFilter::CONTAINING;
 	this->minFlightLength = 0;
 	this->maxFlightLength = 20000.0;
 }
@@ -30,8 +30,8 @@ QList<Data::Type> FlightFilter::getCompatibleDataTypes() {
 bool FlightFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                  vtkPointData* pointData) {
 	return this->isVisibleBasedOnAirline(pointIndex, pointData)
-	       && this->isVisibleBasedOnAirportCodeOrigin(pointIndex, pointData)
-	       && this->isVisibleBasedOnAirportCodeDestination(pointIndex, pointData)
+	       && this->isVisibleBasedOnOriginAirportCode(pointIndex, pointData)
+	       && this->isVisibleBasedOnDestinationAirportCode(pointIndex, pointData)
 	       && this->isVisibleBasedOnFlightLength(pointIndex, pointData);
 }
 
@@ -46,12 +46,12 @@ bool FlightFilter::isVisibleBasedOnAirline(int pointIndex, vtkPointData* pointDa
 
 		//check if the given airline is contained in a airline in visibleAirlines
 		for (int i = 0; i < visibleAirlines.count(); i++) {
-			if (this->modeAirline == CONTAINING) {
+			if (this->airlineMatchingMode == CONTAINING) {
 				//containing Mode
 				if (airline.contains(visibleAirlines.at(i), Qt::CaseInsensitive)) {
 					return true;
 				}
-			} else if (this->modeAirline == MATCHING) {
+			} else if (this->airlineMatchingMode == MATCHING) {
 				//exact match
 				if (QString::compare(airline, visibleAirlines.at(i), Qt::CaseInsensitive) == 0) {
 					return true;
@@ -62,17 +62,17 @@ bool FlightFilter::isVisibleBasedOnAirline(int pointIndex, vtkPointData* pointDa
 	}
 }
 
-bool FlightFilter::isVisibleBasedOnAirportCodeOrigin(int pointIndex, vtkPointData* pointData) {
-	vtkSmartPointer<vtkStringArray> airportCodesOrigin = vtkStringArray::SafeDownCast(
+bool FlightFilter::isVisibleBasedOnOriginAirportCode(int pointIndex, vtkPointData* pointData) {
+	vtkSmartPointer<vtkStringArray> originAirportCodes = vtkStringArray::SafeDownCast(
 	            pointData->GetAbstractArray("originAirportCodes"));
-	QString airportCodeOrigin = QString::fromStdString(airportCodesOrigin->GetValue(pointIndex));
+	QString originAirportCode = QString::fromStdString(originAirportCodes->GetValue(pointIndex));
 
-	if (this->visibleAirportCodesOrigin.count() == 0) {
+	if (this->visibleOriginAirportCodes.count() == 0) {
 		return true;
 	} else {
-		for (int i = 0; i < visibleAirportCodesOrigin.count(); i++) {
+		for (int i = 0; i < visibleOriginAirportCodes.count(); i++) {
 			//accept only exact match
-			if (QString::compare(airportCodeOrigin, visibleAirportCodesOrigin.at(i),
+			if (QString::compare(originAirportCode, visibleOriginAirportCodes.at(i),
 			                     Qt::CaseInsensitive) == 0) {
 				return true;
 			}
@@ -81,17 +81,17 @@ bool FlightFilter::isVisibleBasedOnAirportCodeOrigin(int pointIndex, vtkPointDat
 	}
 }
 
-bool FlightFilter::isVisibleBasedOnAirportCodeDestination(int pointIndex, vtkPointData* pointData) {
-	vtkSmartPointer<vtkStringArray> airportCodesDestination = vtkStringArray::SafeDownCast(
+bool FlightFilter::isVisibleBasedOnDestinationAirportCode(int pointIndex, vtkPointData* pointData) {
+	vtkSmartPointer<vtkStringArray> destinationAirportCodes = vtkStringArray::SafeDownCast(
 	            pointData->GetAbstractArray("destinationAirportCodes"));
-	QString airportCodeDestination = QString::fromStdString(airportCodesDestination->GetValue(
+	QString destinationAirportCode = QString::fromStdString(destinationAirportCodes->GetValue(
 	                                     pointIndex));
-	if (this->visibleAirportCodesDestination.count() == 0) {
+	if (this->visibleDestinationAirportCodes.count() == 0) {
 		return true;
 	} else {
-		for (int i = 0; i < visibleAirportCodesDestination.count(); i++) {
+		for (int i = 0; i < visibleDestinationAirportCodes.count(); i++) {
 			//accept only exact match
-			if (QString::compare(airportCodeDestination, visibleAirportCodesDestination.at(i),
+			if (QString::compare(destinationAirportCode, visibleDestinationAirportCodes.at(i),
 			                     Qt::CaseInsensitive) == 0) {
 				return true;
 			}
@@ -107,26 +107,26 @@ bool FlightFilter::isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* po
 	return this->minFlightLength <= flightLength && flightLength <= this->maxFlightLength;
 }
 
-void FlightFilter::setAirportCodeOrigin(const char* airportCodeOrigin) {
-	QString airportCodesOrigin = QString::fromStdString(airportCodeOrigin);
+void FlightFilter::setOriginAirportCode(const char* originAirportCode) {
+	QString airportCodesOrigin = QString::fromStdString(originAirportCode);
 	airportCodesOrigin.remove(' ');
 
-	if (QString::compare(airportCodesOrigin, "", Qt::CaseInsensitive) == 0) {
-		this->visibleAirportCodesOrigin.clear();
+	if (QString::compare(airportCodesOrigin, "") == 0) {
+		this->visibleOriginAirportCodes.clear();
 	} else {
-		this->visibleAirportCodesOrigin = airportCodesOrigin.split( "," );
+		this->visibleOriginAirportCodes = airportCodesOrigin.split( "," );
 	}
 	this->Modified();
 }
 
 
-void FlightFilter::setAirportCodeDestination(const char* airportCodeDestinatioin) {
-	QString airportCodesDestination = QString::fromStdString(airportCodeDestinatioin);
+void FlightFilter::setDestinationAirportCode(const char* destinationAirportCode){
+	QString airportCodesDestination = QString::fromStdString(destinationAirportCode);
 	airportCodesDestination.remove(' ');
-	if (QString::compare(airportCodesDestination, "", Qt::CaseInsensitive) == 0) {
-		this->visibleAirportCodesDestination.clear();
+	if (QString::compare(airportCodesDestination, "") == 0) {
+		this->visibleDestinationAirportCodes.clear();
 	} else {
-		this->visibleAirportCodesDestination = airportCodesDestination.split( "," );
+		this->visibleDestinationAirportCodes = airportCodesDestination.split( "," );
 	}
 	this->Modified();
 }
@@ -143,7 +143,7 @@ void FlightFilter::setMaxFlightLength(double maxLength) {
 
 
 void FlightFilter::setAirlineMatchingMode(int matchingMode) {
-	this->modeAirline = static_cast<Mode>(matchingMode);
+	this->airlineMatchingMode = static_cast<Mode>(matchingMode);
 	this->Modified();
 }
 
@@ -151,7 +151,7 @@ void FlightFilter::setAirline(const char* airline) {
 	QString airlines = QString::fromStdString(airline);
 	airlines.remove(' ');
 
-	if (QString::compare(airlines, "", Qt::CaseInsensitive) == 0) {
+	if (QString::compare(airlines, "") == 0) {
 		this->visibleAirlines.clear();
 	} else {
 		this->visibleAirlines = airlines.split( "," );
