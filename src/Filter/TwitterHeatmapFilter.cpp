@@ -78,10 +78,12 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
 
     
-    int minX;
-    int maxX;
-    int minY;
-    int maxY;
+    double minX;
+    double maxX;
+    double minY;
+    double maxY;
+    double width;
+    double height;
     
     // get the input data
     vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0],0);
@@ -113,10 +115,42 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
         
     }
     
-    double density[numberOfXComponents * numberOfYComponents];
+    width = maxX-minX;
+    height = maxY-minY;
     
-    double stepWidthX = (maxX-minX) / numberOfXComponents;
-    double stepWidthY = (maxY-minY) / numberOfYComponents;
+    double stepWidthX = ((maxX-minX) / numberOfXComponents);
+    double stepWidthY = ((maxY-minY) / numberOfYComponents);
+    
+    int density[numberOfXComponents * numberOfYComponents];
+    
+    
+    for(int x = 0; x < numberOfXComponents; x++) {
+        for(int y = 0; y < numberOfYComponents; y++) {
+            
+            int pointID = y*numberOfXComponents + x;
+            
+            for(int i=0; i<numberOfDataInputPoints; i++) {
+                double point[3];
+                intputDataPoints->GetPoint(i,point);
+                
+                double relativeX = (minX + point[0]) / width;
+                double relativeY = (minY + point[1]) / height;
+                
+                if(relativeX < x + stepWidthX && relativeX > x - stepWidthX) {
+                    //within x range of this point
+                    
+                    if(relativeY < y + stepWidthY && relativeY > y - stepWidthY) {
+                        //within x & y range of this point!
+
+                        density[pointID] = density[pointID] + 1;
+                    }
+                    
+                }
+            }
+        }
+    }
+    
+    
     
     
 
@@ -141,7 +175,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     
     
-    dataInput->GetPoints()->InsertNextPoint(1.0, 1.0, 1.0);
+    //dataInput->GetPoints()->InsertNextPoint(1.0, 1.0, 1.0);
     
     
     output->ShallowCopy(dataInput);
