@@ -21,7 +21,9 @@ public:
     void PrintSelf(ostream& os, vtkIndent indent) override;
 
 
-    double chooseDate(double initTime);
+    void chooseDateMIPAS(double initTime);
+		void chooseDateAIRS(double initTime);
+		void chooseDateCLaMS(double iniTime);
 
 
     int	RequestData (vtkInformation *, vtkInformationVector **, vtkInformationVector *) override;
@@ -35,6 +37,11 @@ protected:
 
 
 private:
+
+		double MIPASTime;
+		double AIRSTime;
+		double CLaMSTime;
+
     SciVisFilter(const SciVisFilter&); //Not implemented
     void operator=(const SciVisFilter&); //Not implemented
 

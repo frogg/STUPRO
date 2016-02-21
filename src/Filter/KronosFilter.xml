@@ -28,6 +28,7 @@
 		<ShowInMenu category="Kronos" />
 	    </Hints>
         </SourceProxy>
+
         <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Type Filter">
             <Documentation
                 long_help="This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point."
@@ -75,12 +76,13 @@
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <Hints>
-              <ShowInMenu category="SciVis"/>
+              <ShowInMenu category="Kronos"/>
             </Hints>
         </SourceProxy>
-        <SourceProxy name="SciVisFilter" class="SciVisFilter" label="SciVisFilter">
+
+        <SourceProxy name="MIPASFilter" class="SciVisFilter" label="MIPASFilter">
           <Documentation
-            long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014"
+            long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with MIPAS Data"
             short_help="Solve SciVis-Contest with this filter">
           </Documentation>
           <InputProperty
@@ -97,17 +99,90 @@
               <DataType value="vtkPointSet"/>
             </DataTypeDomain>
           </InputProperty>
-          <DoubleVectorProperty name="Zeit"
-           command="chooseDate"
+          <DoubleVectorProperty name="Datum"
+           command="chooseDateMIPAS"
            number_of_elements="1"
-           default_values="3.3">
-          <DoubleRangeDomain name="range" min="0.0" max="15000.0" />
+           default_values="368156000.0">
+          <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
           </DoubleVectorProperty>
           <Hints>
             <ShowInMenu category="SciVis"/>
           </Hints>
         </SourceProxy>
-        </ProxyGroup>
 
+        <SourceProxy name="AIRSFilter" class="SciVisFilter" label="AIRSFilter">
+          <Documentation
+            long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
+            short_help="Solve SciVis-Contest with this filter">
+          </Documentation>
+          <InputProperty
+            name="AIRS Input"
+            command="SetInputConnection">
+            <ProxyGroupDomain name="groups">
+              <Group name="sources"/>
+              <Group name="filters"/>
+            </ProxyGroupDomain>
+            <DataTypeDomain name="input_type">
+              <DataType value="vtkPolyData"/>
+              <DataType value="vtkCellData"/>
+              <DataType value="vtkUnstructuredGrid"/>
+              <DataType value="vtkPointSet"/>
+            </DataTypeDomain>
+          </InputProperty>
+          <DoubleVectorProperty name="Datum"
+           command="chooseDateAIRS"
+           number_of_elements="1"
+           default_values="360029000.0">
+          <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
+          </DoubleVectorProperty>
+          <Hints>
+            <ShowInMenu category="SciVis"/>
+          </Hints>
+        </SourceProxy>
+
+        <SourceProxy name="CLaMSFilter" class="SciVisFilter" label="CLaMSFilter">
+          <Documentation
+            long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
+            short_help="Solve SciVis-Contest with this filter">
+          </Documentation>
+          <InputProperty
+            name="CLaMS Input"
+            command="SetInputConnection">
+            <ProxyGroupDomain name="groups">
+              <Group name="sources"/>
+              <Group name="filters"/>
+            </ProxyGroupDomain>
+            <DataTypeDomain name="input_type">
+              <DataType value="vtkPolyData"/>
+              <DataType value="vtkCellData"/>
+              <DataType value="vtkUnstructuredGrid"/>
+              <DataType value="vtkPointSet"/>
+            </DataTypeDomain>
+          </InputProperty>
+          <DoubleVectorProperty name="Datum"
+           command="chooseDateCLaMS"
+           number_of_elements="1"
+           default_values="361217000.0">
+          <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
+          </DoubleVectorProperty>
+          <Hints>
+            <ShowInMenu category="SciVis"/>
+          </Hints>
+        </SourceProxy>
+
+        </ProxyGroup>
+        <ParaViewFilters>
+        <Category name="Kronos" menu_label="Kronos">
+          <Filter name="SphericalToCartesianFilter" />
+          <Filter name="PrecipitationTypeFilter" />
+          <Filter name="FlightFilter" />
+        </Category>
+
+        <Category name="SciVis" menu_label="SciVis">
+          <Filter name="MIPASFilter" />
+          <Filter name="AIRSFilter" />
+          <Filter name="CLaMSFilter" />
+        </Category>
+</ParaViewFilters>
 
 </ServerManagerConfiguration>

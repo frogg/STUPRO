@@ -43,7 +43,14 @@ int	SciVisFilter::RequestData (vtkInformation *request, vtkInformationVector **i
 //}
 
 
-double SciVisFilter::chooseDate(double initTime) {
-    initTime = 0.0;
-    return initTime;
+void SciVisFilter::chooseDateMIPAS(double MIPASTime) {
+  this->MIPASTime = MIPASTime;
+}
+
+void SciVisFilter::chooseDateAIRS(double AIRSTime){
+  this->AIRSTime = AIRSTime;
+}
+
+void SciVisFilter::chooseDateCLaMS(double CLaMSTime){
+  this->CLaMSTime = CLaMSTime;
 }
