@@ -32,9 +32,10 @@ def split_list(list, size):
     
 d = DataUtility()
 
-print 'Reading the XML file...'
+print 'Reading the csv file...'
 
-csv_content = d.read_csv_file('flightJsonConverter/Flightroutes.csv')
+csv_content = d.read_csv_file('Flightroutes.csv')
+
 print 'Read {0} lines of data.'.format(len(csv_content))
 
 all_flights = []
@@ -43,12 +44,15 @@ for index, item in enumerate(csv_content):
         {
             'startPosition': {
                 'longitude': float(item['srcLongitude']),
-                'latitude': float(item['srcLatitude'])
+                'latitude': float(item['srcLatitude']),
+                'airportCode': item['srcAirport']
             },
             'endPosition': {
                 'longitude': float(item['destLongitude']),
-                'latitude': float(item['destLatitude'])
+                'latitude': float(item['destLatitude']),
+                'airportCode': item['destAirport']
             },
+            'airline': item['airline'].decode('utf-8', 'replace'),
             'length': distance(
                 float(item['srcLatitude']), float(item['srcLongitude']),
                 float(item['destLatitude']), float(item['destLongitude'])
@@ -101,4 +105,5 @@ for index in range(1, maximal_zoom_level - 1):
 print 'Writing rearranged data to JSON file...'
 
 flights = {'meta': {'dataType': 'flights', 'temporal': False}, 'root': { 'children': tree}}
-d.write_json_file(flights, 'test-data/flights.json', True)
+d.write_json_file(flights, '../test-data/flights.json', True)
+

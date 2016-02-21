@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include <Utils/Config/Configuration.hpp>
+#include <Utils/Math/Functions.hpp>
 
 vtkSmartPointer<vtkPolyData> PolyDataSetHelper::getPolyDataFromDataPoints(
     PointDataSet dataPoints,
@@ -241,6 +242,24 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	}
 
 	case Data::FLIGHTS: {
+		vtkSmartPointer<vtkStringArray> airlines = vtkSmartPointer<vtkStringArray>::New();
+		airlines->SetNumberOfComponents(relevantDataPoints.size());
+		airlines->SetName("airlines");
+
+		vtkSmartPointer<vtkStringArray> originAirportCodes = vtkSmartPointer<vtkStringArray>::New();
+		originAirportCodes->SetNumberOfComponents(relevantDataPoints.size());
+		originAirportCodes->SetName("originAirportCodes");
+
+		vtkSmartPointer<vtkStringArray> destinationAirportCodes = vtkSmartPointer<vtkStringArray>::New();
+		destinationAirportCodes->SetNumberOfComponents(relevantDataPoints.size());
+		destinationAirportCodes->SetName("destinationAirportCodes");
+
+		vtkSmartPointer<vtkTypeFloat32Array> flightLengths
+		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		flightLengths->SetNumberOfComponents(1);
+		flightLengths->SetNumberOfTuples(relevantDataPoints.size());
+		flightLengths->SetName("flightLengths");
+
 		vtkSmartPointer<vtkDoubleArray> destinations = vtkSmartPointer<vtkDoubleArray>::New();
 		vtkIdType numberOfTuples[1];
 		numberOfTuples[0] = relevantDataPoints.size();
@@ -262,10 +281,24 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			};
 			destinations->SetTuple(tupleNumber, coordinates);
 
+			double flightLength[1] = {
+				(double) dataPoint->getFlightLength()
+			};
+			flightLengths->SetTuple(tupleNumber, flightLength);
+
+			airlines->InsertNextValue(dataPoint->getAirlineName().toStdString());
+			originAirportCodes->InsertNextValue(dataPoint->getOriginAirportCode().toStdString());
+			destinationAirportCodes->InsertNextValue(dataPoint->getDestinationAirportCode().toStdString());
+
 			tupleNumber++;
 		}
 
 		dataSet->GetPointData()->AddArray(destinations);
+		dataSet->GetPointData()->AddArray(airlines);
+		dataSet->GetPointData()->AddArray(originAirportCodes);
+		dataSet->GetPointData()->AddArray(destinationAirportCodes);
+		dataSet->GetPointData()->AddArray(flightLengths);
+
 		break;
 	}
 
@@ -391,7 +424,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			directions->SetTuple(tupleNumber, direction);
 
 			// Calculate each point's velocity for use in flow visualisation
-			float windBearingRadian = dataPoint->getDirection() * (float)(KRONOS_PI / 180);
+			float windBearingRadian = toRadians(dataPoint->getDirection());
 
 			double velocity[3] = {
 				(double) dataPoint->getSpeed()* sin(windBearingRadian),
