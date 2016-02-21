@@ -80,12 +80,12 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     
     
-    double minX;
-    double maxX;
-    double minY;
-    double maxY;
-    double width;
-    double height;
+    double minX = 360;
+    double maxX = -360.0;
+    double minY = 360;
+    double maxY = -360.0;
+    double width = 0;
+    double height = 0;
     
     // get the input data
     vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0],0);
@@ -97,7 +97,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     for(int i=0; i<numberOfDataInputPoints; i++) {
         double point[3];
         intputDataPoints->GetPoint(i,point);
-        std::cout << "Coodrinaten" << point[0] << "," << point[1] << "," << point[2] << std::endl;
+        
         
         if(point[0] < minX) {
             minX = point[0];
@@ -117,6 +117,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
         
     }
     
+    
     width = maxX-minX;
     height = maxY-minY;
     
@@ -128,9 +129,6 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     for(int x = 0; x < numberOfXComponents; x++) {
         for(int y = 0; y < numberOfYComponents; y++) {
-            
-            
-            
             
             int pointID = y*numberOfXComponents + x;
             
@@ -170,19 +168,19 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     // Add a cell containing all points
     verts->Allocate(verts->EstimateSize(1, numberOfXComponents*numberOfYComponents));
     verts->InsertNextCell(numberOfXComponents*numberOfYComponents);
-
+    
     
     //we could also use the upper for loops to insert these values, but we use a second one to make it more clear. we trust the compiler to optimize this code.
-    for(double x = minX; x < maxX; x+=stepWidthX) {
-        for(double y = minY; y < maxY; y+=stepWidthY) {
-            
-            
-            
-            verts->InsertCellPoint(points->InsertNextPoint(x,y,0));
-
-            
+    
+    for(int x=0; x<numberOfXComponents; x++) {
+        for(int y = 0; y<numberOfYComponents; y++) {
+            double relativeX = minX + x * stepWidthX;
+            double relativeY = minY + y * stepWidthY;
+            verts->InsertCellPoint(points->InsertNextPoint(relativeX,relativeY,0));
         }
     }
+    
+
     
     
     output->SetPoints(points);
@@ -190,9 +188,12 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     vtkSmartPointer<vtkTypeInt16Array> coverageValues = vtkSmartPointer<vtkTypeInt16Array>::New();
     coverageValues->SetNumberOfComponents(1);
-    coverageValues->SetNumberOfTuples(numberOfXComponents * numberOfYComponents);
+    coverageValues->SetNumberOfValues(numberOfXComponents * numberOfYComponents);
     coverageValues->SetName("density");
     
+    for(int i=0; i<sizeof(density); i++) {
+        coverageValues->InsertValue(i, density[i]);
+    }
     
     
     
