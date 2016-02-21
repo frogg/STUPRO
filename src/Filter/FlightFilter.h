@@ -7,9 +7,11 @@
 
 #include <Filter/AbstractSelectionFilter.hpp>
 #include <QMap>
+#include <QStringList>
+
 
 /**
- * This filter can extract data from flight point sets read by a Kronos reader depending on the start, end flight route, airline and maximum flights.
+ * This filter can extract data from flight point sets read by a Kronos reader depending on the flight's origin and destination airport code, the airline operating the flight and its length.
  */
 class FlightFilter : public AbstractSelectionFilter {
 public:

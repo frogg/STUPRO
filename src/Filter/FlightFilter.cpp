@@ -2,16 +2,7 @@
 
 #include <Reader/DataReader/Data.hpp>
 
-#include <vtkSelection.h>
-#include <vtkSelectionNode.h>
-#include <vtkIntArray.h>
-#include <vtkCompositeDataSet.h>
-#include <vtkCompositeDataIterator.h>
-#include <vtkHierarchicalBoxDataIterator.h>
-#include <vtkTable.h>
-#include <vtkGraph.h>
-#include <vtkInformation.h>
-#include <vtkInformationVector.h>
+
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
 #include <vtkTypeFloat32Array.h>
