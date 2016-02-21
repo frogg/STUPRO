@@ -90,6 +90,23 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
         double point[3];
         intputDataPoints->GetPoint(i,point);
         std::cout << "Coodrinaten" << point[0] << "," << point[1] << "," << point[2] << std::endl;
+        
+        if(point[0] < minX) {
+            minX = point[0];
+        }
+        
+        if(point[0] > maxX) {
+            maxX = point[0];
+        }
+        
+        if(point[1] < minY) {
+            minY = point[1];
+        }
+        
+        if(point[1] > maxY) {
+            maxY = point[1];
+        }
+        
     }
     
     
