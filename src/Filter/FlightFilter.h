@@ -22,7 +22,7 @@ public:
 
     /**
       * Callback method for setting the name of the airline(s) of the visible flights.
-      * @param airline
+      * @param airline name of the airline(s) whose flights should be visible. (comma-seperated)
      */
     void setAirline(const char* airline);
     
@@ -68,15 +68,35 @@ private:
     
     QList<Data::Type> getCompatibleDataTypes();
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
-    
-    //returns true, if data point is visible (based on airline filter)
-    bool visibleAirline(int pointIndex, vtkPointData* pointData);
-    //returns true, if data point is visible (based on airport code origin)
-    bool visibleAirportCodeOrigin(int pointIndex, vtkPointData* pointData);
-    //returns true, if data point is visible (based on airport code destination)
-    bool visibleAirportCodeDestination(int pointIndex, vtkPointData* pointData);
-    //returns true, if data point is visible (based on flight length)
-    bool visibleLength(int pointIndex, vtkPointData* pointData);
+
+    /**
+     * check if data point is visible (based on airline filter)
+     * @param pointIndex index of the point whose visiblity is checked
+     * @param pointData contains all information about flight
+     * @return true, if data point is visible (based on airline filter)
+     */
+    bool isVisibleBasedOnAirline(int pointIndex, vtkPointData* pointData);
+    /**
+     * check if data point is visible (based on origin airport code filter)
+     * @param pointIndex index of the point whose visiblity is checked
+     * @param pointData contains all information about flight
+     * @return true, if data point is visible (based on origin airport code)
+     */
+    bool isVisibleBasedOnAirportCodeOrigin(int pointIndex, vtkPointData* pointData);
+    /**
+     * check if data point is visible (based on destination airport code filter)
+     * @param pointIndex index of the point whose visiblity is checked
+     * @param pointData contains all information about flight
+     * @return true, if data point is visible (based on destination airport code)
+     */
+    bool isVisibleBasedOnAirportCodeDestination(int pointIndex, vtkPointData* pointData);
+    /**
+     * check if data point is visible (based on flight length)
+     * @param pointIndex index of the point whose visiblity is checked
+     * @param pointData contains all information about flight
+     * @return true, if data point is visible (based on flight length)
+     */
+    bool isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* pointData);
     
     enum Mode {
         CONTAINING, MATCHING

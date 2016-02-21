@@ -29,13 +29,13 @@ QList<Data::Type> FlightFilter::getCompatibleDataTypes() {
 
 bool FlightFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                  vtkPointData* pointData) {
-	return this->visibleAirline(pointIndex, pointData)
-	       && this->visibleAirportCodeOrigin(pointIndex, pointData)
-	       && this->visibleAirportCodeDestination(pointIndex, pointData)
-	       && this->visibleLength(pointIndex, pointData);
+	return this->isVisibleBasedOnAirline(pointIndex, pointData)
+	       && this->isVisibleBasedOnAirportCodeOrigin(pointIndex, pointData)
+	       && this->isVisibleBasedOnAirportCodeDestination(pointIndex, pointData)
+	       && this->isVisibleBasedOnFlightLength(pointIndex, pointData);
 }
 
-bool FlightFilter::visibleAirline(int pointIndex, vtkPointData* pointData) {
+bool FlightFilter::isVisibleBasedOnAirline(int pointIndex, vtkPointData* pointData) {
 	if (this->visibleAirlines.count() == 0) {
 		return true;
 	} else {
@@ -62,7 +62,7 @@ bool FlightFilter::visibleAirline(int pointIndex, vtkPointData* pointData) {
 	}
 }
 
-bool FlightFilter::visibleAirportCodeOrigin(int pointIndex, vtkPointData* pointData) {
+bool FlightFilter::isVisibleBasedOnAirportCodeOrigin(int pointIndex, vtkPointData* pointData) {
 	vtkSmartPointer<vtkStringArray> airportCodesOrigin = vtkStringArray::SafeDownCast(
 	            pointData->GetAbstractArray("originAirportCodes"));
 	QString airportCodeOrigin = QString::fromStdString(airportCodesOrigin->GetValue(pointIndex));
@@ -81,7 +81,7 @@ bool FlightFilter::visibleAirportCodeOrigin(int pointIndex, vtkPointData* pointD
 	}
 }
 
-bool FlightFilter::visibleAirportCodeDestination(int pointIndex, vtkPointData* pointData) {
+bool FlightFilter::isVisibleBasedOnAirportCodeDestination(int pointIndex, vtkPointData* pointData) {
 	vtkSmartPointer<vtkStringArray> airportCodesDestination = vtkStringArray::SafeDownCast(
 	            pointData->GetAbstractArray("destinationAirportCodes"));
 	QString airportCodeDestination = QString::fromStdString(airportCodesDestination->GetValue(
@@ -100,7 +100,7 @@ bool FlightFilter::visibleAirportCodeDestination(int pointIndex, vtkPointData* p
 	}
 }
 
-bool FlightFilter::visibleLength(int pointIndex, vtkPointData* pointData) {
+bool FlightFilter::isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* pointData) {
 	vtkSmartPointer<vtkTypeFloat32Array> flightLengths = vtkTypeFloat32Array::SafeDownCast(
 	            pointData->GetAbstractArray("flightLengths"));
 	double flightLength = flightLengths->GetTuple1(pointIndex);
