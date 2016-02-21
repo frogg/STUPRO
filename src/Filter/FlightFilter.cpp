@@ -107,26 +107,26 @@ bool FlightFilter::isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* po
 	return this->minFlightLength <= flightLength && flightLength <= this->maxFlightLength;
 }
 
-void FlightFilter::updateStringList(QString inputString, QStringList &list){
-    inputString.remove(' ');
-    if (QString::compare(inputString, "") == 0) {
-        list.clear();
-    } else {
-        list = inputString.split( "," );
-    }
+void FlightFilter::updateStringList(QString inputString, QStringList& list) {
+	inputString.remove(' ');
+	if (QString::compare(inputString, "") == 0) {
+		list.clear();
+	} else {
+		list = inputString.split( "," );
+	}
 }
 
 
 void FlightFilter::setOriginAirportCode(const char* originAirportCode) {
 	QString airportCodesOrigin = QString::fromStdString(originAirportCode);
-    this->updateStringList(airportCodesOrigin, this->visibleOriginAirportCodes);
+	this->updateStringList(airportCodesOrigin, this->visibleOriginAirportCodes);
 	this->Modified();
 }
 
 
-void FlightFilter::setDestinationAirportCode(const char* destinationAirportCode){
+void FlightFilter::setDestinationAirportCode(const char* destinationAirportCode) {
 	QString airportCodesDestination = QString::fromStdString(destinationAirportCode);
-    this->updateStringList(airportCodesDestination, this->visibleDestinationAirportCodes);
+	this->updateStringList(airportCodesDestination, this->visibleDestinationAirportCodes);
 	this->Modified();
 }
 
@@ -148,7 +148,7 @@ void FlightFilter::setAirlineMatchingMode(int matchingMode) {
 
 void FlightFilter::setAirline(const char* airline) {
 	QString airlines = QString::fromStdString(airline);
-    this->updateStringList(airlines, this->visibleAirlines);
+	this->updateStringList(airlines, this->visibleAirlines);
 	this->Modified();
 }
 
