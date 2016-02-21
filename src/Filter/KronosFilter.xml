@@ -78,6 +78,130 @@
                 <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
+        <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
+            <Documentation
+                long_help="This filter can limit temperature data points to a specified temperature range"
+                short_help="Limit temperature data to a specified temperature range">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectInputScalars"
+                number_of_elements="5"
+                default_values="temperatures">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                            name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                            name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <Hints>
+                <Property name="SelectInputScalars" show="0"/>
+            </Hints>
+            <DoubleVectorProperty command="setThreshold"
+                default_values="0 0"
+                label="Temperature Range"
+                name="TemperatureRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower temperature limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+            <PropertyGroup label="Temperature Range">
+                <Property name="SelectInputScalars" />
+                <Property name="TemperatureRange" />
+            </PropertyGroup>
+        </SourceProxy>
+        <SourceProxy name="WindSpeedThresholdFilter" class="WindSpeedThresholdFilter" label="Kronos Wind Speed Threshold Filter">
+            <Documentation
+                long_help="This filter can limit wind data points to a specified wind speed range"
+                short_help="Limit wind data to a specified speed range">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectInputScalars"
+                number_of_elements="5"
+                default_values="speeds">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                            name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                            name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <Hints>
+                <Property name="SelectInputScalars" show="0"/>
+            </Hints>
+            <DoubleVectorProperty command="setThreshold"
+                default_values="0 0"
+                label="Wind Speed Range"
+                name="WindSpeedRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower wind speed limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+            <PropertyGroup label="Wind Speed Range">
+                <Property name="SelectInputScalars" />
+                <Property name="WindSpeedRange" />
+            </PropertyGroup>
+        </SourceProxy>
         <SourceProxy name="TemporalAggregationFilter" class="TemporalAggregationFilter" label="Kronos Temporal Aggregation Filter">
             <Documentation
                 long_help="This filter can accumulate weather data over time by either accumulating values or calculating their average."
@@ -260,6 +384,8 @@
             <Filter name="PrecipitationTypeFilter" />
             <Filter name="FlightFilter" />
             <Filter name="TemporalAggregationFilter" />
+            <Filter name="TemperatureThresholdFilter" />
+            <Filter name="WindSpeedThresholdFilter" />
             <Filter name="TwitterFilter" />
         </Category>
     </ParaViewFilters>
