@@ -45,16 +45,16 @@ public:
     void setDestinationAirportCode(const char* destinationAirportCode);
 
     /**
-     * Callback method for setting miniumum flight length.
-     * @param minimum flight length in km
-     */
-    void setMinFlightLength(double minLength);
+     * Callback method for setting flight length range.
+     * @param lowerLimit The lower flight length limit
+     * @param upperLimit The upper flight length limit
+     */    
+    void setFlightLengthThreshold(double lowerLimit, double upperLimit);
     
     /**
-     * Callback method for setting maximum flight length.
-     * @param maximum flight length in km
+     * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the temperature values and the UI is hidden.
      */
-    void setMaxFlightLength(double maxLength);
+    void ignore(int id, int port, int connection, int fieldAssociation, const char *name) { }
     
 private:
     /**

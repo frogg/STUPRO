@@ -2,30 +2,22 @@
 
 #include <Reader/DataReader/Data.hpp>
 
-
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
 #include <vtkTypeFloat32Array.h>
 #include <vtkStringArray.h>
 
-
-
 FlightFilter::FlightFilter() {
 	this->airlineMatchingMode = FlightFilter::CONTAINING;
-	this->minFlightLength = 0;
-	this->maxFlightLength = 20000.0;
 }
 
 FlightFilter::~FlightFilter() { }
-
-
 
 vtkStandardNewMacro(FlightFilter);
 
 QList<Data::Type> FlightFilter::getCompatibleDataTypes() {
 	return (QList<Data::Type>() << Data::FLIGHTS);
 }
-
 
 bool FlightFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                  vtkPointData* pointData) {
@@ -130,16 +122,11 @@ void FlightFilter::setDestinationAirportCode(const char* destinationAirportCode)
 	this->Modified();
 }
 
-void FlightFilter::setMinFlightLength(double minLength) {
-	this->minFlightLength = minLength;
+void FlightFilter::setFlightLengthThreshold(double lowerLimit, double upperLimit) {
+	this->minFlightLength = lowerLimit;
+	this->maxFlightLength = upperLimit;
 	this->Modified();
 }
-
-void FlightFilter::setMaxFlightLength(double maxLength) {
-	this->maxFlightLength = maxLength;
-	this->Modified();
-}
-
 
 void FlightFilter::setAirlineMatchingMode(int matchingMode) {
 	this->airlineMatchingMode = static_cast<Mode>(matchingMode);
