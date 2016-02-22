@@ -72,8 +72,8 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
                                       vtkInformationVector** inputVector,
                                       vtkInformationVector* outputVector) {
     
-    int numberOfXComponents = 10;
-    int numberOfYComponents = 10;
+    int numberOfXComponents = 50;
+    int numberOfYComponents = 50;
     
     
     
