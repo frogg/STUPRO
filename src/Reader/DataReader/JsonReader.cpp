@@ -11,6 +11,7 @@
 
 #include <Reader/DataReader/PolyDataSetHelper.hpp>
 #include <Utils/Config/Configuration.hpp>
+#include <Utils/Math/GeographicFunctions.hpp>
 
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
                        bool temporal,
@@ -80,19 +81,24 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    jsonValue[i]["name"].GetString()
 			);
 			break;
-		case Data::FLIGHTS:
+		case Data::FLIGHTS: {
+			Coordinate startPosition(jsonValue[i]["startPosition"]["latitude"].GetDouble(),
+			                         jsonValue[i]["startPosition"]["longitude"].GetDouble());
+			Coordinate endPosition(jsonValue[i]["endPosition"]["latitude"].GetDouble(),
+			                       jsonValue[i]["endPosition"]["longitude"].GetDouble());
+			double flightLength = calculateDistance(startPosition, endPosition);
+
 			dataPoint = new FlightDataPoint(
-			    Coordinate(
-			        jsonValue[i]["startPosition"]["latitude"].GetDouble(),
-			        jsonValue[i]["startPosition"]["longitude"].GetDouble()
-			    ),
+			    startPosition,
 			    depth,
-			    Coordinate(
-			        jsonValue[i]["endPosition"]["latitude"].GetDouble(),
-			        jsonValue[i]["endPosition"]["longitude"].GetDouble()
-			    )
+			    endPosition,
+			    jsonValue[i]["airline"].GetString(),
+			    jsonValue[i]["startPosition"]["airportCode"].GetString(),
+			    jsonValue[i]["endPosition"]["airportCode"].GetString(),
+			    flightLength
 			);
 			break;
+		}
 		case Data::TWEETS:
 			dataPoint = new TweetDataPoint(
 			    Coordinate(

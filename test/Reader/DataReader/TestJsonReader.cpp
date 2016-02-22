@@ -202,6 +202,82 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 	    destinationArray->GetTuple2(0)[1]
 	);
 
+	// Test the associated array of origin airport codes
+	vtkSmartPointer<vtkAbstractArray> abstractOriginAirportCodesArray = polyData->GetPointData()
+	        ->GetAbstractArray("originAirportCodes");
+	ASSERT_TRUE(abstractOriginAirportCodesArray);
+	vtkSmartPointer<vtkStringArray> originAirportCodesArray = vtkStringArray::SafeDownCast(
+	            abstractOriginAirportCodesArray
+	        );
+	ASSERT_TRUE(originAirportCodesArray);
+
+	EXPECT_EQ(
+	    1,
+	    originAirportCodesArray->GetNumberOfValues()
+	);
+
+	EXPECT_EQ(
+	    "DXB",
+	    originAirportCodesArray->GetValue(0)
+	);
+
+	// Test the associated array of destination airport codes
+	vtkSmartPointer<vtkAbstractArray> abstractDestinationAirportCodesArray = polyData->GetPointData()
+	        ->GetAbstractArray("destinationAirportCodes");
+	ASSERT_TRUE(abstractDestinationAirportCodesArray);
+	vtkSmartPointer<vtkStringArray> destinationAirportCodesArray = vtkStringArray::SafeDownCast(
+	            abstractDestinationAirportCodesArray
+	        );
+	ASSERT_TRUE(destinationAirportCodesArray);
+
+	EXPECT_EQ(
+	    1,
+	    destinationAirportCodesArray->GetNumberOfValues()
+	);
+
+	EXPECT_EQ(
+	    "LAX",
+	    destinationAirportCodesArray->GetValue(0)
+	);
+
+	// Test the associated array of airline names
+	vtkSmartPointer<vtkAbstractArray> abstractAirlineArray = polyData->GetPointData()
+	        ->GetAbstractArray("airlines");
+	ASSERT_TRUE(abstractAirlineArray);
+	vtkSmartPointer<vtkStringArray> airlineArray = vtkStringArray::SafeDownCast(
+	            abstractAirlineArray
+	        );
+	ASSERT_TRUE(airlineArray);
+
+	EXPECT_EQ(
+	    1,
+	    airlineArray->GetNumberOfValues()
+	);
+
+	EXPECT_EQ(
+	    "Lufthansa",
+	    airlineArray->GetValue(0)
+	);
+
+	// Test the associated array of flight lengths
+	vtkSmartPointer<vtkDataArray> abstractFlightLengthArray = polyData->GetPointData()
+	        ->GetArray("flightLengths");
+	ASSERT_TRUE(abstractFlightLengthArray);
+	vtkSmartPointer<vtkTypeFloat32Array> flightLengthArray = vtkTypeFloat32Array::SafeDownCast(
+	            abstractFlightLengthArray
+	        );
+	ASSERT_TRUE(flightLengthArray);
+
+	EXPECT_EQ(
+	    1,
+	    flightLengthArray->GetNumberOfComponents()
+	);
+
+	EXPECT_FLOAT_EQ(
+	    12380.654,
+	    flightLengthArray->GetValue(0)
+	);
+
 	// Test the associated array of data point priorities
 	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
 	        ->GetArray("priorities");
