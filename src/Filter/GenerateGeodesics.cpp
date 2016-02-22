@@ -85,12 +85,12 @@ void GenerateGeodesics::setArcSize(double value) {
 GenerateGeodesics::GenerateGeodesics() {
 }
 
+
 void GenerateGeodesics::insertNextFlight(const Vector3d& start, const Vector3d& end,
         vtkPolyData* const dataSet) {
 	QVector<Vector3d> points;
 	points.append(start);
 	points.append(end);
-
 
 	// calculate points between if necessary
 	int index = 1;
@@ -99,6 +99,24 @@ void GenerateGeodesics::insertNextFlight(const Vector3d& start, const Vector3d& 
 		if (distance(points.at(index), points.at(index - 1)) > maxLenOfLineSegment) {
 			points.insert(index, calculateCenter(points.at(index), points.at(index - 1)));
 			treeDepth++;
+		} else if (abs(points.at(index - 1).x - points.at(index).x) > 180) {
+			Vector3d p = points.at(index - 1);
+			Vector3d v = moveToOtherSide(points.at(index)) - p;
+			Vector3d center = p + (((p.x < 0 ? -180 : 180) - p.x ) / v.x) * v;
+			points.insert(index, center);
+
+			QVector<Vector3d> nextPoints;
+			while (points.size() > index + 1) {
+				nextPoints.append(points.last());
+				points.remove(points.size() - 1);
+			}
+
+			insertAndConnectPoints(dataSet, points);
+
+			points = nextPoints;
+			points.insert(0, moveToOtherSide(center));
+
+			index = 1;
 		} else {
 			index++;
 			treeDepth--;
@@ -110,16 +128,28 @@ void GenerateGeodesics::insertNextFlight(const Vector3d& start, const Vector3d& 
 		}
 	}
 
+	insertAndConnectPoints(dataSet, points);
+}
+
+Vector3<double> GenerateGeodesics::moveToOtherSide(Vector3<double> point) {
+	if (point.x < 0) {
+		point.x += 360;
+	} else {
+		point.x -= 360;
+	}
+
+	return point;
+}
+
+void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
+        QVector<Vector3<double> >& points) {
 	int currentPointIndex = dataSet->GetPoints()->GetNumberOfPoints();
 	dataSet->GetLines()->InsertNextCell(points.size());
 
-	QVectorIterator<Vector3d> it (points);
+	QVectorIterator<Vector3d> it(points);
 	while (it.hasNext()) {
 		dataSet->GetPoints()->InsertNextPoint(it.next().array());
 		dataSet->GetLines()->InsertCellPoint(currentPointIndex);
 		currentPointIndex++;
 	}
 }
-
-
-

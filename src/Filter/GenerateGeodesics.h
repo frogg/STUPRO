@@ -4,6 +4,7 @@
 #include<vtkPolyDataAlgorithm.h>
 
 template<typename T> class Vector3;
+template<typename T> class QVector;
 
 class GenerateGeodesics : public vtkPolyDataAlgorithm {
 public:
@@ -50,7 +51,9 @@ private:
      * @brief movePointToOppositeSide translates the point to the opposite side (that is +- 180 lat)
      * @param point the point to move
      */
-    Vector3<double> movePointToOppositeSide(Vector3<double> point);
+    Vector3<double> moveToOtherSide(Vector3<double> point);
+
+    void insertAndConnectPoints(vtkPolyData *dataSet, QVector<Vector3<double>> &points);
 };
 
 #endif // KRONOSGENERATEGEODESICS_H

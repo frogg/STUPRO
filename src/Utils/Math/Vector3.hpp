@@ -4,6 +4,7 @@
 #include <Utils/Math/ArithmeticFunctors.hpp>
 #include <limits>
 #include <cmath>
+#include <QString>
 
 /**
  * Generic 3-dimensional vector class (vector in the mathematical sense).
@@ -207,6 +208,10 @@ public:
 		y = func(y, v.y);
 		z = func(z, v.z);
 		return *this;
+	}
+
+	std::string toString() const {
+		return QString("(%1|%2|%3)").arg(x).arg(y).arg(z).toStdString();
 	}
 };
 
