@@ -160,6 +160,14 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     //    }
     
     
+    for(int x = 0; x < numberOfXComponents; x++) {
+        for(int y = 0; y < numberOfYComponents; y++) {
+            
+            int pointID = y*numberOfXComponents + x;
+            density[pointID] = 0.0;
+        }
+    }
+    
     for(int i=0; i<numberOfDataInputPoints; i++) {
         
         double point[3];
