@@ -99,12 +99,21 @@
               <DataType value="vtkPointSet"/>
             </DataTypeDomain>
           </InputProperty>
-          <DoubleVectorProperty name="Datum"
-           command="chooseDateMIPAS"
+
+          <DoubleVectorProperty name="Start-Date"
+           command="setLowerMIPAS"
            number_of_elements="1"
            default_values="368156000.0">
           <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
           </DoubleVectorProperty>
+
+          <DoubleVectorProperty name="End-Date"
+           command="setUpperMIPAS"
+           number_of_elements="1"
+           default_values="368156000.0">
+          <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
+          </DoubleVectorProperty>
+
           <Hints>
             <ShowInMenu category="SciVis"/>
           </Hints>
@@ -129,8 +138,15 @@
               <DataType value="vtkPointSet"/>
             </DataTypeDomain>
           </InputProperty>
-          <DoubleVectorProperty name="Datum"
-           command="chooseDateAIRS"
+          <DoubleVectorProperty name="Start-Date"
+           command="setLowerAIRS"
+           number_of_elements="1"
+           default_values="360029000.0">
+          <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
+          </DoubleVectorProperty>
+
+          <DoubleVectorProperty name="End-Date"
+           command="setUpperAIRS"
            number_of_elements="1"
            default_values="360029000.0">
           <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
@@ -159,12 +175,20 @@
               <DataType value="vtkPointSet"/>
             </DataTypeDomain>
           </InputProperty>
-          <DoubleVectorProperty name="Datum"
-           command="chooseDateCLaMS"
+          <DoubleVectorProperty name="Start-Date"
+           command="setLowerCLaMS"
            number_of_elements="1"
            default_values="361217000.0">
           <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
           </DoubleVectorProperty>
+
+          <DoubleVectorProperty name="End-Date"
+           command="setUpperCLaMS"
+           number_of_elements="1"
+           default_values="361217000.0">
+          <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
+          </DoubleVectorProperty>
+
           <Hints>
             <ShowInMenu category="SciVis"/>
           </Hints>

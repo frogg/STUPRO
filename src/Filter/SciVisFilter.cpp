@@ -1,3 +1,4 @@
+#include <vtkDataObjectAlgorithm.h>
 #include "SciVisFilter.h"
 #include "vtkObjectFactory.h"
 #include "vtkPoints.h"
@@ -10,6 +11,7 @@
 #include <vtkDataSet.h>
 #include <vtkUnstructuredGridAlgorithm.h>
 #include <iostream>
+#include <vtkPolyData.h>
 
 vtkStandardNewMacro(SciVisFilter);
 SciVisFilter::SciVisFilter() {}
@@ -22,35 +24,49 @@ void SciVisFilter::PrintSelf(ostream& os, vtkIndent indent)
     this->Superclass::PrintSelf(os,indent) ;
 }
 
-int	SciVisFilter::RequestData (vtkInformation *request, vtkInformationVector **inputVector, vtkInformationVector *outputVector) {
-
-//vtkInformation *inInfo = inputVector[4]->GetInformationObject(0);
-//vtkInformation *outInfo = outputVector->GetInformationObject(0);
-//std::cout << inInfo;
-//outInfo=inInfo;
-
-    return 1;
+int AbstractSelectionFilter::RequestData(vtkInformation* info,
+        vtkInformationVector** inputVector,
+        vtkInformationVector* outputVector) {
 }
 
-//int SciVisFilter::FillInputPortInformation (int port, vtkInformation *info){
-//this->Superclass::FillInputPortInformation(port,info);
-//return 1;
-//}
+vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
+vtkPolyData* inputData = vtkPolyData::SafeDownCast(inputInformation->Get(
+                             vtkDataObject::DATA_OBJECT()));
 
-//int SciVisFilter::FillOutputPortInformation(int port, vtkInformation *info){
-//  info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPointSet");
-//  return 1;
-//}
+vtkInformation* outputInformation = outputVector->GetInformationObject(0);
+vtkPolyData* output = vtkPolyData::SafeDownCast(outputInformation->Get(
+                          vtkDataObject::DATA_OBJECT()));
 
 
-void SciVisFilter::chooseDateMIPAS(double MIPASTime) {
-  this->MIPASTime = MIPASTime;
+
+
+void SciVisFilter::setLowerMIPAS(double lowerLimit){
+  //vtkThreshold::LowerThreshold = lowerLimit;
+  this->Modified();
 }
 
-void SciVisFilter::chooseDateAIRS(double AIRSTime){
-  this->AIRSTime = AIRSTime;
+void SciVisFilter::setUpperMIPAS(double upperLimit){
+ //vtkThreshold::UpperThreshold = upperLimit;
+ this->Modified();
 }
 
-void SciVisFilter::chooseDateCLaMS(double CLaMSTime){
-  this->CLaMSTime = CLaMSTime;
+
+void SciVisFilter::setLowerAIRS(double lowerLimit){
+  //vtkThreshold::LowerThreshold = lowerLimit;
+  this->Modified();
+}
+
+void SciVisFilter::setUpperAIRS(double upperLimit){
+ //vtkThreshold::UpperThreshold = upperLimit;
+ this->Modified();
+}
+
+void SciVisFilter::setLowerCLaMS(double lowerLimit){
+  //vtkThreshold::LowerThreshold = lowerLimit;
+  this->Modified();
+}
+
+void SciVisFilter::setUpperCLaMS(double upperLimit){
+ //vtkThreshold::UpperThreshold = upperLimit;
+ this->Modified();
 }
