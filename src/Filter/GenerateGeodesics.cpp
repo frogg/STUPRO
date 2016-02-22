@@ -44,9 +44,9 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	}
 
 	vtkPoints* points = vtkPoints::New();
-    output->SetPoints(points);
+	output->SetPoints(points);
 	vtkCellArray* lines = vtkCellArray::New();
-    output->SetLines(lines);
+	output->SetLines(lines);
 
 	vtkDataArray* startPoints = input->GetPoints()->GetData();
 	vtkDataArray* destinationPoints = input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME);
@@ -59,10 +59,10 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 		               0);
 		Vector3d destination(destinationPoints->GetTuple(flight)[0],
 		                     destinationPoints->GetTuple(flight)[1],
-                             0);
+		                     0);
 
-        insertNextFlight(start, destination, output);
-    }
+		insertNextFlight(start, destination, output);
+	}
 
 	return 1;
 }
@@ -87,38 +87,38 @@ GenerateGeodesics::GenerateGeodesics() {
 
 void GenerateGeodesics::insertNextFlight(const Vector3d& start, const Vector3d& end,
         vtkPolyData* const dataSet) {
-    QVector<Vector3d> points;
-    points.append(start);
-    points.append(end);
+	QVector<Vector3d> points;
+	points.append(start);
+	points.append(end);
 
 
-    // calculate points between if necessary
-    int index = 1;
-    int treeDepth = 0;
-    while (index < points.size()) {
-        if (distance(points.at(index), points.at(index - 1)) > maxLenOfLineSegment) {
-            points.insert(index, calculateCenter(points.at(index), points.at(index - 1)));
-            treeDepth++;
-        } else {
-            index++;
-            treeDepth--;
-        }
-        if (treeDepth > 20) {
-            vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point")
-            index++;
-            treeDepth--;
-        }
-    }
+	// calculate points between if necessary
+	int index = 1;
+	int treeDepth = 0;
+	while (index < points.size()) {
+		if (distance(points.at(index), points.at(index - 1)) > maxLenOfLineSegment) {
+			points.insert(index, calculateCenter(points.at(index), points.at(index - 1)));
+			treeDepth++;
+		} else {
+			index++;
+			treeDepth--;
+		}
+		if (treeDepth > 20) {
+			vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point")
+			index++;
+			treeDepth--;
+		}
+	}
 
-    int currentPointIndex = dataSet->GetPoints()->GetNumberOfPoints();
-    dataSet->GetLines()->InsertNextCell(points.size());
+	int currentPointIndex = dataSet->GetPoints()->GetNumberOfPoints();
+	dataSet->GetLines()->InsertNextCell(points.size());
 
-    QVectorIterator<Vector3d> it (points);
-    while (it.hasNext()) {
-        dataSet->GetPoints()->InsertNextPoint(it.next().array());
-        dataSet->GetLines()->InsertCellPoint(currentPointIndex);
-        currentPointIndex++;
-    }
+	QVectorIterator<Vector3d> it (points);
+	while (it.hasNext()) {
+		dataSet->GetPoints()->InsertNextPoint(it.next().array());
+		dataSet->GetLines()->InsertCellPoint(currentPointIndex);
+		currentPointIndex++;
+	}
 }
 
 
