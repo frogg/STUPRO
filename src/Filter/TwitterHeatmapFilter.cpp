@@ -44,8 +44,6 @@
 TwitterHeatmapFilter::TwitterHeatmapFilter() {
     //take this transformation, true -> it transforms per default
     
-    Locator = vtkSmartPointer<vtkPointLocator>::New();
-    Locator->SetTolerance(toleranceValue);
     
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(1);
@@ -53,9 +51,6 @@ TwitterHeatmapFilter::TwitterHeatmapFilter() {
 }
 
 void TwitterHeatmapFilter::setToleranceValue(int newTolerance) {
-    toleranceValue = newTolerance;
-    Locator->SetTolerance(toleranceValue);
-    this->Modified();
 }
 
 
@@ -67,6 +62,8 @@ void TwitterHeatmapFilter::PrintSelf(ostream& os, vtkIndent indent) {
 TwitterHeatmapFilter::~TwitterHeatmapFilter() {}
 
 vtkStandardNewMacro(TwitterHeatmapFilter)
+
+
 
 int TwitterHeatmapFilter::RequestData(vtkInformation* info,
                                       vtkInformationVector** inputVector,

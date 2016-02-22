@@ -28,7 +28,6 @@ public:
     void setToleranceValue(int newTolerance);
     
 protected:
-    vtkSmartPointer<vtkPointLocator> Locator;
     
     int RequestData(vtkInformation* info,
                     vtkInformationVector** inputVector,
