@@ -221,8 +221,8 @@
         </SourceProxy>
         <SourceProxy name="TwitterFilter" class="TwitterFilter" label="Kronos Twitter Filter">
             <Documentation
-                long_help="This filter can extract data from twitter point sets read by a Kronos reader depending on the author and hashtags."
-                short_help="Extract data based on the author or hashtags">
+                long_help="This filter can extract data from twitter point sets read by a Kronos reader depending on the author and keywords."
+                short_help="Extract data based on the author or keywords">
             </Documentation>
             <InputProperty
                 name="Input"
@@ -254,18 +254,18 @@
                 default_values=""
                 information_property="Authors whose tweets should be extracted">
             </StringVectorProperty>
-            <StringVectorProperty name="Hashtags (comma-separated)"
-                command="setHashtags"
+            <StringVectorProperty name="Keywords (comma-separated)"
+                command="setKeywords"
                 number_of_elements="1"
                 default_values=""
-                information_property="All tweets containing at least one of these hashtags will be extracted">
+                information_property="All tweets containing at least one of these keywords will be extracted">
             </StringVectorProperty>
             <PropertyGroup label="Authors">
                 <Property name="Authors (comma-separated)" />
                 <Property name="Author matching mode" />
             </PropertyGroup>
-            <PropertyGroup label="Hashtags">
-                <Property name="Hashtags (comma-separated)" />
+            <PropertyGroup label="Keywords">
+                <Property name="Keywords (comma-separated)" />
             </PropertyGroup>
             <Hints>
                 <ShowInMenu category="Kronos" />

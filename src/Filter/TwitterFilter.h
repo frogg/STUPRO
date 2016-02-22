@@ -26,10 +26,10 @@ public:
     void setAuthors(const char* authors);
     
     /**
-     * Callback method for setting the hashtags of visible tweets.
-     * @param hashtags Comma-separated string of all hashtags
+     * Callback method for setting the keywords of visible tweets.
+     * @param keywords Comma-separated string of all keywords
      */
-    void setHashtags(const char* hashtags);
+    void setKeywords(const char* keywords);
     
     /**
       * Callback method for setting the matching mode for authors
@@ -62,12 +62,12 @@ private:
     /**
      * Contains all author names whose tweets should be extracted.
      */
-    QStringList authors;
+    QStringList visibleAuthors;
     
     /**
-     * Contains all hashtags of visible tweets.
+     * Contains all keywords of visible tweets.
      */
-    QStringList hashtags;
+    QStringList visibleKeywords;
 };
 
 #endif

@@ -35,25 +35,25 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 	QString content = QString::fromStdString(contentData->GetValue(pointIndex));
 
 	//if no author is in authors and no content is in visibleContent (everything should be visible by default), return this point to be visible
-	if (this->authors.count() == 0) {
-		if (this->hashtags.count() == 0) {
+	if (this->visibleAuthors.count() == 0) {
+		if (this->visibleKeywords.count() == 0) {
 			return true;
 		} else {
 			return this->shouldDisplayTweetContent(content);
 		}
 	} else {
 
-		for (int i = 0; i < this->authors.count(); i++) {
+		for (int i = 0; i < this->visibleAuthors.count(); i++) {
 
 			if (this->authorMatchingMode == CONTAINING) {
 				//containing Mode
-				if (author.contains(this->authors.at(i), Qt::CaseInsensitive)
+				if (author.contains(this->visibleAuthors.at(i), Qt::CaseInsensitive)
 				        && this->shouldDisplayTweetContent(content)) {
 					return true;
 				}
 			} else if (this->authorMatchingMode == MATCHING) {
 				//exact match
-				if (QString::compare(author, this->authors.at(i), Qt::CaseInsensitive) == 0
+				if (QString::compare(author, this->visibleAuthors.at(i), Qt::CaseInsensitive) == 0
 				        && shouldDisplayTweetContent(content)) {
 					return true;
 				}
@@ -64,12 +64,12 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 }
 
 bool TwitterFilter::shouldDisplayTweetContent(QString content) {
-	if (this->hashtags.count() == 0) {
+	if (this->visibleKeywords.count() == 0) {
 		return true;
 	}
-	for (int i = 0; i < hashtags.count(); i++) {
+	for (int i = 0; i < visibleKeywords.count(); i++) {
 		//only filter for hashtags
-		if (content.contains(QString("#%1").arg(this->hashtags[i]), Qt::CaseInsensitive)) {
+		if (content.contains(this->visibleKeywords.at(i), Qt::CaseInsensitive)){
 			return true;
 		}
 	}
@@ -83,17 +83,17 @@ void TwitterFilter::setAuthorMatchingMode(int matchingMode) {
 
 void TwitterFilter::setAuthors(const char* authors) {
 	if (QString::fromStdString(authors).trimmed() == "") {
-		this->authors.clear();
+		this->visibleAuthors.clear();
 	} else {
 
 		QString authorList = QString::fromStdString(authors).remove(" ");
 
-		this->authors = authorList.split(",");
+		this->visibleAuthors = authorList.split(",");
 
-		for (int i = 0; i < this->authors.size(); i++) {
+		for (int i = 0; i < this->visibleAuthors.size(); i++) {
 			// Remove trailing @ symbols if necessary
-			if (this->authors[i].startsWith("@")) {
-				this->authors[i] = this->authors[i].remove(0, 1);
+			if (this->visibleAuthors[i].startsWith("@")) {
+				this->visibleAuthors[i] = this->visibleAuthors[i].remove(0, 1);
 			}
 		}
 	}
@@ -101,19 +101,11 @@ void TwitterFilter::setAuthors(const char* authors) {
 	this->Modified();
 }
 
-void TwitterFilter::setHashtags(const char* hashtags) {
-	if (QString::fromStdString(hashtags).replace("#", "").trimmed() == "") {
-		this->hashtags.clear();
+void TwitterFilter::setKeywords(const char* keywords){
+	if (QString::fromStdString(keywords).replace("#", "").trimmed() == "") {
+		this->visibleKeywords.clear();
 	} else {
-		this->hashtags = QString::fromStdString(hashtags).split(",");
-
-		for (int i = 0; i < this->hashtags.size(); i++) {
-			this->hashtags[i] = this->hashtags[i].trimmed();
-			// Remove trailing hashtag symbols if necessary
-			if (this->hashtags[i].startsWith("#")) {
-				this->hashtags[i] = this->hashtags[i].remove(0, 1).trimmed();
-			}
-		}
+		this->visibleKeywords = QString::fromStdString(keywords).split(",");
 	}
 	this->Modified();
 }
