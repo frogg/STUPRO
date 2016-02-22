@@ -75,51 +75,36 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     
     
     
-    
-    
-    double minX = 360;
-    double maxX = -360.0;
-    double minY = 360;
-    double maxY = -360.0;
-    double width = 0;
-    double height = 0;
-    
     // get the input data
     vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0],0);
+    
+    double bounds[6];
+    dataInput->GetBounds(bounds);
+    
+    double minX = bounds[0];
+    double maxX = bounds[1];
+    double minY = bounds[2];
+    double maxY = bounds[3];
+    double width = maxX-minX;
+    double height = maxY-minY;
+    
+    double stepWidthX = (width / numberOfXComponents);
+    double stepWidthY = (height / numberOfYComponents);
+   
+    
+    
+    
+    
     
     vtkPoints* intputDataPoints = dataInput->GetPoints();
     
     int numberOfDataInputPoints = intputDataPoints->GetNumberOfPoints();
-    
-    for(int i=0; i<numberOfDataInputPoints; i++) {
-        double point[3];
-        intputDataPoints->GetPoint(i,point);
-        
-        
-        if(point[0] < minX) {
-            minX = point[0];
-        }
-        
-        if(point[0] > maxX) {
-            maxX = point[0];
-        }
-        
-        if(point[1] < minY) {
-            minY = point[1];
-        }
-        
-        if(point[1] > maxY) {
-            maxY = point[1];
-        }
-        
-    }
+
     
     
-    width = maxX-minX;
-    height = maxY-minY;
     
-    double stepWidthX = (width / numberOfXComponents);
-    double stepWidthY = (height / numberOfYComponents);
+    
+    
     
     int density[numberOfXComponents * numberOfYComponents];
     

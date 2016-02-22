@@ -20,7 +20,7 @@ def createCityTable(tableName):
     createTable = "CREATE TABLE IF NOT EXISTS CITY("  \
      "ID SERIAL PRIMARY KEY ," \
     "NAME           TEXT    NOT NULL," \
-    "COUNTRYCODES CHAR(2)," \
+    "COUNTRYCODE CHAR(2)," \
     "LATITUDE NUMERIC(9, 6)," \
     "LONGITUDE NUMERIC(9, 6));"
     cursor.execute(createTable)
