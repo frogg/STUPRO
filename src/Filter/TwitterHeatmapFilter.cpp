@@ -88,6 +88,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     double width = maxX-minX;
     double height = maxY-minY;
     
+    
     double stepWidthX = (width / numberOfXComponents);
     double stepWidthY = (height / numberOfYComponents);
    
