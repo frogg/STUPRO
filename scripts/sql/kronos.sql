@@ -9,15 +9,50 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
+DROP DATABASE kronos;
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: kronos; Type: DATABASE; Schema: -; Owner: stuproUser
+--
+
+CREATE DATABASE kronos WITH TEMPLATE = template0 ENCODING = 'SQL_ASCII' LC_COLLATE = 'C' LC_CTYPE = 'C';
+
+
+ALTER DATABASE kronos OWNER TO "stuproUser";
+
+\connect kronos
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: UTF8
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO "UTF8";
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: UTF8
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -30,13 +65,13 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: city; Type: TABLE; Schema: public; Owner: stuproUser; Tablespace: 
+-- Name: city; Type: TABLE; Schema: public; Owner: stuproUser; Tablespace:
 --
 
 CREATE TABLE city (
     id integer NOT NULL,
     name text NOT NULL,
-    countrycodes character(2),
+    countrycode character(2),
     latitude numeric(9,6),
     longitude numeric(9,6)
 );
@@ -76,7 +111,7 @@ ALTER TABLE ONLY city ALTER COLUMN id SET DEFAULT nextval('city_id_seq'::regclas
 -- Data for Name: city; Type: TABLE DATA; Schema: public; Owner: stuproUser
 --
 
-COPY city (id, name, countrycodes, latitude, longitude) FROM stdin;
+COPY city (id, name, countrycode, latitude, longitude) FROM stdin;
 1	Dubai	ae	25.258171	55.304718
 2	Abu Dhabi	ae	24.466667	54.366670
 3	Sharjah	ae	25.357310	55.403305
@@ -48068,7 +48103,7 @@ SELECT pg_catalog.setval('city_id_seq', 47980, true);
 
 
 --
--- Name: city_pkey; Type: CONSTRAINT; Schema: public; Owner: stuproUser; Tablespace: 
+-- Name: city_pkey; Type: CONSTRAINT; Schema: public; Owner: stuproUser; Tablespace:
 --
 
 ALTER TABLE ONLY city
@@ -48076,16 +48111,5 @@ ALTER TABLE ONLY city
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: larissa
---
-
--— REVOKE ALL ON SCHEMA public FROM PUBLIC;
--— REVOKE ALL ON SCHEMA public FROM larissa;
--— GRANT ALL ON SCHEMA public TO larissa;
--— GRANT ALL ON SCHEMA public TO PUBLIC;
-
-
---
 -- PostgreSQL database dump complete
 --
-

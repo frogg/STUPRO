@@ -1,14 +1,10 @@
 #ifndef KRONOS_UTILS_DATABSE_CITIESDATABASE
 #define KRONOS_UTILS_DATABSE_CITIESDATABASE
 
-#include <pqxx/pqxx>
 #include <Utils/Database/PostgresDB.hpp>
 #include <Utils/Misc/City.hpp>
-#include <vector>
-#include <string>
-
-using namespace std;
-using namespace pqxx;
+#include <QSqlQuery>
+#include <QList>
 
 /**
  * PostgresDatabase storing the city information
@@ -23,22 +19,19 @@ public:
 	 * @param hostadr address where the database can be accessed
 	 * @param post post where the database can be accessed
 	 */
-	CitiesDatabase (const std::string& databaseName, const std::string& user,
-	                const std::string& password, const std::string& hostaddr,
-	                const std::string& port) : PostgresDB(databaseName, user, password, hostaddr, port) {
-
-	};
+	CitiesDatabase (const QString databaseName, const QString user,
+	                const QString password, const QString hostaddr,
+	                int port);
 	/**
 	 * get Cities from a cityname
 	 * @param name, name of the city we search
 	 @ @param reference to vector of cities which will be filled in function (containing lat-long information) with the given name
 	 */
-	void getCity(std::string name, std::vector<City>* cities);
-	/**
-	 *print all cities that exist in your database on standard output
-	 */
-	void printAllCities();
+	QList<City> getCity(QString name);
 
+private:
+	QSqlQuery query;
+	bool isPrepared;
 };
 
 #endif

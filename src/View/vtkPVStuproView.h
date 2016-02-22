@@ -1,16 +1,13 @@
 #ifndef KRONOS_PVVIEW_H
 #define KRONOS_PVVIEW_H
 
+#include <vtkCallbackCommand.h>
 #include <vtkPVRenderView.h>
 #include <vtkSetGet.h>
+#include <vtkSmartPointer.h>
 #include <vtkWin32Header.h>
-#include <iostream>
 #include <memory>
-
-// TODO/FIXME: Somehow, VS13 needs an include for std::memory here instead of
-// a normal forward-declarion.
 #include <Globe/Globe.hpp>
-//class Globe;
 
 /**
  * This class represents our own, custom vtkPVRenderView. It is responsible
@@ -19,15 +16,7 @@
 class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView
 {
 public:
-	/**
-	 * Enum giving us all available, different display modes for the
-	 * globe.
-	 */
-	enum DisplayMode
-	{
-		DisplayGlobe, DisplayMap
-	};
-
+	
 	/**
 	 * A static new-method needed for any vtk-related initialization
 	 * used by vtkSmartPointers. Gonna be implemented in the .cxx
@@ -41,7 +30,7 @@ public:
 	 * Needed for some vtk-inheritance-stuff.
 	 */
 	vtkTypeMacro(vtkPVStuproView, vtkPVRenderView)
-
+	
 	/**
 	 * This method gets called any time the view is going
 	 * to be initialized. Basically, this is the constructor of
@@ -50,29 +39,23 @@ public:
 	 * @param id the id of the view, gets set by the calling instance, used for Superclass::Initialize(id)
 	 */
 	virtual void Initialize(unsigned int id) override;
-
+	
 	/**
-	 * Moves the camera so that it is focused on the given coordinates while keeping the current
-	 * zoom level.
-	 *
-	 * @param latitude  the latitude to focus on
-	 * @param longitude the longitude to focus on
+	 * Moves the camera the specified latitude and longitude, keeping the distance the same as it was before and
+	 * pointing the camera directly at the globe's center.
 	 */
 	void moveCamera(float latitude, float longitude);
 
 	/**
-	 * Moves the camera so that it is focused on the given coordinates.
-	 *
-	 * @param latitude  the latitude to focus on
-	 * @param longitude the longitude to focus on
-	 * @param distance  the desired distance to the focus point
+	 * Moves the camera the specified latitude and longitude, altering its distance and pointing the camera directly at
+	 * the globe's center.
 	 */
 	void moveCamera(float latitude, float longitude, float distance);
-
+	
 	/**
-	 * Returns the current distance of the camera from the center of the world.
-	 *
-	 * @returns the current distance of the camera from the center of the world
+	 * Returns the distance between the camera and the globe's center point.
+	 * 
+	 * This method should be const, but cannot be set to const as VTK is not const-correct.
 	 */
 	float getCameraDistance();
 
@@ -81,17 +64,14 @@ public:
 	 * basically by inverting this->displayMode.
 	 */
 	void switchCurrentDisplayMode();
-
-	// TODO: Make a global config file.
-	float getGlobeRadius() const;
-
+	
 	/**
 	 * Returns the current display mode.
 	 *
 	 * @return the current display mode
 	 */
-	DisplayMode getDisplayMode() const;
-
+	Globe::DisplayMode getDisplayMode() const;
+	
 	Globe * getGlobe() const;
 
 protected:
@@ -100,9 +80,14 @@ protected:
 	 * called outside of this class. Therefore it can only be
 	 * instantiated by a vtkSmartPointer.
 	 */
-	vtkPVStuproView();
+	vtkPVStuproView() :
+		displayMode(Globe::DisplayGlobe)
+	{
+	};
 
-	~vtkPVStuproView();
+	~vtkPVStuproView()
+	{
+	};
 
 private:
 	/**
@@ -110,7 +95,7 @@ private:
 	 * This will remove the copy-constructor.
 	 */
 	vtkPVStuproView(const vtkPVStuproView&);
-
+	
 	/**
 	* This method is not implemented due to vtks architecture.
 	* This will remove the =-assignment (and copying).
@@ -121,16 +106,15 @@ private:
 	 * TODO: Maybe remove this method using the global config?
 	 */
 	void initParameters();
-
+	
 	/**
 	 * Initializes all render-relevant objects, i.e. the interactor
 	 * and its style.
 	 */
 	void initRenderer();
-
+	
 	/**
 	 * Registers all callback functions used later during runtime.
-	 * FIXME: Doesn't work in PV as of 18-11-2015.
 	 */
 	void registerTimerCallback();
 
@@ -140,12 +124,9 @@ private:
 	void initGlobe();
 
 
-	DisplayMode displayMode;
+	Globe::DisplayMode displayMode;
 	std::unique_ptr<Globe> globe;
-	float globeRadius;
-	float planeSize;
-	float displayModeInterpolation;
-	float heightFactor;
+	vtkSmartPointer<vtkCallbackCommand> cameraModifiedCallback;
 };
 
 #endif
