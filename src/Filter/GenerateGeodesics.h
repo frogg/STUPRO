@@ -38,15 +38,19 @@ private:
     double arcSize = 0.0;
 
 	/**
-	 * @brief calculateFlightPoints calculate the neccessary points between start and end airport and insert them into a data set
+     * @brief insertNextFlight calculate the neccessary points between start and end airport, insert them into the given data set
 	 * @param start the start airport
-	 * @param end the destination airport
-	 * @param maxLineLenght the max length for a straight line (defines how smooth the geodesic seems)
-	 * @param dataSet the data set to insert the points
-	 * @return the number of points inserted
+     * @param end the destination airport
+     * @param dataSet the data set to insert the points
 	 */
-	int calculateFlightPoints(const Vector3<double>& start, const Vector3<double>& end,
-							  vtkPoints* const dataSet);
+    void insertNextFlight(const Vector3<double>& start, const Vector3<double>& end,
+                              vtkPolyData* const dataSet);
+
+    /**
+     * @brief movePointToOppositeSide translates the point to the opposite side (that is +- 180 lat)
+     * @param point the point to move
+     */
+    Vector3<double> movePointToOppositeSide(Vector3<double> point);
 };
 
 #endif // KRONOSGENERATEGEODESICS_H
