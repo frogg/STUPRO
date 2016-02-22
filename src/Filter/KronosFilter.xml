@@ -77,7 +77,7 @@
         </SourceProxy>
         
         
-        <SourceProxy name="TwitterHeatmapFilter" class="TwitterHeatmapFilter" label="Twitter Heatmap Filter">
+        <SourceProxy name="TwitterHeatmapFilter" class="TwitterHeatmapFilter" label="Heatmap Density Filter">
             <Documentation
                 long_help="This filter can interpolate group points and return the data."
                 short_help="This filter can interpolate group points and return the data">
