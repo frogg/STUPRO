@@ -127,37 +127,7 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     int density[numberOfXComponents * numberOfYComponents];
     
     
-    //    for(int x = 0; x < numberOfXComponents; x++) {
-    //        for(int y = 0; y < numberOfYComponents; y++) {
-    //
-    //            int pointID = y*numberOfXComponents + x;
-    //            density[pointID] = 0.0;
-    //
-    //            for(int i=0; i<numberOfDataInputPoints; i++) {
-    //
-    //                double point[3];
-    //                intputDataPoints->GetPoint(i,point);
-    //
-    //                double relativeX = ((point[0] - minX) / width) * numberOfXComponents;
-    //                double relativeY = ((point[1] - minY) / height) * numberOfYComponents;
-    //
-    //
-    //
-    //
-    //                std::cout << relativeX << ", " << relativeY <<std::endl;
-    //
-    //                if(relativeX < x + stepWidthX && relativeX > x - stepWidthX) {
-    //                    //within x range of this point
-    //
-    //                    if(relativeY < y + stepWidthY && relativeY > y - stepWidthY) {
-    //                        //within x & y range of this point!
-    //
-    //                        density[pointID] = density[pointID] + 1;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
+
     
     
     for(int x = 0; x < numberOfXComponents; x++) {
@@ -173,8 +143,8 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
         double point[3];
         intputDataPoints->GetPoint(i,point);
         
-        double relativeX = ((point[0] - minX) / width);// * numberOfXComponents;
-        double relativeY = ((point[1] - minY) / height);// * numberOfYComponents;
+        double relativeX = ((point[0] - minX) / width);
+        double relativeY = ((point[1] - minY) / height);
         
         
         
