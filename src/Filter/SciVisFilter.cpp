@@ -50,7 +50,7 @@ void SciVisFilter::setUpperMIPAS(double upperLimit){
  this->Modified();
 }
 
-
+/*
 void SciVisFilter::setLowerAIRS(double lowerLimit){
   //vtkThreshold::LowerThreshold = lowerLimit;
   this->Modified();
@@ -70,3 +70,4 @@ void SciVisFilter::setUpperCLaMS(double upperLimit){
  //vtkThreshold::UpperThreshold = upperLimit;
  this->Modified();
 }
+ */

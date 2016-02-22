@@ -1,6 +1,6 @@
 <ServerManagerConfiguration>
     <ProxyGroup name="filters">
-            <SourceProxy name="SphericalToCartesianFilter" class="SphericalToCartesianFilter" label="Kronos Spherical to Cartesian">
+        <SourceProxy name="SphericalToCartesianFilter" class="SphericalToCartesianFilter" label="Kronos Spherical to Cartesian">
             <Documentation
                 long_help="This filter can convert GPS data (longitude/latitude/height) to cartesian coordinates in order to 'wrap' the data around a globe."
                 short_help="Convert GPS-Data to cartesian coordinates">
@@ -14,22 +14,21 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
-		    <DataType value="vtkImageData"/>
-		    <DataType value="vtkRectilinearGrid"/>
+                    <DataType value="vtkImageData"/>
+                    <DataType value="vtkRectilinearGrid"/>
                 </DataTypeDomain>
             </InputProperty>
-	    <IntVectorProperty name="transform"
-            			command="setTransform"
-            			number_of_elements="1"
-            			default_values="1">
-		<BooleanDomain name="bool"/>
-	    </IntVectorProperty>
-	    <Hints>
-		<ShowInMenu category="Kronos" />
-	    </Hints>
+            <IntVectorProperty name="transform"
+                command="setTransform"
+                number_of_elements="1"
+                default_values="1">
+                <BooleanDomain name="bool"/>
+            </IntVectorProperty>
+            <Hints>
+                <ShowInMenu category="Kronos" />
+            </Hints>
         </SourceProxy>
-
-        <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Type Filter">
+        <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Filter">
             <Documentation
                 long_help="This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point."
                 short_help="Extract data based on the type of precipitation">
@@ -46,167 +45,386 @@
                 </DataTypeDomain>
             </InputProperty>
             <IntVectorProperty name="Display precipitation of undefined type"
-             command="enableUndefined"
-             number_of_elements="1"
-             default_values="1">
+                command="enableUndefined"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <IntVectorProperty name="Display rain"
-             command="enableRain"
-             number_of_elements="1"
-             default_values="1">
+                command="enableRain"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <IntVectorProperty name="Display snow"
-             command="enableSnow"
-             number_of_elements="1"
-             default_values="1">
+                command="enableSnow"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <IntVectorProperty name="Display sleet"
-             command="enableSleet"
-             number_of_elements="1"
-             default_values="1">
+                command="enableSleet"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <IntVectorProperty name="Display hail"
-             command="enableHail"
-             number_of_elements="1"
-             default_values="1">
+                command="enableHail"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <Hints>
-              <ShowInMenu category="Kronos"/>
+                <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
-
+        <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
+            <Documentation
+                long_help="This filter can limit temperature data points to a specified temperature range"
+                short_help="Limit temperature data to a specified temperature range">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectInputScalars"
+                number_of_elements="5"
+                default_values="temperatures">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <Hints>
+                <Property name="SelectInputScalars" show="0"/>
+            </Hints>
+            <DoubleVectorProperty command="setThreshold"
+                default_values="0 0"
+                label="Temperature Range"
+                name="TemperatureRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower temperature limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+            <PropertyGroup label="Temperature Range">
+                <Property name="SelectInputScalars" />
+                <Property name="TemperatureRange" />
+            </PropertyGroup>
+        </SourceProxy>
+        <SourceProxy name="WindSpeedThresholdFilter" class="WindSpeedThresholdFilter" label="Kronos Wind Speed Threshold Filter">
+            <Documentation
+                long_help="This filter can limit wind data points to a specified wind speed range"
+                short_help="Limit wind data to a specified speed range">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectInputScalars"
+                number_of_elements="5"
+                default_values="speeds">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <Hints>
+                <Property name="SelectInputScalars" show="0"/>
+            </Hints>
+            <DoubleVectorProperty command="setThreshold"
+                default_values="0 0"
+                label="Wind Speed Range"
+                name="WindSpeedRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower wind speed limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+            <PropertyGroup label="Wind Speed Range">
+                <Property name="SelectInputScalars" />
+                <Property name="WindSpeedRange" />
+            </PropertyGroup>
+        </SourceProxy>
+        <SourceProxy name="TemporalAggregationFilter" class="TemporalAggregationFilter" label="Kronos Temporal Aggregation Filter">
+            <Documentation
+                long_help="This filter can accumulate weather data over time by either accumulating values or calculating their average."
+                short_help="Accumulate weather data over time">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+        </SourceProxy>
+        <SourceProxy name="TwitterFilter" class="TwitterFilter" label="Kronos Twitter Filter">
+            <Documentation
+                long_help="This filter can extract data from twitter point sets read by a Kronos reader depending on the author and keywords."
+                short_help="Extract data based on the author or keywords">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <IntVectorProperty
+                name="Author matching mode"
+                command="setAuthorMatchingMode"
+                number_of_elements="1"
+                default_values="0">
+                <EnumerationDomain name="enum">
+                    <Entry value="0" text="Containing"/>
+                    <Entry value="1" text="Matching"/>
+                </EnumerationDomain>
+                <Documentation>
+                    This property indicates the matching mode for authors.
+                </Documentation>
+            </IntVectorProperty>
+            <StringVectorProperty name="Authors (comma-separated)"
+                command="setAuthors"
+                number_of_elements="1"
+                default_values=""
+                information_property="Authors whose tweets should be extracted">
+            </StringVectorProperty>
+            <StringVectorProperty name="Keywords (comma-separated)"
+                command="setKeywords"
+                number_of_elements="1"
+                default_values=""
+                information_property="All tweets containing at least one of these keywords will be extracted">
+            </StringVectorProperty>
+            <PropertyGroup label="Authors">
+                <Property name="Authors (comma-separated)" />
+                <Property name="Author matching mode" />
+            </PropertyGroup>
+            <PropertyGroup label="Keywords">
+                <Property name="Keywords (comma-separated)" />
+            </PropertyGroup>
+            <Hints>
+                <ShowInMenu category="Kronos" />
+            </Hints>
+        </SourceProxy>
+        <SourceProxy name="FlightFilter" class="FlightFilter" label="Kronos Flight Filter">
+            <Documentation
+                long_help="This filter can extract data from flight point sets read by a Kronos reader depending on the airlines, flight distance, start and destination airport."
+                short_help="Extract data based on the airlines, flight distance, start and destination airport">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <IntVectorProperty name="AirlineMatchingMode"
+                label="Airline Matching Mode"
+                command="setAirlineMatchingMode"
+                number_of_elements="1"
+                default_values="0">
+                <EnumerationDomain name="enum">
+                    <Entry value="0" text="Containing"/>
+                    <Entry value="1" text="Matching"/>
+                </EnumerationDomain>
+                <Documentation>
+                    This property sets the matching mode for the airlines.
+                </Documentation>
+            </IntVectorProperty>
+            <StringVectorProperty name="AirlineNames"
+                label="Airline names (comma-separated)"
+                command="setAirline"
+                number_of_elements="1"
+                default_values=""
+                information_property="Airline names">
+            </StringVectorProperty>
+            <StringVectorProperty name="OriginAirportCodes"
+                label="Origin airport codes (comma-separated)"
+                command="setOriginAirportCode"
+                number_of_elements="1"
+                default_values=""
+                information_property="Set the airport code of the origin airports">
+            </StringVectorProperty>
+            <StringVectorProperty name="DestinationAirportCodes"
+                label="Destination airport codes (comma-separated)"
+                command="setDestinationAirportCode"
+                number_of_elements="1"
+                default_values=""
+                information_property="Set the airport code of the destination airports">
+            </StringVectorProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectFlightInputScalars"
+                number_of_elements="5"
+                default_values="flightLengths">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <Hints>
+                <Property name="SelectFlightInputScalars" show="0"/>
+            </Hints>
+            <DoubleVectorProperty command="setFlightLengthThreshold"
+                default_values="0 0"
+                label="Flight Length Range"
+                name="FlightLengthRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectFlightInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower flight length limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+            <PropertyGroup label="Airline">
+                <Property name="AirlineMatchingMode" />
+                <Property name="AirlineNames" />
+            </PropertyGroup>
+            <PropertyGroup label="Airports">
+                <Property name="OriginAirportCodes" />
+                <Property name="DestinationAirportCodes" />
+            </PropertyGroup>
+            <PropertyGroup label="Flight Length Threshold">
+                <Property name="FlightLengthRange" />
+            </PropertyGroup>
+            <Hints>
+                <ShowInMenu category="Kronos" />
+            </Hints>
+        </SourceProxy>
         <SourceProxy name="MIPASFilter" class="SciVisFilter" label="MIPASFilter">
-          <Documentation
-            long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with MIPAS Data"
-            short_help="Solve SciVis-Contest with this filter">
-          </Documentation>
-          <InputProperty
-            name="MIPAS Input"
-            command="SetInputConnection">
-            <ProxyGroupDomain name="groups">
-              <Group name="sources"/>
-              <Group name="filters"/>
-            </ProxyGroupDomain>
-            <DataTypeDomain name="input_type">
-              <DataType value="vtkPolyData"/>
-              <DataType value="vtkCellData"/>
-              <DataType value="vtkUnstructuredGrid"/>
-              <DataType value="vtkPointSet"/>
-            </DataTypeDomain>
-          </InputProperty>
-
-          <DoubleVectorProperty name="Start-Date"
-           command="setLowerMIPAS"
-           number_of_elements="1"
-           default_values="368156000.0">
-          <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
-          </DoubleVectorProperty>
-
-          <DoubleVectorProperty name="End-Date"
-           command="setUpperMIPAS"
-           number_of_elements="1"
-           default_values="368156000.0">
-          <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
-          </DoubleVectorProperty>
-
-          <Hints>
-            <ShowInMenu category="SciVis"/>
-          </Hints>
+            <Documentation
+                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with MIPAS Data"
+                short_help="Solve SciVis-Contest with this filter">
+            </Documentation>
+            <InputProperty
+                name="MIPAS Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkCellData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <DoubleVectorProperty name="Start date"
+                command="setLowerMIPAS"
+                number_of_elements="1"
+                default_values="368156000.0">
+                <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End date"
+                command="setUpperMIPAS"
+                number_of_elements="1"
+                default_values="368156000.0">
+                <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
+            </DoubleVectorProperty>
+            <Hints>
+                <ShowInMenu category="SciVis"/>
+            </Hints>
         </SourceProxy>
-
-        <SourceProxy name="AIRSFilter" class="SciVisFilter" label="AIRSFilter">
-          <Documentation
-            long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
-            short_help="Solve SciVis-Contest with this filter">
-          </Documentation>
-          <InputProperty
-            name="AIRS Input"
-            command="SetInputConnection">
-            <ProxyGroupDomain name="groups">
-              <Group name="sources"/>
-              <Group name="filters"/>
-            </ProxyGroupDomain>
-            <DataTypeDomain name="input_type">
-              <DataType value="vtkPolyData"/>
-              <DataType value="vtkCellData"/>
-              <DataType value="vtkUnstructuredGrid"/>
-              <DataType value="vtkPointSet"/>
-            </DataTypeDomain>
-          </InputProperty>
-          <DoubleVectorProperty name="Start-Date"
-           command="setLowerAIRS"
-           number_of_elements="1"
-           default_values="360029000.0">
-          <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
-          </DoubleVectorProperty>
-
-          <DoubleVectorProperty name="End-Date"
-           command="setUpperAIRS"
-           number_of_elements="1"
-           default_values="360029000.0">
-          <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
-          </DoubleVectorProperty>
-          <Hints>
-            <ShowInMenu category="SciVis"/>
-          </Hints>
-        </SourceProxy>
-
-        <SourceProxy name="CLaMSFilter" class="SciVisFilter" label="CLaMSFilter">
-          <Documentation
-            long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
-            short_help="Solve SciVis-Contest with this filter">
-          </Documentation>
-          <InputProperty
-            name="CLaMS Input"
-            command="SetInputConnection">
-            <ProxyGroupDomain name="groups">
-              <Group name="sources"/>
-              <Group name="filters"/>
-            </ProxyGroupDomain>
-            <DataTypeDomain name="input_type">
-              <DataType value="vtkPolyData"/>
-              <DataType value="vtkCellData"/>
-              <DataType value="vtkUnstructuredGrid"/>
-              <DataType value="vtkPointSet"/>
-            </DataTypeDomain>
-          </InputProperty>
-          <DoubleVectorProperty name="Start-Date"
-           command="setLowerCLaMS"
-           number_of_elements="1"
-           default_values="361217000.0">
-          <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
-          </DoubleVectorProperty>
-
-          <DoubleVectorProperty name="End-Date"
-           command="setUpperCLaMS"
-           number_of_elements="1"
-           default_values="361217000.0">
-          <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
-          </DoubleVectorProperty>
-
-          <Hints>
-            <ShowInMenu category="SciVis"/>
-          </Hints>
-        </SourceProxy>
-
-        </ProxyGroup>
-        <ParaViewFilters>
+    </ProxyGroup>
+    <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
-          <Filter name="SphericalToCartesianFilter" />
-          <Filter name="PrecipitationTypeFilter" />
-          <Filter name="FlightFilter" />
+            <Filter name="SphericalToCartesianFilter" />
+            <Filter name="PrecipitationTypeFilter" />
+            <Filter name="FlightFilter" />
+            <Filter name="TemporalAggregationFilter" />
+            <Filter name="TemperatureThresholdFilter" />
+            <Filter name="WindSpeedThresholdFilter" />
+            <Filter name="TwitterFilter" />
         </Category>
-
         <Category name="SciVis" menu_label="SciVis">
-          <Filter name="MIPASFilter" />
-          <Filter name="AIRSFilter" />
-          <Filter name="CLaMSFilter" />
+            <Filter name="MIPASFilter" />
         </Category>
-</ParaViewFilters>
-
+    </ParaViewFilters>
 </ServerManagerConfiguration>
