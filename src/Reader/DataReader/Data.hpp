@@ -37,6 +37,13 @@ public:
 	enum Type {
 		CITIES, FLIGHTS, TWEETS, PRECIPITATION, TEMPERATURE, WIND, CLOUD_COVERAGE
 	};
+	
+	/**
+	 * Enum that denotes the different states a data set can have.
+	 */
+	enum State {
+		RAW, AGGREGATED, DENSITY_MAPPED
+	};
 
 	/**
 	 * Check whether a data type contains time information.
@@ -51,12 +58,24 @@ public:
 	 * @return The data type's name
 	 */
 	static QString getDataTypeName(const Data::Type dataType);
+	
+	/**
+	 * Get a human-readable name of a data state.
+	 * @param dataState The data state whose name should be retrieved
+	 * @return The data state's name
+	 */
+	static QString getDataStateName(const Data::State dataState);
 
 private:
 	/**
 	 * Maps data types to human-readable names of themselves.
 	 */
 	static const QMap<Data::Type, QString> DATA_TYPE_NAMES;
+	
+	/**
+	 * Maps data states to human-readable names of themselves.
+	 */
+	static const QMap<Data::State, QString> DATA_STATE_NAMES;
 };
 
 #endif
