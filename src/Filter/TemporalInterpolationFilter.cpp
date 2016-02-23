@@ -139,6 +139,7 @@ int TemporalInterpolationFilter::RequestData(
 		this->SetProgress(1.0);
         this->addDataInFirstTimeStep();
         this->addDataInLastTimeStep();
+        this->interpolateData();
         std::cout << "Total number of points: " << this->allPointCooridinates.count();
         
         this->printData();
@@ -146,6 +147,49 @@ int TemporalInterpolationFilter::RequestData(
 	}
 
 	return 1;
+}
+
+void TemporalInterpolationFilter::interpolateData(){
+
+    
+    for(PointCoordinates coord : this->allPointCooridinates){
+        
+        int firstTimestep = 0;
+        int numberOfInterpolations = 0;
+        TemporalDataPoint lower;
+        TemporalDataPoint higher;
+        bool foundGap = false;
+        
+    for(int i=1; i<this->timestampMap.count()-1;i++){
+        //evtl nicht keine Referenz
+        //vermutlich besser alles als array umzubauen
+        //sonst nicht mehr lineare lauftzeit
+        if(timestampMap[i].contains(coord)){
+            if(foundGap){
+                higher = timestampMap[i][coord];
+                //evtl Q list mit Zwischen coodinaten
+                //alle Zwischenpunkte interpolieren und in Map einfügen
+                for(int x = 1; x=<numberOfInterpolations; x++){
+                    
+                }
+                
+            numberOfInterpolations = 0;
+                firstTimestep = firstTimestep+numberOfInterpolations; //evtl off by one error
+            }
+            firstTimestep++;
+        }else{
+            if(!foundGap){
+                lower = timestampMap[i][coord];
+                foundGap = true;
+            }
+            numberOfInterpolations++;
+        }
+    }
+    }
+}
+
+void TemporalInterpolationFilter::interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int index){
+    //TODO
 }
 
 void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputData){
