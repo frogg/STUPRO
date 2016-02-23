@@ -377,7 +377,7 @@
                 <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
-        <SourceProxy name="MIPASFilter" class="SciVisFilter" label="MIPASFilter">
+        <SourceProxy name="MIPASFilter" class="MIPASFilter" label="MIPASFilter">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with MIPAS Data"
                 short_help="Solve SciVis-Contest with this filter">
@@ -397,16 +397,86 @@
                 </DataTypeDomain>
             </InputProperty>
             <DoubleVectorProperty name="Start date"
-                command="setLowerMIPAS"
+                command="setLower"
                 number_of_elements="1"
                 default_values="360205000.0">
                 <DoubleRangeDomain name="range" min="360205000.0" max="368156000.0" />
             </DoubleVectorProperty>
             <DoubleVectorProperty name="End date"
-                command="setUpperMIPAS"
+                command="setUpper"
                 number_of_elements="1"
                 default_values="368156000.0">
                 <DoubleRangeDomain name="range" min="360205000.0" max="368156000.0" />
+            </DoubleVectorProperty>
+            <Hints>
+                <ShowInMenu category="SciVis"/>
+            </Hints>
+        </SourceProxy>
+        <SourceProxy name="AIRSFilter" class="AIRSFilter" label="AIRSFilter">
+            <Documentation
+                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
+                short_help="Solve SciVis-Contest with this filter">
+            </Documentation>
+            <InputProperty
+                name="AIRS Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkCellData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <DoubleVectorProperty name="Start date"
+                command="setLower"
+                number_of_elements="1"
+                default_values="360029000.0">
+                <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End date"
+                command="setUpper"
+                number_of_elements="1"
+                default_values="360072000.0">
+                <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
+            </DoubleVectorProperty>
+            <Hints>
+                <ShowInMenu category="SciVis"/>
+            </Hints>
+        </SourceProxy>
+        <SourceProxy name="CLaMSFilter" class="CLaMSFilter" label="CLaMSFilter">
+            <Documentation
+                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with ClaMS Data"
+                short_help="Solve SciVis-Contest with this filter">
+            </Documentation>
+            <InputProperty
+                name="CLaMS Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkCellData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <DoubleVectorProperty name="Start date"
+                command="setLower"
+                number_of_elements="1"
+                default_values="361217000.0">
+                <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End date"
+                command="setUpper"
+                number_of_elements="1"
+                default_values="368582000.0">
+                <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
             </DoubleVectorProperty>
             <Hints>
                 <ShowInMenu category="SciVis"/>
@@ -425,6 +495,8 @@
         </Category>
         <Category name="SciVis" menu_label="SciVis">
             <Filter name="MIPASFilter" />
+            <Filter name="AIRSFilter" />
+            <Filter name="CLaMSFilter"/>
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>
