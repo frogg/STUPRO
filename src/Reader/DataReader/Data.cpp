@@ -3,6 +3,7 @@
 #include <vtkInformationIntegerKey.h>
 
 vtkInformationKeyMacro(Data, VTK_DATA_TYPE, DataType);
+vtkInformationKeyMacro(Data, VTK_DATA_STATE, DataState);
 vtkInformationKeyMacro(Data, VTK_TIME_RESOLUTION, TimeResolution);
 
 static QMap<Data::Type, QString> dataTypeNameMap() {
