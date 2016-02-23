@@ -150,14 +150,12 @@ int TemporalInterpolationFilter::RequestData(
 }
 
 void TemporalInterpolationFilter::interpolateData(){
-
     
     for(PointCoordinates coord : this->allPointCooridinates){
-        
         int firstTimestep = 0;
-        int numberOfInterpolations = 0;
-        TemporalDataPoint lower;
-        TemporalDataPoint higher;
+        //int numberOfInterpolations = 0;
+        //TemporalDataPoint lower;
+        //TemporalDataPoint higher;
         bool foundGap = false;
         
     for(int i=1; i<this->timestampMap.count()-1;i++){
@@ -166,11 +164,11 @@ void TemporalInterpolationFilter::interpolateData(){
         //sonst nicht mehr lineare lauftzeit
         if(timestampMap[i].contains(coord)){
             if(foundGap){
-                higher = timestampMap[i][coord];
-                //evtl Q list mit Zwischen coodinaten
+                //higher = timestampMap[i][coord];
                 //alle Zwischenpunkte interpolieren und in Map einfügen
-                for(int x = 1; x=<numberOfInterpolations; x++){
-                    
+                //Zeitschritte
+                for(int x = firstTimestep+1; x<i; x++){
+                    this->interpolateDataPoint(timestampMap[firstTimestep][coord], timestampMap[i][coord], x, coord, i-firstTimestep);
                 }
                 
             numberOfInterpolations = 0;
@@ -179,17 +177,18 @@ void TemporalInterpolationFilter::interpolateData(){
             firstTimestep++;
         }else{
             if(!foundGap){
-                lower = timestampMap[i][coord];
+                //lower = timestampMap[i][coord];
                 foundGap = true;
             }
-            numberOfInterpolations++;
+            //numberOfInterpolations++;
         }
     }
     }
 }
 
-void TemporalInterpolationFilter::interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int index){
-    //TODO
+void TemporalInterpolationFilter::interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int index, PointCoordinates coordinate, int numberOfInterpolations){
+    //TODO interpolieren
+    //this->timestampMap[index].insert(coordinate,this->timestampMap[i][coordinate]);
 }
 
 void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputData){

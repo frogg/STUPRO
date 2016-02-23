@@ -55,7 +55,7 @@ private:
     void addDataInLastTimeStep();
     void printData();
     void interpolateData();
-    void interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int index);
+    void interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int index, PointCoordinates coordinate, int numberOfInterpolations);
 
     QList<PointCoordinates> allPointCooridinates;
     /**
