@@ -7,7 +7,7 @@
 //
 
 
-#include "TwitterHeatmapFilter.h"
+#include "HeatmapDensityFilter.h"
 
 #include "vtkUnstructuredGrid.h"
 #include "vtkCell.h"
@@ -36,41 +36,39 @@
 
 #include <vtkPolyData.h>
 #include <vtkTypeFloat32Array.h>
-#include <vtkTypeInt16Array.h>
+#include <vtkIntArray.h>
 #include <QList>
 #include <vtkCellArray.h>
 
 
-TwitterHeatmapFilter::TwitterHeatmapFilter() {
-    //take this transformation, true -> it transforms per default
-    
-    
+HeatmapDensityFilter::HeatmapDensityFilter() {
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(1);
     
 }
 
-void TwitterHeatmapFilter::setToleranceValue(int newTolerance) {
+void HeatmapDensityFilter::setHeatmapResolution(double heatmapResolution) {
+    this->heatmapResolution = heatmapResolution;
+    this->Modified();
 }
 
 
-void TwitterHeatmapFilter::PrintSelf(ostream& os, vtkIndent indent) {
+void HeatmapDensityFilter::PrintSelf(ostream& os, vtkIndent indent) {
     this->Superclass::PrintSelf(os, indent);
     os << indent << "Twitter Filter, Kronos Project" << endl;
 }
 
-TwitterHeatmapFilter::~TwitterHeatmapFilter() {}
+HeatmapDensityFilter::~HeatmapDensityFilter() {}
 
-vtkStandardNewMacro(TwitterHeatmapFilter)
+vtkStandardNewMacro(HeatmapDensityFilter)
 
 
 
-int TwitterHeatmapFilter::RequestData(vtkInformation* info,
+int HeatmapDensityFilter::RequestData(vtkInformation* info,
                                       vtkInformationVector** inputVector,
                                       vtkInformationVector* outputVector) {
     
-    int numberOfXComponents = 50;
-    int numberOfYComponents = 50;
+    
     
     
     
@@ -89,6 +87,11 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     double height = maxY-minY;
     
     
+    
+    int numberOfXComponents = 50;//(int) (50.0 * this->heatmapResolution + 0.5);
+    int numberOfYComponents = 50;//(int) ((height * numberOfXComponents) / width + 0.5);
+    
+    
     double stepWidthX = (width / numberOfXComponents);
     double stepWidthY = (height / numberOfYComponents);
    
@@ -102,17 +105,9 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     int numberOfDataInputPoints = intputDataPoints->GetNumberOfPoints();
 
     
-    
-    
-    
-    
-    
     int density[numberOfXComponents * numberOfYComponents];
     
-    
 
-    
-    
     for(int x = 0; x < numberOfXComponents; x++) {
         for(int y = 0; y < numberOfYComponents; y++) {
             
@@ -169,29 +164,25 @@ int TwitterHeatmapFilter::RequestData(vtkInformation* info,
     }
     
     
-    
-    //    output->GetPoints();
     output->SetPoints(points);
     output->SetVerts(verts);
     
-    vtkSmartPointer<vtkTypeInt16Array> coverageValues = vtkSmartPointer<vtkTypeInt16Array>::New();
-    coverageValues->SetNumberOfComponents(1);
-    coverageValues->SetNumberOfValues(sizeof(density)/sizeof(*density));
-    coverageValues->SetName("density");
+    vtkSmartPointer<vtkIntArray> densityValues = vtkSmartPointer<vtkIntArray>::New();
+    densityValues->SetNumberOfComponents(1);
+    densityValues->SetNumberOfValues(sizeof(density)/sizeof(*density));
+    densityValues->SetName("density");
     
     for(int i=0; i< sizeof(density)/sizeof(*density); i++) {
-        coverageValues->InsertValue(i, density[i]);
+        densityValues->InsertValue(i, density[i]);
     }
     
-    
-    
-    output->GetPointData()->AddArray(coverageValues);
-    
+
+    output->GetPointData()->AddArray(densityValues);
     
     return 1;
 }
 
-int TwitterHeatmapFilter::FillInputPortInformation(int port, vtkInformation* info) {
+int HeatmapDensityFilter::FillInputPortInformation(int port, vtkInformation* info) {
     info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataSet");
     return 1;
 }

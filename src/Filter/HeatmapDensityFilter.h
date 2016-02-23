@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef TwitterHeatmapFilter_hpp
-#define TwitterHeatmapFilter_hpp
+#ifndef HeatmapDensityFilter_hpp
+#define HeatmapDensityFilter_hpp
 
 #include <stdio.h>
 #include <Utils/Misc/Macros.hpp>
@@ -17,15 +17,15 @@
 #include <vtkSmartPointer.h>
 #include <vtkPolyDataAlgorithm.h>
 
-class TwitterHeatmapFilter : public vtkPolyDataAlgorithm {
+class HeatmapDensityFilter : public vtkPolyDataAlgorithm {
     
 public:
-    vtkTypeMacro(TwitterHeatmapFilter, vtkPolyDataAlgorithm)
-    static TwitterHeatmapFilter* New();
+    vtkTypeMacro(HeatmapDensityFilter, vtkPolyDataAlgorithm)
+    static HeatmapDensityFilter* New();
     void PrintSelf(ostream& os, vtkIndent indent) override;
     
-    int toleranceValue = 0;
-    void setToleranceValue(int newTolerance);
+    
+    void setHeatmapResolution(double heatmapResolution);
     
 protected:
     
@@ -38,13 +38,14 @@ protected:
     
     
 private:
-    TwitterHeatmapFilter();
-    ~TwitterHeatmapFilter();
+    HeatmapDensityFilter();
+    ~HeatmapDensityFilter();
     
     
-    TwitterHeatmapFilter(const TwitterHeatmapFilter&);  // Not implemented.
-    void operator=(const TwitterHeatmapFilter&);  // Not implemented.
+    HeatmapDensityFilter(const HeatmapDensityFilter&);  // Not implemented.
+    void operator=(const HeatmapDensityFilter&);  // Not implemented.
     
+    double heatmapResolution = 1.0;
 };
 
 
