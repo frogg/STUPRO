@@ -19,6 +19,7 @@ TEST(TestTemporalAggregationFilter, TestTemperatureData) {
 	vtkSmartPointer<TemporalAggregationFilter> filter = TemporalAggregationFilter::New();
 	filter->SetInputData(0, inputDataSet);
 	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::TEMPERATURE);
+	filter->GetInputInformation()->Set(Data::VTK_DATA_STATE(), Data::RAW);
 	filter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
 	filter->Update();
 
@@ -51,6 +52,7 @@ TEST(TestTemporalAggregationFilter, TestCloudCoverageData) {
 	vtkSmartPointer<TemporalAggregationFilter> filter = TemporalAggregationFilter::New();
 	filter->SetInputData(0, inputDataSet);
 	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::CLOUD_COVERAGE);
+	filter->GetInputInformation()->Set(Data::VTK_DATA_STATE(), Data::RAW);
 	filter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
 	filter->Update();
 
@@ -83,6 +85,7 @@ TEST(TestTemporalAggregationFilter, TestWindData) {
 	vtkSmartPointer<TemporalAggregationFilter> filter = TemporalAggregationFilter::New();
 	filter->SetInputData(0, inputDataSet);
 	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::WIND);
+	filter->GetInputInformation()->Set(Data::VTK_DATA_STATE(), Data::RAW);
 	filter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
 	filter->Update();
 
