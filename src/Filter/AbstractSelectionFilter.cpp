@@ -133,6 +133,19 @@ int AbstractSelectionFilter::RequestInformation(vtkInformation* request,
 		this->fail("This filter only works with data read by the Kronos reader.");
 		return 0;
 	}
+	
+	// Check the meta information containing the data's state
+	if (inInfo->Has(Data::VTK_DATA_STATE())) {
+		Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
+		if (dataState != Data::RAW) {
+			this->fail(
+			    QString("This filter only works with raw input data, but the input data has the state %1.").arg(Data::getDataStateName(dataState)));
+			return 0;
+		}
+	} else {
+		this->fail("The input data has no data state information attached.");
+		return 0;
+	}
 
 	return 1;
 }
