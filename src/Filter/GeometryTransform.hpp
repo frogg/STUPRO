@@ -11,13 +11,6 @@
 #include <exception>
 #include <QString>
 
-/**
- * we do not support Backward transformation and throw an exception if someone wants it
- */
-struct NoBackwardTransformationException : public KronosException {
-	NoBackwardTransformationException(QString reason) : KronosException(reason) { }
-};
-
 
 /**
  * transforms from gps to world coodinates

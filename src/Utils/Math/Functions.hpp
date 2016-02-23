@@ -43,4 +43,13 @@ T getNextPowerOf2(T value) {
 	return value + 1;
 }
 
+/**
+ * Limits a value to the specified min/max range.
+ */
+template <typename T>
+T clamp(T min, T value, T max)
+{
+	return std::max(min, std::min(value, max));
+}
+
 #endif
