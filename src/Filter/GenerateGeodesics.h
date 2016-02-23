@@ -20,15 +20,15 @@ public:
 
 	int FillInputPortInformation(int, vtkInformation* info) override;
 
-    /**
-     * @brief setArcSize set the arc size.
-     * The arc size is a measurement of how much the flights will be displayed above the earth surface.
-     * In detail the geodesic arc is drawn as a circle sector from a point m, which is aequidistant to
-     * both the start and target airport. The arc size is the difference of the (real) earth radius and
-     * the radius of the geodesics.
-     * @param value the arc size
-     */
-    void setArcSize(double value);
+	/**
+	 * @brief setArcSize set the arc size.
+	 * The arc size is a measurement of how much the flights will be displayed above the earth surface.
+	 * In detail the geodesic arc is drawn as a circle sector from a point m, which is aequidistant to
+	 * both the start and target airport. The arc size is the difference of the (real) earth radius and
+	 * the radius of the geodesics.
+	 * @param value the arc size
+	 */
+	void setArcSize(double value);
 
 private:
 	GenerateGeodesics();
@@ -36,24 +36,27 @@ private:
 	void operator =(const GenerateGeodesics&); // not implemented
 
 	double maxLenOfLineSegment = 0.9;
-    double arcSize = 0.0;
+	double arcSize = 0.0;
 
 	/**
-     * @brief insertNextFlight calculate the neccessary points between start and end airport, insert them into the given data set
+	 * @brief insertNextFlight calculate the neccessary points between start and end airport, insert them into the given data set
 	 * @param start the start airport
-     * @param end the destination airport
-     * @param dataSet the data set to insert the points
+	 * @param end the destination airport
+	 * @param dataSet the data set to insert the points
 	 */
-    void insertNextFlight(const Vector3<double>& start, const Vector3<double>& end,
-                              vtkPolyData* const dataSet);
+	void insertNextFlight(const Vector3<double>& start, const Vector3<double>& end,
+						  vtkPolyData* const dataSet);
 
-    /**
-     * @brief movePointToOppositeSide translates the point to the opposite side (that is +- 180 lat)
-     * @param point the point to move
-     */
-    Vector3<double> moveToOtherSide(Vector3<double> point);
+	/**
+	 * @brief movePointToOppositeSide translates the point to the opposite side (that is +- 180 lat)
+	 * @param point the point to move
+	 */
+	Vector3<double> moveToOtherSide(Vector3<double> point);
 
-    void insertAndConnectPoints(vtkPolyData *dataSet, QVector<Vector3<double>> &points);
+	void insertAndConnectPoints(vtkPolyData* dataSet, QVector<Vector3<double>>& points);
+
+	Vector3<double> getCircleCenterPoint(const Vector3<double>& point1, const Vector3<double>& point2,
+										 double radius);
 };
 
 #endif // KRONOSGENERATEGEODESICS_H

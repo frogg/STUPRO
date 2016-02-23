@@ -159,3 +159,17 @@ void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
 		currentPointIndex++;
 	}
 }
+
+Vector3<double> GenerateGeodesics::getCircleCenterPoint(const Vector3<double> &point1, const Vector3<double> &point2, double radius) {
+	Vector3d center = (point1 + point2) / 2;
+	Vector3d p1center = center - point1;
+
+	// this vector is orthogonal to all other vectors and works as a constraint
+	Vector3d orthogonalVector = center.cross(p1center);
+
+
+
+	// constraints:
+	// dotp(p1center, centerToCircleCenter) = 0
+	// dotp(crossp(p1center, center), centerToCircleCenter) = 0
+}
