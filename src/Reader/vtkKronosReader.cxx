@@ -107,6 +107,10 @@ int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationV
     outInfo->Set(Data::VTK_DATA_TYPE(), this->jsonReader->getDataType());
     request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TYPE());
     
+    // Initialise the data state as an entry to the output information
+    outInfo->Set(Data::VTK_DATA_STATE(), Data::RAW);
+    request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_STATE());
+    
     // If applicable, append the time resolution as an entry to the output information
     if (this->jsonReader->hasTemporalData()) {
         outInfo->Set(Data::VTK_TIME_RESOLUTION(), this->jsonReader->getTimeResolution());
