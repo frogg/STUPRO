@@ -1,8 +1,8 @@
 #ifndef KRONOS_READER_DATA_HPP
 #define KRONOS_READER_DATA_HPP
 
-#include <Reader/DataReader/vtkInformationDataTypeKey.hpp>
-#include <Reader/DataReader/vtkInformationTimeResolutionKey.hpp>
+#include <Reader/DataReader/MetaInformationKeys/vtkInformationDataTypeKey.hpp>
+#include <Reader/DataReader/MetaInformationKeys/vtkInformationTimeResolutionKey.hpp>
 
 #include <vtkInformationDataObjectMetaDataKey.h>
 
