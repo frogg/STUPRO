@@ -23,7 +23,7 @@ public:
 	 * through the pipeline.
 	 */
 	static vtkInformationTimeResolutionKey* VTK_TIME_RESOLUTION();
-	
+
 	/**
 	 * A VTK information key for storing the state of the data in an object that will be passed
 	 * through the pipeline.
@@ -37,7 +37,7 @@ public:
 	enum Type {
 		CITIES, FLIGHTS, TWEETS, PRECIPITATION, TEMPERATURE, WIND, CLOUD_COVERAGE
 	};
-	
+
 	/**
 	 * Enum that denotes the different states a data set can have.
 	 */
@@ -58,7 +58,7 @@ public:
 	 * @return The data type's name
 	 */
 	static QString getDataTypeName(const Data::Type dataType);
-	
+
 	/**
 	 * Get a human-readable name of a data state.
 	 * @param dataState The data state whose name should be retrieved
@@ -71,7 +71,7 @@ private:
 	 * Maps data types to human-readable names of themselves.
 	 */
 	static const QMap<Data::Type, QString> DATA_TYPE_NAMES;
-	
+
 	/**
 	 * Maps data states to human-readable names of themselves.
 	 */
