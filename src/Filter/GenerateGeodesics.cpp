@@ -160,7 +160,8 @@ void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
 	}
 }
 
-Vector3<double> GenerateGeodesics::getCircleCenterPoint(const Vector3<double> &point1, const Vector3<double> &point2, double radius) {
+Vector3<double> GenerateGeodesics::getCircleCenterPoint(const Vector3<double>& point1,
+        const Vector3<double>& point2, double radius) {
 	Vector3d center = (point1 + point2) / 2;
 	Vector3d p1center = center - point1;
 
