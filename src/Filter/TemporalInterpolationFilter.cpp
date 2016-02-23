@@ -137,8 +137,11 @@ int TemporalInterpolationFilter::RequestData(
 		this->currentTimeStep = 0;
 		this->SetProgressText("");
 		this->SetProgress(1.0);
-        this->interpolateMissingData();
+        this->addDataInFirstTimeStep();
+        this->addDataInLastTimeStep();
         std::cout << "Total number of points: " << this->allPointCooridinates.count();
+        
+        this->printData();
 
 	}
 
@@ -191,8 +194,8 @@ TemporalDataPoint TemporalInterpolationFilter::temporalDataPoint(int pointIndex,
     //return nanl;
 }
 
-void TemporalInterpolationFilter::interpolateMissingData(){
-    std::cout << "Anzahl an erstem Zeitschritt: " <<this->timestampMap[0].count();
+void TemporalInterpolationFilter::addDataInFirstTimeStep(){
+  //  std::cout << "Anzahl an erstem Zeitschritt: " <<this->timestampMap[0].count();
     //copy-on-write
     QList<PointCoordinates> missingCoordinates = this->allPointCooridinates;
     for(auto knownCoordinate : this->timestampMap[0].keys()){
@@ -215,8 +218,43 @@ void TemporalInterpolationFilter::interpolateMissingData(){
         }
     }
     
-    std::cout << "Anzahl an erstem Zeitschritt: danach" <<this->timestampMap[0].count();
+   // std::cout << "Anzahl an erstem Zeitschritt: danach" <<this->timestampMap[0].count();
     
+}
+
+void TemporalInterpolationFilter::printData(){
+    for(int i=0; i<this->timestampMap.count(); i++){
+        std::cout << "Number of Points in in Timestep: " << i << ": " << this->timestampMap[i].count() <<std::endl;
+    }
+    std::cout << "Gesamtanzahl" <<this->timestampMap.count();
+}
+
+void TemporalInterpolationFilter::addDataInLastTimeStep(){
+    QList<PointCoordinates> missingCoordinates = this->allPointCooridinates;
+    
+    //last timestep
+    int lastTimestep = this->timestampMap.count()-1;
+
+    for(auto knownCoordinate : this->timestampMap[lastTimestep].keys()){
+        missingCoordinates.removeAll(knownCoordinate);
+    }
+    
+    //as not sure about interator order
+    for(int i=lastTimestep-1; i>=0; i--){
+        QList<PointCoordinates> temp = missingCoordinates;
+        for(auto coordinate: temp){
+            //if timestep i has missingPoint, append it on timestep n
+            //ÜBERPRÜFEN MIT C++
+            if(this->timestampMap[i].contains(coordinate)){
+                this->timestampMap[lastTimestep].insert(coordinate,this->timestampMap[i][coordinate]);
+                missingCoordinates.removeAll(coordinate);
+            }
+        }
+        if(missingCoordinates.count() == 0){
+            break;
+        }
+    }
+    std::cout << "Anzahl an letzen Zeitschritt: danach" <<this->timestampMap[lastTimestep].count();
 }
 
 

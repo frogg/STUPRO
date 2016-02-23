@@ -51,7 +51,9 @@ private:
     TemporalDataPoint temporalDataPoint(int pointIndex,vtkPolyData *inputData);
     QMap<int, QMap<PointCoordinates, TemporalDataPoint>> timestampMap;
 
-    void interpolateMissingData();
+    void addDataInFirstTimeStep();
+    void addDataInLastTimeStep();
+    void printData();
     QList<PointCoordinates> allPointCooridinates;
     /**
      * Boolean flag denoting whether there was an error.
