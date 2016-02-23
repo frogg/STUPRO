@@ -5,7 +5,7 @@
 #include <vtkAlgorithm.h>
 #include <vtkCellArray.h>
 #include <vtkObjectFactory.h>
-#include <vtkFloatArray.h>
+#include <vtkDoubleArray.h>
 #include <iostream>
 
 vtkStandardNewMacro(SciVisFilter);
@@ -171,7 +171,7 @@ int SciVisFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	return 1;
 }
 bool SciVisFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData){
-    vtkSmartPointer<vtkFloatArray> flightLengths = vtkFloatArray::SafeDownCast(pointData->GetAbstractArray("time"));
+    vtkSmartPointer<vtkDoubleArray> flightLengths = vtkDoubleArray::SafeDownCast(pointData->GetAbstractArray("time"));
     std::cout << "test"<< flightLengths->GetTuple1(pointIndex);
     return true;
 }
