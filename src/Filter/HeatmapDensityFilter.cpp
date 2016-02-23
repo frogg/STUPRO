@@ -88,8 +88,8 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     
     
     
-    int numberOfXComponents = 60;//(int) (50.0 * this->heatmapResolution + 0.5);
-    int numberOfYComponents = 50;//(int) ((height * numberOfXComponents) / width + 0.5);
+    int numberOfXComponents = (int) (50.0 * this->heatmapResolution + 0.5);
+    int numberOfYComponents = (int) ((height * numberOfXComponents) / width + 0.5);
     
     
     double stepWidthX = (width / numberOfXComponents);
