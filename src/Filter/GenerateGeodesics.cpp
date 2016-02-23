@@ -102,7 +102,13 @@ void GenerateGeodesics::insertNextFlight(const Vector3d& start, const Vector3d& 
 		} else if (abs(points.at(index - 1).x - points.at(index).x) > 180) {
 			Vector3d p = points.at(index - 1);
 			Vector3d v = moveToOtherSide(points.at(index)) - p;
-			Vector3d center = p + (((p.x < 0 ? -180 : 180) - p.x ) / v.x) * v;
+			v /= v.x;
+			if (p.x < 0) {
+				v *= -180 - p.x;
+			} else {
+				v *= 180 - p.x;
+			}
+			Vector3d center = p + v;
 			points.insert(index, center);
 
 			QVector<Vector3d> nextPoints;
