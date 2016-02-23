@@ -43,17 +43,17 @@ void KronosView::initRenderer() {
 }
 
 void KronosView::initGlobe() {
-	const Configuration& config = Configuration::getInstance();
-
 	// Initialize a unique pointer with a new instance of the Globe
 	// using the current renderer.
 	this->globe = makeUnique<Globe>(*this->GetRenderer());
 
 	// Dirty workaround: Create a transparent box around the globe.
+	float radius = Configuration::getInstance().getFloat("globe.radius");
+
 	vtkSmartPointer<vtkCubeSource> cube = vtkCubeSource::New();
-	cube->SetXLength(2);
-	cube->SetYLength(2);
-	cube->SetZLength(2);
+	cube->SetXLength(radius * 2);
+	cube->SetYLength(radius * 2);
+	cube->SetZLength(radius * 2);
 
 	vtkSmartPointer<vtkPolyDataMapper> cubeMapper = vtkPolyDataMapper::New();
 	cubeMapper->SetInputConnection(cube->GetOutputPort());
