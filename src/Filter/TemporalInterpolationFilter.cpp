@@ -112,7 +112,8 @@ int TemporalInterpolationFilter::RequestData(
 	}
 
     std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
-
+    this->updateQMap(this->currentTimeStep, input);
+    
 	if (this->currentTimeStep < inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())) {
 		// There are still time steps left, continue on
 		request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
@@ -132,6 +133,42 @@ int TemporalInterpolationFilter::RequestData(
 
 	return 1;
 }
+
+void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputData){
+    //QList<int> knownPoints;
+    
+    for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
+        
+        double coordinates[3];
+        inputData->GetPoint(i, coordinates);
+        PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
+        TemporalDataPoint temporalDataPoint;
+        
+        //this->dataAggregator
+        
+        //knownPoints.append(i);
+    }
+}
+
+TemporalDataPoint TemporalInterpolationFilter::temporalDataPoint(int pointIndex,vtkPolyData *inputData){
+    switch (this->dataType) {
+        case Data::TEMPERATURE:
+            break;
+        case Data::TWEETS:
+            break;
+        case Data::PRECIPITATION:
+            break;
+        case Data::WIND:
+            break;
+        case Data::CLOUD_COVERAGE:
+            break;
+        default:
+            std::cout << "not corrrect!!!";
+            //warning
+            break;
+    }
+}
+
 
 int TemporalInterpolationFilter::RequestUpdateExtent (
     vtkInformation* request,

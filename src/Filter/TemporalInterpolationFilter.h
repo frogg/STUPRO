@@ -7,6 +7,8 @@
 #include <vtkFiltersGeneralModule.h>
 #include <vtkPassInputTypeAlgorithm.h>
 #include <vtkDataSet.h>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/TemporalDataPoint.hpp>
+#include <PointCoordinates.hpp>
 
 #include <qstring.h>
 #include <qlist.h>
@@ -43,6 +45,11 @@ private:
      * @param message The error message to be shown to the user
      */
     void fail(QString message);
+    
+    void updateQMap(int timestep, vtkPolyData *inputData);
+    
+    TemporalDataPoint temporalDataPoint(int pointIndex,vtkPolyData *inputData);
+    QMap<int, QMap<PointCoordinates, TemporalDataPoint>> timestampMap;
 
     /**
      * Boolean flag denoting whether there was an error.
