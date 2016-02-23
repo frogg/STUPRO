@@ -7,6 +7,14 @@
 #include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkTypeFloat32Array.h>
+#include <MakeUnique.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/TemperatureDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverageDataPoint.hpp>
+
 
 vtkStandardNewMacro(TemporalInterpolationFilter);
 
@@ -129,6 +137,8 @@ int TemporalInterpolationFilter::RequestData(
 		this->currentTimeStep = 0;
 		this->SetProgressText("");
 		this->SetProgress(1.0);
+        std::cout << "Total number of points: " << this->allPointCooridinates.count();
+
 	}
 
 	return 1;
@@ -136,24 +146,34 @@ int TemporalInterpolationFilter::RequestData(
 
 void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputData){
     //QList<int> knownPoints;
-    
+    //auto content = makeUnique<QMap<PointCoordinates, TemporalDataPoint>>() ;
+    QMap<PointCoordinates, TemporalDataPoint> content;
     for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
-        
         double coordinates[3];
         inputData->GetPoint(i, coordinates);
         PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
-        TemporalDataPoint temporalDataPoint;
+        content.insert(currentCoordinates, this->temporalDataPoint(i, inputData));
         
+        if(!this->allPointCooridinates.contains(currentCoordinates)){
+            this->allPointCooridinates.append(currentCoordinates);
+        }
         //this->dataAggregator
-        
         //knownPoints.append(i);
+      //  std::cout << dynamic_cast<TemperatureDataPoint>(content[currentCoordinates]) ;
     }
+    std::cout << "contentSize: " << content.count();
+    this->timestampMap.insert(timestep,content);
 }
 
 TemporalDataPoint TemporalInterpolationFilter::temporalDataPoint(int pointIndex,vtkPolyData *inputData){
     switch (this->dataType) {
-        case Data::TEMPERATURE:
+        case Data::TEMPERATURE:{
+            vtkSmartPointer<vtkDataArray> abstractTemperatureArray = inputData->GetPointData()->GetArray("temperatures");
+            vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(abstractTemperatureArray);
+            double currentTemperature = temperatureArray->GetValue(pointIndex);
+            return 	TemperatureDataPoint(Coordinate(1.0,1.0),5,334,currentTemperature);
             break;
+        }
         case Data::TWEETS:
             break;
         case Data::PRECIPITATION:
@@ -167,6 +187,7 @@ TemporalDataPoint TemporalInterpolationFilter::temporalDataPoint(int pointIndex,
             //warning
             break;
     }
+    //return nanl;
 }
 
 
