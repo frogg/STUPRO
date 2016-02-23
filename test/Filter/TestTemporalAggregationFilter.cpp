@@ -6,7 +6,7 @@
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 #include <Reader/DataReader/Data.hpp>
 
-#include <vtkTypeFloat32Array.h>
+#include <vtkFloatArray.h>
 #include <vtkInformation.h>
 
 TEST(TestTemporalAggregationFilter, TestTemperatureData) {
@@ -31,7 +31,7 @@ TEST(TestTemporalAggregationFilter, TestTemperatureData) {
 	// Extract the filter's output
 	vtkSmartPointer<vtkDataArray> abstractTemperatureArray = outputDataSet->GetPointData()
 	        ->GetArray("Average Temperatures");
-	vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
 	            abstractTemperatureArray);
 	ASSERT_TRUE(temperatureArray);
 
@@ -63,7 +63,7 @@ TEST(TestTemporalAggregationFilter, TestCloudCoverageData) {
 	// Extract the filter's output
 	vtkSmartPointer<vtkDataArray> abstractCloudCoverageArray = outputDataSet->GetPointData()
 	        ->GetArray("Average Cloud Coverage Values");
-	vtkSmartPointer<vtkTypeFloat32Array> cloudCoverageArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> cloudCoverageArray = vtkFloatArray::SafeDownCast(
 	            abstractCloudCoverageArray);
 	ASSERT_TRUE(cloudCoverageArray);
 
@@ -95,19 +95,19 @@ TEST(TestTemporalAggregationFilter, TestWindData) {
 	// Extract the filter's outputs
 	vtkSmartPointer<vtkDataArray> abstractWindSpeedsArray = outputDataSet->GetPointData()
 	        ->GetArray("Average Wind Speeds");
-	vtkSmartPointer<vtkTypeFloat32Array> windSpeedsArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> windSpeedsArray = vtkFloatArray::SafeDownCast(
 	            abstractWindSpeedsArray);
 	ASSERT_TRUE(windSpeedsArray);
 
 	vtkSmartPointer<vtkDataArray> abstractWindDirectionsArray = outputDataSet->GetPointData()
 	        ->GetArray("Average Wind Directions");
-	vtkSmartPointer<vtkTypeFloat32Array> windDirectionsArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> windDirectionsArray = vtkFloatArray::SafeDownCast(
 	            abstractWindDirectionsArray);
 	ASSERT_TRUE(windDirectionsArray);
 
 	vtkSmartPointer<vtkDataArray> abstractWindVelocitiesArray = outputDataSet->GetPointData()
 	        ->GetArray("velocity");
-	vtkSmartPointer<vtkTypeFloat32Array> windVelocitiesArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> windVelocitiesArray = vtkFloatArray::SafeDownCast(
 	            abstractWindVelocitiesArray);
 	ASSERT_TRUE(windVelocitiesArray);
 
