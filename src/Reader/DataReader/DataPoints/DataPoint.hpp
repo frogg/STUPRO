@@ -37,7 +37,9 @@ public:
 	 */
 	Coordinate getCoordinate() const;
 
+    DataPoint(){ };
 private:
+    
 	Coordinate coordinate;
 	Data::Type dataType;
 	int priority;
