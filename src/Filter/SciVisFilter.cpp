@@ -1,18 +1,27 @@
-#include <Filter/SciVisFilter.hpp>
+#include <Filter/SciVisFilter.h>
 
 #include <vtkPolyData.h>
 #include <vtkDataObject.h>
 #include <vtkAlgorithm.h>
 #include <vtkCellArray.h>
+#include <vtkObjectFactory.h>
+#include <vtkFloatArray.h>
+#include <iostream>
 
-SciVisFilter::SciVisFilter() : error(false) { }
+vtkStandardNewMacro(SciVisFilter);
+
+SciVisFilter::SciVisFilter(){ };
+//SciVisFilter::SciVisFilter() : error(false) { }
 
 SciVisFilter::~SciVisFilter() { }
+
 
 void SciVisFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());
 	this->error = true;
 }
+
+
 
 int SciVisFilter::RequestData(vtkInformation* info,
         vtkInformationVector** inputVector,
@@ -30,24 +39,25 @@ int SciVisFilter::RequestData(vtkInformation* info,
 	vtkPolyData* output = vtkPolyData::SafeDownCast(outputInformation->Get(
 	                          vtkDataObject::DATA_OBJECT()));
     
-    output->DeepCopy(inputData);
-/*
-	// Create a list of the indices of all points that should be kept by evaluating each one
-	QList<int> selectedPoints;
 
+    
+	// Create a list of the indices of all points that should be kept by evaluating each one
+	QList<int> visiblePoints;
+//interates over all points
 	for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
 		double coordinates[3];
 		inputData->GetPoint(i, coordinates);
 		if (this->evaluatePoint(i, Coordinate(coordinates[0], coordinates[1]), inputData->GetPointData())) {
-			selectedPoints.append(i);
+			visiblePoints.append(i);
 		}
 	}
+
 
 	// Create the content of the output poly data object
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
-	vertices->Allocate(vertices->EstimateSize(1, selectedPoints.size()));
-	vertices->InsertNextCell(selectedPoints.size());
+	vertices->Allocate(vertices->EstimateSize(1, visiblePoints.size()));
+	vertices->InsertNextCell(visiblePoints.size());
 
 	// Create all arrays from the input data
 	QList<vtkSmartPointer<vtkAbstractArray>> inputArrays;
@@ -65,7 +75,7 @@ int SciVisFilter::RequestData(vtkInformation* info,
 		            inputArray->GetDataType());
 
 		outputArray->SetNumberOfComponents(inputArray->GetNumberOfComponents());
-		outputArray->SetNumberOfTuples(selectedPoints.size());
+		outputArray->SetNumberOfTuples(visiblePoints.size());
 		outputArray->SetName(inputArray->GetName());
 
 		inputArrays.append(inputArray);
@@ -75,7 +85,7 @@ int SciVisFilter::RequestData(vtkInformation* info,
 	// Fill the output poly data object with the coordinates of all selected points
 	QList<int>::iterator i;
 	int tupleNumber = 0;
-	for (i = selectedPoints.begin(); i != selectedPoints.end(); ++i) {
+	for (i = visiblePoints.begin(); i != visiblePoints.end(); ++i) {
 		double coordinates[3];
 		inputData->GetPoint(*i, coordinates);
 		vertices->InsertCellPoint(points->InsertNextPoint(coordinates[0], coordinates[1], coordinates[2]));
@@ -97,7 +107,7 @@ int SciVisFilter::RequestData(vtkInformation* info,
 	for (j = outputArrays.begin(); j != outputArrays.end(); ++j) {
 		output->GetPointData()->AddArray(*j);
 	}
-*/
+
 	return 1;
 }
 
@@ -105,24 +115,11 @@ int SciVisFilter::RequestData(vtkInformation* info,
 int SciVisFilter::RequestInformation(vtkInformation* request,
         vtkInformationVector** inputVector,
         vtkInformationVector* outputVector) {
-	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-/*
-	// Create a human-readable string of all supported data types for potentially showing an error message
-	QString supportedTypes = "";
-	int amountOfSupportedDataTypes = this->getCompatibleDataTypes().size();
-	if (amountOfSupportedDataTypes == 1) {
-		supportedTypes.append(Data::getDataTypeName(this->getCompatibleDataTypes().value(0)));
-	} else if (amountOfSupportedDataTypes > 1) {
-		for (int i = 0; i < amountOfSupportedDataTypes - 2; i++) {
-			supportedTypes.append(Data::getDataTypeName(this->getCompatibleDataTypes().value(i)));
-			if (i < amountOfSupportedDataTypes - 3) {
-				supportedTypes.append(", ");
-			}
-		}
-		supportedTypes.append(" and ").append(Data::getDataTypeName(this->getCompatibleDataTypes().value(
-		        amountOfSupportedDataTypes - 1)));
-	}
+//	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+  //  vtkInformation* outInfo;
+  //  outInfo->DeepCopy(inInfo);
 
+/*
 	// Check the meta information containing the data's type
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
 		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
@@ -136,7 +133,8 @@ int SciVisFilter::RequestInformation(vtkInformation* request,
 		this->fail("This filter only works with data read by the Kronos reader.");
 		return 0;
 	}
-*/
+ */
+
 	return 1;
 }
 
@@ -172,3 +170,9 @@ int SciVisFilter::FillInputPortInformation(int port, vtkInformation* info) {
 
 	return 1;
 }
+bool SciVisFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData){
+    vtkSmartPointer<vtkFloatArray> flightLengths = vtkFloatArray::SafeDownCast(pointData->GetAbstractArray("time"));
+    std::cout << "test"<< flightLengths->GetTuple1(pointIndex);
+    return true;
+}
+

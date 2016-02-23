@@ -19,8 +19,9 @@
  */
 class SciVisFilter : public vtkDataObjectAlgorithm {
 public:
-	SciVisFilter();
-	~SciVisFilter();
+    
+    vtkTypeMacro(SciVisFilter, vtkDataObjectAlgorithm)
+    static SciVisFilter *New();
 
 	void PrintSelf(ostream& os, vtkIndent indent) override;
 
@@ -30,6 +31,7 @@ public:
 	int RequestInformation(vtkInformation* request,
 	                       vtkInformationVector** inputVector,
 	                       vtkInformationVector* outputVector) override;
+ 
 	int FillOutputPortInformation(int port, vtkInformation* info) override;
 	int FillInputPortInformation(int port, vtkInformation* info) override;
     void SetInputConnection(vtkAlgorithmOutput *input) override;
@@ -47,6 +49,9 @@ protected:
 	void fail(QString message);
 
 private:
+    SciVisFilter();
+    ~SciVisFilter();
+    
 	SciVisFilter(const SciVisFilter&);  // Not implemented.
 	void operator=(const SciVisFilter&);  // Not implemented.
 
@@ -62,7 +67,7 @@ private:
      * @param pointData All scalar point data
      * @return True if the point should be kept, false otherwise
      */
-    //bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
+    bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
 };
 
 #endif
