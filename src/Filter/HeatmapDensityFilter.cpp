@@ -88,7 +88,7 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     
     
     
-    int numberOfXComponents = 50;//(int) (50.0 * this->heatmapResolution + 0.5);
+    int numberOfXComponents = 60;//(int) (50.0 * this->heatmapResolution + 0.5);
     int numberOfYComponents = 50;//(int) ((height * numberOfXComponents) / width + 0.5);
     
     
@@ -104,8 +104,7 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     
     int numberOfDataInputPoints = intputDataPoints->GetNumberOfPoints();
 
-    
-    int density[numberOfXComponents * numberOfYComponents];
+    std::vector<int> density(numberOfXComponents * numberOfYComponents);
     
 
     for(int x = 0; x < numberOfXComponents; x++) {
@@ -132,9 +131,8 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
         std::cout << x << ", " << y << std::endl;
         
         int pointID = x*numberOfXComponents + y;
+        
         density[pointID] = density[pointID]+1;
-        
-        
     }
     
     
@@ -169,11 +167,11 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     
     vtkSmartPointer<vtkIntArray> densityValues = vtkSmartPointer<vtkIntArray>::New();
     densityValues->SetNumberOfComponents(1);
-    densityValues->SetNumberOfValues(sizeof(density)/sizeof(*density));
+    densityValues->SetNumberOfTuples(density.size());
     densityValues->SetName("density");
     
-    for(int i=0; i< sizeof(density)/sizeof(*density); i++) {
-        densityValues->InsertValue(i, density[i]);
+    for(int i=0; i< density.size(); i++) {
+        densityValues->InsertNextValue(density[i]);
     }
     
 
