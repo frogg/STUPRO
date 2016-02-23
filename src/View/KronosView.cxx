@@ -5,15 +5,15 @@
 #include <vtkCommand.h>
 #include <vtkInformation.h>
 #include <vtkObjectFactory.h>
-#include <vtkPVStuproView.h>
+#include <KronosView.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkMatrix4x4.h>
 
-vtkStandardNewMacro(vtkPVStuproView);
+vtkStandardNewMacro(KronosView);
 
-void vtkPVStuproView::Initialize(unsigned int id)
+void KronosView::Initialize(unsigned int id)
 {
 	this->Superclass::Initialize(id);
 
@@ -22,20 +22,20 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	initGlobe();
 }
 
-void vtkPVStuproView::initParameters()
+void KronosView::initParameters()
 {
 	// Initialize parameters.
 	this->displayMode = Globe::DisplayGlobe;
 }
 
-void vtkPVStuproView::initRenderer()
+void KronosView::initRenderer()
 {
 	this->cameraModifiedCallback = vtkCallbackCommand::New();
 
     this->cameraModifiedCallback->SetCallback(
 		[](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
 		{
-			vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
+			KronosView * view = (KronosView *)clientdata;
 			if (view->getGlobe()) {
 				view->getGlobe()->onCameraChanged();
 			}
@@ -46,7 +46,7 @@ void vtkPVStuproView::initRenderer()
 	this->GetRenderer()->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, this->cameraModifiedCallback);
 }
 
-void vtkPVStuproView::initGlobe()
+void KronosView::initGlobe()
 {
 	const Configuration & config = Configuration::getInstance();
 
@@ -56,12 +56,12 @@ void vtkPVStuproView::initGlobe()
 }
 
 
-void vtkPVStuproView::moveCamera(float latitude, float longitude)
+void KronosView::moveCamera(float latitude, float longitude)
 {
 	this->moveCamera(latitude, longitude, this->getCameraDistance());
 }
 
-void vtkPVStuproView::moveCamera(float latitude, float longitude, float distance)
+void KronosView::moveCamera(float latitude, float longitude, float distance)
 {
 	// left-right, up-down, close-far
 	Vector3d position(0.0, 0.0, 2.6);
@@ -87,7 +87,7 @@ void vtkPVStuproView::moveCamera(float latitude, float longitude, float distance
 	GetRenderWindow()->Render();
 }
 
-float vtkPVStuproView::getCameraDistance()
+float KronosView::getCameraDistance()
 {
 	vtkCamera* cam = GetActiveCamera();
 	double x, y, z;
@@ -100,7 +100,7 @@ float vtkPVStuproView::getCameraDistance()
 }
 
 
-void vtkPVStuproView::switchCurrentDisplayMode()
+void KronosView::switchCurrentDisplayMode()
 {
 	// Invert the display mode and set the interpolation using a static cast.
 	this->displayMode = this->displayMode == Globe::DisplayGlobe ? Globe::DisplayMap : Globe::DisplayGlobe;
@@ -110,12 +110,12 @@ void vtkPVStuproView::switchCurrentDisplayMode()
 	// GetRenderWindow()->Render();
 }
 
-Globe::DisplayMode vtkPVStuproView::getDisplayMode() const
+Globe::DisplayMode KronosView::getDisplayMode() const
 {
 	return this->displayMode;
 }
 
-Globe * vtkPVStuproView::getGlobe() const
+Globe * KronosView::getGlobe() const
 {
 	return this->globe.get();
 }
