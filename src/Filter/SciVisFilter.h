@@ -60,6 +60,9 @@ private:
 	 */
 	bool error;
     
+    double mipasUpperLimit;
+    double mipasLowerLimit;
+    
     /**
      * Decide whether a data point should be kept in the selection.
      * @param pointIndex The index of the point to be checked

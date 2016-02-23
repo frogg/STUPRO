@@ -399,14 +399,14 @@
             <DoubleVectorProperty name="Start date"
                 command="setLowerMIPAS"
                 number_of_elements="1"
-                default_values="368156000.0">
-                <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
+                default_values="360205000.0">
+                <DoubleRangeDomain name="range" min="360205000.0" max="368156000.0" />
             </DoubleVectorProperty>
             <DoubleVectorProperty name="End date"
                 command="setUpperMIPAS"
                 number_of_elements="1"
                 default_values="368156000.0">
-                <DoubleRangeDomain name="range" min="368156000.0" max="360205000.0" />
+                <DoubleRangeDomain name="range" min="360205000.0" max="368156000.0" />
             </DoubleVectorProperty>
             <Hints>
                 <ShowInMenu category="SciVis"/>

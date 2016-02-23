@@ -115,36 +115,16 @@ int SciVisFilter::RequestData(vtkInformation* info,
 int SciVisFilter::RequestInformation(vtkInformation* request,
         vtkInformationVector** inputVector,
         vtkInformationVector* outputVector) {
-//	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-  //  vtkInformation* outInfo;
-  //  outInfo->DeepCopy(inInfo);
-
-/*
-	// Check the meta information containing the data's type
-	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
-		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
-		if (!this->getCompatibleDataTypes().contains(dataType)) {
-			this->fail(
-			    QString("This filter only works with %1 data, but the input contains %2 data.").arg(supportedTypes,
-			            Data::getDataTypeName(dataType)));
-			return 0;
-		}
-	} else {
-		this->fail("This filter only works with data read by the Kronos reader.");
-		return 0;
-	}
- */
-
 	return 1;
 }
 
 void SciVisFilter::setLowerMIPAS(double lowerLimit){
-    //vtkThreshold::LowerThreshold = lowerLimit;
+    this->mipasLowerLimit = lowerLimit;
     this->Modified();
 }
 
 void SciVisFilter::setUpperMIPAS(double upperLimit){
-    //vtkThreshold::UpperThreshold = upperLimit;
+    this->mipasUpperLimit = upperLimit;
     this->Modified();
 }
 
@@ -171,8 +151,8 @@ int SciVisFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	return 1;
 }
 bool SciVisFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData){
-    vtkSmartPointer<vtkDoubleArray> flightLengths = vtkDoubleArray::SafeDownCast(pointData->GetAbstractArray("time"));
-    std::cout << "test"<< flightLengths->GetTuple1(pointIndex);
-    return true;
+    vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(pointData->GetAbstractArray("time"));
+    double time = timeArray->GetTuple1(pointIndex);
+    return(this->mipasLowerLimit <= time && time <= this->mipasUpperLimit);
 }
 
