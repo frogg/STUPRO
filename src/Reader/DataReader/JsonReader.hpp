@@ -48,6 +48,12 @@ public:
 	int getAmountOfTimeSteps() const;
 
 	/**
+	 * Get the amount of seconds in a time step. This will return 0 for non-temporal data.
+	 * @return The amount of seconds in a time step
+	 */
+	int getTimeResolution() const;
+
+	/**
 	 * Get all data stored in the file this reader uses, pruned by a specified zoom level.
 	 * @param zoomLevel The zoom level of the data set. Every data point with a higher zoom level
 	 * will be discarded while creating the vtkPolyData.
