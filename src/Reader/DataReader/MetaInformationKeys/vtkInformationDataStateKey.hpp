@@ -1,5 +1,5 @@
-#ifndef KRONOS_VTK_INFORMATION_DATA_STATUS_KEY_HPP
-#define KRONOS_VTK_INFORMATION_DATA_STATUS_KEY_HPP
+#ifndef KRONOS_VTK_INFORMATION_DATA_STATE_KEY_HPP
+#define KRONOS_VTK_INFORMATION_DATA_STATE_KEY_HPP
 
 #include <vtkCommonExecutionModelModule.h>
 #include <vtkInformationIntegerKey.h>
@@ -10,13 +10,13 @@
  * propagated down the pipeline.
  * This class needs to have this name to work with VTK's information key macro.
  */
-class vtkInformationDataStatusKey : public vtkInformationIntegerKey {
+class vtkInformationDataStateKey : public vtkInformationIntegerKey {
 public:
-	vtkTypeMacro(vtkInformationDataStatusKey, vtkInformationIntegerKey);
+	vtkTypeMacro(vtkInformationDataStateKey, vtkInformationIntegerKey);
 	void PrintSelf(ostream& os, vtkIndent indent);
 
-	vtkInformationDataStatusKey(const char* name, const char* location);
-	~vtkInformationDataStatusKey();
+	vtkInformationDataStateKey(const char* name, const char* location);
+	~vtkInformationDataStateKey();
 
 	/**
 	 * This is the crucial method for this class. It is the only method that is not directly inherited
@@ -29,8 +29,8 @@ public:
 	                                    vtkInformation* toInfo);
 
 private:
-	vtkInformationDataStatusKey(const vtkInformationDataStatusKey&); // Not implemented.
-	void operator=(const vtkInformationDataStatusKey&); // Not implemented.
+	vtkInformationDataStateKey(const vtkInformationDataStateKey&); // Not implemented.
+	void operator=(const vtkInformationDataStateKey&); // Not implemented.
 };
 
 #endif

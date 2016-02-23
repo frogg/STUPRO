@@ -3,7 +3,7 @@
 
 #include <Reader/DataReader/MetaInformationKeys/vtkInformationDataTypeKey.hpp>
 #include <Reader/DataReader/MetaInformationKeys/vtkInformationTimeResolutionKey.hpp>
-#include <Reader/DataReader/MetaInformationKeys/vtkInformationDataStatusKey.hpp>
+#include <Reader/DataReader/MetaInformationKeys/vtkInformationDataStateKey.hpp>
 
 #include <vtkInformationDataObjectMetaDataKey.h>
 
@@ -25,10 +25,10 @@ public:
 	static vtkInformationTimeResolutionKey* VTK_TIME_RESOLUTION();
 	
 	/**
-	 * A VTK information key for storing the status of the data in an object that will be passed
+	 * A VTK information key for storing the state of the data in an object that will be passed
 	 * through the pipeline.
 	 */
-	static vtkInformationDataStatusKey* VTK_DATA_STATUS();
+	static vtkInformationDataStateKey* VTK_DATA_STATE();
 
 	/**
 	 * Enum that denotes a data type. Do not assign values to these. Adding a new data type here
