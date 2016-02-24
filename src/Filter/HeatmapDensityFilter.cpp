@@ -39,6 +39,7 @@
 #include <vtkIntArray.h>
 #include <QList>
 #include <vtkCellArray.h>
+#include <vtkTypeInt16Array.h>
 
 
 HeatmapDensityFilter::HeatmapDensityFilter() {
@@ -165,17 +166,17 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     output->SetPoints(points);
     output->SetVerts(verts);
     
-    vtkSmartPointer<vtkIntArray> densityValues = vtkSmartPointer<vtkIntArray>::New();
-    densityValues->SetNumberOfComponents(1);
-    densityValues->SetNumberOfTuples(density.size());
-    densityValues->SetName("density");
+    vtkSmartPointer<vtkIntArray> coverageValues = vtkSmartPointer<vtkIntArray>::New();
+    coverageValues->SetNumberOfComponents(1);
+    coverageValues->SetNumberOfValues(density.size());
+    coverageValues->SetName("density");
     
     for(int i=0; i< density.size(); i++) {
-        densityValues->InsertNextValue(density[i]);
+        coverageValues->InsertValue(i, density[i]);
     }
-    
 
-    output->GetPointData()->AddArray(densityValues);
+
+    output->GetPointData()->AddArray(coverageValues);
     
     return 1;
 }
