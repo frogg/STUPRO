@@ -36,7 +36,7 @@ private:
 	void operator =(const GenerateGeodesics&); // not implemented
 
 	double maxLenOfLineSegment = 0.9;
-	double arcSize = 0.0;
+	double radius = 100.0;
 
 	/**
 	 * @brief insertNextFlight calculate the neccessary points between start and end airport, insert them into the given data set
@@ -57,6 +57,9 @@ private:
 
 	Vector3<double> getCircleCenterPoint(const Vector3<double>& point1, const Vector3<double>& point2,
 										 double radius);
+
+	Vector3<double> getPointInbetween(const Vector3<double>& point1, const Vector3<double>& point2,
+									  const Vector3<double>& center);
 };
 
 #endif // KRONOSGENERATEGEODESICS_H
