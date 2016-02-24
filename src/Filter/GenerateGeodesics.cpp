@@ -58,11 +58,11 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	for (int flight = 0; flight < numberOfFlights; flight++) {
 		// insert moar points into points
 		GPS start(startPoints->GetTuple(flight)[0],
-				  startPoints->GetTuple(flight)[1],
-				  0);
+		          startPoints->GetTuple(flight)[1],
+		          0);
 		GPS destination(destinationPoints->GetTuple(flight)[0],
-						destinationPoints->GetTuple(flight)[1],
-						0);
+		                destinationPoints->GetTuple(flight)[1],
+		                0);
 
 		insertNextFlight(start, destination, output);
 	}
@@ -95,7 +95,7 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 	points.append(end);
 
 	Cartesian center = getCircleCenterPoint(sphericalToCartesian
-											(start), sphericalToCartesian(end), radius);
+	                                        (start), sphericalToCartesian(end), radius);
 
 	// calculate points between if necessary
 	int index = 1;
@@ -153,7 +153,7 @@ GPS GenerateGeodesics::moveToOtherSide(GPS point) {
 }
 
 void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
-		QVector<GPS >& points) {
+        QVector<GPS >& points) {
 	int currentPointIndex = dataSet->GetPoints()->GetNumberOfPoints();
 	dataSet->GetLines()->InsertNextCell(points.size());
 
@@ -166,7 +166,7 @@ void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
 }
 
 Cartesian GenerateGeodesics::getCircleCenterPoint(const Cartesian& point1,
-		const Cartesian& point2, double radius) {
+        const Cartesian& point2, double radius) {
 	Cartesian center = (point1 + point2) / 2;
 	Cartesian p1p2 = point2 - point1;
 
@@ -178,7 +178,7 @@ Cartesian GenerateGeodesics::getCircleCenterPoint(const Cartesian& point1,
 }
 
 GPS GenerateGeodesics::getPointInbetween(const GPS& point1, const GPS& point2,
-		const Cartesian& center) {
+        const Cartesian& center) {
 	Cartesian p1 = sphericalToCartesian(point1);
 	Cartesian p2 = sphericalToCartesian(point2);
 
