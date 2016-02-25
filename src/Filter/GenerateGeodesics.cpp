@@ -82,7 +82,23 @@ int GenerateGeodesics::FillInputPortInformation(int, vtkInformation* info) {
 }
 
 void GenerateGeodesics::setArcSize(double value) {
-	this->radius = value * Configuration::getInstance().getDouble("world.radius");
+	// this value is statistically determined
+	double v1 = 0.95 - 0.95 * pow(M_E, -4.25 * value);
+	double v2 = cbrt(0.85 * value);
+	this->radius = (v1 + v2) / 2;
+
+	this->Modified();
+}
+
+void GenerateGeodesics::setLoD(double value) {
+	// maxLenOfLineSegment should always be \in (0, radius] and grow exponentially
+	this->maxLenOfLineSegment = Configuration::getInstance().getDouble("globe.radius") * (pow(2,
+								1 - value) - 0.99);
+	this->Modified();
+}
+
+void GenerateGeodesics::setLimitDepth(bool value) {
+	this->limitCalcDepth = value;
 }
 
 GenerateGeodesics::GenerateGeodesics() {
@@ -105,6 +121,7 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 			points.insert(index, getPointInbetween(points.at(index), points.at(index - 1), center));
 			treeDepth++;
 		} else if (abs(points.at(index - 1).x - points.at(index).x) > 180) {
+			// NOTE: This is not exactly correct, but simpler to implement
 			GPS p = points.at(index - 1);
 			GPS v = moveToOtherSide(points.at(index)) - p;
 			v /= v.x;
@@ -132,24 +149,17 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 			index++;
 			treeDepth--;
 		}
-		if (treeDepth > 20) {
-			vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point")
+		if (this->limitCalcDepth && treeDepth > 10) {
+			vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point."
+							 << endl
+							 << "Remove the limit of the calculation depth if you need more detail. This may"
+							 << " result in an infinity loop though, so be careful.")
 			index++;
 			treeDepth--;
 		}
 	}
 
 	insertAndConnectPoints(dataSet, points);
-}
-
-GPS GenerateGeodesics::moveToOtherSide(GPS point) {
-	if (point.x < 0) {
-		point.x += 360;
-	} else {
-		point.x -= 360;
-	}
-
-	return point;
 }
 
 void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
@@ -159,7 +169,12 @@ void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
 
 	QVectorIterator<GPS> it(points);
 	while (it.hasNext()) {
-		dataSet->GetPoints()->InsertNextPoint(it.next().array());
+		GPS point = it.next();
+		if (point.z < 0) {
+			// fixes a problem with the arc
+			point.z = -point.z;
+		}
+		dataSet->GetPoints()->InsertNextPoint(point.array());
 		dataSet->GetLines()->InsertCellPoint(currentPointIndex);
 		currentPointIndex++;
 	}
@@ -167,12 +182,11 @@ void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
 
 Cartesian GenerateGeodesics::getCircleCenterPoint(const Cartesian& point1,
         const Cartesian& point2, double radius) {
-	Cartesian center = (point1 + point2) / 2;
-	Cartesian p1p2 = point2 - point1;
+	GPS middle = getPointInbetween(cartesianToSpherical(point1),
+								   cartesianToSpherical(point2),
+								   Vector3d(0, 0, 0));
 
-	Cartesian orthToP1P2 = p1p2.cross(point1.cross(point2));
-	double absOfCenterCircle = sqrt(radius * radius - p1p2.length() * p1p2.length() / 4);
-	Cartesian circleCenter = center + orthToP1P2.normTyped() * absOfCenterCircle;
+	Cartesian circleCenter = sphericalToCartesian(middle) * radius;
 
 	return circleCenter;
 }
@@ -188,9 +202,22 @@ GPS GenerateGeodesics::getPointInbetween(const GPS& point1, const GPS& point2,
 
 	// get point in between
 	Cartesian middle = p1 + p2;
-	middle /= 2;
+	// apply correct scale
+	middle = middle.normTyped() * (p1.lengthTyped() + p2.lengthTyped()) / 2;
+	// re-scale the point
+	middle += center;
 
 	GPS retVal = cartesianToSpherical(middle);
 
-	return scaleTo(retVal, (point1.z + point2.z) / 2);
+	return retVal;
+}
+
+GPS GenerateGeodesics::moveToOtherSide(GPS point) {
+	if (point.x < 0) {
+		point.x += 360;
+	} else {
+		point.x -= 360;
+	}
+
+	return point;
 }

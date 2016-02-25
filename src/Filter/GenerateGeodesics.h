@@ -23,20 +23,35 @@ public:
 	/**
 	 * @brief setArcSize set the arc size.
 	 * The arc size is a measurement of how much the flights will be displayed above the earth surface.
-	 * In detail the geodesic arc is drawn as a circle sector from a point m, which is aequidistant to
-	 * both the start and target airport. The arc size is the difference of the (real) earth radius and
-	 * the radius of the geodesics.
+	 * In detail the geodesic arc is drawn as sth like a circle sector. The arc size modifies the radius
+	 * of this circle
 	 * @param value the arc size
 	 */
 	void setArcSize(double value);
+
+	/**
+	 * @brief setLoD set the level of detail.
+	 * The Geodesics are approximated by multiple straight lines. The level of detail is related to the
+	 * maximum length of a single straight line.
+	 * @param value the level of detail to set.
+	 */
+	void setLoD(double value);
+
+	/**
+	 * @brief setLimitDepth determines if the calculation depth will be limited.
+	 * @param value true if you want to limit the calculation.
+	 */
+	void setLimitDepth(bool value);
 
 private:
 	GenerateGeodesics();
 	GenerateGeodesics(const GenerateGeodesics&); // not implemented
 	void operator =(const GenerateGeodesics&); // not implemented
 
-	double maxLenOfLineSegment = 0.9;
-	double radius = 100.0;
+	// defaults will be set by ParaView as well
+	double maxLenOfLineSegment = 0.0;
+	double radius = 0.0;
+	bool limitCalcDepth = true;
 
 	/**
 	 * @brief insertNextFlight calculate the neccessary points between start and end airport, insert them into the given data set
@@ -48,18 +63,39 @@ private:
 						  vtkPolyData* const dataSet);
 
 	/**
-	 * @brief movePointToOppositeSide translates the point to the opposite side (that is +- 180 lat)
-	 * @param point the point to move
+	 * @brief insertAndConnectPoints insert and connect the points.
+	 * This is neccessary twice if the flight goes over the date limit.
+	 * @param dataSet the data set to insert into
+	 * @param points the points to insert and connect
 	 */
-	Vector3<double> moveToOtherSide(Vector3<double> point);
-
 	void insertAndConnectPoints(vtkPolyData* dataSet, QVector<Vector3<double>>& points);
 
+	/**
+	 * @brief getCircleCenterPoint get the center point to draw the geodesic circle
+	 * @param point1 the start point
+	 * @param point2 the end point
+	 * @param radius the radius to use
+	 * @return the center point of a circle through point1 and point2 with radius
+	 */
 	Vector3<double> getCircleCenterPoint(const Vector3<double>& point1, const Vector3<double>& point2,
 										 double radius);
 
+	/**
+	 * @brief getPointInbetween calculates point between point1 and point2.
+	 * This is neccessary to increase the detail of the geodesic.
+	 * @param point1 the first point
+	 * @param point2 the second point
+	 * @param center the circle center
+	 * @return a point inbetween
+	 */
 	Vector3<double> getPointInbetween(const Vector3<double>& point1, const Vector3<double>& point2,
 									  const Vector3<double>& center);
+
+	/**
+	 * @brief movePointToOppositeSide translates the point to the opposite side of the map(that is +- 180 lat)
+	 * @param point the point to move
+	 */
+	Vector3<double> moveToOtherSide(Vector3<double> point);
 };
 
 #endif // KRONOSGENERATEGEODESICS_H
