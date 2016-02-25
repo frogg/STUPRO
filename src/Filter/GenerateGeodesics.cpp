@@ -93,7 +93,7 @@ void GenerateGeodesics::setArcSize(double value) {
 void GenerateGeodesics::setLoD(double value) {
 	// maxLenOfLineSegment should always be \in (0, radius] and grow exponentially
 	this->maxLenOfLineSegment = Configuration::getInstance().getDouble("globe.radius") * (pow(2,
-								1 - value) - 0.99);
+	                            1 - value) - 0.99);
 	this->Modified();
 }
 
@@ -151,9 +151,9 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 		}
 		if (this->limitCalcDepth && treeDepth > 10) {
 			vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point."
-							 << endl
-							 << "Remove the limit of the calculation depth if you need more detail. This may"
-							 << " result in an infinity loop though, so be careful.")
+			                 << endl
+			                 << "Remove the limit of the calculation depth if you need more detail. This may"
+			                 << " result in an infinity loop though, so be careful.")
 			index++;
 			treeDepth--;
 		}
@@ -183,8 +183,8 @@ void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
 Cartesian GenerateGeodesics::getCircleCenterPoint(const Cartesian& point1,
         const Cartesian& point2, double radius) {
 	GPS middle = getPointInbetween(cartesianToSpherical(point1),
-								   cartesianToSpherical(point2),
-								   Vector3d(0, 0, 0));
+	                               cartesianToSpherical(point2),
+	                               Vector3d(0, 0, 0));
 
 	Cartesian circleCenter = sphericalToCartesian(middle) * radius;
 
