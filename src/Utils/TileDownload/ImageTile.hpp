@@ -18,6 +18,10 @@ public:
 	 */
 	ImageTile(const QMap<QString, MetaImage> layers, int zoomLevel, int tileX, int tileY);
 
+	ImageTile(int zoomLevel, int tileX, int tileY);
+
+	ImageTile(const ImageTile& obj);
+
 	ImageTile();
 
 	~ImageTile();
@@ -27,6 +31,7 @@ public:
 	 * @return A map of layer identifiers and corresponding images
 	 */
 	const QMap<QString, MetaImage>& getLayers() const;
+	QMap<QString, MetaImage>& getLayers();
 
 	/**
 	 * Set the map of layers saved in this image tile.
