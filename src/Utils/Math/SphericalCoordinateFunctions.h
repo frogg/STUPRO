@@ -9,7 +9,7 @@
  * @brief getGlobeRadius get the radius of the globe
  * @return the globe radius
  */
-double getGlobeRadius() {
+inline double getGlobeRadius() {
     static double globeRadius = Configuration::getInstance().getDouble("globe.radius");
     return globeRadius;
 }
@@ -20,7 +20,7 @@ double getGlobeRadius() {
  * @return the cartesian position of gps
  */
 template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
-    
+
     //Radian of longitude
     const T lonInRadian = gps.x * KRONOS_PI / 180;
     //Radian of latitude
@@ -37,22 +37,22 @@ template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
 template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T jacobian[3][3]) {
     const T lonInRadian = gps.x * KRONOS_PI / 180;
     const T latInRadian = gps.y * KRONOS_PI / 180;
-    
+
     //calculate first row of jacobian
     jacobian[0][0] = (getGlobeRadius() + gps.z) * cos(latInRadian)* cos(lonInRadian)* KRONOS_PI / 180;
     jacobian[0][1] = (getGlobeRadius() + gps.z) * sin(lonInRadian)* (-1) * sin(latInRadian)* KRONOS_PI / 180;
     jacobian[0][2] = 1 * cos(latInRadian)* sin(lonInRadian);
-    
+
     //calculate second row of jacobian
     jacobian[1][0] = 0;
     jacobian[1][1] = (getGlobeRadius() + gps.z) * cos(latInRadian) * KRONOS_PI / 180;
     jacobian[1][2] = sin(latInRadian);
-    
+
     //calculate third row of jacobian
     jacobian[2][0] = (getGlobeRadius() + gps.z) * cos(latInRadian) * (-1)* sin(lonInRadian) * KRONOS_PI / 180;
     jacobian[2][1] = (getGlobeRadius() + gps.z) * (-1)* sin(latInRadian) * KRONOS_PI / 180 * cos(lonInRadian);
     jacobian[2][2] = 1* cos(latInRadian) * cos(lonInRadian);
-    
+
 }
 
 
@@ -67,7 +67,7 @@ template<typename T> Vector3<T> cartesianToSpherical(const Vector3<T>& point) {
     retVal.z = point.length() - getGlobeRadius();
     retVal.x = atan2(point.x, point.z) * 180 / KRONOS_PI;
     retVal.y = asin(point.y / point.length()) * 180 / KRONOS_PI;
-    return point;
+    return retVal;
 }
 
 /**
@@ -100,4 +100,3 @@ template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Ve
 #undef BASE_HEIGHT
 
 #endif // SPHERICAL_COORDINATE_FUNCTIONS
-
