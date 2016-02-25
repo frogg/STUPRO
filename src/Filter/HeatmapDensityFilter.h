@@ -17,6 +17,10 @@
 #include <vtkSmartPointer.h>
 #include <vtkPolyDataAlgorithm.h>
 
+/**
+ * Filter that receives vtkPolyData and calculates the data density for each point
+ * the resolution can be changed dynamically
+ */
 class HeatmapDensityFilter : public vtkPolyDataAlgorithm {
     
 public:
