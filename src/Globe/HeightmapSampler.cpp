@@ -18,22 +18,18 @@
 #include <Utils/TileDownload/ImageDownloader.hpp>
 #include <Utils/TileDownload/ImageTile.hpp>
 
-HeightmapSampler& HeightmapSampler::getInstance()
-{
-	static HeightmapSampler * instance = nullptr;
+HeightmapSampler& HeightmapSampler::getInstance() {
+	static HeightmapSampler* instance = nullptr;
 
-	if (!instance)
-	{
+	if (!instance) {
 		instance = new HeightmapSampler;
 	}
 
 	return *instance;
 }
 
-float HeightmapSampler::sample(float longitude, float latitude) const
-{
-	if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90)
-	{
+float HeightmapSampler::sample(float longitude, float latitude) const {
+	if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
 		return 0;
 	}
 
@@ -47,7 +43,7 @@ float HeightmapSampler::sample(float longitude, float latitude) const
 	tileX = clamp<int>(0, tileX, width);
 	tileY = clamp<int>(0, tileY, height);
 
-	const Heightmap & heightmap = heightmaps[tileY * width + tileX];
+	const Heightmap& heightmap = heightmaps[tileY * width + tileX];
 
 	// Find which pixel the sample falls into.
 	RectF tileBounds = GlobeTile::Location(zoomLevel, tileX, tileY).getFlippedBounds();
@@ -66,40 +62,34 @@ float HeightmapSampler::sample(float longitude, float latitude) const
 	return sample * heightFactor;
 }
 
-HeightmapSampler::HeightmapSampler()
-{
+HeightmapSampler::HeightmapSampler() {
 	float earthRadius = Configuration::getInstance().getFloat("globe.earthRadius");
 	float globeHeightFactor = Configuration::getInstance().getFloat("globe.heightFactor");
 	heightFactor = globeHeightFactor / earthRadius;
 	initHeightmap();
 }
 
-void HeightmapSampler::initHeightmap()
-{
+void HeightmapSampler::initHeightmap() {
 	zoomLevel = Configuration::getInstance().getInteger("globe.terrainHeightFilter.heightmapZoomLevel");
 	unsigned int height = 1 << zoomLevel;
 	unsigned int width = height * 2;
 
 	heightmaps.resize(width * height);
 
-	for (unsigned int lat = 0; lat < height; ++lat)
-	{
-		for (unsigned int lon = 0; lon < width; ++lon)
-		{
-			Heightmap & heightmap = heightmaps[lat * width + lon];
+	for (unsigned int lat = 0; lat < height; ++lat) {
+		for (unsigned int lon = 0; lon < width; ++lon) {
+			Heightmap& heightmap = heightmaps[lat * width + lon];
 
 			bool success = false;
-			const char * errorText;
+			const char* errorText;
 			AsyncWrapper async;
 			ImageTile tile;
-			ImageDownloader downloader([&](ImageTile loadedTile)
-			{
+			ImageDownloader downloader([&](ImageTile loadedTile) {
 				// Successfully downloaded.
 				success = true;
 				tile = loadedTile;
 				async.wake();
-			}, [&](const std::exception & ex)
-			{
+			}, [&](const std::exception & ex) {
 				// Error downloading tile.
 				success = false;
 				errorText = ex.what();
@@ -109,21 +99,19 @@ void HeightmapSampler::initHeightmap()
 
 			async.sleep();
 
-			if (!success)
-			{
+			if (!success) {
 				KRONOS_LOG_WARN("Failed to load tile %u,%u: %s", lon, lat, errorText);
 				continue;
 			}
 
 			auto heightmapIterator = tile.getLayers().find("heightmap");
 
-			if (heightmapIterator == tile.getLayers().end())
-			{
+			if (heightmapIterator == tile.getLayers().end()) {
 				KRONOS_LOG_WARN("Failed to load tile %u,%u: no heightmap data", lon, lat);
 				continue;
 			}
 
-			const QImage & image = heightmapIterator->getImage();
+			const QImage& image = heightmapIterator->getImage();
 
 			unsigned int imageWidth = image.width();
 			unsigned int imageHeight = image.height();
@@ -135,10 +123,8 @@ void HeightmapSampler::initHeightmap()
 			int minHeight = heightmapIterator->getMinimumHeight();
 			int maxHeight = heightmapIterator->getMaximumHeight();
 
-			for (unsigned int y = 0; y < imageHeight; ++y)
-			{
-				for (unsigned int x = 0; x < imageWidth; ++x)
-				{
+			for (unsigned int y = 0; y < imageHeight; ++y) {
+				for (unsigned int x = 0; x < imageWidth; ++x) {
 					static const int minShort = -32768;
 					static const int maxShort = 32767;
 

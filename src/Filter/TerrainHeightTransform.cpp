@@ -8,40 +8,33 @@
 #include <Exceptions.hpp>
 #include <TerrainHeightTransform.hpp>
 
-TerrainHeightTransform* TerrainHeightTransform::New(bool clamped, bool forward)
-{
+TerrainHeightTransform* TerrainHeightTransform::New(bool clamped, bool forward) {
 	return new TerrainHeightTransform(clamped, forward);
 }
 
 TerrainHeightTransform::TerrainHeightTransform(bool clamped, bool forward) :
-		clamped(clamped),
-		transformForward(forward)
-{
+	clamped(clamped),
+	transformForward(forward) {
 }
 
-TerrainHeightTransform::~TerrainHeightTransform()
-{
+TerrainHeightTransform::~TerrainHeightTransform() {
 }
 
-void TerrainHeightTransform::setClampingEnabled(bool clamped)
-{
+void TerrainHeightTransform::setClampingEnabled(bool clamped) {
 	this->clamped = clamped;
 	this->Modified();
 }
 
-bool TerrainHeightTransform::isClampingEnabled() const
-{
+bool TerrainHeightTransform::isClampingEnabled() const {
 	return this->clamped;
 }
 
-void TerrainHeightTransform::Inverse()
-{
+void TerrainHeightTransform::Inverse() {
 	this->transformForward = !this->transformForward;
 	this->Modified();
 }
 
-void TerrainHeightTransform::InternalTransformPoint(const float in[3], float out[3])
-{
+void TerrainHeightTransform::InternalTransformPoint(const float in[3], float out[3]) {
 	Vector3f outV = Vector3f(out);
 	if (this->transformForward) {
 		adjustByTerrainHeight(Vector3f(in), outV);
@@ -51,8 +44,7 @@ void TerrainHeightTransform::InternalTransformPoint(const float in[3], float out
 	copyVectorToArray(outV, out);
 }
 
-void TerrainHeightTransform::InternalTransformPoint(const double in[3], double out[3])
-{
+void TerrainHeightTransform::InternalTransformPoint(const double in[3], double out[3]) {
 	Vector3d outV = Vector3d(out);
 	if (this->transformForward) {
 		adjustByTerrainHeight(Vector3d(in), outV);
@@ -63,8 +55,7 @@ void TerrainHeightTransform::InternalTransformPoint(const double in[3], double o
 }
 
 void TerrainHeightTransform::InternalTransformDerivative(const float in[3], float out[3],
-        float derivative[3][3])
-{
+        float derivative[3][3]) {
 	Vector3f outV = Vector3f(out);
 	if (this->transformForward) {
 		adjustByTerrainHeightWithDerivatives(Vector3f(in), outV, derivative);
@@ -75,8 +66,7 @@ void TerrainHeightTransform::InternalTransformDerivative(const float in[3], floa
 }
 
 void TerrainHeightTransform::InternalTransformDerivative(const double in[3], double out[3],
-        double derivative[3][3])
-{
+        double derivative[3][3]) {
 	Vector3d outV = Vector3d(out);
 	if (this->transformForward) {
 		adjustByTerrainHeightWithDerivatives(Vector3d(in), outV, derivative);
@@ -86,8 +76,8 @@ void TerrainHeightTransform::InternalTransformDerivative(const double in[3], dou
 	copyVectorToArray(outV, out);
 }
 
-vtkAbstractTransform* TerrainHeightTransform::MakeTransform()
-{
-	TerrainHeightTransform* geoTrans = TerrainHeightTransform::New(this->clamped, this->transformForward);
+vtkAbstractTransform* TerrainHeightTransform::MakeTransform() {
+	TerrainHeightTransform* geoTrans = TerrainHeightTransform::New(this->clamped,
+	                                   this->transformForward);
 	return geoTrans;
 }

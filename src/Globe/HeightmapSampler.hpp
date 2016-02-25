@@ -10,11 +10,10 @@
 
 #include <vector>
 
-class HeightmapSampler
-{
+class HeightmapSampler {
 public:
 
-	static HeightmapSampler & getInstance();
+	static HeightmapSampler& getInstance();
 
 	float sample(float longitude, float latitude) const;
 
@@ -24,13 +23,12 @@ private:
 
 	void initHeightmap();
 
-	struct Heightmap
-	{
+	struct Heightmap {
 		unsigned int width;
 		unsigned int height;
 		std::vector<short> samples;
 	};
-	
+
 	std::vector<Heightmap> heightmaps;
 	unsigned int zoomLevel;
 	float heightFactor;

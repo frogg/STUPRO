@@ -64,14 +64,14 @@ public:
 
 		/**
 		 * Returns the starting/ending longitude/latitude of the tile this location describes.
-		 * 
+		 *
 		 * The coordinate system is OpenGL's (+x right, +y up).
 		 */
 		RectF getBounds() const;
 
 		/**
 		 * Returns the starting/ending longitude/latitude of the tile this location describes.
-		 * 
+		 *
 		 * The coordinate system is vertically flipped from OpenGL's system (+x right, +y down).
 		 */
 		RectF getFlippedBounds() const;

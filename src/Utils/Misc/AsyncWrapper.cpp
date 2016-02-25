@@ -1,21 +1,17 @@
 #include <AsyncWrapper.hpp>
 
 AsyncWrapper::AsyncWrapper() :
-		awake(false)
-{
+	awake(false) {
 }
 
-void AsyncWrapper::sleep()
-{
+void AsyncWrapper::sleep() {
 	std::unique_lock<std::mutex> lock(mutex);
-	condition.wait(lock, [this]
-	{
+	condition.wait(lock, [this] {
 		return awake;
 	});
 }
 
-void AsyncWrapper::wake()
-{
+void AsyncWrapper::wake() {
 	std::unique_lock<std::mutex> lock(mutex);
 	awake = true;
 	condition.notify_one();

@@ -9,8 +9,7 @@
  *
  * The asynchronous operation's callback should execute "wake()" on this object.
  */
-class AsyncWrapper
-{
+class AsyncWrapper {
 public:
 
 	AsyncWrapper();

@@ -15,8 +15,7 @@
 /**
  * transforms data by terrain height.
  */
-class TerrainHeightTransform: public vtkAbstractTransform
-{
+class TerrainHeightTransform: public vtkAbstractTransform {
 private:
 	//inidcates if transformation should be clamped so that heights below 0 are treated as 0.
 	bool clamped;
@@ -24,26 +23,21 @@ private:
 	bool transformForward;
 
 	template<typename T>
-	void adjustByTerrainHeight(const Vector3<T>& input, Vector3<T>& output)
-	{
+	void adjustByTerrainHeight(const Vector3<T>& input, Vector3<T>& output) {
 		output.x = input.x;
 		output.y = input.y;
 
-		if (clamped)
-		{
+		if (clamped) {
 			output.z = input.z
-			        + std::max<T>(0, HeightmapSampler::getInstance().sample(input.x, -input.y));
-		}
-		else
-		{
+			           + std::max<T>(0, HeightmapSampler::getInstance().sample(input.x, -input.y));
+		} else {
 			output.z = input.z + HeightmapSampler::getInstance().sample(input.x, -input.y);
 		}
 	}
 
 	template<typename T>
 	void adjustByTerrainHeightWithDerivatives(const Vector3<T>& input, Vector3<T>& output,
-	        T derivatives[3][3])
-	{
+	        T derivatives[3][3]) {
 		adjustByTerrainHeight(input, output);
 		// TODO: wtf is derivative
 	}
@@ -51,8 +45,7 @@ private:
 	/**
 	 * copies a vector to an array
 	 */
-	template<typename T> void copyVectorToArray(const Vector3<T>& vector, T array[3])
-	{
+	template<typename T> void copyVectorToArray(const Vector3<T>& vector, T array[3]) {
 		array[0] = vector.x;
 		array[1] = vector.y;
 		array[2] = vector.z;
@@ -88,13 +81,13 @@ public:
 	 * InternalTransformDerivative for floats (transforms point AND deriactive)
 	 */
 	void InternalTransformDerivative(const float in[3], float out[3], float derivative[3][3])
-	        override;
+	override;
 
 	/**
 	 * InternalTransformDerivative for doubles (transforms point AND deriactive)
 	 */
 	void InternalTransformDerivative(const double in[3], double out[3], double derivative[3][3])
-	        override;
+	override;
 
 	vtkAbstractTransform* MakeTransform() override;
 };
