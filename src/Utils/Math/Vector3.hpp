@@ -1,6 +1,7 @@
 #ifndef STUPRO_VECTOR3_HPP
 #define STUPRO_VECTOR3_HPP
 
+#include <Utils/Math/Vector2.hpp>
 #include <Utils/Math/ArithmeticFunctors.hpp>
 #include <limits>
 #include <cmath>
@@ -23,10 +24,11 @@ public:
 	}
 
 	/**
-	 * Constructs a vector from its two coordinates.
+	 * Constructs a vector from its three coordinates.
 	 *
 	 * @param x The x-coordinate for the vector
 	 * @param y The y-coordinate for the vector
+	 * @param z The z-coordinate for the vector
 	 */
 	Vector3(T x, T y, T z) :
 		x(x), y(y), z(z) {
@@ -35,7 +37,7 @@ public:
 	/**
 	 * Constructs a vector from an array/pointer.
 	 *
-	 * @param a The array to construct the vector from (x = a[0], y = a[1])
+	 * @param a The array to construct the vector from (x = a[0], y = a[1], y = a[2])
 	 */
 	Vector3(const T a[]) :
 		x(a[0]), y(a[1]), z(a[2]) {
@@ -48,6 +50,16 @@ public:
 	 */
 	Vector3(const Vector3<T>& v) :
 		x(v.x), y(v.y), z(v.z) {
+	}
+
+	/**
+	 * Constructs a 3D vector from a 2D vector and a z-coordinate.
+	 *
+	 * @param xy The x and y coordinates for the vector
+	 * @param z The z-coordinate for the vector
+	 */
+	Vector3(Vector2<T> xy, T z) :
+		x(xy.x), y(xy.y), z(z) {
 	}
 
 	/**
@@ -82,6 +94,13 @@ public:
 	 */
 	const T* array() const {
 		return &x;
+	}
+
+	/**
+	 * @return A 2D vector with the x and y components of this vector.
+	 */
+	Vector2<T> xy() const {
+		return Vector2<T>(x, y);
 	}
 
 	/**
@@ -169,12 +188,12 @@ public:
 	T z;
 
 	/**
-	 * A zero vector (0, 0).
+	 * A zero vector (0, 0, 0).
 	 */
 	static const Vector3<T> Zero;
 
 	/**
-	 * An invalid vector (NaN, NaN).
+	 * An invalid vector (NaN, NaN, NaN).
 	 */
 	static const Vector3<T> Invalid;
 

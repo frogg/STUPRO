@@ -11,6 +11,10 @@ struct ImageNotCachedException : public KronosException {
 	ImageNotCachedException(QString message) : KronosException(message) { }
 };
 
+struct ImageCorruptedException : public KronosException {
+	ImageCorruptedException(QString message) : KronosException(message) { }
+};
+
 class ImageCache {
 public:
 	/**
@@ -27,7 +31,7 @@ public:
 	 * @param tileY Vertical position of the requested tile
 	 * @return True if the image has been cached, false otherwise
 	 */
-	const bool isImageCached(QString layer, int zoomLevel, int tileX, int tileY);
+	const bool isImageCached(QString layer, int zoomLevel, int tileX, int tileY) const;
 
 	/**
 	 * Get a saved image tile from the cache.
@@ -38,7 +42,7 @@ public:
 	 * @return A pointer to the image loaded from the cache
 	 * @throws ImageNotCachedException If the requested image has not been cached yet
 	 */
-	const MetaImage getCachedImage(QString layer, int zoomLevel, int tileX, int tileY);
+	const MetaImage getCachedImage(QString layer, int zoomLevel, int tileX, int tileY) const;
 
 	/**
 	 * Save an existing image to the cache.
@@ -48,13 +52,22 @@ public:
 	 * @param tileX Horizontal position of the requested tile
 	 * @param tileY Vertical position of the requested tile
 	 */
-	const void cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX, int tileY);
+	void cacheImage(MetaImage image, QString layer, int zoomLevel, int tileX, int tileY);
+
+	/**
+	 * Remove a single image from the cache.
+	 * @param layer Unique identifier of an existing layer
+	 * @param zoomLevel Zoom level down the quad tree of images
+	 * @param tileX Horizontal position of the tile to be deleted
+	 * @param tileY Vertical position of the tile to be deleted
+	 */
+	void deleteCachedImage(QString layer, int zoomLevel, int tileX, int tileY);
 
 	/**
 	 * Delete all cached data from a specified layer.
 	 * @param layer The unique identifier of the layer whose cache should be cleared
 	 */
-	const void clearCache(QString layer);
+	void clearCache(QString layer);
 
 private:
 	/*
@@ -70,6 +83,7 @@ private:
 	 * This method is needed since Qt offers the same functionality only with
 	 * version 5.
 	 * @param path Path of the directory to be deleted
+	 * @return True if the removal was successful, false otherwise
 	 */
 	static bool removeDirectory(const QString& path);
 
@@ -111,6 +125,10 @@ private:
 	 * Error message used if the requested image file could not be read.
 	 */
 	static const QString IMAGE_COULD_NOT_BE_READ_MESSAGE;
+	/**
+	 * Error message used if the requested image file has not been cached yet.
+	 */
+	static const QString IMAGE_CORRUPTED_MESSAGE;
 };
 
 #endif

@@ -7,13 +7,16 @@
     "children": [
       {
         "startPosition": {
+          "airportCode": "DXB",
           "longitude": 55.304718,
           "latitude": 25.258171
         },
         "endPosition": {
+          "airportCode": "LAX",
           "longitude": -118.242775,
           "latitude": 34.052223
         },
+        "airline": "Lufthansa",
         "children": []
       }
     ]
