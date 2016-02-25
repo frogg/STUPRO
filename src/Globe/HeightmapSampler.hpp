@@ -33,6 +33,7 @@ private:
 	
 	std::vector<Heightmap> heightmaps;
 	unsigned int zoomLevel;
+	float heightFactor;
 };
 
 #endif /* SRC_GLOBE_HEIGHTMAPSAMPLER_HPP_ */

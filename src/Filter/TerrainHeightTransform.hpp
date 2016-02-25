@@ -32,11 +32,11 @@ private:
 		if (clamped)
 		{
 			output.z = input.z
-			        + std::max<T>(0, HeightmapSampler::getInstance().sample(input.x, input.y));
+			        + std::max<T>(0, HeightmapSampler::getInstance().sample(input.x, -input.y));
 		}
 		else
 		{
-			output.z = input.z + HeightmapSampler::getInstance().sample(input.x, input.y);
+			output.z = input.z + HeightmapSampler::getInstance().sample(input.x, -input.y);
 		}
 	}
 
