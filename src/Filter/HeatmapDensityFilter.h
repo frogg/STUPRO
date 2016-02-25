@@ -35,7 +35,7 @@ protected:
     
     
     virtual int FillInputPortInformation(int port, vtkInformation* info) override;
-    
+    virtual int FillOutputPortInformation(int port, vtkInformation* info) override;
     
 private:
     HeatmapDensityFilter();

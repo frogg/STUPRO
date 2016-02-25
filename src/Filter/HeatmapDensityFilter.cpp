@@ -181,6 +181,12 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     return 1;
 }
 
+int HeatmapDensityFilter::FillOutputPortInformation(int port, vtkInformation* info) {
+    info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
+    
+    return 1;
+}
+
 int HeatmapDensityFilter::FillInputPortInformation(int port, vtkInformation* info) {
     info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataSet");
     return 1;
