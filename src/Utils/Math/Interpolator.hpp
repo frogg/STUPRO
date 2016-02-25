@@ -2,7 +2,6 @@
 #define KRONOS_UTILS_MATH_INTERPOLATOR_HPP
 
 #include <Utils/Math/Vector2.hpp>
-#include <Utils/Misc/KronosLogger.hpp>
 
 class Interpolator {
 public:
@@ -57,7 +56,6 @@ public:
 
 	template<typename T>
 	static T qubicBezier(double t, T start, T stop, T controlPoint1, T controlPoint2) {
-		// TODO: validate this calculation
 		T d1 = start + (t * (controlPoint1 - start));
 		T d2 = controlPoint1 + (t * (controlPoint2 - controlPoint1));
 		T d3 = controlPoint2 + (t * (stop - controlPoint2));
