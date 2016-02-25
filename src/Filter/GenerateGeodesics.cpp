@@ -92,8 +92,8 @@ void GenerateGeodesics::setArcSize(double value) {
 
 void GenerateGeodesics::setLoD(double value) {
 	// maxLenOfLineSegment should always be \in (0, radius] and grow exponentially
-	this->maxLenOfLineSegment = Configuration::getInstance().getDouble("globe.radius") * (pow(2,
-	                            1 - value) - 0.99);
+	this->maxLenOfLineSegment = Configuration::getInstance().getDouble("globe.radius")
+	                            * (pow(2, 1 - value) - 0.99);
 	this->Modified();
 }
 
