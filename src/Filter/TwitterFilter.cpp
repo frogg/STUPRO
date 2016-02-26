@@ -37,10 +37,12 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 	author.remove(' ');
 	QString content = QString::fromStdString(contentData->GetValue(pointIndex));
     int retweets = numberOfRetweets->GetValue(pointIndex);
-    //numberOfRetweets->GetTuple1(<#vtkIdType i#>)
+
+    //check at first tweet is visible because of numbers of retweets
     if(!shouldDisplayRetweet(retweets)){
         return false;
     }
+    
 	//if no author is in authors and no content is in visibleContent (everything should be visible by default), return this point to be visible
 	if (this->visibleAuthors.count() == 0) {
 		if (this->visibleKeywords.count() == 0) {
