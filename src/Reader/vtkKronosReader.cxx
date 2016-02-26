@@ -79,18 +79,17 @@ void vtkKronosReader::fail(QString message) {
 	this->error = true;
 }
 
-int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationVector **inputVector,
-        vtkInformationVector *outputVector) {
-    if (this->error) {
-        return 1;
-    }
-            
-    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+int vtkKronosReader::RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
+                                        vtkInformationVector* outputVector) {
+	if (this->error) {
+		return 1;
+	}
 
+	vtkInformation* outInfo = outputVector->GetInformationObject(0);
+    
     // Add information to the output vector if the data contains time information
     if (this->jsonReader->hasTemporalData()) {
         int amountOfTimeSteps = this->jsonReader->getAmountOfTimeSteps();
-
         std::vector<double> timeSteps;
         for (int i = 0; i < amountOfTimeSteps; i++) {
             timeSteps.push_back(i);
@@ -117,7 +116,8 @@ int vtkKronosReader::RequestInformation(vtkInformation *request, vtkInformationV
         request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_TIME_RESOLUTION());
     }
 
-    return 1;
+
+	return 1;
 }
 
 int vtkKronosReader::RequestData(vtkInformation*, vtkInformationVector**,
