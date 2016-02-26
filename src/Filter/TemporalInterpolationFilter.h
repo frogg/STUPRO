@@ -53,15 +53,15 @@ private:
      * @param inputData The poly data object containing the point data
      * @return A temporal data point of the right type with all available data
      */
-    InterpolationValue createDataPoint(int pointIndex, vtkPolyData *inputData);
+    InterpolationValue* createDataPoint(int pointIndex, vtkPolyData *inputData);
     
-    QMap<int, QMap<PointCoordinates, InterpolationValue>> timestampMap;
+    QMap<int, QMap<PointCoordinates, InterpolationValue*>> timestampMap;
 
     void addDataInFirstTimeStep();
     void addDataInLastTimeStep();
     void printData();
     void interpolateData();
-    void interpolateDataPoint(InterpolationValue lower, InterpolationValue higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance);
+    void interpolateDataPoint(InterpolationValue *lower, InterpolationValue *higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance);
 
     QList<PointCoordinates> allPointCooridinates;
     

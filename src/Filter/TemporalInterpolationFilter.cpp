@@ -27,7 +27,12 @@ TemporalInterpolationFilter::TemporalInterpolationFilter() : preprocessed(false)
 	this->SetNumberOfOutputPorts(1);
 }
 
-TemporalInterpolationFilter::~TemporalInterpolationFilter() { }
+TemporalInterpolationFilter::~TemporalInterpolationFilter() {
+    for(int i=0; i<this->timestampMap.count();i++){
+        qDeleteAll(timestampMap[i]);
+    }
+    
+}
 
 void TemporalInterpolationFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());
@@ -190,7 +195,7 @@ void TemporalInterpolationFilter::interpolateData(){
     }
 }
 
-void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue lower, InterpolationValue higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance){
+void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower, InterpolationValue* higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance){
     //noch interpolieren erstmal  higher und lower genommen
     this->timestampMap[index].insert(coordinate,lower);
     //std::cout << "interpolateDataPoint" << std::endl;
@@ -224,7 +229,7 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue lower,
 void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputData){
     //QList<int> knownPoints;
     //auto content = makeUnique<QMap<PointCoordinates, TemporalDataPoint>>() ;
-    QMap<PointCoordinates, InterpolationValue> content;
+    QMap<PointCoordinates, InterpolationValue*> content;
     for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
         double coordinates[3];
         inputData->GetPoint(i, coordinates);
@@ -242,7 +247,7 @@ void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputDat
     this->timestampMap.insert(timestep,content);
 }
 
-InterpolationValue TemporalInterpolationFilter::createDataPoint(int pointIndex, vtkPolyData *inputData) {
+InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex, vtkPolyData *inputData) {
     vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(inputData->GetPointData()->GetArray("priorities"));
     int priority = priorityArray->GetValue(pointIndex);
     
@@ -252,34 +257,34 @@ InterpolationValue TemporalInterpolationFilter::createDataPoint(int pointIndex, 
     switch (this->dataType) {
         case Data::TEMPERATURE:{
             vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("temperatures"));
-            return TemperatureInterpolationValue(priority, timestamp, temperatureArray->GetValue(pointIndex));
+            return new TemperatureInterpolationValue(priority, timestamp, temperatureArray->GetValue(pointIndex));
             break;
         }
         case Data::TWEETS: {
             vtkSmartPointer<vtkFloatArray> densityArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("density"));
-            return TwitterInterpolationValue(priority, timestamp, densityArray->GetValue(pointIndex));
+            return new TwitterInterpolationValue(priority, timestamp, densityArray->GetValue(pointIndex));
             break;
         }
         case Data::PRECIPITATION: {
             vtkSmartPointer<vtkFloatArray> precipitationRateArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("precipitationRates"));
             vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(inputData->GetPointData()->GetArray("precipitationTypes"));
-            return PrecipitationInterpolationValue(priority, timestamp, precipitationRateArray->GetValue(pointIndex), static_cast<PrecipitationDataPoint::PrecipitationType>(precipitationTypeArray->GetValue(pointIndex)));
+            return new PrecipitationInterpolationValue(priority, timestamp, precipitationRateArray->GetValue(pointIndex), static_cast<PrecipitationDataPoint::PrecipitationType>(precipitationTypeArray->GetValue(pointIndex)));
             break;
         }
         case Data::WIND: {
             vtkSmartPointer<vtkFloatArray> bearingArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("directions"));
             vtkSmartPointer<vtkFloatArray> velocityArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("speeds"));
-            return WindInterpolationValue(priority, timestamp, bearingArray->GetValue(pointIndex), velocityArray->GetValue(pointIndex));
+            return new WindInterpolationValue(priority, timestamp, bearingArray->GetValue(pointIndex), velocityArray->GetValue(pointIndex));
             break;
         }
         case Data::CLOUD_COVERAGE: {
             vtkSmartPointer<vtkFloatArray> cloudCoverageArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("cloudCovers"));
-            return CloudCoverageInterpolationValue(priority, timestamp, cloudCoverageArray->GetValue(pointIndex));
+            return new CloudCoverageInterpolationValue(priority, timestamp, cloudCoverageArray->GetValue(pointIndex));
             break;
         }
         default: {
             this->fail("The data type of this filter seems to be invalid.");
-            return InterpolationValue();
+            return new InterpolationValue();
             break;
         }
     }
