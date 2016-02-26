@@ -21,7 +21,7 @@ vtkStandardNewMacro(TemporalInterpolationFilter);
 const QList<Data::Type> TemporalInterpolationFilter::SUPPORTED_DATA_TYPES = QList<Data::Type>() <<
         Data::PRECIPITATION << Data::TEMPERATURE << Data::WIND << Data::CLOUD_COVERAGE << Data::TWEETS;
 
-TemporalInterpolationFilter::TemporalInterpolationFilter() : error(false), currentTimeStep(0) {
+TemporalInterpolationFilter::TemporalInterpolationFilter() : error(false), currentTimeStep(0), preprocessed(false) {
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
 }
@@ -107,6 +107,12 @@ int TemporalInterpolationFilter::RequestData(
 	if (this->error) {
 		return 0;
 	}
+    
+    if (this->hasPreprocessed()) {
+        // TODO: Output the interpolated data set from the preprocessed data using the time in the request
+        request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 0);
+        //return
+    }
 
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -119,12 +125,11 @@ int TemporalInterpolationFilter::RequestData(
 		this->SetProgress(0.0);
 	}
 
-    std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
+    // std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
     this->updateQMap(this->currentTimeStep, input);
     
 	if (this->currentTimeStep < inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())) {
 		// There are still time steps left, continue on
-		request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
 		this->currentTimeStep++;
 
 		// Update the progress
@@ -143,9 +148,9 @@ int TemporalInterpolationFilter::RequestData(
         std::cout << "Total number of points: " << this->allPointCooridinates.count();
         
         this->printData();
-
 	}
-
+    
+    request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
 	return 1;
 }
 
@@ -263,6 +268,10 @@ void TemporalInterpolationFilter::addDataInFirstTimeStep(){
     
    // std::cout << "Anzahl an erstem Zeitschritt: danach" <<this->timestampMap[0].count();
     
+}
+
+bool TemporalInterpolationFilter::hasPreprocessed() {
+    return this->preprocessed;
 }
 
 void TemporalInterpolationFilter::printData(){

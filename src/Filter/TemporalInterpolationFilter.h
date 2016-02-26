@@ -58,6 +58,18 @@ private:
     void interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int index, PointCoordinates coordinate, int numberOfInterpolations);
 
     QList<PointCoordinates> allPointCooridinates;
+    
+    /**
+     * Check whether this filter has successfully finished preprocessing data.
+     * @return True if this filter has preprocessed data available, false otherwise
+     */
+    bool hasPreprocessed();
+    
+    /**
+     * Boolean flag denoting whether the filter has successfully finished preprocessing.
+     */
+    bool preprocessed;
+    
     /**
      * Boolean flag denoting whether there was an error.
      */
