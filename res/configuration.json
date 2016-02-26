@@ -11,6 +11,9 @@
     "transitionEffectSpeed": 0.125,
     "tilePoolSize": 64,
     "timerDelay": 17,
+    "terrainHeightFilter" : {
+      "heightmapZoomLevel": 1
+    },
     "zoom": {
       "nearDistance": 1.05,
       "nearZoom": 5,
