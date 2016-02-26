@@ -1,45 +1,56 @@
 #include <Reader/DataReader/JsonValidator.hpp>
 
+#define kJsonTypeNull 0
+#define kJsonTypeBoolean 1
+#define kJsonTypeObject 2
+#define kJsonTypeArray 3
+#define kJsonTypeString 4
+#define kJsonTypeInteger 5
+#define kJsonTypeDouble 6
+#define kJsonTypeUnknown 7
+
+
+
 static QMap<int, QString> typeNameMap() {
 	QMap<int, QString> map;
-	map.insert(0, "Null");
-	map.insert(1, "Boolean");
-	map.insert(2, "Object");
-	map.insert(3, "Array");
-	map.insert(4, "String");
-	map.insert(5, "Integer");
-	map.insert(6, "Double");
-	map.insert(7, "Unknown");
+	map.insert(kJsonTypeNull, "Null");
+	map.insert(kJsonTypeBoolean, "Boolean");
+	map.insert(kJsonTypeObject, "Object");
+	map.insert(kJsonTypeArray, "Array");
+	map.insert(kJsonTypeString, "String");
+	map.insert(kJsonTypeInteger, "Integer");
+	map.insert(kJsonTypeDouble, "Double");
+	map.insert(kJsonTypeUnknown, "Unknown");
 	return map;
 }
 const QMap<int, QString> JsonValidator::TYPE_NAMES = typeNameMap();
 
 static QMap<QString, int> nonTemporalTagsMap() {
 	QMap<QString, int> map;
-	map.insert("temporal", 1);
-	map.insert("dataType", 4);
+	map.insert("temporal", kJsonTypeBoolean);
+	map.insert("dataType", kJsonTypeString);
 	return map;
 }
 const QMap<QString, int> JsonValidator::NON_TEMPORAL_TAGS = nonTemporalTagsMap();
 
 int JsonValidator::getType(rapidjson::Value& jsonValue) {
 	if (jsonValue.IsNull()) {
-		return 0;
+		return kJsonTypeNull;
 	} else if (jsonValue.IsBool()) {
-		return 1;
+		return kJsonTypeBoolean;
 	} else if (jsonValue.IsObject()) {
-		return 2;
+		return kJsonTypeObject;
 	} else if (jsonValue.IsArray()) {
-		return 3;
+		return kJsonTypeArray;
 	} else if (jsonValue.IsString()) {
-		return 4;
+		return kJsonTypeString;
 	} else if (jsonValue.IsInt() || jsonValue.IsInt64() ||
 	           jsonValue.IsUint() || jsonValue.IsUint64()) {
-		return 5;
+		return kJsonTypeInteger;
 	} else if (jsonValue.IsDouble()) {
-		return 6;
+		return kJsonTypeDouble;
 	} else {
-		return 7;
+		return kJsonTypeUnknown;
 	}
 }
 
@@ -77,7 +88,7 @@ void JsonValidator::validateMetaData(rapidjson::Value& metaDocument, QString pat
 			);
 		}
 
-		if (JsonValidator::getType(metaDocument["timeResolution"]) != 5) {
+		if (JsonValidator::getType(metaDocument["timeResolution"]) != kJsonTypeInteger) {
 			throw JsonReaderParseException(
 			    path,
 			    QString("Error in the meta header: The tag \"timeResolution\" should be of type "
@@ -103,10 +114,10 @@ void JsonValidator::checkChildTag(rapidjson::Value& jsonValue, QString memberNam
 	int actualDataType = JsonValidator::getType(jsonValue[memberName.toStdString().c_str()]);
 	bool expectedEqualsActual = false;
 
-	if (dataType == 6) {
+	if (dataType == kJsonTypeDouble) {
 		// If the expected data type is Double, the actual data type can be Integer or Double since
 		// Integers are automatically converted to Doubles
-		if (actualDataType == 5 || actualDataType == 6) {
+		if (actualDataType == kJsonTypeInteger || actualDataType == kJsonTypeDouble) {
 			expectedEqualsActual = true;
 		}
 	} else {
@@ -142,7 +153,7 @@ void JsonValidator::validateChildElement(rapidjson::Value& childDocument, Data::
 			);
 		}
 
-		if (JsonValidator::getType(childDocument["timestamp"]) != 5) {
+		if (JsonValidator::getType(childDocument["timestamp"]) != kJsonTypeInteger) {
 			throw JsonReaderParseException(
 			    path,
 			    QString("Error in a data element: The tag \"timestamp\" should be of type "
@@ -165,8 +176,8 @@ void JsonValidator::validateChildElement(rapidjson::Value& childDocument, Data::
 			);
 		}
 
-		if (JsonValidator::getType(childDocument["longitude"]) != 6 ||
-		        JsonValidator::getType(childDocument["latitude"]) != 6) {
+		if (JsonValidator::getType(childDocument["longitude"]) != kJsonTypeDouble ||
+		        JsonValidator::getType(childDocument["latitude"]) != kJsonTypeDouble) {
 			throw JsonReaderParseException(
 			    path,
 			    QString("Error in a data element: The tags \"longitude\" and \"latitude\" should "
@@ -175,46 +186,47 @@ void JsonValidator::validateChildElement(rapidjson::Value& childDocument, Data::
 		}
 	}
 
-	JsonValidator::checkChildTag(childDocument, "children", 3, path);
+	JsonValidator::checkChildTag(childDocument, "children", kJsonTypeArray, path);
 
 	switch (dataType) {
 	case Data::CITIES: {
-		JsonValidator::checkChildTag(childDocument, "name", 4, path);
+		JsonValidator::checkChildTag(childDocument, "name", kJsonTypeString, path);
 		break;
 	}
 	case Data::FLIGHTS: {
-		JsonValidator::checkChildTag(childDocument, "startPosition", 2, path);
-		JsonValidator::checkChildTag(childDocument, "endPosition", 2, path);
-		JsonValidator::checkChildTag(childDocument["startPosition"], "latitude", 6, path);
-		JsonValidator::checkChildTag(childDocument["startPosition"], "longitude", 6, path);
-		JsonValidator::checkChildTag(childDocument["endPosition"], "latitude", 6, path);
-		JsonValidator::checkChildTag(childDocument["endPosition"], "longitude", 6, path);
-		JsonValidator::checkChildTag(childDocument["startPosition"], "airportCode", 4, path);
-		JsonValidator::checkChildTag(childDocument["endPosition"], "airportCode", 4, path);
-		JsonValidator::checkChildTag(childDocument, "airline", 4, path);
+		JsonValidator::checkChildTag(childDocument, "startPosition", kJsonTypeObject, path);
+		JsonValidator::checkChildTag(childDocument, "endPosition", kJsonTypeObject, path);
+		JsonValidator::checkChildTag(childDocument["startPosition"], "latitude", kJsonTypeDouble, path);
+		JsonValidator::checkChildTag(childDocument["startPosition"], "longitude", kJsonTypeDouble, path);
+		JsonValidator::checkChildTag(childDocument["endPosition"], "latitude", kJsonTypeDouble, path);
+		JsonValidator::checkChildTag(childDocument["endPosition"], "longitude", kJsonTypeDouble, path);
+		JsonValidator::checkChildTag(childDocument["startPosition"], "airportCode", kJsonTypeString, path);
+		JsonValidator::checkChildTag(childDocument["endPosition"], "airportCode", kJsonTypeString, path);
+		JsonValidator::checkChildTag(childDocument, "airline", kJsonTypeString, path);
 		break;
 	}
 	case Data::TWEETS: {
-		JsonValidator::checkChildTag(childDocument, "author", 4, path);
-		JsonValidator::checkChildTag(childDocument, "content", 4, path);
+		JsonValidator::checkChildTag(childDocument, "author", kJsonTypeString, path);
+		JsonValidator::checkChildTag(childDocument, "content", kJsonTypeString, path);
+        JsonValidator::checkChildTag(childDocument, "numberOfRetweets", kJsonTypeInteger, path);
 		break;
 	}
 	case Data::PRECIPITATION: {
-		JsonValidator::checkChildTag(childDocument, "precipitationType", 4, path);
-		JsonValidator::checkChildTag(childDocument, "precipitationRate", 6, path);
+		JsonValidator::checkChildTag(childDocument, "precipitationType", kJsonTypeString, path);
+		JsonValidator::checkChildTag(childDocument, "precipitationRate", kJsonTypeDouble, path);
 		break;
 	}
 	case Data::TEMPERATURE: {
-		JsonValidator::checkChildTag(childDocument, "temperature", 6, path);
+		JsonValidator::checkChildTag(childDocument, "temperature", kJsonTypeDouble, path);
 		break;
 	}
 	case Data::WIND: {
-		JsonValidator::checkChildTag(childDocument, "direction", 6, path);
-		JsonValidator::checkChildTag(childDocument, "speed", 6, path);
+		JsonValidator::checkChildTag(childDocument, "direction", kJsonTypeDouble, path);
+		JsonValidator::checkChildTag(childDocument, "speed", kJsonTypeDouble, path);
 		break;
 	}
 	case Data::CLOUD_COVERAGE: {
-		JsonValidator::checkChildTag(childDocument, "cloudCover", 6, path);
+		JsonValidator::checkChildTag(childDocument, "cloudCover", kJsonTypeDouble, path);
 		break;
 	}
 	}
