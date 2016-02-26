@@ -1,10 +1,3 @@
-/*
- * HeightmapSampler.cpp
- *
- *  Created on: Feb 23, 2016
- *      Author: bbq
- */
-
 #include <Utils/Misc/AsyncWrapper.hpp>
 #include <Globe/GlobeTile.hpp>
 #include <Globe/HeightmapSampler.hpp>
