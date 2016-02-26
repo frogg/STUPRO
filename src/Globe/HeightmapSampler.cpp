@@ -33,8 +33,8 @@ float HeightmapSampler::sample(float longitude, float latitude) const {
 	int tileX = ((longitude + 180.f) / 360.f) * width;
 	int tileY = ((latitude + 90.f) / 180.f) * height;
 
-	tileX = clamp<int>(0, tileX, width);
-	tileY = clamp<int>(0, tileY, height);
+	tileX = clamp<int>(0, tileX, width - 1);
+	tileY = clamp<int>(0, tileY, height - 1);
 
 	const Heightmap& heightmap = heightmaps[tileY * width + tileX];
 
@@ -47,8 +47,8 @@ float HeightmapSampler::sample(float longitude, float latitude) const {
 	int pixelX = normalizedX * heightmap.width;
 	int pixelY = normalizedY * heightmap.height;
 
-	pixelX = clamp<int>(0, pixelX, heightmap.width);
-	pixelY = clamp<int>(0, pixelY, heightmap.height);
+	pixelX = clamp<int>(0, pixelX, heightmap.width - 1);
+	pixelY = clamp<int>(0, pixelY, heightmap.height - 1);
 
 	short sample = heightmap.samples[pixelY * heightmap.width + pixelX];
 

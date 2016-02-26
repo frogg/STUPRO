@@ -69,7 +69,7 @@ bool TwitterFilter::shouldDisplayTweetContent(QString content) {
 	}
 	for (int i = 0; i < visibleKeywords.count(); i++) {
 		//only filter for hashtags
-		if (content.contains(this->visibleKeywords.at(i), Qt::CaseInsensitive)){
+		if (content.contains(this->visibleKeywords.at(i), Qt::CaseInsensitive)) {
 			return true;
 		}
 	}
@@ -101,7 +101,7 @@ void TwitterFilter::setAuthors(const char* authors) {
 	this->Modified();
 }
 
-void TwitterFilter::setKeywords(const char* keywords){
+void TwitterFilter::setKeywords(const char* keywords) {
 	if (QString::fromStdString(keywords).replace("#", "").trimmed() == "") {
 		this->visibleKeywords.clear();
 	} else {

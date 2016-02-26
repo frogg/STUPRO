@@ -1,7 +1,7 @@
 #ifndef KRONOS_MATH_FUNCTIONS_HPP
 #define KRONOS_MATH_FUNCTIONS_HPP
 
-#include <Utils/Misc/Macros.hpp>
+#include <algorithm>
 
 /**
  * Returns the positive modulo betwen the two specified numbers.
