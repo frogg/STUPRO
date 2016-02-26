@@ -233,6 +233,7 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
             break;
         }
         case Data::PRECIPITATION: {
+        
             PrecipitationInterpolationValue* lowerValue = static_cast<PrecipitationInterpolationValue*>(lower);
             PrecipitationInterpolationValue* higherValue = static_cast<PrecipitationInterpolationValue*>(higher);
             
@@ -251,14 +252,23 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
             break;
         }
         case Data::WIND: {
-            vtkSmartPointer<vtkFloatArray> bearingArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("directions"));
-            vtkSmartPointer<vtkFloatArray> velocityArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("speeds"));
-            return new WindInterpolationValue(priority, timestamp, bearingArray->GetValue(pointIndex), velocityArray->GetValue(pointIndex));
+            WindInterpolationValue* lowerValue = static_cast<WindInterpolationValue*>(lower);
+            WindInterpolationValue* higherValue = static_cast<WindInterpolationValue*>(higher);
+            
+            float interpolatedBearing = factorB * lowerValue->getBearing() + factorA *higherValue->getBearing();
+            float interpolatedSpeed = factorB * lowerValue->getSpeed() + factorA * higherValue->getSpeed();
+           
+            WindInterpolationValue *interpolatedValue = new WindInterpolationValue(priority, interpolatedTimestamp, interpolatedBearing, interpolatedSpeed);
+            this->timestampMap[index].insert(coordinate,interpolatedValue);
             break;
         }
         case Data::CLOUD_COVERAGE: {
-            vtkSmartPointer<vtkFloatArray> cloudCoverageArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("cloudCovers"));
-            return new CloudCoverageInterpolationValue(priority, timestamp, cloudCoverageArray->GetValue(pointIndex));
+            CloudCoverageInterpolationValue* lowerValue = static_cast<CloudCoverageInterpolationValue*>(lower);
+            CloudCoverageInterpolationValue* higherValue = static_cast<CloudCoverageInterpolationValue*>(higher);
+            float interpolatedCloudCoverage = factorB * lowerValue->getCloudCoverage() + factorA *higherValue->getCloudCoverage();
+
+            CloudCoverageInterpolationValue *interpolatedValue = new CloudCoverageInterpolationValue(priority, interpolatedTimestamp, interpolatedCloudCoverage);
+            this->timestampMap[index].insert(coordinate,interpolatedValue);
             break;
         }
         default: {
