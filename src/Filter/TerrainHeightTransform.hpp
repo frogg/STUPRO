@@ -39,7 +39,19 @@ private:
 	void adjustByTerrainHeightWithDerivatives(const Vector3<T>& input, Vector3<T>& output,
 	        T derivatives[3][3]) {
 		adjustByTerrainHeight(input, output);
-		// TODO: wtf is derivative
+
+		// Use unit matrix.
+		derivatives[0][0] = 1;
+		derivatives[0][1] = 0;
+		derivatives[0][2] = 0;
+
+		derivatives[1][0] = 0;
+		derivatives[1][1] = 1;
+		derivatives[1][2] = 0;
+
+		derivatives[2][0] = 0;
+		derivatives[2][1] = 0;
+		derivatives[2][2] = 1;
 	}
 
 	/**
