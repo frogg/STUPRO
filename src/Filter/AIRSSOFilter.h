@@ -8,6 +8,8 @@
 #include <vtkInformationVector.h>
 #include <vtkPointData.h>
 #include <vtkUnsignedIntArray.h>
+#include <vtkDoubleArray.h>
+#include <vtkFloatArray.h>
 
 #include <qstring.h>
 #include <qlist.h>
@@ -19,11 +21,11 @@
 /**
  * Abstract super class for filters that work on a Kronos point data set and extract some of those points.
  */
-class MIPASOrbidFilter : public vtkDataObjectAlgorithm {
+class AIRSSOFilter : public vtkDataObjectAlgorithm {
 public:
 
-    vtkTypeMacro(MIPASOrbidFilter, vtkDataObjectAlgorithm)
-    static MIPASOrbidFilter *New();
+    vtkTypeMacro(AIRSSOFilter, vtkDataObjectAlgorithm)
+    static AIRSSOFilter *New();
 
 	void PrintSelf(ostream& os, vtkIndent indent) override;
 
@@ -38,8 +40,8 @@ public:
 	int FillInputPortInformation(int port, vtkInformation* info) override;
     void SetInputConnection(vtkAlgorithmOutput *input) override;
 
-    void setUpper(int upperLimit);
-    void setLower(int lowerLimit);
+    void setUpper(float upperLimit);
+    void setLower(float lowerLimit);
 
 
 
@@ -52,19 +54,19 @@ protected:
 	void fail(QString message);
 
 private:
-    MIPASOrbidFilter();
-    ~MIPASOrbidFilter();
+    AIRSSOFilter();
+    ~AIRSSOFilter();
 
-	MIPASOrbidFilter(const MIPASOrbidFilter&);  // Not implemented.
-	void operator=(const MIPASOrbidFilter&);  // Not implemented.
+	AIRSSOFilter(const AIRSSOFilter&);  // Not implemented.
+	void operator=(const AIRSSOFilter&);  // Not implemented.
 
 	/**
 	 * Boolean flag denoting whether there was an error.
 	 */
 	bool error;
 
-    int UpperLimit;
-    int LowerLimit;
+    float UpperLimit;
+    float LowerLimit;
 
 
     /**

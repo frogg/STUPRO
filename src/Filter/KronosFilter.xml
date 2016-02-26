@@ -490,7 +490,7 @@
                 short_help="Solve SciVis-Contest with this filter">
             </Documentation>
             <InputProperty
-                name="AIRS Input"
+                name="MIPAS Input"
                 command="SetInputConnection">
                 <ProxyGroupDomain name="groups">
                     <Group name="sources"/>
@@ -519,6 +519,41 @@
                 <ShowInMenu category="SciVis"/>
             </Hints>
         </SourceProxy>
+        <SourceProxy name="AIRSSOFilter" class="AIRSSOFilter" label="AIRSSOFilter">
+            <Documentation
+                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
+                short_help="Solve SciVis-Contest with this filter">
+            </Documentation>
+            <InputProperty
+                name="AIRS Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkCellData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <DoubleVectorProperty name="Start range"
+                command="setLower"
+                number_of_elements="1"
+                default_values="-2.20437">
+                <DoubleRangeDomain name="range" min="-2.20437" max="10.7381" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End range"
+                command="setUpper"
+                number_of_elements="1"
+                default_values="10.7381">
+                <DoubleRangeDomain name="range" min="-2.20437" max="10.7381" />
+            </DoubleVectorProperty>
+            <Hints>
+                <ShowInMenu category="SciVis"/>
+            </Hints>
+        </SourceProxy>
     </ProxyGroup>
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
@@ -534,6 +569,8 @@
             <Filter name="MIPASFilter" />
             <Filter name="AIRSFilter" />
             <Filter name="CLaMSFilter"/>
+            <Filter name="MIPASOrbidFilter"/>
+            <Filter name="AIRSSOFilter"/>
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>

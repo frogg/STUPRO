@@ -1,30 +1,32 @@
-#include <Filter/MIPASOrbidFilter.h>
+#include <Filter/AIRSSOFilter.h>
 
 #include <vtkPolyData.h>
 #include <vtkDataObject.h>
 #include <vtkAlgorithm.h>
 #include <vtkCellArray.h>
 #include <vtkObjectFactory.h>
-#include <vtkUnsignedIntArray.h>
-
-vtkStandardNewMacro(MIPASOrbidFilter);
-
-MIPASOrbidFilter::MIPASOrbidFilter() { };
-//MIPASOrbidFilter::MIPASOrbidFilter() : error(false) { }
-
-MIPASOrbidFilter::~MIPASOrbidFilter() { }
+#include <vtkFloatArray.h>
+#include <vtkDoubleArray.h>
 
 
-void MIPASOrbidFilter::fail(QString message) {
+vtkStandardNewMacro(AIRSSOFilter);
+
+AIRSSOFilter::AIRSSOFilter() { };
+//AIRSSOFilter::AIRSSOFilter() : error(false) { }
+
+AIRSSOFilter::~AIRSSOFilter() { }
+
+
+void AIRSSOFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());
 	this->error = true;
 }
 
 
 
-int MIPASOrbidFilter::RequestData(vtkInformation* info,
-                                  vtkInformationVector** inputVector,
-                                  vtkInformationVector* outputVector) {
+int AIRSSOFilter::RequestData(vtkInformation* info,
+                              vtkInformationVector** inputVector,
+                              vtkInformationVector* outputVector) {
 	if (this->error) {
 		return 0;
 	}
@@ -111,39 +113,39 @@ int MIPASOrbidFilter::RequestData(vtkInformation* info,
 }
 
 
-int MIPASOrbidFilter::RequestInformation(vtkInformation* request,
-        vtkInformationVector** inputVector,
-        vtkInformationVector* outputVector) {
+int AIRSSOFilter::RequestInformation(vtkInformation* request,
+                                     vtkInformationVector** inputVector,
+                                     vtkInformationVector* outputVector) {
 	return 1;
 }
 
-void MIPASOrbidFilter::setLower(int lowerLimit) {
+void AIRSSOFilter::setLower(float lowerLimit) {
 	this->LowerLimit = lowerLimit;
 	this->Modified();
 }
 
-void MIPASOrbidFilter::setUpper(int upperLimit) {
+void AIRSSOFilter::setUpper(float upperLimit) {
 	this->UpperLimit = upperLimit;
 	this->Modified();
 }
 
 
 
-void MIPASOrbidFilter::PrintSelf(ostream& os, vtkIndent indent) {
+void AIRSSOFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
 	os << indent << "Filter for selecting and extracting certain data points, Kronos Project" <<
 	   endl;
 }
-void MIPASOrbidFilter::SetInputConnection(vtkAlgorithmOutput* input) {
+void AIRSSOFilter::SetInputConnection(vtkAlgorithmOutput* input) {
 	this->Superclass::SetInputConnection(input);
 }
 
-int MIPASOrbidFilter::FillOutputPortInformation(int port, vtkInformation* info) {
+int AIRSSOFilter::FillOutputPortInformation(int port, vtkInformation* info) {
 	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
 	return 1;
 }
 
-int MIPASOrbidFilter::FillInputPortInformation(int port, vtkInformation* info) {
+int AIRSSOFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	if (port == 0) {
 		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
 		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
@@ -151,10 +153,10 @@ int MIPASOrbidFilter::FillInputPortInformation(int port, vtkInformation* info) {
 
 	return 1;
 }
-bool MIPASOrbidFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
-                                     vtkPointData* pointData) {
-	vtkSmartPointer<vtkUnsignedIntArray> orbit_idArray = vtkUnsignedIntArray::SafeDownCast(
-	            pointData->GetAbstractArray("orbit_id"));
+bool AIRSSOFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
+                                 vtkPointData* pointData) {
+	vtkSmartPointer<vtkFloatArray> orbit_idArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("SO2"));
 	double orbit_id = orbit_idArray->GetTuple1(pointIndex);
 	return (this->LowerLimit <= orbit_id && orbit_id <= this->UpperLimit);
 }
