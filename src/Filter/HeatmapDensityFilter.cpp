@@ -129,11 +129,14 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 		int x = round(relativeX * numberOfXComponents);
 		int y = round(relativeY * numberOfYComponents);
 
-		std::cout << x << ", " << y << std::endl;
+		//std::cout << x << ", " << y << std::endl;
 
 		int pointID = x * numberOfXComponents + y;
-
-		density[pointID] = density[pointID] + 1;
+        
+        //diese Abfrage sollte eigentlich nicht existieren müssen, aber es gibt manchmal falsche Werte!
+        if(pointID >=0 && pointID < density.size()) {
+            density[pointID] = density[pointID] + 1;
+        }
 	}
 
 
