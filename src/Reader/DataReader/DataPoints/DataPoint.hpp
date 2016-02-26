@@ -37,7 +37,6 @@ public:
 	 */
 	Coordinate getCoordinate() const;
 
-    DataPoint(){ };
 private:
     
 	Coordinate coordinate;

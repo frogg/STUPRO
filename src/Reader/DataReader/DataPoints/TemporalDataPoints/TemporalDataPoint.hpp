@@ -25,9 +25,6 @@ public:
 	* @return This point's timestamp in UNIX GMT format
 	*/
 	int getTimestamp() const;
-    
-    //default
-    TemporalDataPoint():DataPoint(){ };
 
 private:
 	int timestamp;
