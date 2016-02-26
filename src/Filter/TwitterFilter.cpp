@@ -4,6 +4,7 @@
 
 #include <vtkObjectFactory.h>
 #include <vtkStringArray.h>
+#include <vtkIntArray.h>
 
 TwitterFilter::TwitterFilter() {
 	this->authorMatchingMode = CONTAINING;
@@ -23,8 +24,10 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 	            pointData->GetAbstractArray("authors"));
 	vtkSmartPointer<vtkStringArray> contentData = vtkStringArray::SafeDownCast(
 	            pointData->GetAbstractArray("contents"));
+    vtkSmartPointer<vtkIntArray> numberOfRetweets = vtkIntArray::SafeDownCast(pointData->GetAbstractArray("numberOfRetweets"));
+    
 
-	if (!contentData || !authorData) {
+	if (!contentData || !authorData || !numberOfRetweets) {
 		this->fail("The string arrays containing tweet contents or authors seem to be invalid.");
 		return false;
 	}
@@ -33,7 +36,11 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 	QString author = QString::fromStdString(authorData->GetValue(pointIndex));
 	author.remove(' ');
 	QString content = QString::fromStdString(contentData->GetValue(pointIndex));
-
+    int retweets = numberOfRetweets->GetValue(pointIndex);
+    //numberOfRetweets->GetTuple1(<#vtkIdType i#>)
+    if(!shouldDisplayRetweet(retweets)){
+        return false;
+    }
 	//if no author is in authors and no content is in visibleContent (everything should be visible by default), return this point to be visible
 	if (this->visibleAuthors.count() == 0) {
 		if (this->visibleKeywords.count() == 0) {
@@ -76,6 +83,10 @@ bool TwitterFilter::shouldDisplayTweetContent(QString content) {
 	return false;
 }
 
+bool TwitterFilter::shouldDisplayRetweet(int retweetNumber) {
+    return this->lowerRetweetLimit <= retweetNumber && retweetNumber <= this->upperRetweetLimit;
+}
+
 void TwitterFilter::setAuthorMatchingMode(int matchingMode) {
 	this->authorMatchingMode = static_cast<Mode>(matchingMode);
 	this->Modified();
@@ -112,5 +123,11 @@ void TwitterFilter::setKeywords(const char* keywords) {
 
 void TwitterFilter::SetInputConnection(vtkAlgorithmOutput* input) {
 	this->Superclass::SetInputConnection(input);
+}
+
+void TwitterFilter::setRetweetThreshold(double lowerLimit, double upperLimit){
+    this->lowerRetweetLimit = lowerLimit;
+    this->upperRetweetLimit = upperLimit;
+    this->Modified();
 }
 

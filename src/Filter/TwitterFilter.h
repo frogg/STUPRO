@@ -36,6 +36,19 @@ public:
 	  * @param mode (0 stands for containing, 1 for matching)
 	 */
 	void setAuthorMatchingMode(int mode);
+    
+    /**
+     * Callback method for setting flight length range.
+     * @param lowerLimit The lower flight length limit
+     * @param upperLimit The upper flight length limit
+     */
+    void setRetweetThreshold(double lowerLimit, double upperLimit);
+    
+    /**
+     * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the temperature values and the UI is hidden.
+     */
+    void ignore(int id, int port, int connection, int fieldAssociation, const char* name) { }
+    
 
 private:
 	/**
@@ -55,9 +68,14 @@ private:
 	TwitterFilter::Mode authorMatchingMode;
 
 	bool shouldDisplayTweetContent(QString content);
+    bool shouldDisplayRetweet(int retweetNumber);
 
 	QList<Data::Type> getCompatibleDataTypes();
 	bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
+    
+    double lowerRetweetLimit;
+    double upperRetweetLimit;
+
 
 	/**
 	 * Contains all author names whose tweets should be extracted.

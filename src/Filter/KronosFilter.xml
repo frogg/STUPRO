@@ -316,12 +316,56 @@
                 default_values=""
                 information_property="All tweets containing at least one of these keywords will be extracted">
             </StringVectorProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectRetweetInputScalars"
+                number_of_elements="5"
+                default_values="numberOfRetweets">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <Hints>
+                <Property name="SelectRetweetInputScalars" show="0"/>
+            </Hints>
+            <DoubleVectorProperty command="setRetweetThreshold"
+                default_values="0 0"
+                label="Retweet Number Range"
+                name="Retweet Number Range"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectRetweetInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower retweet number.
+                </Documentation>
+            </DoubleVectorProperty>
             <PropertyGroup label="Authors">
                 <Property name="Authors (comma-separated)" />
                 <Property name="Author matching mode" />
             </PropertyGroup>
             <PropertyGroup label="Keywords">
                 <Property name="Keywords (comma-separated)" />
+            </PropertyGroup>
+            <PropertyGroup label="Retweets">
+                <Property name="Retweet Number Range" />
             </PropertyGroup>
             <Hints>
                 <ShowInMenu category="Kronos" />
