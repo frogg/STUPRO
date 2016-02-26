@@ -1,6 +1,6 @@
-#include <View/vtkSMStuproViewProxy.h>
+#include <View/vtkSMKronosViewProxy.h>
 
-#include <View/vtkPVStuproView.h>
+#include <View/KronosView.h>
 #include <Utils/Misc/KronosLogger.hpp>
 
 #include "vtkObjectFactory.h"
@@ -14,12 +14,12 @@
 #include "vtkSMSourceProxy.h"
 #include "vtkClientServerStream.h"
 
-vtkStandardNewMacro(vtkSMStuproViewProxy);
+vtkStandardNewMacro(vtkSMKronosViewProxy);
 
-vtkSMStuproViewProxy::vtkSMStuproViewProxy() { }
-vtkSMStuproViewProxy::~vtkSMStuproViewProxy() { }
+vtkSMKronosViewProxy::vtkSMKronosViewProxy() { }
+vtkSMKronosViewProxy::~vtkSMKronosViewProxy() { }
 
-void vtkSMStuproViewProxy::moveCamera(float latitude, float longitude) {
+void vtkSMKronosViewProxy::moveCamera(float latitude, float longitude) {
 	vtkClientServerStream stream;
 	stream << vtkClientServerStream::Invoke
 	       << VTKOBJECT(this)
@@ -30,7 +30,7 @@ void vtkSMStuproViewProxy::moveCamera(float latitude, float longitude) {
 	this->ExecuteStream(stream);
 }
 
-void vtkSMStuproViewProxy::moveCamera(float latitude, float longitude, float distance) {
+void vtkSMKronosViewProxy::moveCamera(float latitude, float longitude, float distance) {
 	vtkClientServerStream stream;
 	stream << vtkClientServerStream::Invoke
 	       << VTKOBJECT(this)

@@ -2,7 +2,7 @@
 
 #include <Kronos.h>
 #include <Utils/Misc/KronosLogger.hpp>
-#include <View/vtkSMStuproViewProxy.h>
+#include <View/vtkSMKronosViewProxy.h>
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -130,11 +130,11 @@ void PlaceSearchWidget::listSelectionChanged(const QItemSelection& selection,
 		pqRenderView* rView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
 		if (rView) {
 			vtkSMRenderViewProxy* renderViewProxy = rView->getRenderViewProxy();
-			vtkSMStuproViewProxy* stuproViewProxy = dynamic_cast<vtkSMStuproViewProxy*>(renderViewProxy);
-			if (stuproViewProxy) {
+			vtkSMKronosViewProxy* kronosViewProxy = dynamic_cast<vtkSMKronosViewProxy*>(renderViewProxy);
+			if (kronosViewProxy) {
 				// get the selected city
 				City city = this->resultListModel->getAll()[selection[0].top()];
-				stuproViewProxy->moveCamera(city.latitude, city.longitude);
+				kronosViewProxy->moveCamera(city.latitude, city.longitude);
 			}
 		}
 	}

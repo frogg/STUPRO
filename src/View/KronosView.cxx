@@ -3,17 +3,16 @@
 #include <Utils/Misc/MakeUnique.hpp>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
-#include <vtkInformation.h>
 #include <vtkObjectFactory.h>
-#include <vtkPVStuproView.h>
+#include <KronosView.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkMatrix4x4.h>
+#include <vtkCubeSource.h>
+#include <vtkProperty.h>
 
-vtkStandardNewMacro(vtkPVStuproView);
+vtkStandardNewMacro(KronosView);
 
-void vtkPVStuproView::Initialize(unsigned int id) {
+void KronosView::Initialize(unsigned int id) {
 	this->Superclass::Initialize(id);
 
 	initParameters();
@@ -21,17 +20,17 @@ void vtkPVStuproView::Initialize(unsigned int id) {
 	initGlobe();
 }
 
-void vtkPVStuproView::initParameters() {
+void KronosView::initParameters() {
 	// Initialize parameters.
 	this->displayMode = Globe::DisplayGlobe;
 }
 
-void vtkPVStuproView::initRenderer() {
+void KronosView::initRenderer() {
 	this->cameraModifiedCallback = vtkCallbackCommand::New();
 
 	this->cameraModifiedCallback->SetCallback(
 	[](vtkObject * object, unsigned long eid, void* clientdata, void* calldata) {
-		vtkPVStuproView* view = (vtkPVStuproView*)clientdata;
+		KronosView* view = (KronosView*)clientdata;
 		if (view->getGlobe()) {
 			view->getGlobe()->onCameraChanged();
 		}
@@ -43,20 +42,35 @@ void vtkPVStuproView::initRenderer() {
 	                                 this->cameraModifiedCallback);
 }
 
-void vtkPVStuproView::initGlobe() {
-	const Configuration& config = Configuration::getInstance();
-
+void KronosView::initGlobe() {
 	// Initialize a unique pointer with a new instance of the Globe
 	// using the current renderer.
 	this->globe = makeUnique<Globe>(*this->GetRenderer());
+
+	// Dirty workaround: Create a transparent box around the globe.
+	float radius = Configuration::getInstance().getFloat("globe.radius");
+
+	vtkSmartPointer<vtkCubeSource> cube = vtkCubeSource::New();
+	cube->SetXLength(radius * 2);
+	cube->SetYLength(radius * 2);
+	cube->SetZLength(radius * 2);
+
+	vtkSmartPointer<vtkPolyDataMapper> cubeMapper = vtkPolyDataMapper::New();
+	cubeMapper->SetInputConnection(cube->GetOutputPort());
+
+	vtkSmartPointer<vtkActor> cubeActor = vtkActor::New();
+	cubeActor->SetMapper(cubeMapper);
+	cubeActor->GetProperty()->SetOpacity(0);
+
+	this->GetRenderer()->AddActor(cubeActor);
 }
 
 
-void vtkPVStuproView::moveCamera(float latitude, float longitude) {
+void KronosView::moveCamera(float latitude, float longitude) {
 	this->moveCamera(latitude, longitude, this->getCameraDistance());
 }
 
-void vtkPVStuproView::moveCamera(float latitude, float longitude, float distance) {
+void KronosView::moveCamera(float latitude, float longitude, float distance) {
 	// left-right, up-down, close-far
 	Vector3d position(0.0, 0.0, 2.6);
 
@@ -81,7 +95,7 @@ void vtkPVStuproView::moveCamera(float latitude, float longitude, float distance
 	GetRenderWindow()->Render();
 }
 
-float vtkPVStuproView::getCameraDistance() {
+float KronosView::getCameraDistance() {
 	vtkCamera* cam = GetActiveCamera();
 	double x, y, z;
 	cam->GetPosition(x, y, z);
@@ -93,7 +107,7 @@ float vtkPVStuproView::getCameraDistance() {
 }
 
 
-void vtkPVStuproView::switchCurrentDisplayMode() {
+void KronosView::switchCurrentDisplayMode() {
 	// Invert the display mode and set the interpolation using a static cast.
 	this->displayMode = this->displayMode == Globe::DisplayGlobe ? Globe::DisplayMap :
 	                    Globe::DisplayGlobe;
@@ -103,10 +117,10 @@ void vtkPVStuproView::switchCurrentDisplayMode() {
 	// GetRenderWindow()->Render();
 }
 
-Globe::DisplayMode vtkPVStuproView::getDisplayMode() const {
+Globe::DisplayMode KronosView::getDisplayMode() const {
 	return this->displayMode;
 }
 
-Globe* vtkPVStuproView::getGlobe() const {
+Globe* KronosView::getGlobe() const {
 	return this->globe.get();
 }
