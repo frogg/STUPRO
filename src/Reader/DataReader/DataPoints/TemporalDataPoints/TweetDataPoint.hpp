@@ -17,9 +17,10 @@ public:
 	 * @param timestamp The point's timestamp
 	 * @param author The tweet's author
 	 * @param content The tweet's content
+     * @param numberOfRetweets The number of retweets for this tweet
 	 */
 	TweetDataPoint(Coordinate coordinate, int priority, int timestamp, QString author,
-	               QString content);
+	               QString content, int numberOfRetweets);
 
 	/**
 	 * Get the author of the Twitter message of this data point.
@@ -32,11 +33,17 @@ public:
 	 * @return The content of this point's tweet
 	 */
 	QString getContent() const;
+    
+    /**
+     * Get the number of retweets for this tweet data point
+     * @return the number of retweets
+     */
+    int getNumberOfRetweets() const;
 
 private:
 	QString author;
 	QString content;
-
+    int numberOfRetweets;
 };
 
 #endif
