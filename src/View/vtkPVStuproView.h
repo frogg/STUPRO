@@ -13,10 +13,9 @@
  * This class represents our own, custom vtkPVRenderView. It is responsible
  * for initializing all the relevant variables and objects used later on.
  */
-class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView
-{
+class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView {
 public:
-	
+
 	/**
 	 * A static new-method needed for any vtk-related initialization
 	 * used by vtkSmartPointers. Gonna be implemented in the .cxx
@@ -30,7 +29,7 @@ public:
 	 * Needed for some vtk-inheritance-stuff.
 	 */
 	vtkTypeMacro(vtkPVStuproView, vtkPVRenderView)
-	
+
 	/**
 	 * This method gets called any time the view is going
 	 * to be initialized. Basically, this is the constructor of
@@ -39,7 +38,7 @@ public:
 	 * @param id the id of the view, gets set by the calling instance, used for Superclass::Initialize(id)
 	 */
 	virtual void Initialize(unsigned int id) override;
-	
+
 	/**
 	 * Moves the camera the specified latitude and longitude, keeping the distance the same as it was before and
 	 * pointing the camera directly at the globe's center.
@@ -51,10 +50,10 @@ public:
 	 * the globe's center.
 	 */
 	void moveCamera(float latitude, float longitude, float distance);
-	
+
 	/**
 	 * Returns the distance between the camera and the globe's center point.
-	 * 
+	 *
 	 * This method should be const, but cannot be set to const as VTK is not const-correct.
 	 */
 	float getCameraDistance();
@@ -64,15 +63,15 @@ public:
 	 * basically by inverting this->displayMode.
 	 */
 	void switchCurrentDisplayMode();
-	
+
 	/**
 	 * Returns the current display mode.
 	 *
 	 * @return the current display mode
 	 */
 	Globe::DisplayMode getDisplayMode() const;
-	
-	Globe * getGlobe() const;
+
+	Globe* getGlobe() const;
 
 protected:
 	/**
@@ -81,12 +80,10 @@ protected:
 	 * instantiated by a vtkSmartPointer.
 	 */
 	vtkPVStuproView() :
-		displayMode(Globe::DisplayGlobe)
-	{
+		displayMode(Globe::DisplayGlobe) {
 	};
 
-	~vtkPVStuproView()
-	{
+	~vtkPVStuproView() {
 	};
 
 private:
@@ -95,7 +92,7 @@ private:
 	 * This will remove the copy-constructor.
 	 */
 	vtkPVStuproView(const vtkPVStuproView&);
-	
+
 	/**
 	* This method is not implemented due to vtks architecture.
 	* This will remove the =-assignment (and copying).
@@ -106,13 +103,13 @@ private:
 	 * TODO: Maybe remove this method using the global config?
 	 */
 	void initParameters();
-	
+
 	/**
 	 * Initializes all render-relevant objects, i.e. the interactor
 	 * and its style.
 	 */
 	void initRenderer();
-	
+
 	/**
 	 * Registers all callback functions used later during runtime.
 	 */
