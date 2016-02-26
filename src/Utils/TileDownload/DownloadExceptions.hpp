@@ -4,6 +4,7 @@
 #include <Utils/Misc/Exceptions.hpp>
 
 #include <QString>
+#include <QSet>
 #include <QUrl>
 #include <QNetworkReply>
 #include <exception>
@@ -25,6 +26,24 @@ struct DownloadAbortedException : public DownloadFailedException {
 		: DownloadFailedException(
 		      QString("The download was aborted. Url: '%1'").arg(url.toString())
 		  ) { }
+};
+
+/**
+ * Exception thrown when a tile download was declared complete, but tiles are missing from it.
+ */
+struct TileIncompleteException : public DownloadFailedException {
+	static QString buildErrorMessage(QList<QString> const& actual, QSet<QString> const& expected) {
+		QString message = QString("Download finished but is incomplete. Missing layers:");
+		for (QString layer : expected) {
+			if (!actual.contains(layer)) {
+				message += QString(" '%1'").arg(layer);
+			}
+		}
+		return message;
+	}
+
+	TileIncompleteException(QList<QString> const& actual, QSet<QString> const& expected)
+			: DownloadFailedException(buildErrorMessage(actual, expected)) { }
 };
 
 /**

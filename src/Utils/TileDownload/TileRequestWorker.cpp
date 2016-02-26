@@ -42,6 +42,10 @@ void TileRequestWorker::requestAbort() {
     this->requestQueue.append(std::make_shared<AbortRequest>());
 }
 
+const QSet<QString> TileRequestWorker::getRequestedLayers() const {
+    return this->layers;
+}
+
 void TileRequestWorker::requestLoop() {
     while (!this->isShutdownRequested()) {
         // poll for new requests

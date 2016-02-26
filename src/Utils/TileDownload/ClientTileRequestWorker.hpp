@@ -3,6 +3,7 @@
 
 #include <Utils/TileDownload/TileRequestWorker.hpp>
 
+#include <QEventLoop>
 #include <QList>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -11,6 +12,7 @@
 
 struct ImageDownloadJob : public WorkerJob {
     bool aborted = false;
+    bool failed = false;
     QSet<QNetworkReply*> pendingReplies;
 
     ImageDownloadJob() = default;
@@ -68,6 +70,13 @@ protected:
     virtual void handleAbortRequest();
 
 private:;
+    /** Thread responsible for running the required QEventLoop */
+    // std::thread eventLoopThread;
+    /** Event loop needed for processing the network access manager's events */
+    // QEventLoop eventLoop;
+
+    QQueue<WorkerJob> jobQueue;
+
     /** The set containing all pending download jobs. */
     QList<std::shared_ptr<ImageDownloadJob>> pendingDownloadJobs;
 
@@ -81,10 +90,16 @@ private:;
     /** The network access manager used to make HTTP requests. */
     QNetworkAccessManager networkManager;
 
+    static MetaImage decodeBil16(const QByteArray& rawData, int width, int height);
+
     void handleDownload(QNetworkReply* reply);
+    void checkStatusCode(QNetworkReply* reply);
+    void handleReplyContent(QNetworkReply* reply);
+    static ImageDownloadJobMetaData getMetaData(QNetworkReply* reply);
 
 private slots:
     void downloadFinished(QNetworkReply* reply);
+    void processJobQueue();
 };
 
 #endif // KRONOS_UTILS_TILE_DOWNLOAD_CLIENT_TILE_REQUEST_WORKER_HPP

@@ -282,7 +282,7 @@ void Globe::showTile(int lon, int lat) {
 		tile.setVisibile(true);
 
 		// Start loading process.
-		myDownloader.fetchTile(myZoomLevel, lon, lat);
+		myDownloader.requestTile(myZoomLevel, lon, lat);
 	} else {
 		// Re-use existing tile resource by reactivating it.
 		handle.setActive(true);
@@ -322,7 +322,7 @@ void Globe::createTileHandles() {
 void Globe::eraseTileHandles() {
 
 	// Cancel all pending downloads.
-	myDownloader.abortAllDownloads();
+	myDownloader.abortAllRequests();
 
 	for (auto& handle : myTileHandles) {
 		if (handle.isActive()) {

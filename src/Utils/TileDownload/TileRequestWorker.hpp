@@ -89,6 +89,8 @@ public:
      */
     void requestAbort();
 
+    const QSet<QString> getRequestedLayers() const;
+
 protected:
     /** Map containing information on available layers */
     QMap<QString, ImageLayerDescription> layerConfig;

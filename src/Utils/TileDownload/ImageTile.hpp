@@ -20,7 +20,7 @@ public:
 
 	ImageTile(int zoomLevel, int tileX, int tileY);
 
-	ImageTile(const ImageTile& obj);
+	ImageTile(ImageTile const& obj) = default;
 
 	ImageTile();
 

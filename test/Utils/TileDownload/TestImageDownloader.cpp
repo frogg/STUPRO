@@ -15,7 +15,7 @@ TEST(TestImageDownloader, GetAvailableLayers) {
 
 		});
 
-		QList<QString> availableLayers = downloader.getAvailableLayers();
+		QSet<QString> availableLayers = downloader.getRequestedLayers();
 
 		EXPECT_TRUE(availableLayers.contains("satelliteImagery"));
 		EXPECT_TRUE(availableLayers.contains("heightmap"));
@@ -39,9 +39,9 @@ TEST(TestImageDownloader, GetTile) {
 	const int zoomLevel = 10;
 	const int tileX = 20;
 	const int tileY = 30;
-	const QString layerName = downloader.getAvailableLayers()[0];
+	const QString layerName = downloader.getRequestedLayers().toList()[0];
 
-	ASSERT_NO_THROW(downloader.fetchTile(zoomLevel, tileX, tileY));
+	ASSERT_NO_THROW(downloader.requestTile(zoomLevel, tileX, tileY));
 
 	if (future.wait_for(std::chrono::seconds(10)) != std::future_status::ready) {
 		FAIL() << "Timeout while waiting for ImageDownloader::fetchTile";
@@ -93,10 +93,10 @@ TEST(TestImageDownloader, AbortDownload) {
 	const int zoomLevel = 2;
 	const int tileX = 1;
 	const int tileY = 1;
-	const QString layerName = downloader.getAvailableLayers()[0];
+	const QString layerName = downloader.getRequestedLayers().toList()[0];
 
-	downloader.fetchTile(zoomLevel, tileX, tileY);
-	downloader.abortAllDownloads();
+	downloader.requestTile(zoomLevel, tileX, tileY);
+	downloader.abortAllRequests();
 
 	// actually this should check for a DownloadAbortedException, but the onTileFetchFailed lambda
 	// set for this downloader somehow discards the original exception and throws a std::exception
