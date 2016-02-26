@@ -13,7 +13,7 @@
  * This class represents our own, custom vtkPVRenderView. It is responsible
  * for initializing all the relevant variables and objects used later on.
  */
-class VTK_EXPORT vtkPVStuproView : public vtkPVRenderView {
+class VTK_EXPORT KronosView : public vtkPVRenderView {
 public:
 
 	/**
@@ -23,12 +23,12 @@ public:
 	 *
 	 * @return a new instance of this view via a pointer
 	 */
-	static vtkPVStuproView* New();
+	static KronosView* New();
 
 	/**
 	 * Needed for some vtk-inheritance-stuff.
 	 */
-	vtkTypeMacro(vtkPVStuproView, vtkPVRenderView)
+	vtkTypeMacro(KronosView, vtkPVRenderView)
 
 	/**
 	 * This method gets called any time the view is going
@@ -79,11 +79,11 @@ protected:
 	 * called outside of this class. Therefore it can only be
 	 * instantiated by a vtkSmartPointer.
 	 */
-	vtkPVStuproView() :
+	KronosView() :
 		displayMode(Globe::DisplayGlobe) {
 	};
 
-	~vtkPVStuproView() {
+	~KronosView() {
 	};
 
 private:
@@ -91,13 +91,13 @@ private:
 	 * This method is not implemented due to vtks architecture.
 	 * This will remove the copy-constructor.
 	 */
-	vtkPVStuproView(const vtkPVStuproView&);
+	KronosView(const KronosView&);
 
 	/**
 	* This method is not implemented due to vtks architecture.
 	* This will remove the =-assignment (and copying).
 	*/
-	void operator=(const vtkPVStuproView&);
+	void operator=(const KronosView&);
 
 	/**
 	 * TODO: Maybe remove this method using the global config?

@@ -4,23 +4,24 @@
 #include <qmainwindow.h>
 #include <qnamespace.h>
 #include <qstring.h>
-#include <StuproWindow.hpp>
+#include <KronosWindow.hpp>
 #include <pqActiveObjects.h>
 #include <pqObjectBuilder.h>
 #include <pqApplicationCore.h>
 
-#include "ui_StuproWindow.h"
+#include "ui_KronosWindow.h"
 
-class StuproWindow::pqInternals : public Ui::pqClientMainWindow {
-
+/**
+ * This class basically provides the default ParaView
+ * components for initialization.
+ */
+class KronosWindow::pqInternals : public Ui::pqClientMainWindow {
 };
 
-//-----------------------------------------------------------------------------
-StuproWindow::StuproWindow() {
+KronosWindow::KronosWindow() {
+	// Setup default GUI layout.
 	this->Internals = new pqInternals();
 	this->Internals->setupUi(this);
-
-	// Setup default GUI layout.
 
 	// Set up the dock window corners to give the vertical docks more room.
 	this->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -70,19 +71,17 @@ StuproWindow::StuproWindow() {
 	// behaviors, we use this convenience method.
 	new pqParaViewBehaviors(this, this);
 
+	// TODO: Try and set the default view to our view.
 	// this->Internals->MultiViewWidget->closeTab(0);
 	// pqApplicationCore::instance()->getObjectBuilder()->createView("StuproView",
 	//         pqActiveObjects::instance().activeServer());
 }
 
-//-----------------------------------------------------------------------------
-StuproWindow::~StuproWindow() {
+KronosWindow::~KronosWindow() {
 	delete this->Internals;
 }
 
-
-//-----------------------------------------------------------------------------
-void StuproWindow::showHelpForProxy(const QString& proxyname) {
+void KronosWindow::showHelpForProxy(const QString& proxyname) {
 	pqHelpReaction::showHelp(
 	    QString("qthelp://paraview.org/paraview/%1.html").arg(proxyname));
 }

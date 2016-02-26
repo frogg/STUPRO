@@ -40,6 +40,6 @@ else
 	break;
 }
 
-$projectPath = $binaryPath + "src/paraview_stupro.vcxproj"
+$projectPath = $binaryPath + "src/kronos.vcxproj"
 <# Use the paths and other info to replace the beginning of the additional dependencies of the default project file with the added libs. #>
 (Get-Content $projectPath) | ForEach-Object { $_ -replace "<AdditionalDependencies>", "<AdditionalDependencies>$freetypeLibs" } | Set-Content $projectPath

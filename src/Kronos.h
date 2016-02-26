@@ -1,7 +1,7 @@
 #ifndef KRONOS_KRONOS_MAIN_H
 #define KRONOS_KRONOS_MAIN_H
 
-#include <View/vtkPVStuproView.h>
+#include <View/KronosView.h>
 
 #include <QObject>
 
