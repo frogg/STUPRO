@@ -12,18 +12,19 @@
 #include <vtkInformationVector.h>
 #include <vtkIntArray.h>
 #include <vtkCamera.h>
+#include <pqApplicationCore.h>
 vtkStandardNewMacro(KronosRepresentation);
 //----------------------------------------------------------------------------
-KronosRepresentation::KronosRepresentation() : error(false)
+KronosRepresentation::KronosRepresentation() : error(false), inPowerwallMode(false)
 {
-    //Set nummber of input connections.
-    this->SetNumberOfInputPorts(1);
-    this->SetNumberOfOutputPorts(0);
+    this->SetNumberOfInputPorts(2);
+
     //Create Object of Everything used;
     this->labelActor = vtkSmartPointer<vtkActor2D>::New();
     this->pointMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     this->labelMapper = vtkSmartPointer<KronosLabelMapper>::New();
     this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
+    this->inputData =  vtkSmartPointer<vtkPolyData>::New();
     //Set visibility to false so its not shown on load
     this->SetVisibility(false);
     //Get DepthBuffer Option from Config
@@ -45,8 +46,10 @@ int KronosRepresentation::RequestInformation(vtkInformation* request,
                                                 vtkInformationVector** inputVector,
                                                 vtkInformationVector* outputVector) {
     vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-   
-    
+    if(inInfo==nullptr){
+        this->inPowerwallMode=true;
+        return 1;
+    }
     if (inInfo->Has(Data::VTK_DATA_TYPE())) {
         Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
         if (dataType != Data::CITIES && dataType != Data::TWEETS) {
@@ -70,13 +73,23 @@ int KronosRepresentation::RequestData(vtkInformation* request,
     if (this->error) {
         return 0;
     }
-    if(inputVector[0]->GetNumberOfInformationObjects()==1){
+    
+    if(inputVector[0]->GetNumberOfInformationObjects()==1 &&  !inPowerwallMode){
         vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
         vtkPolyData *input = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
-        
+        if(this->inPowerwallMode){
+            if(input->GetPointData()->HasArray("names")){
+                currentDataType=Data::CITIES;
+
+            }
+            if(input->GetPointData()->HasArray("content")){
+                currentDataType=Data::TWEETS;
+            }
+        }
         switch(currentDataType){
             case Data::CITIES:
                 CitiesRepresentation(input);
+
                 break;
             case Data::TWEETS:
                 TweetRepresentation(input);
@@ -86,13 +99,13 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         };
         
     }
+
     // Call superclass to draw points.
     return this->Superclass::RequestData(request, inputVector, outputVector);
 
 }
 //----------------------------------------------------------------------------
 void KronosRepresentation::CitiesRepresentation(vtkPolyData *input){
-    
     //Generate the label hierarchy and filter the points according to the priorities.
     this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
     this->pointSetToLabelHierarchyFilter->SetInputData(input);
@@ -133,12 +146,13 @@ void KronosRepresentation::SetVisibility(bool val)
 {
     //Set visibility of the actors and superclass.
     this->Superclass::SetVisibility(val);
-    this->labelActor->SetVisibility(val?  1 : 0);
+    this->labelActor->SetVisibility(val?  1 : 1);
 }
 //----------------------------------------------------------------------------
 bool KronosRepresentation::AddToView(vtkView* view)
 {
     //Adds the actors to the view.
+    std::cout << "Added to view" << endl;
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
@@ -150,6 +164,7 @@ bool KronosRepresentation::AddToView(vtkView* view)
 bool KronosRepresentation::RemoveFromView(vtkView* view)
 {
     //Removes the actors from the view.
+    std::cout << "remove to view" << endl;
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
@@ -158,7 +173,7 @@ bool KronosRepresentation::RemoveFromView(vtkView* view)
     return this->Superclass::RemoveFromView(view);
 }
 //----------------------------------------------------------------------------
-int KronosRepresentation::FillInputPortInformation(int, vtkInformation *info) {
+int KronosRepresentation::FillInputPortInformation(int port, vtkInformation *info) {
     //The input data needs to be polydata.
     info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1);
     info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");

@@ -33,7 +33,7 @@ public:
    * @param val visibility variable
    */
   void SetVisibility(bool val) override;
-    
+
 protected:
     //constructor and destructor
     KronosRepresentation();
@@ -74,16 +74,18 @@ private:
     vtkSmartPointer<vtkPolyDataMapper> pointMapper;
     //Mapper for the labels
     vtkSmartPointer<KronosLabelMapper> labelMapper;
-    //Actor which adds the Points to the view
-    vtkSmartPointer<vtkActor> pointActor;
     //Actor which adds the Lables to the view
     vtkSmartPointer<vtkActor2D> labelActor;
     //Filters the Data according to the priority
     vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter;
+    //Input data
+    vtkSmartPointer<vtkPolyData> inputData;
     //Boolean flag used to enable/disable the depthbuffer
     bool useDepthBuffer;
     //Boolean flag denoting whether there was an error.
     bool error;
+    //Boolean flag denoting whether paraview is in powerwallmode
+    bool inPowerwallMode;
     //Holds the current DataType
     Data::Type currentDataType;
 };
