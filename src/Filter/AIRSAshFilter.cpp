@@ -1,4 +1,4 @@
-#include <Filter/AIRSSOFilter.h>
+#include <Filter/AIRSAshFilter.h>
 
 #include <vtkPolyData.h>
 #include <vtkDataObject.h>
@@ -9,24 +9,24 @@
 #include <vtkDoubleArray.h>
 
 
-vtkStandardNewMacro(AIRSSOFilter);
+vtkStandardNewMacro(AIRSAshFilter);
 
-AIRSSOFilter::AIRSSOFilter() { };
-//AIRSSOFilter::AIRSSOFilter() : error(false) { }
+AIRSAshFilter::AIRSAshFilter() { };
+//AIRSAshFilter::AIRSAshFilter() : error(false) { }
 
-AIRSSOFilter::~AIRSSOFilter() { }
+AIRSAshFilter::~AIRSAshFilter() { }
 
 
-void AIRSSOFilter::fail(QString message) {
+void AIRSAshFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());
 	this->error = true;
 }
 
 
 
-int AIRSSOFilter::RequestData(vtkInformation* info,
-                              vtkInformationVector** inputVector,
-                              vtkInformationVector* outputVector) {
+int AIRSAshFilter::RequestData(vtkInformation* info,
+                               vtkInformationVector** inputVector,
+                               vtkInformationVector* outputVector) {
 	if (this->error) {
 		return 0;
 	}
@@ -113,39 +113,39 @@ int AIRSSOFilter::RequestData(vtkInformation* info,
 }
 
 
-int AIRSSOFilter::RequestInformation(vtkInformation* request,
-                                     vtkInformationVector** inputVector,
-                                     vtkInformationVector* outputVector) {
+int AIRSAshFilter::RequestInformation(vtkInformation* request,
+                                      vtkInformationVector** inputVector,
+                                      vtkInformationVector* outputVector) {
 	return 1;
 }
 
-void AIRSSOFilter::setLower(float lowerLimit) {
+void AIRSAshFilter::setLower(float lowerLimit) {
 	this->LowerLimit = lowerLimit;
 	this->Modified();
 }
 
-void AIRSSOFilter::setUpper(float upperLimit) {
+void AIRSAshFilter::setUpper(float upperLimit) {
 	this->UpperLimit = upperLimit;
 	this->Modified();
 }
 
 
 
-void AIRSSOFilter::PrintSelf(ostream& os, vtkIndent indent) {
+void AIRSAshFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
 	os << indent << "Filter for selecting and extracting certain data points, Kronos Project" <<
 	   endl;
 }
-void AIRSSOFilter::SetInputConnection(vtkAlgorithmOutput* input) {
+void AIRSAshFilter::SetInputConnection(vtkAlgorithmOutput* input) {
 	this->Superclass::SetInputConnection(input);
 }
 
-int AIRSSOFilter::FillOutputPortInformation(int port, vtkInformation* info) {
+int AIRSAshFilter::FillOutputPortInformation(int port, vtkInformation* info) {
 	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
 	return 1;
 }
 
-int AIRSSOFilter::FillInputPortInformation(int port, vtkInformation* info) {
+int AIRSAshFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	if (port == 0) {
 		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
 		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
@@ -153,10 +153,10 @@ int AIRSSOFilter::FillInputPortInformation(int port, vtkInformation* info) {
 
 	return 1;
 }
-bool AIRSSOFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
-                                 vtkPointData* pointData) {
-	vtkSmartPointer<vtkFloatArray> soArray = vtkFloatArray::SafeDownCast(
-	            pointData->GetAbstractArray("SO2"));
-	double so = soArray->GetTuple1(pointIndex);
-	return (this->LowerLimit <= so && so <= this->UpperLimit);
+bool AIRSAshFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
+                                  vtkPointData* pointData) {
+	vtkSmartPointer<vtkFloatArray> ashArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("ash"));
+	float ash = ashArray->GetTuple1(pointIndex);
+	return (this->LowerLimit <= ash && ash <= this->UpperLimit);
 }

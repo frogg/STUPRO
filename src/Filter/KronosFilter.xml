@@ -377,6 +377,7 @@
                 <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
+
         <SourceProxy name="MIPASFilter" class="MIPASFilter" label="MIPASFilter">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with MIPAS Data"
@@ -449,6 +450,7 @@
                 <ShowInMenu category="SciVis"/>
             </Hints>
         </SourceProxy>
+
         <SourceProxy name="CLaMSFilter" class="CLaMSFilter" label="CLaMSFilter">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with ClaMS Data"
@@ -484,6 +486,7 @@
                 <ShowInMenu category="SciVis"/>
             </Hints>
         </SourceProxy>
+
         <SourceProxy name="MIPASOrbidFilter" class="MIPASOrbidFilter" label="MIPASOrbidFilter">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
@@ -519,6 +522,7 @@
                 <ShowInMenu category="SciVis"/>
             </Hints>
         </SourceProxy>
+
         <SourceProxy name="AIRSSOFilter" class="AIRSSOFilter" label="AIRSSOFilter">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
@@ -554,6 +558,43 @@
                 <ShowInMenu category="SciVis"/>
             </Hints>
         </SourceProxy>
+
+        <SourceProxy name="AIRSAshFilter" class="AIRSAshFilter" label="AIRSAshFilter">
+            <Documentation
+                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
+                short_help="Solve SciVis-Contest with this filter">
+            </Documentation>
+            <InputProperty
+                name="AIRS Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkCellData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <DoubleVectorProperty name="Start range"
+                command="setLower"
+                number_of_elements="1"
+                default_values="-7.53248">
+                <DoubleRangeDomain name="range" min="-7.53248" max="17.147" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End range"
+                command="setUpper"
+                number_of_elements="1"
+                default_values="17.147">
+                <DoubleRangeDomain name="range" min="-7.53248" max="17.147" />
+            </DoubleVectorProperty>
+            <Hints>
+                <ShowInMenu category="SciVis"/>
+            </Hints>
+        </SourceProxy>
+
     </ProxyGroup>
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
