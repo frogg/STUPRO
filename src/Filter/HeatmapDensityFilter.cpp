@@ -48,15 +48,20 @@ HeatmapDensityFilter::HeatmapDensityFilter() {
 
 }
 
+/**
+ *called from XML to set the heatmap's resolution
+ */
 void HeatmapDensityFilter::setHeatmapResolution(double heatmapResolution) {
 	this->heatmapResolution = heatmapResolution;
 	this->Modified();
 }
 
-
+/**
+ * print self methode
+ */
 void HeatmapDensityFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
-	os << indent << "Twitter Filter, Kronos Project" << endl;
+	os << indent << "Heatmap Density Filter, Kronos Project" << endl;
 }
 
 HeatmapDensityFilter::~HeatmapDensityFilter() {}
@@ -65,12 +70,12 @@ vtkStandardNewMacro(HeatmapDensityFilter)
 
 
 
+/**
+ * this method is called when new a higher instance requests new data
+ */
 int HeatmapDensityFilter::RequestData(vtkInformation* info,
                                       vtkInformationVector** inputVector,
                                       vtkInformationVector* outputVector) {
-
-
-
 
 
 
@@ -100,7 +105,7 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 
 
 
-
+    
 	vtkPoints* intputDataPoints = dataInput->GetPoints();
 
 	int numberOfDataInputPoints = intputDataPoints->GetNumberOfPoints();
