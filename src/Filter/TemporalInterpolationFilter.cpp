@@ -164,7 +164,7 @@ void TemporalInterpolationFilter::interpolateData(){
         //int numberOfGaps = 0;
         bool foundGap = false;
         //test for a specific coordinate all timesteps
-    for(int i=1; i<this->timestampMap.count()-1;i++){
+    for(int i=1; i<this->timestampMap.count();i++){
         //nicht mehr lineare Laufzeit, weil contain nicht in O(1) geht
         //check if coordinate exists at this timestep
         if(timestampMap[i].contains(coord)){
@@ -302,7 +302,7 @@ void TemporalInterpolationFilter::printData(){
     for(int i=0; i<this->timestampMap.count(); i++){
         std::cout << "Number of Points in in Timestep: " << i << ": " << this->timestampMap[i].count() <<std::endl;
     }
-    std::cout << "Gesamtanzahl" <<this->timestampMap.count();
+    std::cout << "Gesamtanzahl" <<this->timestampMap.count() <<std::endl;
 }
 
 void TemporalInterpolationFilter::addDataInLastTimeStep(){
