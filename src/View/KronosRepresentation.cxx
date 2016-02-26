@@ -146,7 +146,7 @@ void KronosRepresentation::SetVisibility(bool val)
 {
     //Set visibility of the actors and superclass.
     this->Superclass::SetVisibility(val);
-    this->labelActor->SetVisibility(val?  1 : 1);
+    this->labelActor->SetVisibility(val);
 }
 //----------------------------------------------------------------------------
 bool KronosRepresentation::AddToView(vtkView* view)
