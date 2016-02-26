@@ -13,8 +13,7 @@
  * This class represents our own, custom vtkPVRenderView. It is responsible
  * for initializing all the relevant variables and objects used later on.
  */
-class VTK_EXPORT KronosView : public vtkPVRenderView
-{
+class VTK_EXPORT KronosView : public vtkPVRenderView {
 public:
 
 	/**
@@ -72,7 +71,7 @@ public:
 	 */
 	Globe::DisplayMode getDisplayMode() const;
 
-	Globe * getGlobe() const;
+	Globe* getGlobe() const;
 
 protected:
 	/**
@@ -81,12 +80,10 @@ protected:
 	 * instantiated by a vtkSmartPointer.
 	 */
 	KronosView() :
-		displayMode(Globe::DisplayGlobe)
-	{
+		displayMode(Globe::DisplayGlobe) {
 	};
 
-	~KronosView()
-	{
+	~KronosView() {
 	};
 
 private:

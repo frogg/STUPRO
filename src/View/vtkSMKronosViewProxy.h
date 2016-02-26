@@ -7,19 +7,19 @@ class vtkSMRenderViewProxy;
 
 class VTK_EXPORT vtkSMKronosViewProxy : public vtkSMRenderViewProxy {
 public:
-    static vtkSMKronosViewProxy* New();
-    vtkTypeMacro(vtkSMKronosViewProxy, vtkSMRenderViewProxy);
+	static vtkSMKronosViewProxy* New();
+	vtkTypeMacro(vtkSMKronosViewProxy, vtkSMRenderViewProxy);
 
-    void moveCamera(float latitude, float longitude);
-    void moveCamera(float latitude, float longitude, float distance);
+	void moveCamera(float latitude, float longitude);
+	void moveCamera(float latitude, float longitude, float distance);
 
 protected:
-    vtkSMKronosViewProxy();
-    ~vtkSMKronosViewProxy();
+	vtkSMKronosViewProxy();
+	~vtkSMKronosViewProxy();
 
 private:
-    vtkSMKronosViewProxy(const vtkSMKronosViewProxy&); // not implemented
-    void operator=(const vtkSMKronosViewProxy&); // not implemented
+	vtkSMKronosViewProxy(const vtkSMKronosViewProxy&); // not implemented
+	void operator=(const vtkSMKronosViewProxy&); // not implemented
 };
 
 #endif
