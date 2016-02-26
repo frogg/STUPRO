@@ -13,6 +13,7 @@ public:
      * @param timestamp The timestamp of this interpolation data point
 	 */
 	InterpolationValue(int priority, int timestamp);
+	InterpolationValue();
 	~InterpolationValue();
     
     /**

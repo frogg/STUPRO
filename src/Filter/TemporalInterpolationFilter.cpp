@@ -224,7 +224,7 @@ void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputDat
         double coordinates[3];
         inputData->GetPoint(i, coordinates);
         PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
-        content.insert(currentCoordinates, this->temporalDataPoint(i, inputData));
+        content.insert(currentCoordinates, this->createDataPoint(i, inputData));
         
         if(!this->allPointCooridinates.contains(currentCoordinates)){
             this->allPointCooridinates.append(currentCoordinates);
@@ -239,7 +239,7 @@ void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputDat
 
 InterpolationValue TemporalInterpolationFilter::createDataPoint(int pointIndex, vtkPolyData *inputData) {
     double coordinates[3];
-    inputData->GetPoint(i, coordinates);
+    inputData->GetPoint(pointIndex, coordinates);
     
     switch (this->dataType) {
         case Data::TEMPERATURE:{
@@ -263,7 +263,6 @@ InterpolationValue TemporalInterpolationFilter::createDataPoint(int pointIndex, 
         }
         default: {
             this->fail("The data type of this filter seems to be invalid.");
-            return;
             break;
         }
     }
