@@ -408,6 +408,8 @@
                 default_values="368156000.0">
                 <DoubleRangeDomain name="range" min="360205000.0" max="368156000.0" />
             </DoubleVectorProperty>
+
+
             <Hints>
                 <ShowInMenu category="SciVis"/>
             </Hints>
@@ -478,6 +480,41 @@
                 default_values="368582000.0">
                 <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
             </DoubleVectorProperty>
+            <Hints>
+                <ShowInMenu category="SciVis"/>
+            </Hints>
+        </SourceProxy>
+        <SourceProxy name="MIPASOrbidFilter" class="MIPASOrbidFilter" label="MIPASOrbidFilter">
+            <Documentation
+                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
+                short_help="Solve SciVis-Contest with this filter">
+            </Documentation>
+            <InputProperty
+                name="AIRS Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkCellData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <IntVectorProperty name="Start range"
+                command="setLower"
+                number_of_elements="1"
+                default_values="48379">
+                <IntRangeDomain name="range" min="48379" max="49701" />
+            </IntVectorProperty>
+            <IntVectorProperty name="End range"
+                command="setUpper"
+                number_of_elements="1"
+                default_values="48379">
+                <IntRangeDomain name="range" min="48379" max="49701" />
+            </IntVectorProperty>
             <Hints>
                 <ShowInMenu category="SciVis"/>
             </Hints>

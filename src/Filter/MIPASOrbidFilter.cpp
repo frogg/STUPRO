@@ -1,4 +1,4 @@
-#include <Filter/MIPASFilter.h>
+#include <Filter/MIPASOrbidFilter.h>
 
 #include <vtkPolyData.h>
 #include <vtkDataObject.h>
@@ -8,25 +8,27 @@
 #include <vtkDoubleArray.h>
 #include <iostream>
 #include <vtkIntArray.h>
+#include <vtkTypeInt32Array.h>
+#include <vtkUnsignedIntArray.h>
 
-vtkStandardNewMacro(MIPASFilter);
+vtkStandardNewMacro(MIPASOrbidFilter);
 
-MIPASFilter::MIPASFilter() { };
-//MIPASFilter::MIPASFilter() : error(false) { }
+MIPASOrbidFilter::MIPASOrbidFilter() { };
+//MIPASOrbidFilter::MIPASOrbidFilter() : error(false) { }
 
-MIPASFilter::~MIPASFilter() { }
+MIPASOrbidFilter::~MIPASOrbidFilter() { }
 
 
-void MIPASFilter::fail(QString message) {
+void MIPASOrbidFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());
 	this->error = true;
 }
 
 
 
-int MIPASFilter::RequestData(vtkInformation* info,
-                             vtkInformationVector** inputVector,
-                             vtkInformationVector* outputVector) {
+int MIPASOrbidFilter::RequestData(vtkInformation* info,
+                                  vtkInformationVector** inputVector,
+                                  vtkInformationVector* outputVector) {
 	if (this->error) {
 		return 0;
 	}
@@ -48,8 +50,7 @@ int MIPASFilter::RequestData(vtkInformation* info,
 	for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
 		double coordinates[3];
 		inputData->GetPoint(i, coordinates);
-		if (this->evaluatePoint(i, Coordinate(coordinates[0], coordinates[1]),
-		                        inputData->GetPointData()) ) {
+		if (this->evaluatePoint(i, Coordinate(coordinates[0], coordinates[1]), inputData->GetPointData())) {
 			visiblePoints.append(i);
 		}
 	}
@@ -114,39 +115,39 @@ int MIPASFilter::RequestData(vtkInformation* info,
 }
 
 
-int MIPASFilter::RequestInformation(vtkInformation* request,
-                                    vtkInformationVector** inputVector,
-                                    vtkInformationVector* outputVector) {
+int MIPASOrbidFilter::RequestInformation(vtkInformation* request,
+        vtkInformationVector** inputVector,
+        vtkInformationVector* outputVector) {
 	return 1;
 }
 
-void MIPASFilter::setLower(double lowerLimit) {
+void MIPASOrbidFilter::setLower(int lowerLimit) {
 	this->LowerLimit = lowerLimit;
 	this->Modified();
 }
 
-void MIPASFilter::setUpper(double upperLimit) {
+void MIPASOrbidFilter::setUpper(int upperLimit) {
 	this->UpperLimit = upperLimit;
 	this->Modified();
 }
 
 
 
-void MIPASFilter::PrintSelf(ostream& os, vtkIndent indent) {
+void MIPASOrbidFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
 	os << indent << "Filter for selecting and extracting certain data points, Kronos Project" <<
 	   endl;
 }
-void MIPASFilter::SetInputConnection(vtkAlgorithmOutput* input) {
+void MIPASOrbidFilter::SetInputConnection(vtkAlgorithmOutput* input) {
 	this->Superclass::SetInputConnection(input);
 }
 
-int MIPASFilter::FillOutputPortInformation(int port, vtkInformation* info) {
+int MIPASOrbidFilter::FillOutputPortInformation(int port, vtkInformation* info) {
 	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
 	return 1;
 }
 
-int MIPASFilter::FillInputPortInformation(int port, vtkInformation* info) {
+int MIPASOrbidFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	if (port == 0) {
 		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
 		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
@@ -154,10 +155,10 @@ int MIPASFilter::FillInputPortInformation(int port, vtkInformation* info) {
 
 	return 1;
 }
-bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) {
-	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
-	            pointData->GetAbstractArray("time"));
-
-	double time = timeArray->GetTuple1(pointIndex);
-	return (this->LowerLimit <= time && time <= this->UpperLimit);
+bool MIPASOrbidFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
+                                     vtkPointData* pointData) {
+	vtkSmartPointer<vtkUnsignedIntArray> orbit_idArray = vtkUnsignedIntArray::SafeDownCast(
+	            pointData->GetAbstractArray("orbit_id"));
+	double orbit_id = orbit_idArray->GetTuple1(pointIndex);
+	return (this->LowerLimit <= orbit_id && orbit_id <= this->UpperLimit);
 }
