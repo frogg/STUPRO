@@ -17,7 +17,7 @@ set(PLUGIN_MOC_SRCS
 
 # files to be moced for the paraview part
 set(PARAVIEW_MOC_SRCS
-	"${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/KronosWindow.hpp"
 )
 
 set(PRINT_CLANG_COMPLETE NO CACHE BOOL "Generate output to be pasted into a .clang_complete file")
@@ -46,11 +46,11 @@ endif()
 if("${KRONOS_QT_VERSION}" STREQUAL "5")
 	QT5_WRAP_CPP(PLUGIN_MOC_FILES ${PLUGIN_MOC_SRCS})
 	QT5_WRAP_CPP(PARAVIEW_MOC_FILES ${PARAVIEW_MOC_SRCS})
-	QT5_WRAP_UI(UISrcs StuproWindow.ui)
+	QT5_WRAP_UI(UISrcs KronosWindow.ui)
 else()
 	QT4_WRAP_CPP(PLUGIN_MOC_FILES ${PLUGIN_MOC_SRCS})
 	QT4_WRAP_CPP(PARAVIEW_MOC_FILES ${PARAVIEW_MOC_SRCS})
-	QT4_WRAP_UI(UISrcs StuproWindow.ui)
+	QT4_WRAP_UI(UISrcs KronosWindow.ui)
 endif()
 
 # fallback (works only for CMake 3.0 and above)
@@ -58,14 +58,14 @@ endif()
 
 # source files responsible for creating the ParaView window
 set(ParaView_SOURCE_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/StuproWindow.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/KronosWindow.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/KronosWindow.hpp
 	${PARAVIEW_MOC_SRCS}
 	${UISrcs}
 )
 
 # all other Kronos source files
-file(GLOB_RECURSE StuproView_SOURCE_FILES
+file(GLOB_RECURSE KRONOS_SOURCE_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/Kronos.*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/**/*.hpp"
@@ -107,7 +107,7 @@ include_directories(
 # load the glsl-shaders to use in code:
 # these can be used using the filename (without extension) as
 # const char* variables
-encode_files_as_strings(StuproView_ENCODED_SHADERS
+encode_files_as_strings(KRONOS_ENCODED_SHADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/glsl/GlobeShader_fsh.glsl
 	${CMAKE_CURRENT_SOURCE_DIR}/../res/glsl/GlobeShader_vsh.glsl
 )
@@ -149,8 +149,8 @@ add_paraview_plugin(
 	GUI_SOURCES
 		${PLACE_SEARCH_WIDGET_OUTSRCS}
 	SOURCES
-		${StuproView_SOURCE_FILES}
-		${StuproView_ENCODED_SHADERS}
+		${KRONOS_SOURCE_FILES}
+		${KRONOS_ENCODED_SHADERS}
 		${PLACE_SEARCH_WIDGET_OUTSRCS}
 		${PLUGIN_MOC_FILES}
 		${Kronos_Main_Interfaces_SRCS}
@@ -170,15 +170,15 @@ set_property(TARGET KronosPlugin PROPERTY CXX_STANDARD 11)
 
 # register a ParaView client
 build_paraview_client(
-	paraview_stupro
-	TITLE "ParaView - Kronos-Edition"
+	kronos
+	TITLE "Kronos"
 	ORGANIZATION "Kitware Inc."
 	SPLASH_IMAGE "Splash.png"
 	VERSION_MAJOR 1
 	VERSION_MINOR 0
 	VERSION_PATCH 0
-	PVMAIN_WINDOW StuproWindow
-	PVMAIN_WINDOW_INCLUDE StuproWindow.hpp
+	PVMAIN_WINDOW KronosWindow
+	PVMAIN_WINDOW_INCLUDE KronosWindow.hpp
 	REQUIRED_PLUGINS KronosPlugin
 	SOURCES
 		${ParaView_SOURCE_FILES}
@@ -189,13 +189,13 @@ build_paraview_client(
 )
 
 # use C++11 to compile the client
-set_property(TARGET paraview_stupro PROPERTY CXX_STANDARD 11)
+set_property(TARGET kronos PROPERTY CXX_STANDARD 11)
 
 # make sure not to copy or delete the resource folder if we are doing an in-source build
 if(NOT ("${CMAKE_SOURCE_DIR}" STREQUAL "${KRONOS_BIN_DIR}"))
 	# copy over all required resources after each build
 	add_custom_command(
-		TARGET paraview_stupro
+		TARGET kronos
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${KRONOS_BIN_DIR}/res
 	)

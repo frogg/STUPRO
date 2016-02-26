@@ -13,31 +13,31 @@ class SphericalToCartesianFilter : public vtkTransformFilter {
 	KRONOS_FRIEND_TEST(TestSphericalToCartesianFilter, ValidCalls);
 
 public:
-    vtkTypeMacro(SphericalToCartesianFilter, vtkTransformFilter)
-	static SphericalToCartesianFilter *New();
-	void PrintSelf(ostream &os, vtkIndent indent) override;
+	vtkTypeMacro(SphericalToCartesianFilter, vtkTransformFilter)
+	static SphericalToCartesianFilter* New();
+	void PrintSelf(ostream& os, vtkIndent indent) override;
 
 	/**
 	 * Documentation see vtkAlgorithm
 	 */
-	int FillOutputPortInformation(int, vtkInformation *info) override;
+	int FillOutputPortInformation(int, vtkInformation* info) override;
 
 	/**
 	 * Documentation see vtkAlgorithm
 	 */
-	int FillInputPortInformation(int, vtkInformation *info) override;
+	int FillInputPortInformation(int, vtkInformation* info) override;
 
-    /**
-     * to activate our filter (there is a checkbox in UI which is connected in the xml)
-     */
-    void setTransform(bool value);
+	/**
+	 * to activate our filter (there is a checkbox in UI which is connected in the xml)
+	 */
+	void setTransform(bool value);
 
 private:
 	SphericalToCartesianFilter();
-    ~SphericalToCartesianFilter();
+	~SphericalToCartesianFilter();
 
-	SphericalToCartesianFilter(const SphericalToCartesianFilter &); // Not implemented.
-    void operator=(const SphericalToCartesianFilter &); // Not implemented.
+	SphericalToCartesianFilter(const SphericalToCartesianFilter&);  // Not implemented.
+	void operator=(const SphericalToCartesianFilter&);  // Not implemented.
 };
 
 #endif /* SphericalToCartesianFilter_hpp */
