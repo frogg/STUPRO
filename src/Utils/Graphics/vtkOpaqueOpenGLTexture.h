@@ -17,10 +17,9 @@ class vtkOpenGLTexture;
 /**
  * Workaround class that forces a texture to be recognized as opaque to work around a vtk bug.
  */
-class vtkOpaqueOpenGLTexture : public vtkOpenGLTexture
-{
+class vtkOpaqueOpenGLTexture : public vtkOpenGLTexture {
 public:
-	static vtkOpaqueOpenGLTexture *New();
+	static vtkOpaqueOpenGLTexture* New();
 	vtkTypeMacro(vtkOpaqueOpenGLTexture, vtkOpenGLTexture);
 	virtual void PrintSelf(std::ostream& os, vtkIndent indent);
 

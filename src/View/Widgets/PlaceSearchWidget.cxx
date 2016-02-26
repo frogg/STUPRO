@@ -130,11 +130,11 @@ void PlaceSearchWidget::listSelectionChanged(const QItemSelection& selection,
 		pqRenderView* rView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
 		if (rView) {
 			vtkSMRenderViewProxy* renderViewProxy = rView->getRenderViewProxy();
-			vtkSMKronosViewProxy* stuproViewProxy = dynamic_cast<vtkSMKronosViewProxy*>(renderViewProxy);
-			if (stuproViewProxy) {
+			vtkSMKronosViewProxy* kronosViewProxy = dynamic_cast<vtkSMKronosViewProxy*>(renderViewProxy);
+			if (kronosViewProxy) {
 				// get the selected city
 				City city = this->resultListModel->getAll()[selection[0].top()];
-				stuproViewProxy->moveCamera(city.latitude, city.longitude);
+				kronosViewProxy->moveCamera(city.latitude, city.longitude);
 			}
 		}
 	}

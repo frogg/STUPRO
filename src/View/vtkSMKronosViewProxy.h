@@ -5,8 +5,7 @@
 
 class vtkSMRenderViewProxy;
 
-class VTK_EXPORT vtkSMKronosViewProxy : public vtkSMRenderViewProxy
-{
+class VTK_EXPORT vtkSMKronosViewProxy : public vtkSMRenderViewProxy {
 public:
     static vtkSMKronosViewProxy* New();
     vtkTypeMacro(vtkSMKronosViewProxy, vtkSMRenderViewProxy);
