@@ -208,7 +208,7 @@ void JsonValidator::validateChildElement(rapidjson::Value& childDocument, Data::
 	case Data::TWEETS: {
 		JsonValidator::checkChildTag(childDocument, "author", kJsonTypeString, path);
 		JsonValidator::checkChildTag(childDocument, "content", kJsonTypeString, path);
-        JsonValidator::checkChildTag(childDocument, "numberOfRetweets", kJsonTypeInteger, path);
+		JsonValidator::checkChildTag(childDocument, "numberOfRetweets", kJsonTypeInteger, path);
 		break;
 	}
 	case Data::PRECIPITATION: {

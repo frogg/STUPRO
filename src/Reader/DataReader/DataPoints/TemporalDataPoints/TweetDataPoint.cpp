@@ -2,7 +2,8 @@
 #include <Reader/DataReader/Data.hpp>
 
 TweetDataPoint::TweetDataPoint(Coordinate coordinate, int priority, int timestamp, QString author,
-                               QString content, int numberOfRetweets) : TemporalDataPoint(Data::TWEETS, coordinate, priority, timestamp),
+                               QString content, int numberOfRetweets) : TemporalDataPoint(Data::TWEETS, coordinate, priority,
+	                                       timestamp),
 	author(author), content(content), numberOfRetweets(numberOfRetweets) { }
 
 QString TweetDataPoint::getAuthor() const {
@@ -14,5 +15,5 @@ QString TweetDataPoint::getContent() const {
 };
 
 int TweetDataPoint::getNumberOfRetweets() const {
-    return this->numberOfRetweets;
+	return this->numberOfRetweets;
 }
