@@ -7,14 +7,10 @@
 #include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
-#include <vtkTypeFloat32Array.h>
+#include <vtkFloatArray.h>
 #include <MakeUnique.hpp>
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/TemperatureDataPoint.hpp>
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/TweetDataPoint.hpp>
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/WindDataPoint.hpp>
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/CloudCoverageDataPoint.hpp>
 
+#include <Filter/TemporalInterpolationFilter/CloudCoverageInterpolationValue.hpp>
 
 vtkStandardNewMacro(TemporalInterpolationFilter);
 
@@ -111,7 +107,7 @@ int TemporalInterpolationFilter::RequestData(
     if (this->hasPreprocessed()) {
         // TODO: Output the interpolated data set from the preprocessed data using the time in the request
         request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 0);
-        //return
+        return 0;
     }
 
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
@@ -191,7 +187,7 @@ void TemporalInterpolationFilter::interpolateData(){
     }
 }
 
-void TemporalInterpolationFilter::interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int index, PointCoordinates coordinate, int numberOfInterpolations){
+void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue lower, InterpolationValue higher, int index, PointCoordinates coordinate, int numberOfInterpolations){
     //TODO interpolieren
     //this->timestampMap[index].insert(coordinate,this->timestampMap[i][coordinate]);
 }
@@ -199,7 +195,7 @@ void TemporalInterpolationFilter::interpolateDataPoint(TemporalDataPoint lower, 
 void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputData){
     //QList<int> knownPoints;
     //auto content = makeUnique<QMap<PointCoordinates, TemporalDataPoint>>() ;
-    QMap<PointCoordinates, TemporalDataPoint> content;
+    QMap<PointCoordinates, InterpolationValue> content;
     for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
         double coordinates[3];
         inputData->GetPoint(i, coordinates);
@@ -217,29 +213,36 @@ void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputDat
     this->timestampMap.insert(timestep,content);
 }
 
-TemporalDataPoint TemporalInterpolationFilter::temporalDataPoint(int pointIndex,vtkPolyData *inputData){
+InterpolationValue TemporalInterpolationFilter::createDataPoint(int pointIndex, vtkPolyData *inputData) {
+    double coordinates[3];
+    inputData->GetPoint(i, coordinates);
+    
     switch (this->dataType) {
         case Data::TEMPERATURE:{
             vtkSmartPointer<vtkDataArray> abstractTemperatureArray = inputData->GetPointData()->GetArray("temperatures");
-            vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(abstractTemperatureArray);
-            double currentTemperature = temperatureArray->GetValue(pointIndex);
-            return 	TemperatureDataPoint(Coordinate(1.0,1.0),5,334,currentTemperature);
+            vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(abstractTemperatureArray);
+
+            // return TemperatureDataPoint(Coordinate(coordinates[0], coordinates[1]), 0, 0, temperatureArray->GetValue(pointIndex));
             break;
         }
-        case Data::TWEETS:
+        case Data::TWEETS: {
             break;
-        case Data::PRECIPITATION:
+        }
+        case Data::PRECIPITATION: {
             break;
-        case Data::WIND:
+        }
+        case Data::WIND: {
             break;
-        case Data::CLOUD_COVERAGE:
+        }
+        case Data::CLOUD_COVERAGE: {
             break;
-        default:
-            std::cout << "not corrrect!!!";
-            //warning
+        }
+        default: {
+            this->fail("The data type of this filter seems to be invalid.");
+            return;
             break;
+        }
     }
-    //return nanl;
 }
 
 void TemporalInterpolationFilter::addDataInFirstTimeStep(){

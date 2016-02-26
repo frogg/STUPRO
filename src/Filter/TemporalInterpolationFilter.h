@@ -7,14 +7,13 @@
 #include <vtkFiltersGeneralModule.h>
 #include <vtkPassInputTypeAlgorithm.h>
 #include <vtkDataSet.h>
-#include <Reader/DataReader/DataPoints/TemporalDataPoints/TemporalDataPoint.hpp>
-#include <PointCoordinates.hpp>
+#include <Filter/TemporalInterpolationFilter/InterpolationValue.hpp>
 
 #include <qstring.h>
 #include <qlist.h>
 #include <qmap.h>
 
-class VTKFILTERSGENERAL_EXPORT TemporalInterpolationFilter : public vtkPassInputTypeAlgorithm {
+class TemporalInterpolationFilter : public vtkPassInputTypeAlgorithm {
 public:
     static TemporalInterpolationFilter *New();
 
@@ -48,14 +47,21 @@ private:
     
     void updateQMap(int timestep, vtkPolyData *inputData);
     
-    TemporalDataPoint temporalDataPoint(int pointIndex,vtkPolyData *inputData);
-    QMap<int, QMap<PointCoordinates, TemporalDataPoint>> timestampMap;
+    /**
+     * Create a temporal data point from the data available in a `vtkPolyData` object.
+     * @param pointIndex The index of the data point in the input data
+     * @param inputData The poly data object containing the point data
+     * @return A temporal data point of the right type with all available data
+     */
+    InterpolationValue createDataPoint(int pointIndex, vtkPolyData *inputData);
+    
+    QMap<int, QMap<PointCoordinates, InterpolationValue>> timestampMap;
 
     void addDataInFirstTimeStep();
     void addDataInLastTimeStep();
     void printData();
     void interpolateData();
-    void interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int index, PointCoordinates coordinate, int numberOfInterpolations);
+    void interpolateDataPoint(InterpolationValue lower, InterpolationValue higher, int index, PointCoordinates coordinate, int numberOfInterpolations);
 
     QList<PointCoordinates> allPointCooridinates;
     
