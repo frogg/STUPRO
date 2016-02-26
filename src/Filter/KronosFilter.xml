@@ -104,10 +104,11 @@
                 <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
-        <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
+
+        <SourceProxy name="HeatmapDensityFilter" class="HeatmapDensityFilter" label="Heatmap Density Filter">
             <Documentation
-                long_help="This filter can limit temperature data points to a specified temperature range"
-                short_help="Limit temperature data to a specified temperature range">
+                long_help="This filter can interpolate group points and return the data."
+                short_help="This filter can interpolate group points and return the data">
             </Documentation>
             <InputProperty
                 name="Input"
@@ -117,6 +118,35 @@
                     <Group name="filters"/>
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkPointSet"/>
+                    <DataType value="vtkImageData"/>
+                </DataTypeDomain>
+            </InputProperty>
+                <IntVectorProperty name="Set the Heatmap resolution"
+                    command="setHeatmapResolution"
+                    number_of_elements="1"
+                    default_values="1">
+                <IntegerDomain name="double"/>
+            </IntVectorProperty>
+	    <Hints>
+		<ShowInMenu category="Kronos" />
+	    </Hints>
+        </SourceProxy>
+    
+    <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
+        <Documentation
+            long_help="This filter can limit temperature data points to a specified temperature range"
+            short_help="Limit temperature data to a specified temperature range">
+        </Documentation>
+        <InputProperty
+            name="Input"
+            command="SetInputConnection">
+            <ProxyGroupDomain name="groups">
+                <Group name="sources"/>
+                <Group name="filters"/>
+            </ProxyGroupDomain>
+            <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
@@ -408,6 +438,7 @@
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
             <Filter name="PrecipitationTypeFilter" />
+            <Filter name="TwitterHeatmapFilter" />
             <Filter name="FlightFilter" />
             <Filter name="TemporalAggregationFilter" />
             <Filter name="TemperatureThresholdFilter" />
