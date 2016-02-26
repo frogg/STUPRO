@@ -196,33 +196,77 @@ void TemporalInterpolationFilter::interpolateData(){
 }
 
 void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower, InterpolationValue* higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance){
-    //noch interpolieren erstmal  higher und lower genommen
-    this->timestampMap[index].insert(coordinate,lower);
-    //std::cout << "interpolateDataPoint" << std::endl;
-    //TODO interpolieren
-    //this->timestampMap[index].insert(coordinate,this->timestampMap[i][coordinate]);
-    /*switch (this->dataType) {
+    
+    float factorA = distanceToFirstInterpolationTimestep / float (distance);
+    float factorB = (distance-distanceToFirstInterpolationTimestep) / float (distance);
+    
+    int priority;
+    //take the value of the lower data point
+    if(distanceToFirstInterpolationTimestep <= distance/2){
+        priority = lower->getPriority();
+    }else{
+        priority = higher->getPriority();
+    }
+    
+    int interpolatedTimestamp = int(factorB * lower->getTimestamp() + factorA * higher->getTimestamp());
+    
+    
+    
+    switch (this->dataType) {
         case Data::TEMPERATURE:{
-            vtkSmartPointer<vtkDataArray> abstractTemperatureArray = inputData->GetPointData()->GetArray("temperatures");
-            vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(abstractTemperatureArray);
-            double currentTemperature = temperatureArray->GetValue(pointIndex);
-            return 	TemperatureDataPoint(Coordinate(1.0,1.0),5,334,currentTemperature);
+            TemperatureInterpolationValue* lowerValue = static_cast<TemperatureInterpolationValue*>(lower);
+            TemperatureInterpolationValue* higherValue = static_cast<TemperatureInterpolationValue*>(higher);
+            
+            float interpolatedTemperature = factorB * lowerValue->getTemperature() + factorA * higherValue->getTemperature();
+            
+            TemperatureInterpolationValue *interpolatedValue = new TemperatureInterpolationValue(priority, interpolatedTimestamp, interpolatedTemperature);
+            this->timestampMap[index].insert(coordinate,interpolatedValue);
             break;
         }
-        case Data::TWEETS:
+        case Data::TWEETS: {
+            TwitterInterpolationValue* lowerValue = static_cast<TwitterInterpolationValue*>(lower);
+            TwitterInterpolationValue* higherValue = static_cast<TwitterInterpolationValue*>(higher);
+            
+            float interpolatedDensity = factorB * lowerValue->getDensity() + factorA * higherValue->getDensity();
+            TwitterInterpolationValue *interpolatedValue = new TwitterInterpolationValue(priority, interpolatedTimestamp, interpolatedDensity);
+            this->timestampMap[index].insert(coordinate,interpolatedValue);
             break;
-        case Data::PRECIPITATION:
+        }
+        case Data::PRECIPITATION: {
+            PrecipitationInterpolationValue* lowerValue = static_cast<PrecipitationInterpolationValue*>(lower);
+            PrecipitationInterpolationValue* higherValue = static_cast<PrecipitationInterpolationValue*>(higher);
+            
+            PrecipitationDataPoint::PrecipitationType percipiationType;
+            
+            if(distanceToFirstInterpolationTimestep <= distance/2){
+                percipiationType = lowerValue->getPrecipitationType();
+            }else{
+                percipiationType = higherValue->getPrecipitationType();
+            }
+            
+            float interpolatedPrecipitationRate = factorB * lowerValue->getPrecipitationRate() + factorA *higherValue->getPrecipitationRate();
+            
+            PrecipitationInterpolationValue *interpolatedValue = new PrecipitationInterpolationValue(priority, interpolatedTimestamp, interpolatedPrecipitationRate, percipiationType);
+            this->timestampMap[index].insert(coordinate,interpolatedValue);
             break;
-        case Data::WIND:
+        }
+        case Data::WIND: {
+            vtkSmartPointer<vtkFloatArray> bearingArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("directions"));
+            vtkSmartPointer<vtkFloatArray> velocityArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("speeds"));
+            return new WindInterpolationValue(priority, timestamp, bearingArray->GetValue(pointIndex), velocityArray->GetValue(pointIndex));
             break;
-        case Data::CLOUD_COVERAGE:
+        }
+        case Data::CLOUD_COVERAGE: {
+            vtkSmartPointer<vtkFloatArray> cloudCoverageArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("cloudCovers"));
+            return new CloudCoverageInterpolationValue(priority, timestamp, cloudCoverageArray->GetValue(pointIndex));
             break;
-        default:
-            std::cout << "not corrrect!!!";
-            //warning
+        }
+        default: {
+            this->fail("The data type of this filter seems to be invalid.");
+            return new InterpolationValue();
             break;
+        }
     }
-    */
 
 }
 
