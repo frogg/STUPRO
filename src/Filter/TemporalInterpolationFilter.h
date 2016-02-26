@@ -61,7 +61,7 @@ private:
     void addDataInLastTimeStep();
     void printData();
     void interpolateData();
-    void interpolateDataPoint(InterpolationValue lower, InterpolationValue higher, int index, PointCoordinates coordinate, int numberOfInterpolations);
+    void interpolateDataPoint(InterpolationValue lower, InterpolationValue higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance);
 
     QList<PointCoordinates> allPointCooridinates;
     

@@ -144,6 +144,8 @@ int TemporalInterpolationFilter::RequestData(
         std::cout << "Total number of points: " << this->allPointCooridinates.count();
         
         this->printData();
+        this->preprocessed = true;
+        
 	}
     
     request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
@@ -152,44 +154,66 @@ int TemporalInterpolationFilter::RequestData(
 
 void TemporalInterpolationFilter::interpolateData(){
     
+    //interate over all coodinates
     for(PointCoordinates coord : this->allPointCooridinates){
         int firstTimestep = 0;
-        //int numberOfInterpolations = 0;
-        //TemporalDataPoint lower;
-        //TemporalDataPoint higher;
+        //int numberOfGaps = 0;
         bool foundGap = false;
-        
-    for(int i=1; i<this->timestampMap.count()-1;i++){
-        //evtl nicht keine Referenz
-        //vermutlich besser alles als array umzubauen
-        //sonst nicht mehr lineare lauftzeit
+        //test for a specific coordinate all timesteps
+    for(int i=1; i<this->timestampMap.count();i++){
+        //nicht mehr lineare Laufzeit, weil contain nicht in O(1) geht
+        //check if coordinate exists at this timestep
         if(timestampMap[i].contains(coord)){
             if(foundGap){
-                //higher = timestampMap[i][coord];
                 //alle Zwischenpunkte interpolieren und in Map einfügen
                 //Zeitschritte
                 for(int x = firstTimestep+1; x<i; x++){
-                    this->interpolateDataPoint(timestampMap[firstTimestep][coord], timestampMap[i][coord], x, coord, i-firstTimestep);
+                    int distanceToFirstTimestep = x-firstTimestep;
+                    this->interpolateDataPoint(timestampMap[firstTimestep][coord], timestampMap[i][coord], distanceToFirstTimestep, x, coord, i-firstTimestep);
                 }
-                
-            numberOfInterpolations = 0;
-                firstTimestep = firstTimestep+numberOfInterpolations; //evtl off by one error
+                firstTimestep = i;
+                foundGap = false;
+            }else{
+                firstTimestep++;
             }
-            firstTimestep++;
         }else{
             if(!foundGap){
-                //lower = timestampMap[i][coord];
                 foundGap = true;
             }
-            //numberOfInterpolations++;
         }
     }
     }
 }
 
-void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue lower, InterpolationValue higher, int index, PointCoordinates coordinate, int numberOfInterpolations){
+void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue lower, InterpolationValue higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance){
+    //noch interpolieren erstmal  higher und lower genommen
+    this->timestampMap[index].insert(coordinate,lower);
+    //std::cout << "interpolateDataPoint" << std::endl;
     //TODO interpolieren
     //this->timestampMap[index].insert(coordinate,this->timestampMap[i][coordinate]);
+    /*switch (this->dataType) {
+        case Data::TEMPERATURE:{
+            vtkSmartPointer<vtkDataArray> abstractTemperatureArray = inputData->GetPointData()->GetArray("temperatures");
+            vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(abstractTemperatureArray);
+            double currentTemperature = temperatureArray->GetValue(pointIndex);
+            return 	TemperatureDataPoint(Coordinate(1.0,1.0),5,334,currentTemperature);
+            break;
+        }
+        case Data::TWEETS:
+            break;
+        case Data::PRECIPITATION:
+            break;
+        case Data::WIND:
+            break;
+        case Data::CLOUD_COVERAGE:
+            break;
+        default:
+            std::cout << "not corrrect!!!";
+            //warning
+            break;
+    }
+    */
+
 }
 
 void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputData){
@@ -281,7 +305,7 @@ void TemporalInterpolationFilter::printData(){
     for(int i=0; i<this->timestampMap.count(); i++){
         std::cout << "Number of Points in in Timestep: " << i << ": " << this->timestampMap[i].count() <<std::endl;
     }
-    std::cout << "Gesamtanzahl" <<this->timestampMap.count();
+    std::cout << "Gesamtanzahl" <<this->timestampMap.count() <<std::endl;
 }
 
 void TemporalInterpolationFilter::addDataInLastTimeStep(){
