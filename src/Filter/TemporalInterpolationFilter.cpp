@@ -192,7 +192,7 @@ void TemporalInterpolationFilter::interpolateData(){
 void TemporalInterpolationFilter::interpolateDataPoint(TemporalDataPoint lower, TemporalDataPoint higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance){
     //noch interpolieren erstmal  higher und lower genommen
     this->timestampMap[index].insert(coordinate,lower);
-    std::cout << "interpolateDataPoint" << std::endl;
+    //std::cout << "interpolateDataPoint" << std::endl;
     //TODO interpolieren
     //this->timestampMap[index].insert(coordinate,this->timestampMap[i][coordinate]);
     /*switch (this->dataType) {
