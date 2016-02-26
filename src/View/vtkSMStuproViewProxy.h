@@ -5,22 +5,21 @@
 
 class vtkSMRenderViewProxy;
 
-class VTK_EXPORT vtkSMStuproViewProxy : public vtkSMRenderViewProxy
-{
+class VTK_EXPORT vtkSMStuproViewProxy : public vtkSMRenderViewProxy {
 public:
-    static vtkSMStuproViewProxy* New();
-    vtkTypeMacro(vtkSMStuproViewProxy, vtkSMRenderViewProxy);
+	static vtkSMStuproViewProxy* New();
+	vtkTypeMacro(vtkSMStuproViewProxy, vtkSMRenderViewProxy);
 
-    void moveCamera(float latitude, float longitude);
-    void moveCamera(float latitude, float longitude, float distance);
+	void moveCamera(float latitude, float longitude);
+	void moveCamera(float latitude, float longitude, float distance);
 
 protected:
-    vtkSMStuproViewProxy();
-    ~vtkSMStuproViewProxy();
+	vtkSMStuproViewProxy();
+	~vtkSMStuproViewProxy();
 
 private:
-    vtkSMStuproViewProxy(const vtkSMStuproViewProxy&); // not implemented
-    void operator=(const vtkSMStuproViewProxy&); // not implemented
+	vtkSMStuproViewProxy(const vtkSMStuproViewProxy&); // not implemented
+	void operator=(const vtkSMStuproViewProxy&); // not implemented
 };
 
 #endif
