@@ -88,13 +88,13 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 	double height = maxY - minY;
 
 
+    
 
 	int numberOfXComponents = (int) (50.0 * this->heatmapResolution + 0.5);
 	int numberOfYComponents = (int) ((height * numberOfXComponents) / width + 0.5);
 
-
-	double stepWidthX = (width / numberOfXComponents);
-	double stepWidthY = (height / numberOfYComponents);
+	double stepWidthX = (width / (numberOfXComponents-1));
+	double stepWidthY = (height / (numberOfYComponents-1));
 
 
 
@@ -115,7 +115,7 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 			density[pointID] = 0.0;
 		}
 	}
-
+    std::cout << numberOfDataInputPoints << "Daten anzahl";
 	for (int i = 0; i < numberOfDataInputPoints; i++) {
 
 		double point[3];
@@ -126,10 +126,10 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 
 
 
-		int x = round(relativeX * numberOfXComponents);
-		int y = round(relativeY * numberOfYComponents);
+		int x = round(relativeX * (numberOfXComponents-1));
+		int y = round(relativeY * (numberOfYComponents-1));
 
-		std::cout << x << ", " << y << std::endl;
+		std::cout << relativeX << ", " << relativeY << std::endl;
 
 		int pointID = x * numberOfXComponents + y;
 
@@ -163,6 +163,7 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 			double relativeX = minX + x * stepWidthX;
 			double relativeY = minY + y * stepWidthY;
 			verts->InsertCellPoint(points->InsertNextPoint(relativeX, relativeY, 0));
+            std::cout << "Test" << x << ", " << y << std::endl;
 		}
 	}
 
