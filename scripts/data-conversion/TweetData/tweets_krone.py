@@ -16,9 +16,9 @@ for tweet in twitterjsondata:
 	try:
 
 		tweet["longitude"] = float(tweet["longitude"])
-	    tweet["latitude"] = float(tweet["latitude"])
-	    tweet["children"] = []
-        tweet["timestamp"] = 0
+		tweet["latitude"] = float(tweet["latitude"])
+		tweet["children"] = []
+		tweet["timestamp"] = 0
 	    #timestamp = tweet["timestamp"]
 
     	#tweet["timestamp"] = int(time.mktime(datetime.datetime.strptime(str(timestamp), "%Y%m%d%H%M%S").timetuple()))
