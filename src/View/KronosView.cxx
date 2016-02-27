@@ -9,18 +9,16 @@
 #include <QEventLoop>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
-#include <vtkInformation.h>
 #include <vtkObjectFactory.h>
-#include <vtkPVStuproView.h>
+#include <KronosView.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkMatrix4x4.h>
+#include <vtkCubeSource.h>
+#include <vtkProperty.h>
 
-vtkStandardNewMacro(vtkPVStuproView);
+vtkStandardNewMacro(KronosView);
 
-void vtkPVStuproView::Initialize(unsigned int id)
-{
+void KronosView::Initialize(unsigned int id) {
 	this->Superclass::Initialize(id);
 
 	initParameters();
@@ -28,41 +26,52 @@ void vtkPVStuproView::Initialize(unsigned int id)
 	initGlobe();
 }
 
-void vtkPVStuproView::initParameters()
-{
+void KronosView::initParameters() {
 	// Initialize parameters.
 	this->displayMode = Globe::DisplayGlobe;
 }
 
-void vtkPVStuproView::initRenderer()
-{
+void KronosView::initRenderer() {
 	this->cameraModifiedCallback = vtkCallbackCommand::New();
 
-    this->cameraModifiedCallback->SetCallback(
-		[](vtkObject* object, unsigned long eid, void* clientdata, void *calldata)
-		{
-			vtkPVStuproView * view = (vtkPVStuproView *)clientdata;
-			if (view->getGlobe()) {
-				view->getGlobe()->onCameraChanged();
-			}
-		});
+	this->cameraModifiedCallback->SetCallback(
+	[](vtkObject * object, unsigned long eid, void* clientdata, void* calldata) {
+		KronosView* view = (KronosView*)clientdata;
+		if (view->getGlobe()) {
+			view->getGlobe()->onCameraChanged();
+		}
+	});
 
-    this->cameraModifiedCallback->SetClientData(this);
+	this->cameraModifiedCallback->SetClientData(this);
 
-	this->GetRenderer()->AddObserver(vtkCommand::ResetCameraClippingRangeEvent, this->cameraModifiedCallback);
+	this->GetRenderer()->AddObserver(vtkCommand::ResetCameraClippingRangeEvent,
+	                                 this->cameraModifiedCallback);
 }
 
-void vtkPVStuproView::initGlobe()
-{
-	const Configuration & config = Configuration::getInstance();
-
+void KronosView::initGlobe() {
 	// Initialize a unique pointer with a new instance of the Globe
 	// using the current renderer.
 	this->globe = makeUnique<Globe>(*this->GetRenderer());
+
+	// Dirty workaround: Create a transparent box around the globe.
+	float radius = Configuration::getInstance().getFloat("globe.radius");
+
+	vtkSmartPointer<vtkCubeSource> cube = vtkCubeSource::New();
+	cube->SetXLength(radius * 2);
+	cube->SetYLength(radius * 2);
+	cube->SetZLength(radius * 2);
+
+	vtkSmartPointer<vtkPolyDataMapper> cubeMapper = vtkPolyDataMapper::New();
+	cubeMapper->SetInputConnection(cube->GetOutputPort());
+
+	vtkSmartPointer<vtkActor> cubeActor = vtkActor::New();
+	cubeActor->SetMapper(cubeMapper);
+	cubeActor->GetProperty()->SetOpacity(0);
+
+	this->GetRenderer()->AddActor(cubeActor);
 }
 
-void vtkPVStuproView::animateMove(double latitude, double longitude, double distance)
-{
+void KronosView::animateMove(double latitude, double longitude, double distance) {
 	bool onGlobe = this->getDisplayMode() == Globe::DisplayGlobe;
 
 	// camera positions
@@ -89,7 +98,8 @@ void vtkPVStuproView::animateMove(double latitude, double longitude, double dist
 	// calculate a distance control point based on the distance of the animation for creating a
 	// zoom-out-and-back-in effect
 	Vector2d latLongDelta(to.x - from.x, to.y - from.y);
-	double distanceControlPoint = latLongDelta.lengthTyped() / (onGlobe ? 100 : 1) + std::min(from.z, to.z);
+	double distanceControlPoint = latLongDelta.lengthTyped() / (onGlobe ? 100 : 1) + std::min(from.z,
+	                              to.z);
 
 	// animation
 	for (int i = 0; i <= 30; i++) {
@@ -97,9 +107,9 @@ void vtkPVStuproView::animateMove(double latitude, double longitude, double dist
 
 		// interpolate the camera position
 		Vector3d pos(
-			Interpolator::quadraticInOut(t, from.x, to.x),
-			Interpolator::quadraticInOut(t, from.y, to.y),
-			Interpolator::quadraticBezier(t, from.z, to.z, distanceControlPoint)
+		    Interpolator::quadraticInOut(t, from.x, to.x),
+		    Interpolator::quadraticInOut(t, from.y, to.y),
+		    Interpolator::quadraticBezier(t, from.z, to.z, distanceControlPoint)
 		);
 		// if we're on a globe, translate the camera's gps coordinates back to cartesian coordinates
 		if (onGlobe) {
@@ -130,13 +140,11 @@ void vtkPVStuproView::animateMove(double latitude, double longitude, double dist
 	}
 }
 
-void vtkPVStuproView::moveCamera(float latitude, float longitude)
-{
+void KronosView::moveCamera(float latitude, float longitude) {
 	this->moveCamera(latitude, longitude, 0.3);
 }
 
-void vtkPVStuproView::moveCamera(float latitude, float longitude, float distance)
-{
+void KronosView::moveCamera(float latitude, float longitude, float distance) {
 	// left-right, up-down, close-far
 	Vector3d position(0.0, 0.0, 2.6);
 
@@ -168,8 +176,7 @@ void vtkPVStuproView::moveCamera(float latitude, float longitude, float distance
 	}
 }
 
-float vtkPVStuproView::getCameraDistance()
-{
+float KronosView::getCameraDistance() {
 	vtkCamera* cam = GetActiveCamera();
 	double x, y, z;
 	cam->GetPosition(x, y, z);
@@ -182,39 +189,35 @@ float vtkPVStuproView::getCameraDistance()
 	z -= cz;
 
 	return sqrt(
-		x * x +
-		y * y +
-		z * z
-	);
+	           x * x +
+	           y * y +
+	           z * z
+	       );
 }
 
 
-void vtkPVStuproView::switchCurrentDisplayMode()
-{
+void KronosView::switchCurrentDisplayMode() {
 	// Invert the display mode and set the interpolation using a static cast.
-	this->displayMode = this->displayMode == Globe::DisplayGlobe ? Globe::DisplayMap : Globe::DisplayGlobe;
+	this->displayMode = this->displayMode == Globe::DisplayGlobe ? Globe::DisplayMap :
+	                    Globe::DisplayGlobe;
 	this->globe->setDisplayMode(this->displayMode);
 
 	// Render the view again.
 	// GetRenderWindow()->Render();
 }
 
-Globe::DisplayMode vtkPVStuproView::getDisplayMode() const
-{
+Globe::DisplayMode KronosView::getDisplayMode() const {
 	return this->displayMode;
 }
 
-Globe * vtkPVStuproView::getGlobe() const
-{
+Globe* KronosView::getGlobe() const {
 	return this->globe.get();
 }
 
-void vtkPVStuproView::setAnimated(bool animated)
-{
+void KronosView::setAnimated(bool animated) {
 	this->animated = animated;
 }
 
-bool vtkPVStuproView::isAnimated()
-{
+bool KronosView::isAnimated() {
 	return this->animated;
 }

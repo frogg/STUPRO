@@ -36,89 +36,90 @@
 
 class vtkPolyData;
 
-class vtkGeoGraticule : public vtkPolyDataAlgorithm
-{
+class vtkGeoGraticule : public vtkPolyDataAlgorithm {
 public:
-  static vtkGeoGraticule* New();
-  virtual void PrintSelf( ostream& os, vtkIndent indent );
-  vtkTypeMacro(vtkGeoGraticule,vtkPolyDataAlgorithm);
+	static vtkGeoGraticule* New();
+	virtual void PrintSelf( ostream& os, vtkIndent indent );
+	vtkTypeMacro(vtkGeoGraticule, vtkPolyDataAlgorithm);
 
-  // Description:
-  // The latitude bounds of the graticule.
-  vtkSetVector2Macro(LatitudeBounds,double);
-  vtkGetVector2Macro(LatitudeBounds,double);
+	// Description:
+	// The latitude bounds of the graticule.
+	vtkSetVector2Macro(LatitudeBounds, double);
+	vtkGetVector2Macro(LatitudeBounds, double);
 
-  // Description:
-  // The longitude bounds of the graticule.
-  vtkSetVector2Macro(LongitudeBounds,double);
-  vtkGetVector2Macro(LongitudeBounds,double);
+	// Description:
+	// The longitude bounds of the graticule.
+	vtkSetVector2Macro(LongitudeBounds, double);
+	vtkGetVector2Macro(LongitudeBounds, double);
 
-  //BTX
-  enum LevelLimits {
-    LEVEL_MIN = 0,
-    LEVEL_MAX = 11,
-    NUMBER_OF_LEVELS = ( LEVEL_MAX - LEVEL_MIN + 1 )
-  };
-  //ETX
+	//BTX
+	enum LevelLimits {
+		LEVEL_MIN = 0,
+		LEVEL_MAX = 11,
+		NUMBER_OF_LEVELS = ( LEVEL_MAX - LEVEL_MIN + 1 )
+	};
+	//ETX
 
-  // Description:
-  // The frequency level of latitude lines.
-  vtkSetClampMacro(LatitudeLevel,int,LEVEL_MIN,LEVEL_MAX);
-  vtkGetMacro(LatitudeLevel,int);
+	// Description:
+	// The frequency level of latitude lines.
+	vtkSetClampMacro(LatitudeLevel, int, LEVEL_MIN, LEVEL_MAX);
+	vtkGetMacro(LatitudeLevel, int);
 
-  // Description:
-  // The frequency level of longitude lines.
-  vtkSetClampMacro(LongitudeLevel,int,LEVEL_MIN,LEVEL_MAX);
-  vtkGetMacro(LongitudeLevel,int);
+	// Description:
+	// The frequency level of longitude lines.
+	vtkSetClampMacro(LongitudeLevel, int, LEVEL_MIN, LEVEL_MAX);
+	vtkGetMacro(LongitudeLevel, int);
 
-  // Description:
-  // The latitude delta at a certain frequency level.
-  static double GetLatitudeDelta(int level)
-    { return LatitudeLevelTics[level]; }
+	// Description:
+	// The latitude delta at a certain frequency level.
+	static double GetLatitudeDelta(int level) {
+		return LatitudeLevelTics[level];
+	}
 
-  // Description:
-  // The longitude delta at a certain frequency level.
-  static double GetLongitudeDelta(int level)
-    { return LongitudeLevelTics[level]; }
+	// Description:
+	// The longitude delta at a certain frequency level.
+	static double GetLongitudeDelta(int level) {
+		return LongitudeLevelTics[level];
+	}
 
-  // Description:
-  // Set//get the type(s) of cells that will be
-  // output by the filter. By default, polylines
-  // are output. You may also request quadrilaterals.
-  // This is a bit vector of GeometryType enums.
-  vtkSetMacro(GeometryType,int);
-  vtkGetMacro(GeometryType,int);
+	// Description:
+	// Set//get the type(s) of cells that will be
+	// output by the filter. By default, polylines
+	// are output. You may also request quadrilaterals.
+	// This is a bit vector of GeometryType enums.
+	vtkSetMacro(GeometryType, int);
+	vtkGetMacro(GeometryType, int);
 
-  //BTX
-  enum GeometryType {
-    POLYLINES      = 0x1,
-    QUADRILATERALS = 0x2
-  };
-  //ETX
+	//BTX
+	enum GeometryType {
+		POLYLINES      = 0x1,
+		QUADRILATERALS = 0x2
+	};
+	//ETX
 
 protected:
-  vtkGeoGraticule();
-  virtual ~vtkGeoGraticule();
+	vtkGeoGraticule();
+	virtual ~vtkGeoGraticule();
 
-  int GeometryType;
-  double LatitudeBounds[2];
-  double LongitudeBounds[2];
-  int LatitudeLevel;
-  int LongitudeLevel;
+	int GeometryType;
+	double LatitudeBounds[2];
+	double LongitudeBounds[2];
+	int LatitudeLevel;
+	int LongitudeLevel;
 
-  // Description:
-  // The distance between tic marks at each level, in degrees.
-  static double LatitudeLevelTics[NUMBER_OF_LEVELS];
-  static double LongitudeLevelTics[NUMBER_OF_LEVELS];
+	// Description:
+	// The distance between tic marks at each level, in degrees.
+	static double LatitudeLevelTics[NUMBER_OF_LEVELS];
+	static double LongitudeLevelTics[NUMBER_OF_LEVELS];
 
-  virtual int RequestData( vtkInformation*, vtkInformationVector**, vtkInformationVector* );
+	virtual int RequestData( vtkInformation*, vtkInformationVector**, vtkInformationVector* );
 
-  void GenerateGraticule( vtkPolyData* output, double latbds[2], double lngbds[2] );
-  int ComputeLineLevel( int ticId, int baseLevel, const double* levelIncrements );
+	void GenerateGraticule( vtkPolyData* output, double latbds[2], double lngbds[2] );
+	int ComputeLineLevel( int ticId, int baseLevel, const double* levelIncrements );
 
 private:
-  vtkGeoGraticule( const vtkGeoGraticule& ); // Not implemented.
-  void operator = ( const vtkGeoGraticule& ); // Not implemented.
+	vtkGeoGraticule( const vtkGeoGraticule& ); // Not implemented.
+	void operator = ( const vtkGeoGraticule& ); // Not implemented.
 };
 
 #endif // __vtkGeoGraticule_h

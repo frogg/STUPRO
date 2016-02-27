@@ -1,7 +1,7 @@
 #ifndef KRONOS_MATH_FUNCTIONS_HPP
 #define KRONOS_MATH_FUNCTIONS_HPP
 
-#include <Utils/Misc/Macros.hpp>
+#include <algorithm>
 
 /**
  * Returns the positive modulo betwen the two specified numbers.
@@ -47,6 +47,12 @@ T getNextPowerOf2(T value) {
 	return value + 1;
 }
 
-
+/**
+ * Limits a value to the specified min/max range.
+ */
+template <typename T>
+T clamp(T min, T value, T max) {
+	return std::max(min, std::min(value, max));
+}
 
 #endif
