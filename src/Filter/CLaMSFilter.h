@@ -25,8 +25,8 @@
 class CLaMSFilter : public vtkDataObjectAlgorithm {
 public:
 
-    vtkTypeMacro(CLaMSFilter, vtkDataObjectAlgorithm)
-    static CLaMSFilter *New();
+	vtkTypeMacro(CLaMSFilter, vtkDataObjectAlgorithm)
+	static CLaMSFilter* New();
 
 	void PrintSelf(ostream& os, vtkIndent indent) override;
 
@@ -39,31 +39,31 @@ public:
 
 	int FillOutputPortInformation(int port, vtkInformation* info) override;
 	int FillInputPortInformation(int port, vtkInformation* info) override;
-    void SetInputConnection(vtkAlgorithmOutput *input) override;
+	void SetInputConnection(vtkAlgorithmOutput* input) override;
 
-    //set the lower and upper Limit for altitude
-    void setUpperAltitude(float upperLimit);
-    void setLowerAltitude(float lowerLimit);
+	//set the lower and upper Limit for altitude
+	void setUpperAltitude(float upperLimit);
+	void setLowerAltitude(float lowerLimit);
 
-    //set the lower and upper Limit for PotTemperature
-    void setLowerPotTemperature(float lowerLimit);
-    void setUpperPotTemperature(float upperLimit);
+	//set the lower and upper Limit for PotTemperature
+	void setLowerPotTemperature(float lowerLimit);
+	void setUpperPotTemperature(float upperLimit);
 
-    //set the lower and upper Limit for the vorticity
-    void setLowerVorticity(float lowerLimit);
-    void setUpperVorticity(float upperLimit);
+	//set the lower and upper Limit for the vorticity
+	void setLowerVorticity(float lowerLimit);
+	void setUpperVorticity(float upperLimit);
 
-    //set the lower and upper limit for pressure
-    void setLowerPressure(float lowerLimit);
-    void setUpperPressure(float upperLimit);
+	//set the lower and upper limit for pressure
+	void setLowerPressure(float lowerLimit);
+	void setUpperPressure(float upperLimit);
 
-    //set the lower and upper Limit for Temperature
-    void setLowerTemperature(float lowerLimit);
-    void setUpperTemperature(float upperLimit);
+	//set the lower and upper Limit for Temperature
+	void setLowerTemperature(float lowerLimit);
+	void setUpperTemperature(float upperLimit);
 
-    //set the lower and upper Limit for the date
-    void setLowerDate(double lowerLimit);
-    void setUpperDate(double upperLimit);
+	//set the lower and upper Limit for the date
+	void setLowerDate(double lowerLimit);
+	void setUpperDate(double upperLimit);
 
 
 
@@ -76,8 +76,8 @@ protected:
 	void fail(QString message);
 
 private:
-    CLaMSFilter();
-    ~CLaMSFilter();
+	CLaMSFilter();
+	~CLaMSFilter();
 
 	CLaMSFilter(const CLaMSFilter&);  // Not implemented.
 	void operator=(const CLaMSFilter&);  // Not implemented.
@@ -87,38 +87,38 @@ private:
 	 */
 	bool error;
 
-  // Lower and Upper Limit for the altitution
-    float UpperLimitAltitude;
-    float LowerLimitAltitude;
+	// Lower and Upper Limit for the altitution
+	float UpperLimitAltitude;
+	float LowerLimitAltitude;
 
-    //lower and upper limit for the PotTemperature
-    float lowerPotTemperature;
-    float upperPotTemperature;
+	//lower and upper limit for the PotTemperature
+	float lowerPotTemperature;
+	float upperPotTemperature;
 
-    //lower and upper Limit for the vorticity
-    float lowerVorticity;
-    float upperVorticity;
+	//lower and upper Limit for the vorticity
+	float lowerVorticity;
+	float upperVorticity;
 
-    //lower and upper limit for the pressure
-    float lowerPressure;
-    float upperPressure;
+	//lower and upper limit for the pressure
+	float lowerPressure;
+	float upperPressure;
 
-    //lower and upper Limit fot the Temperature
-    float lowerTemperature;
-    float upperTemperature;
+	//lower and upper Limit fot the Temperature
+	float lowerTemperature;
+	float upperTemperature;
 
-    //lower and upper Limit for the date
-    double lowerDate;
-    double upperDate;
+	//lower and upper Limit for the date
+	double lowerDate;
+	double upperDate;
 
-    /**
-     * Decide whether a data point should be kept in the selection.
-     * @param pointIndex The index of the point to be checked
-     * @param coordinate The coordinate of the point
-     * @param pointData All scalar point data
-     * @return True if the point should be kept, false otherwise
-     */
-    bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
+	/**
+	 * Decide whether a data point should be kept in the selection.
+	 * @param pointIndex The index of the point to be checked
+	 * @param coordinate The coordinate of the point
+	 * @param pointData All scalar point data
+	 * @return True if the point should be kept, false otherwise
+	 */
+	bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
 
 };
 

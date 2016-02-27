@@ -814,12 +814,11 @@
             <Filter name="TemperatureThresholdFilter" />
             <Filter name="WindSpeedThresholdFilter" />
             <Filter name="TwitterFilter" />
-			<Filter name="TerrainHeightFilter" />
+			      <Filter name="TerrainHeightFilter" />
+            <Filter name="MIPASFilter"/>
+            <Filter name="AIRSFilter"/>
+            <Filter name="CLaMSFilter"/>
         </Category>
-        <Category name="SciVis" menu_label="SciVis">
-            <Filter name="MIPASFilter" />
-            <Filter name="AIRSFilter" />
-            <Filter name="CLaMSFilterPuyehue"/>
-        </Category>
+
     </ParaViewFilters>
 </ServerManagerConfiguration>
