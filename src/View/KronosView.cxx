@@ -85,7 +85,10 @@ void KronosView::animateMove(double latitude, double longitude, double distance)
 
 	// on the globe, the target position already is given in gps coordinates, but on the map we have
 	// to translate the target position to map coordinates
-	Vector3d to(longitude / (onGlobe ? 1 : 90), latitude / (onGlobe ? 1 : 90), distance);
+	Vector3d to(longitude, latitude, distance);
+	if (!onGlobe) {
+		to = sphericalToCartesianFlat(to);
+	}
 
 	// focal point positions
 	Vector3d focalFrom;
@@ -146,7 +149,7 @@ void KronosView::moveCamera(float latitude, float longitude) {
 
 void KronosView::moveCamera(float latitude, float longitude, float distance) {
 	// left-right, up-down, close-far
-	Vector3d position(0.0, 0.0, 2.6);
+	Vector3d position(longitude, latitude, distance);
 
 	// probably important for map view
 	Vector3d focus(0.0, 0.0, 0.0);
@@ -155,15 +158,12 @@ void KronosView::moveCamera(float latitude, float longitude, float distance) {
 		this->animateMove(latitude, longitude, distance);
 	} else {
 		if (this->displayMode == Globe::DisplayGlobe) {
-			position = sphericalToCartesian(Vector3d(longitude, latitude, distance));
+			position = sphericalToCartesian(position);
 		} else {
-			position.x = longitude / 90;
-			position.y = latitude / 180;
-			position.z = distance;
+			position = sphericalToCartesianFlat(position);
 
 			focus.x = position.x;
 			focus.y = position.y;
-			focus.z = 0;
 		}
 		vtkCamera* camera = GetActiveCamera();
 
