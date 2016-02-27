@@ -24,7 +24,11 @@ ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
 ClientTileRequestWorker::~ClientTileRequestWorker() { }
 
 void ClientTileRequestWorker::scheduleJob(WorkerJob job) {
-    KRONOS_LOG_DEBUG("scheduling download job for %d, (%d,%d)", job.incompleteTile.getZoomLevel(), job.incompleteTile.getTileX(), job.incompleteTile.getTileY());
+    KRONOS_LOG_DEBUG("scheduling download job for %d, (%d,%d)",
+        job.incompleteTile.getZoomLevel(),
+        job.incompleteTile.getTileX(),
+        job.incompleteTile.getTileY()
+    );
 
     this->jobQueue.append(job);
 }
@@ -35,7 +39,7 @@ void ClientTileRequestWorker::processJobQueue() {
     }
 
     WorkerJob job = this->jobQueue.dequeue();
-    std::shared_ptr<ImageDownloadJob> downloadJob = std::make_shared<ImageDownloadJob>(job);
+    ImageDownloadJob* downloadJob = new ImageDownloadJob(job);
 
     int zoom = job.incompleteTile.getZoomLevel();
     int x = job.incompleteTile.getTileX();
@@ -45,14 +49,15 @@ void ClientTileRequestWorker::processJobQueue() {
     for (auto layer : job.missingLayers) {
         QNetworkRequest req(this->layerConfig[layer].buildTileUrl(zoom, x, y));
 
-        QVariant meta;
-        meta.setValue(ImageDownloadJobMetaData(downloadJob, layer));
-        req.setAttribute(QNetworkRequest::User, meta);
+        ImageDownloadJobMetaData* metaData = new ImageDownloadJobMetaData(downloadJob, layer);
 
-        downloadJob->pendingReplies.insert(this->networkManager.get(req));
+        QNetworkReply* reply = this->networkManager.get(req);
+        downloadJob->pendingReplies.insert(reply);
+
+        this->replyJobMetaMapping[reply] = metaData;
     }
 
-    this->pendingDownloadJobs.append(downloadJob);
+    this->pendingDownloadJobs.insert(downloadJob);
 }
 
 void ClientTileRequestWorker::handleAbortRequest() {
@@ -65,8 +70,8 @@ void ClientTileRequestWorker::handleAbortRequest() {
     }
 }
 
-void ClientTileRequestWorker::removeDownloadJob(std::shared_ptr<ImageDownloadJob> downloadJob) {
-    QMutableListIterator<std::shared_ptr<ImageDownloadJob>> jobIterator(this->pendingDownloadJobs);
+void ClientTileRequestWorker::removeDownloadJob(ImageDownloadJob* downloadJob) {
+    QMutableSetIterator<ImageDownloadJob*> jobIterator(this->pendingDownloadJobs);
     if (jobIterator.findNext(downloadJob)) {
         jobIterator.remove();
     }
@@ -74,35 +79,40 @@ void ClientTileRequestWorker::removeDownloadJob(std::shared_ptr<ImageDownloadJob
 
 void ClientTileRequestWorker::downloadFinished(QNetworkReply* reply) {
     KRONOS_LOG_DEBUG("download finished");
+
+    // delete the reply as soon as control is returned to the event loop
+    reply->deleteLater();
+
     try {
         this->handleDownload(reply);
     } catch (std::exception const& e) {
         KRONOS_LOG_DEBUG("download finished with exception: %s", e.what());
-        // only send one exception per tile
-        std::shared_ptr<ImageDownloadJob> job = ClientTileRequestWorker::getMetaData(reply).job;
-        if (!job->failed) {
-            job->failed = true;
-            this->onTileFetchFailed(e);
-        }
+        this->onTileFetchFailed(e);
     }
 }
 
 void ClientTileRequestWorker::handleDownload(QNetworkReply* reply) {
     KRONOS_LOG_DEBUG("handling download");
-    ImageDownloadJobMetaData meta = ClientTileRequestWorker::getMetaData(reply);
 
-    // remove the reply from the pending reply set
-    meta.job->pendingReplies.remove(reply);
+    // get and remove the metadata object from the reply -> replyJobMeta map. Putting it into a
+    // unique_ptr will make sure that the object is deleted as soon as we leave the current scope.
+    std::unique_ptr<ImageDownloadJobMetaData> meta(this->replyJobMetaMapping.take(reply));
+
+    QString layer = meta->layer;
+    ImageDownloadJob* job = meta->job;
+
+    // mark the reply in the job as done
+    job->pendingReplies.remove(reply);
 
     // remove the job from the job list if all pending replies returned
-    if (meta.job->pendingReplies.isEmpty()) {
-        this->removeDownloadJob(meta.job);
+    if (job->pendingReplies.isEmpty()) {
+        this->removeDownloadJob(job);
     }
 
     if (reply->error() == QNetworkReply::OperationCanceledError) {
         // make sure to only send one aborted exception
-        if (!meta.job->aborted) {
-            meta.job->aborted = true;
+        if (!job->aborted) {
+            job->aborted = true;
             throw DownloadAbortedException(reply->url());
         }
         return;
@@ -112,21 +122,27 @@ void ClientTileRequestWorker::handleDownload(QNetworkReply* reply) {
     this->checkStatusCode(reply);
 
     // handle content
-    this->handleReplyContent(reply);
+    this->handleReplyContent(reply, meta.get());
 
-    if (!meta.job->failed && meta.job->pendingReplies.isEmpty()) {
+    if (!job->failed && job->pendingReplies.isEmpty()) {
+        ImageTile tile = job->incompleteTile;
+
+        // the job is finished, so delete it
+        delete job;
+
         // ensure all layers are present
         bool allLayersPresent = true;
         for (QString layer : this->layers) {
-            if (!meta.job->incompleteTile.getLayers().contains(layer)) {
+            if (!tile.getLayers().contains(layer)) {
                 allLayersPresent = false;
                 break;
             }
         }
+
         if (allLayersPresent) {
-            this->onTileFetched(meta.job->incompleteTile);
+            this->onTileFetched(tile);
         } else {
-            throw TileIncompleteException(meta.job->incompleteTile.getLayers().keys(), this->layers);
+            throw TileIncompleteException(tile.getLayers().keys(), this->layers);
         }
     }
 }
@@ -142,12 +158,11 @@ void ClientTileRequestWorker::checkStatusCode(QNetworkReply *reply) {
     }
 }
 
-void ClientTileRequestWorker::handleReplyContent(QNetworkReply *reply) {
+void ClientTileRequestWorker::handleReplyContent(QNetworkReply *reply, ImageDownloadJobMetaData* meta) {
     KRONOS_LOG_DEBUG("handling reply content");
-    ImageDownloadJobMetaData meta = ClientTileRequestWorker::getMetaData(reply);
     std::unique_ptr<MetaImage> metaImage = nullptr;
 
-    meta.job->missingLayers.remove(meta.layer);
+    meta->job->missingLayers.remove(meta->layer);
 
     QString contentType = reply->header(QNetworkRequest::ContentTypeHeader).toString();
     if (QRegExp("^image\\/(png|tiff|jpeg|gif)$").exactMatch(contentType)) {
@@ -165,7 +180,7 @@ void ClientTileRequestWorker::handleReplyContent(QNetworkReply *reply) {
     } else if (QRegExp("^application\\/bil16$").exactMatch(contentType)) {
         QByteArray rawData = reply->readAll();
 
-        int imageSize = this->layerConfig[meta.layer].getTileSize();
+        int imageSize = this->layerConfig[meta->layer].getTileSize();
         MetaImage image = ClientTileRequestWorker::decodeBil16(rawData, imageSize, imageSize);
 
         // store the image
@@ -175,15 +190,8 @@ void ClientTileRequestWorker::handleReplyContent(QNetworkReply *reply) {
     }
 
     if (metaImage != nullptr) {
-        meta.job->incompleteTile.getLayers()[meta.layer] = *metaImage;
+        meta->job->incompleteTile.getLayers()[meta->layer] = *metaImage;
     }
-}
-
-ImageDownloadJobMetaData ClientTileRequestWorker::getMetaData(QNetworkReply* reply) {
-    KRONOS_LOG_DEBUG("getting download metadata");
-    QVariant metadata = reply->attribute(QNetworkRequest::User);
-    ImageDownloadJobMetaData meta = metadata.value<ImageDownloadJobMetaData>();
-    return meta;
 }
 
 MetaImage ClientTileRequestWorker::decodeBil16(const QByteArray &rawData, int width, int height) {

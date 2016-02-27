@@ -24,11 +24,11 @@ struct ImageDownloadJob : public WorkerJob {
 };
 
 struct ImageDownloadJobMetaData {
-    std::shared_ptr<ImageDownloadJob> job;
+    ImageDownloadJob* job;
     QString layer;
 
     ImageDownloadJobMetaData() = default;
-    ImageDownloadJobMetaData(std::shared_ptr<ImageDownloadJob> job, QString layer)
+    ImageDownloadJobMetaData(ImageDownloadJob* job, QString layer)
             : job(job), layer(layer) { }
 };
 
@@ -78,14 +78,17 @@ private:;
     QQueue<WorkerJob> jobQueue;
 
     /** The set containing all pending download jobs. */
-    QList<std::shared_ptr<ImageDownloadJob>> pendingDownloadJobs;
+    QSet<ImageDownloadJob*> pendingDownloadJobs;
+
+    /** Map used to associate a NetworkReply with ImageDownloadJobMetaData */
+    QMap<QNetworkReply*, ImageDownloadJobMetaData*> replyJobMetaMapping;
 
     /**
      * Removes the given job from the pendingDownloadsJobs list
      *
      * @param downloadJob the job to remove
      */
-    void removeDownloadJob(std::shared_ptr<ImageDownloadJob> downloadJob);
+    void removeDownloadJob(ImageDownloadJob* downloadJob);
 
     /** The network access manager used to make HTTP requests. */
     QNetworkAccessManager networkManager;
@@ -94,8 +97,7 @@ private:;
 
     void handleDownload(QNetworkReply* reply);
     void checkStatusCode(QNetworkReply* reply);
-    void handleReplyContent(QNetworkReply* reply);
-    static ImageDownloadJobMetaData getMetaData(QNetworkReply* reply);
+    void handleReplyContent(QNetworkReply* reply, ImageDownloadJobMetaData* meta);
 
 private slots:
     void downloadFinished(QNetworkReply* reply);
