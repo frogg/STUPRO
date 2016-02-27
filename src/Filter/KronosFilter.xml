@@ -451,41 +451,6 @@
             </Hints>
         </SourceProxy>
 
-        <SourceProxy name="CLaMSFilter" class="CLaMSFilter" label="CLaMSFilter">
-            <Documentation
-                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with ClaMS Data"
-                short_help="Solve SciVis-Contest with this filter">
-            </Documentation>
-            <InputProperty
-                name="CLaMS Input"
-                command="SetInputConnection">
-                <ProxyGroupDomain name="groups">
-                    <Group name="sources"/>
-                    <Group name="filters"/>
-                </ProxyGroupDomain>
-                <DataTypeDomain name="input_type">
-                    <DataType value="vtkPolyData"/>
-                    <DataType value="vtkCellData"/>
-                    <DataType value="vtkUnstructuredGrid"/>
-                    <DataType value="vtkPointSet"/>
-                </DataTypeDomain>
-            </InputProperty>
-            <DoubleVectorProperty name="Start date"
-                command="setLower"
-                number_of_elements="1"
-                default_values="361217000.0">
-                <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="End date"
-                command="setUpper"
-                number_of_elements="1"
-                default_values="368582000.0">
-                <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
-            </DoubleVectorProperty>
-            <Hints>
-                <ShowInMenu category="SciVis"/>
-            </Hints>
-        </SourceProxy>
 
         <SourceProxy name="MIPASOrbidFilter" class="MIPASOrbidFilter" label="MIPASOrbidFilter">
             <Documentation
@@ -595,7 +560,7 @@
             </Hints>
         </SourceProxy>
 
-        <SourceProxy name="CLaMSAltitudeFilter" class="CLaMSAltitudeFilter" label="CLaMSAltitudeFilter">
+        <SourceProxy name="CLaMSFilter" class="CLaMSFilter" label="CLaMSFilter">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
                 short_help="Solve SciVis-Contest with this filter">
@@ -614,17 +579,83 @@
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
-            <DoubleVectorProperty name="Start range"
-                command="setLower"
+
+            <DoubleVectorProperty name="lowest altitude"
+                command="setLowerAltitude"
                 number_of_elements="1"
-                default_values="-0.0311764">
-                <DoubleRangeDomain name="range" min="-0.0311764" max="32.3995" />
+                default_values="-0.0151925">
+                <DoubleRangeDomain name="range" min="-0.0151925" max="18.0319" />
             </DoubleVectorProperty>
-            <DoubleVectorProperty name="End range"
-                command="setUpper"
+            <DoubleVectorProperty name="Highest altitude"
+                command="setUpperAltitude"
                 number_of_elements="1"
-                default_values="32.3995">
-                <DoubleRangeDomain name="range" min="-0.0311764" max="32.3995" />
+                default_values="18.0319">
+                <DoubleRangeDomain name="range" min="-0.0151925" max="18.0319" />
+            </DoubleVectorProperty>
+
+            <DoubleVectorProperty name="lowest pot_Temperature"
+                command="setLowerPotTemperature"
+                number_of_elements="1"
+                default_values="240.141">
+                <DoubleRangeDomain name="range" min="240.141" max="431.165" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="highest pot_Temperature"
+                command="setUpperPotTemperature"
+                number_of_elements="1"
+                default_values="431.165">
+                <DoubleRangeDomain name="range" min="240.141" max="431.165" />
+            </DoubleVectorProperty>
+
+            <DoubleVectorProperty name="lowest vorticity"
+                command="setLowerVorticity"
+                number_of_elements="1"
+                default_values="-1e+30">
+                <DoubleRangeDomain name="range" min="-1e+30" max="6.92938" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="highest vorticity"
+                command="setUpperVorticity"
+                number_of_elements="1"
+                default_values="6.92938">
+                <DoubleRangeDomain name="range" min="-1e+30" max="6.92938" />
+            </DoubleVectorProperty>
+
+            <DoubleVectorProperty name="lowest Temperature"
+                command="setLowerTemperature"
+                number_of_elements="1"
+                default_values="187.766">
+                <DoubleRangeDomain name="range" min="187.766" max="305.673" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="highest Temperature"
+                command="setUpperTemperature"
+                number_of_elements="1"
+                default_values="305.673">
+                <DoubleRangeDomain name="range" min="187.766" max="305.673" />
+            </DoubleVectorProperty>
+
+            <DoubleVectorProperty name="Start pressure"
+                command="setLowerPressure"
+                number_of_elements="1"
+                default_values="60.7511">
+                <DoubleRangeDomain name="range" min="60.7511" max="1030.58" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End pressure"
+                command="setUpperPressure"
+                number_of_elements="1"
+                default_values="1030.58">
+                <DoubleRangeDomain name="range" min="60.7511" max="1030.58" />
+            </DoubleVectorProperty>
+
+            <DoubleVectorProperty name="Start date"
+                command="setLowerDate"
+                number_of_elements="1"
+                default_values="361217000.0">
+                <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End date"
+                command="setUpperDate"
+                number_of_elements="1"
+                default_values="368582000.0">
+                <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
             </DoubleVectorProperty>
             <Hints>
                 <ShowInMenu category="SciVis"/>
@@ -646,9 +677,6 @@
             <Filter name="MIPASFilter" />
             <Filter name="AIRSFilter" />
             <Filter name="CLaMSFilter"/>
-            <Filter name="MIPASOrbidFilter"/>
-            <Filter name="AIRSSOFilter"/>
-            <Filter name="AIRSAshFilter"/>
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>

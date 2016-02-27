@@ -7,12 +7,16 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkPointData.h>
+#include <vtkUnsignedIntArray.h>
+#include <vtkDoubleArray.h>
+#include <vtkFloatArray.h>
 
 #include <qstring.h>
 #include <qlist.h>
 
 #include <Reader/DataReader/Data.hpp>
 #include <Globe/Coordinate.hpp>
+
 
 /**
  * Abstract super class for filters that work on a Kronos point data set and extract some of those points.
@@ -36,8 +40,30 @@ public:
 	int FillInputPortInformation(int port, vtkInformation* info) override;
     void SetInputConnection(vtkAlgorithmOutput *input) override;
 
-    void setUpper(double upperLimit);
-    void setLower(double lowerLimit);
+    //lower and upper Limit for altitude
+    void setUpperAltitude(float upperLimit);
+    void setLowerAltitude(float lowerLimit);
+
+    //lower and upper Limit for PotTemperature
+    void setLowerPotTemperature(float lowerLimit);
+    void setUpperPotTemperature(float upperLimit);
+
+    //lower and upper Limit for the vorticity
+    void setLowerVorticity(float lowerLimit);
+    void setUpperVorticity(float upperLimit);
+
+    //lower and upper limit for pressure
+    void setLowerPressure(float lowerLimit);
+    void setUpperPressure(float upperLimit);
+
+    //lower and upper Limit for Temperature
+    void setLowerTemperature(float lowerLimit);
+    void setUpperTemperature(float upperLimit);
+
+    //lower and upper Limit for the date
+    void setLowerDate(double lowerLimit);
+    void setUpperDate(double upperLimit);
+
 
 
 
@@ -60,8 +86,29 @@ private:
 	 */
 	bool error;
 
-    double UpperLimit;
-    double LowerLimit;
+  // Lower and Upper Limit for the altitution
+    float UpperLimitAltitude;
+    float LowerLimitAltitude;
+
+    //lower and upper limit for the PotTemperature
+    float lowerPotTemperature;
+    float upperPotTemperature;
+
+    //lower and upper Limit for the vorticity
+    float lowerVorticity;
+    float upperVorticity;
+
+    //lower and upper limit for the pressure
+    float lowerPressure;
+    float upperPressure;
+
+    //lower and upper Limit fot the Temperature
+    float lowerTemperature;
+    float upperTemperature;
+
+    //lower and upper Limit for the date
+    double lowerDate;
+    double upperDate;
 
     /**
      * Decide whether a data point should be kept in the selection.
@@ -71,6 +118,7 @@ private:
      * @return True if the point should be kept, false otherwise
      */
     bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
+
 };
 
 #endif

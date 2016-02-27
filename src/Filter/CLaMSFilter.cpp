@@ -5,8 +5,9 @@
 #include <vtkAlgorithm.h>
 #include <vtkCellArray.h>
 #include <vtkObjectFactory.h>
+#include <vtkFloatArray.h>
 #include <vtkDoubleArray.h>
-#include <iostream>
+
 
 vtkStandardNewMacro(CLaMSFilter);
 
@@ -118,15 +119,70 @@ int CLaMSFilter::RequestInformation(vtkInformation* request,
 	return 1;
 }
 
-void CLaMSFilter::setLower(double lowerLimit) {
-	this->LowerLimit = lowerLimit;
+void CLaMSFilter::setLowerAltitude(float lowerLimit) {
+	this->LowerLimitAltitude = lowerLimit;
 	this->Modified();
 }
 
-void CLaMSFilter::setUpper(double upperLimit) {
-	this->UpperLimit = upperLimit;
+void CLaMSFilter::setUpperAltitude(float upperLimit) {
+	this->UpperLimitAltitude = upperLimit;
 	this->Modified();
 }
+
+
+void CLaMSFilter::setLowerPotTemperature(float lowerLimit) {
+	this->lowerPotTemperature = lowerLimit;
+	this->Modified();
+}
+
+void CLaMSFilter::setUpperPotTemperature(float upperLimit) {
+	this->upperPotTemperature = upperLimit;
+	this->Modified();
+}
+
+void CLaMSFilter::setLowerVorticity(float lowerLimit) {
+	this->lowerVorticity = lowerLimit;
+	this->Modified();
+}
+
+void CLaMSFilter::setUpperVorticity(float upperLimit) {
+	this->upperVorticity = upperLimit;
+	this->Modified();
+}
+
+void CLaMSFilter::setLowerPressure(float lowerLimit) {
+	this->lowerPressure = lowerLimit;
+	this->Modified();
+}
+
+void CLaMSFilter::setUpperPressure(float upperLimit) {
+	this->upperPressure = upperLimit;
+	this->Modified();
+}
+
+void CLaMSFilter::setLowerTemperature(float lowerLimit) {
+	this->lowerTemperature = lowerLimit;
+	this->Modified();
+}
+
+void CLaMSFilter::setUpperTemperature(float upperLimit) {
+	this->upperTemperature = upperLimit;
+	this->Modified();
+}
+
+
+void CLaMSFilter::setLowerDate(double lowerLimit) {
+	this->lowerDate = lowerLimit;
+	this->Modified();
+}
+
+void CLaMSFilter::setUpperDate(double upperLimit) {
+	this->upperDate = upperLimit;
+	this->Modified();
+}
+
+
+
 
 void CLaMSFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
@@ -150,9 +206,32 @@ int CLaMSFilter::FillInputPortInformation(int port, vtkInformation* info) {
 
 	return 1;
 }
-bool CLaMSFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) {
-	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
+bool CLaMSFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
+                                vtkPointData* pointData) {
+	vtkSmartPointer<vtkFloatArray> altitudeArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("altitude"));
+	vtkSmartPointer<vtkFloatArray> PotTemperatureArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("pot_temperature"));
+	vtkSmartPointer<vtkFloatArray> vorticityArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("pot_vorticity"));
+	vtkSmartPointer<vtkFloatArray> pressureArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("pressure"));
+	vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("temperature"));
+	vtkSmartPointer<vtkDoubleArray> dateArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
-	double time = timeArray->GetTuple1(pointIndex);
-	return (this->LowerLimit <= time && time <= this->UpperLimit);
+
+	float altitude = altitudeArray->GetTuple1(pointIndex);
+	float PotTemperature = PotTemperatureArray->GetTuple1(pointIndex);
+	float vorticity = vorticityArray->GetTuple1(pointIndex);
+	float pressure = pressureArray->GetTuple1(pointIndex);
+	float temperature = temperatureArray->GetTuple1(pointIndex);
+	double date = dateArray->GetTuple1(pointIndex);
+
+	return (this->LowerLimitAltitude <= altitude && altitude <= this->UpperLimitAltitude)
+	       && (this->lowerPressure <= pressure && pressure <= this->upperPressure)
+	       && (this->lowerPotTemperature <= PotTemperature && PotTemperature <= this->upperPotTemperature)
+	       && (this->lowerVorticity <= vorticity && vorticity <= this-> upperVorticity)
+	       && (this-> lowerTemperature <= temperature && temperature <= upperTemperature)
+	       && (this-> lowerDate <= date && date <= upperDate);
 }
