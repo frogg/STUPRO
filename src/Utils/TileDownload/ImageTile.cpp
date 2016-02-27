@@ -9,7 +9,7 @@ ImageTile::ImageTile(const QMap<QString, MetaImage> layers, int zoomLevel, int t
 }
 
 ImageTile::ImageTile(int zoomLevel, int tileX, int tileY)
-        : zoomLevel(zoomLevel), tileX(tileX), tileY(tileY) { }
+	: zoomLevel(zoomLevel), tileX(tileX), tileY(tileY) { }
 
 ImageTile::ImageTile() : ImageTile(QMap<QString, MetaImage>(), -1, -1, -1) { }
 
@@ -22,7 +22,7 @@ const QMap<QString, MetaImage>& ImageTile::getLayers() const {
 }
 
 QMap<QString, MetaImage>& ImageTile::getLayers() {
-    return this->layers;
+	return this->layers;
 }
 
 void ImageTile::setLayers(const QMap<QString, MetaImage> layers) {

@@ -54,7 +54,7 @@ public:
 	 *                          loading the tiles.
 	 */
 	ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed,
-					QSet<QString> requestedLayers);
+	                QSet<QString> requestedLayers);
 
 	/**
 	 * Fetches images of all layers at the given location.

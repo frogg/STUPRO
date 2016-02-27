@@ -9,20 +9,22 @@
 #include <thread>
 
 ImageDownloader::ImageDownloader(OnTileFetched onTileFetched)
-		: ImageDownloader(onTileFetched, ImageDownloader::defaultErrorHandler) { }
+	: ImageDownloader(onTileFetched, ImageDownloader::defaultErrorHandler) { }
 
 ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, QSet<QString> requestedLayers)
-		: ImageDownloader(onTileFetched, ImageDownloader::defaultErrorHandler, requestedLayers) { }
+	: ImageDownloader(onTileFetched, ImageDownloader::defaultErrorHandler, requestedLayers) { }
 
 ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed)
-		: ImageDownloader(onTileFetched, onTileFetchFailed, ImageDownloader::getAllAvailableLayers()) { }
+	: ImageDownloader(onTileFetched, onTileFetchFailed, ImageDownloader::getAllAvailableLayers()) { }
 
 ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed,
-								QSet<QString> requestedLayers) {
+                                 QSet<QString> requestedLayers) {
 	if (ServerUtils::isClient()) {
-		this->requestWorker = std::unique_ptr<TileRequestWorker>(new ClientTileRequestWorker(requestedLayers, onTileFetched, onTileFetchFailed));
+		this->requestWorker = std::unique_ptr<TileRequestWorker>(new ClientTileRequestWorker(
+		                          requestedLayers, onTileFetched, onTileFetchFailed));
 	} else {
-		this->requestWorker = std::unique_ptr<TileRequestWorker>(new ServerTileRequestWorker(requestedLayers, onTileFetched, onTileFetchFailed));
+		this->requestWorker = std::unique_ptr<TileRequestWorker>(new ServerTileRequestWorker(
+		                          requestedLayers, onTileFetched, onTileFetchFailed));
 	}
 }
 

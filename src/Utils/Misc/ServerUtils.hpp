@@ -3,10 +3,10 @@
 
 class ServerUtils {
 public:
-    ServerUtils() = delete;
+	ServerUtils() = delete;
 
-    static bool isClient();
-    static bool isServer();
+	static bool isClient();
+	static bool isServer();
 };
 
 #endif // KRONOS_UTILS_MISC_SERVER_UTILS_HPP

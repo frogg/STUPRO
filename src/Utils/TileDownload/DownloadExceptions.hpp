@@ -43,7 +43,7 @@ struct TileIncompleteException : public DownloadFailedException {
 	}
 
 	TileIncompleteException(QList<QString> const& actual, QSet<QString> const& expected)
-			: DownloadFailedException(buildErrorMessage(actual, expected)) { }
+		: DownloadFailedException(buildErrorMessage(actual, expected)) { }
 };
 
 /**
