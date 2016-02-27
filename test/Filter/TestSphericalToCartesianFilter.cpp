@@ -26,22 +26,22 @@ TEST(TestSphericalToCartesianFilter, ValidCalls) {
 	GeometryTransform* transform = new GeometryTransform(true, true);
 	vtkPoints* points = vtkPoints::New();
 	vtkPoints* transformed = vtkPoints::New();
-	vtkPoints* newPoints = vtkPoints::New();
+	vtkPoints* expectedPointsAfterTransformation = vtkPoints::New();
 	const double precision = 0.01;
 
 	points->InsertNextPoint(0, 0, 100);
-	newPoints->InsertNextPoint(0, 0, 200);
+	expectedPointsAfterTransformation->InsertNextPoint(0, 0, 200);
 	points->InsertNextPoint(90, 0, 100);
-	newPoints->InsertNextPoint(200, 0, 0);
+	expectedPointsAfterTransformation->InsertNextPoint(200, 0, 0);
 	points->InsertNextPoint(0, 90, 10);
-	newPoints->InsertNextPoint(0, 110, 0);
+	expectedPointsAfterTransformation->InsertNextPoint(0, 110, 0);
 	points->InsertNextPoint(-90, 0, 100);
-	newPoints->InsertNextPoint(-200, 0, 0);
+	expectedPointsAfterTransformation->InsertNextPoint(-200, 0, 0);
 
 	transformed->Allocate(points->GetNumberOfPoints());
 	transform->TransformPoints(points, transformed);
 
-	for (int i = 0; i < points->GetNumberOfPoints() && i < newPoints->GetNumberOfPoints(); i++) {
-		CHECK_POINT(newPoints->GetPoint(i), transformed->GetPoint(i), precision);
+	for (int i = 0; i < points->GetNumberOfPoints() && i < expectedPointsAfterTransformation->GetNumberOfPoints(); i++) {
+		CHECK_POINT(expectedPointsAfterTransformation->GetPoint(i), transformed->GetPoint(i), precision);
 	}
 }
