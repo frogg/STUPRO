@@ -68,7 +68,7 @@ fi
 # only check directories in the FORMATTER_DIRS list
 for i in "${FORMATTER_DIRS[@]}"
 do
-  output=$($COMMAND --options=.astyle-options --recursive --dry-run "$i/*.cpp" "$i/*.hpp" "$i/*.?sh" 2>&1 | egrep 'Formatted|command not found')
+  output=$($COMMAND --options=.astyle-options --recursive --dry-run "$i/*.cpp" "$i/*.hpp" "$i/*.cxx" "$i/*.h" "$i/*.?sh" 2>&1 | egrep 'Formatted|command not found')
   if [[ $output ]]; then
 		DIR_HEADER="\e[41m\e[97mFormatting error in $i\e[49m\e[39m"
 		PRINTED_DIR_HEADER=false

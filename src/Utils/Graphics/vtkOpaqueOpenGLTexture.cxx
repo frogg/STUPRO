@@ -11,19 +11,15 @@
 
 vtkStandardNewMacro(vtkOpaqueOpenGLTexture);
 
-vtkOpaqueOpenGLTexture::vtkOpaqueOpenGLTexture()
-{
+vtkOpaqueOpenGLTexture::vtkOpaqueOpenGLTexture() {
 }
 
-vtkOpaqueOpenGLTexture::~vtkOpaqueOpenGLTexture()
-{
+vtkOpaqueOpenGLTexture::~vtkOpaqueOpenGLTexture() {
 }
 
-void vtkOpaqueOpenGLTexture::PrintSelf(std::ostream& os, vtkIndent indent)
-{
+void vtkOpaqueOpenGLTexture::PrintSelf(std::ostream& os, vtkIndent indent) {
 }
 
-int vtkOpaqueOpenGLTexture::IsTranslucent()
-{
+int vtkOpaqueOpenGLTexture::IsTranslucent() {
 	return 0;
 }
