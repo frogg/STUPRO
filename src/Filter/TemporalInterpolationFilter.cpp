@@ -285,10 +285,10 @@ void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData *i
         inputData->GetPoint(i, coordinates);
         
         PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
-        content.insert(currentCoordinates, this->createDataPoint(i, inputData));
+        timestepData.insert(currentCoordinates, this->createDataPoint(i, inputData));
     }
 
-    this->pointData.insert(timestep, content);
+    this->pointData.insert(timestep, timestepData);
 }
 
 InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex, vtkPolyData *inputData) {
