@@ -70,12 +70,7 @@ protected:
 	virtual void handleAbortRequest();
 
 private:
-	;
-	/** Thread responsible for running the required QEventLoop */
-	// std::thread eventLoopThread;
-	/** Event loop needed for processing the network access manager's events */
-	// QEventLoop eventLoop;
-
+	/** Queue used to schedule jobs for the timer callback to process */
 	QQueue<WorkerJob> jobQueue;
 
 	/** The set containing all pending download jobs. */
@@ -94,14 +89,50 @@ private:
 	/** The network access manager used to make HTTP requests. */
 	QNetworkAccessManager networkManager;
 
+	/**
+	 * Converts a raw bil16 encoded heightmap to a MetaImage.
+	 *
+	 * @param rawData the raw heightmap data
+	 * @param width   the expected width of the image
+	 * @param height  the expected height of the image
+	 *
+	 * @returns a greyscale heightmap with min and max height data attached
+	 */
 	static MetaImage decodeBil16(const QByteArray& rawData, int width, int height);
 
+	/**
+	 * Handles the given network reply.
+	 *
+	 * @param reply the reply received from the server
+	 */
 	void handleDownload(QNetworkReply* reply);
+
+	/**
+	 * Checks if the status code of the response is 200.
+	 *
+	 * @param reply the reply received from the server
+	 */
 	void checkStatusCode(QNetworkReply* reply);
+
+	/**
+	 * Handles the content of the given network reply.
+	 *
+	 * @param reply the reply received from the server
+	 * @param meta  the metadata object associated with the reply
+	 */
 	void handleReplyContent(QNetworkReply* reply, ImageDownloadJobMetaData* meta);
 
 private slots:
+	/**
+	 * Slot called whenever a download finished.
+	 *
+	 * @param reply the reply received from the server
+	 */
 	void downloadFinished(QNetworkReply* reply);
+
+	/**
+	 * Pops an item from the job queue and handles it.
+	 */
 	void processJobQueue();
 };
 
