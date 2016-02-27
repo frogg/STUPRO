@@ -52,9 +52,10 @@ public:
 	void setFlightLengthThreshold(double lowerLimit, double upperLimit);
 
 	/**
-	 * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the temperature values and the UI is hidden.
+	 * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the flight values and the UI is hidden.
 	 */
 	void ignore(int id, int port, int connection, int fieldAssociation, const char* name) { }
+
 
 private:
 	/**
