@@ -42,27 +42,76 @@ public:
 	void SetInputConnection(vtkAlgorithmOutput* input) override;
 
 	//set the lower and upper Limit for altitude
+	/**
+	 * Sets the upper Limit of the Altitude Index
+	 * @param upperLimit the upper Limit of the Altitude Index
+	 */
 	void setUpperAltitude(float upperLimit);
+
+	/**
+	 * Sets the lower Limit of the Altitude Index
+	 * @param lowerLimit the lower Limit of the Altitude Index
+	 */
 	void setLowerAltitude(float lowerLimit);
 
-	//set the lower and upper Limit for PotTemperature
+
+	/**
+	 * Sets the lower Limit of the potential Temperature
+	 * @param lowerLimit the lower Limit of the potential Temperature
+	 */
 	void setLowerPotTemperature(float lowerLimit);
+
+	/**
+	 * Sets the upper Limit of the potential Temperature
+	 * @param upperLimit the upper Limit of the potential Temperature
+	 */
 	void setUpperPotTemperature(float upperLimit);
 
-	//set the lower and upper Limit for the vorticity
+	/**
+	 * Sets the lower Limit of the potential Vorticity
+	 * @param lowerLimit the lower Limit of the potential Vorticity
+	 */
 	void setLowerVorticity(float lowerLimit);
+
+	/**
+	 * Sets the upper Limit of the potential Vorticity
+	 * @param upperLimit the upper Limit of the potential Vorticity
+	 */
 	void setUpperVorticity(float upperLimit);
 
-	//set the lower and upper limit for pressure
+	/**
+	 * Sets the lower Limit of the Pressure Index
+	 * @param lowerLimit the lower Limit of the Pressure Index
+	 */
 	void setLowerPressure(float lowerLimit);
+
+	/**
+	 * Sets the upper Limit of the Pressure Index
+	 * @param upperLimit the lower Limit of the Pressure Index
+	 */
 	void setUpperPressure(float upperLimit);
 
-	//set the lower and upper Limit for Temperature
+	/**
+	 * Sets the lower Limit of the Temperature
+	 * @param lowerLimit the lower Limit of the Temperature
+	 */
 	void setLowerTemperature(float lowerLimit);
+	/**
+	 * Sets the upper Limit of the Temperature
+	 * @param upperLimit the lower Limit of the Temperature
+	 */
 	void setUpperTemperature(float upperLimit);
 
 	//set the lower and upper Limit for the date
+	/**
+	 * Sets the lower Limit for the Time
+	 * @param lowerLimit the lower Limit of the Time
+	 */
 	void setLowerDate(double lowerLimit);
+	/**
+	 * Sets the upper Limit for the Time
+	 * @param upperLimit the upper Limit of the Time
+	 */
 	void setUpperDate(double upperLimit);
 
 
@@ -87,28 +136,62 @@ private:
 	 */
 	bool error;
 
-	// Lower and Upper Limit for the altitution
+
+	/**
+	 * the upper Limit for the Altitude
+	 */
 	float UpperLimitAltitude;
+	/**
+	 * the lower Limit for the Altitude
+	 */
 	float LowerLimitAltitude;
 
-	//lower and upper limit for the PotTemperature
+
+	/**
+	 * the lower Limit for the Potential Temperature
+	 */
 	float lowerPotTemperature;
+	/**
+	 * the upper Limit of the Potential Temperature
+	 */
 	float upperPotTemperature;
 
-	//lower and upper Limit for the vorticity
+
+	/**
+	 * the lower Limit for the potential Vorticity
+	 */
 	float lowerVorticity;
+	/**
+	 * the upper Limit for the potential Vorticity
+	 */
 	float upperVorticity;
 
-	//lower and upper limit for the pressure
+
+	/**
+	 * The lower Limit for the Pressure
+	 */
 	float lowerPressure;
+	/**
+	 * The upper Limit for the Pressure
+	 */
 	float upperPressure;
 
-	//lower and upper Limit fot the Temperature
+	/**
+	 * the lower Limit of the Temperature
+	 */
 	float lowerTemperature;
+	/**
+	 * the upper Limit of the Temperature
+	 */
 	float upperTemperature;
 
-	//lower and upper Limit for the date
+	/**
+	 * The lower Limit for the Time
+	 */
 	double lowerDate;
+	/**
+	 * The upper Limit for the Time
+	 */
 	double upperDate;
 
 	/**

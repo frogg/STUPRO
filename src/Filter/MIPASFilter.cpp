@@ -184,12 +184,10 @@ bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointD
 	            pointData->GetAbstractArray("altitude"));
 	float altitude = altitudeArray->GetTuple1(pointIndex);
 
-
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
 	double time = timeArray->GetTuple1(pointIndex);
 	return (this->LowerLimitOrbit <= orbit_id && orbit_id <= this->UpperLimitOrbit)
 	       && (this->LowerLimitAltitude <= altitude && altitude <= this->UpperLimitAltitude)
-
 	       && (this->LowerLimit <= time && time <= this->UpperLimit);
 }

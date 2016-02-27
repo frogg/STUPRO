@@ -39,16 +39,41 @@ public:
 	int FillInputPortInformation(int port, vtkInformation* info) override;
 	void SetInputConnection(vtkAlgorithmOutput* input) override;
 
-	//set the upper and Lower Limit for the given Time
+
+	/**
+	 * Sets the upper Limit for the given Time
+	 * @param upperLimit the upper Limit of the Time
+	 */
 	void setUpper(double upperLimit);
+
+	/**
+	 * Sets the lower Limit for the given Time
+	 * @param lowerLimit the lower Limit of the Time
+	 */
 	void setLower(double lowerLimit);
 
-	//set the upper and Lower Limit for the given Ash Attribute
+	/**
+	 * Sets the upper Limit for the given Ash Index
+	 * @param upperLimit the upper Limit of the Ash Index
+	 */
 	void setUpperAsh(float upperLimit);
+
+	/**
+	 * Sets the lower Limit for the given Ash Index
+	 * @param lowerLimit the lower Limit of the Ash Index
+	 */
 	void setLowerAsh(float lowerLimit);
 
-	//set the upper and Lower Limit for the given SO Attribute
+	/**
+	 * Sets the upper Limit for the given SO Index
+	 * @param upperLimit the upper Limit of the SO Index
+	 */
 	void setUpperSO(float upperLimit);
+
+	/**
+	 * Sets the lower Limit for the given SO Index
+	 * @param lowerLimit the lower Limit of the SO Index
+	 */
 	void setLowerSO(float lowerLimit);
 
 
@@ -71,15 +96,31 @@ private:
 	 */
 	bool error;
 
+	/**
+	 * the upper Limit for the Time
+	 */
 	double UpperLimit;
+	/**
+	 * the lower Limit for the Time
+	 */
 	double LowerLimit;
 
-	//upper and lower Limit for ash
+	/**
+	 * the upper Limit for the ash Index
+	 */
 	float UpperLimitAsh;
+	/**
+	 * the lower Limit for the ash Index
+	 */
 	float LowerLimitAsh;
 
-	//upper and lower Limit  for SO
+	/**
+	 * the upper Limit for the SO Index
+	 */
 	float UpperLimitSO;
+	/**
+	 * the lower Limit for the SO Index
+	 */
 	float LowerLimitSO;
 
 	/**

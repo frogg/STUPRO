@@ -461,6 +461,20 @@
                 default_values="368156000.0">
                 <DoubleRangeDomain name="range" min="360205000.0" max="368156000.0" />
             </DoubleVectorProperty>
+
+            <PropertyGroup label="Altitude">
+                <Property name="Lowest Altitude" />
+                <Property name="Highest Altitude" />
+            </PropertyGroup>
+            <PropertyGroup label="Orbit">
+                <Property name="Starting Range Orbit" />
+                <Property name="Ending Range Orbit" />
+            </PropertyGroup>
+            <PropertyGroup label="Time">
+                <Property name="Starting Time" />
+                <Property name="Ending Time" />
+            </PropertyGroup>
+
             <Hints>
                 <ShowInMenu category="SciVis"/>
             </Hints>
@@ -498,13 +512,13 @@
                 <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
             </DoubleVectorProperty>
 
-            <DoubleVectorProperty name="Starting Range SO"
+            <DoubleVectorProperty name="Starting Range SO2"
                 command="setLowerSO"
                 number_of_elements="1"
                 default_values="-2.20437">
                 <DoubleRangeDomain name="range" min="-2.20437" max="10.7381" />
             </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Range SO"
+            <DoubleVectorProperty name="Ending Range SO2"
                 command="setUpperSO"
                 number_of_elements="1"
                 default_values="10.7381">
@@ -523,6 +537,21 @@
                 default_values="17.147">
                 <DoubleRangeDomain name="range" min="-7.53248" max="17.147" />
             </DoubleVectorProperty>
+
+            <PropertyGroup label="Time">
+                <Property name="Starting Time" />
+                <Property name="Ending Time" />
+            </PropertyGroup>
+            <PropertyGroup label="SO2 Index">
+                <Property name="Starting Range SO2" />
+                <Property name="Ending Range SO2" />
+            </PropertyGroup>
+            <PropertyGroup label="Ash Index">
+                <Property name="Starting Range Ash" />
+                <Property name="Ending Range Ash" />
+            </PropertyGroup>
+
+
             <Hints>
                 <ShowInMenu category="SciVis"/>
             </Hints>
@@ -586,6 +615,20 @@
                 default_values="28.2891">
                 <DoubleRangeDomain name="range" min="-4.07154" max="28.2891" />
             </DoubleVectorProperty>
+
+            <PropertyGroup label="Time">
+                <Property name="Starting Time" />
+                <Property name="Ending Time" />
+            </PropertyGroup>
+            <PropertyGroup label="SO2 Index">
+                <Property name="Starting Range SO2" />
+                <Property name="Ending Range SO2" />
+            </PropertyGroup>
+            <PropertyGroup label="Ash Index">
+                <Property name="Starting Range Ash" />
+                <Property name="Ending Range Ash" />
+            </PropertyGroup>
+
             <Hints>
                 <ShowInMenu category="SciVis"/>
             </Hints>
@@ -690,6 +733,33 @@
                 default_values="3.67664e+08">
                 <DoubleRangeDomain name="range" min="3.60461e+08" max="3.67664e+08" />
             </DoubleVectorProperty>
+
+
+            <PropertyGroup label="Altitude">
+                <Property name="Lowest Altitude" />
+                <Property name="Highest Altitude" />
+            </PropertyGroup>
+            <PropertyGroup label="potential Temperature">
+                <Property name="Lowest pot_Temperature" />
+                <Property name="Highest pot_Temperature" />
+            </PropertyGroup>
+            <PropertyGroup label="potential Vorticity">
+                <Property name="Lowest Vorticity" />
+                <Property name="Highest Vorticity" />
+            </PropertyGroup>
+            <PropertyGroup label="Temperature">
+                <Property name="Starting Temperature" />
+                <Property name="Highest Temperature" />
+            </PropertyGroup>
+            <PropertyGroup label="Pressure">
+                <Property name="Starting Pressure" />
+                <Property name="Highest Pressure" />
+            </PropertyGroup>
+            <PropertyGroup label="Time">
+                <Property name="Starting Time" />
+                <Property name="Ending Time" />
+            </PropertyGroup>
+
             <Hints>
                 <ShowInMenu category="SciVis"/>
             </Hints>
@@ -782,7 +852,6 @@
                 <DoubleRangeDomain name="range" min="184.492" max="317.236" />
             </DoubleVectorProperty>
 
-
             <DoubleVectorProperty name="Starting Time"
                 command="setLowerDate"
                 number_of_elements="1"
@@ -795,6 +864,32 @@
                 default_values="368582000.0">
                 <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
             </DoubleVectorProperty>
+
+            <PropertyGroup label="Altitude">
+                <Property name="Lowest Altitude" />
+                <Property name="Highest Altitude" />
+            </PropertyGroup>
+            <PropertyGroup label="potential Temperature">
+                <Property name="Starting pot_Temperature" />
+                <Property name="Highest pot_Temperature" />
+            </PropertyGroup>
+            <PropertyGroup label="potential Vorticity">
+                <Property name="Starting vorticity" />
+                <Property name="Highest vorticity" />
+            </PropertyGroup>
+            <PropertyGroup label="Temperature">
+                <Property name="Starting Temperature" />
+                <Property name="Highest Temperature" />
+            </PropertyGroup>
+            <PropertyGroup label="Pressure">
+                <Property name="Starting pressure" />
+                <Property name="Highest pressure" />
+            </PropertyGroup>
+            <PropertyGroup label="Time">
+                <Property name="Starting Time" />
+                <Property name="Ending Time" />
+            </PropertyGroup>
+
             <Hints>
                 <ShowInMenu category="SciVis"/>
             </Hints>

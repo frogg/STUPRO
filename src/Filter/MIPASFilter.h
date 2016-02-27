@@ -42,16 +42,40 @@ public:
 	int FillInputPortInformation(int port, vtkInformation* info) override;
 	void SetInputConnection(vtkAlgorithmOutput* input) override;
 
-	//Set upper and lower Limit Time
+	/**
+	 * Sets the upper Limit for Time
+	 * @param upperLimit the upper Limit of the Time
+	 */
 	void setUpper(double upperLimit);
+
+	/**
+	 * Sets th lower Limit for Time
+	 * @param lowerLimit the lower Limit of the Time
+	 */
 	void setLower(double lowerLimit);
 
-	//Set upper and Lower Limit Orbit
+	/**
+	 * Sets the upper Limit of the Orbit
+	 * @param upperLimit the upper Limit of the Orbit
+	 */
 	void setUpperOrbit(int upperLimit);
+
+	/**
+	 * Sets th upper Limit for Orbit
+	 * @param lowerLimit the lower Limit of the Orbit
+	 */
 	void setLowerOrbit(int lowerLimit);
 
-	//Set upper and lower limit altitude
+	/**
+	 * Sets the upper Limit of the Altitude
+	 * @param upperLimit the upper Limit of the Altitude
+	 */
 	void setUpperAltitude(float upperLimit);
+
+	/**
+	 * Sets the lower Limit of the Altitude
+	 * @param lowerLimit the upper Limit of the Altitude
+	 */
 	void setLowerAltitude(float lowerLimit);
 
 
@@ -76,15 +100,31 @@ private:
 	 */
 	bool error;
 
+	/**
+	 * upper limit for the time
+	 */
 	double UpperLimit;
+	/**
+	 * lower limit for the time
+	 */
 	double LowerLimit;
 
-	//lower and upper limit for orbit
+	/**
+	 * upper limit for orbit
+	 */
 	int UpperLimitOrbit;
+	/**
+	 * lower limit for orbit
+	 */
 	int LowerLimitOrbit;
 
-	//lower and upper limit for altitude
+	/**
+	 * upper limit for altitude
+	 */
 	float UpperLimitAltitude;
+	/**
+	 * lower limit for altitude
+	 */
 	float LowerLimitAltitude;
 
 
