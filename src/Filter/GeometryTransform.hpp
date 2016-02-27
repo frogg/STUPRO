@@ -11,13 +11,6 @@
 #include <exception>
 #include <QString>
 
-/**
- * we do not support Backward transformation and throw an exception if someone wants it
- */
-struct NoBackwardTransformationException : public KronosException {
-	NoBackwardTransformationException(QString reason) : KronosException(reason) { }
-};
-
 
 /**
  * transforms from gps to world coodinates
@@ -30,13 +23,18 @@ private:
 	bool transformForward;
 
 	//globe radius
-	double baseAltitude;
+	float globeRadius;
 
 	/**
 	 * transforms gps cooridinates (lat, long, height) to world/cartesian coodinate systen
 	 */
 	template<typename T> void gpsToWorldCoordinates(const Vector3<T>& gps, Vector3<T>& cartesian) {
-		cartesian = sphericalToCartesian(gps);
+		if (transform) {
+			// Wrap around globe
+			cartesian = sphericalToCartesian(gps);
+		} else {
+			cartesian = sphericalToCartesianFlat(gps);
+		}
 	}
 
 	/**
@@ -46,7 +44,12 @@ private:
 	        T derivatives[3][3]) {
 
 		gpsToWorldCoordinates(gps, cartesian);
-		sphericalToCartesianJacobian(gps, derivatives);
+
+		if (transform) {
+			sphericalToCartesianJacobian(gps, derivatives);
+		} else {
+			sphericalToCartesianFlatJacobian(gps, derivatives);
+		}
 	}
 
 	/**
@@ -66,7 +69,7 @@ public:
 	GeometryTransform(bool transform = true, bool forward = true) {
 		this->transform = transform;
 		this->transformForward = forward;
-		this->baseAltitude = Configuration::getInstance().getDouble("globe.radius");
+		this->globeRadius = Configuration::getInstance().getFloat("globe.radius");
 	}
 
 	~GeometryTransform() {
@@ -91,9 +94,7 @@ public:
 	 * InternalTransformPoint for floats
 	 */
 	void InternalTransformPoint(const float in[3], float out[3]) override {
-		if (!transform) {
-			return;
-		}
+
 		Vector3f outV = Vector3f(out);
 		if (this->transformForward) {
 			gpsToWorldCoordinates(Vector3f(in), outV);
@@ -107,9 +108,7 @@ public:
 	 * InternalTransformPoint for doubles
 	 */
 	void InternalTransformPoint(const double in[3], double out[3]) override {
-		if (!transform) {
-			return;
-		}
+
 		Vector3d outV = Vector3d(out);
 		if (this->transformForward) {
 			gpsToWorldCoordinates(Vector3d(in), outV);
@@ -123,9 +122,7 @@ public:
 	 * InternalTransformDerivative for floats (transforms point AND deriactive)
 	 */
 	void InternalTransformDerivative(const float in[3], float out[3], float derivative[3][3]) override {
-		if (!transform) {
-			return;
-		}
+
 		Vector3f outV = Vector3f(out);
 
 		if (this->transformForward) {
@@ -141,9 +138,7 @@ public:
 	 */
 	void InternalTransformDerivative(const double in[3], double out[3],
 	                                 double derivative[3][3]) override {
-		if (!transform) {
-			return;
-		}
+
 		Vector3d outV = Vector3d(out);
 
 		if (this->transformForward) {

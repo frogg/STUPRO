@@ -27,7 +27,7 @@
 #include <cstddef>
 #include <memory>
 
-Globe::Globe(vtkRenderer& renderer, GlobeConfig globeConfig) :
+Globe::Globe(vtkRenderer& renderer) :
 	myRenderer(renderer),
 	myDownloader([ = ](ImageTile tile) {
 	onTileLoad(tile);
@@ -36,14 +36,18 @@ myTilePool([this]() -> std::unique_ptr<GlobeTile> {
 	return makeUnique<GlobeTile>(*this);
 }),
 myTimerCallback([this](void* unused) {
+	updateZoomLevel();
+	updateTileVisibility();
 	loadGlobeTiles();
 	updateDisplayMode(false);
 }),
-myZoomLevel(3),
+myZoomLevel(0),
 myDisplayMode(DisplayGlobe),
 myDisplayModeInterpolation(0.f) {
-	// TODO: add config option for pool size.
-	myTilePool.setPoolSize(32);
+
+	myCachedCameraMatrix.fill(0.0);
+
+	myTilePool.setPoolSize(Configuration::getInstance().getInteger("globe.tilePoolSize"));
 
 	// Check if we have a ParaView application instance (and the Event Loop that comes with it).
 	if (pqApplicationCore::instance() != nullptr) {
@@ -54,17 +58,14 @@ myDisplayModeInterpolation(0.f) {
 		// Set timer callback.
 		QObject::connect(myTimer.get(), SIGNAL(timeout()), &myTimerCallback, SLOT(callbackSlot()));
 
-		// TODO: add config option for texture load check interval.
-		myTimer->start(17);
+		myTimer->start(Configuration::getInstance().getInteger("globe.timerDelay"));
 	}
 
 	myLoadingTexture = loadTextureFromFile("./res/tiles/TileLoading.png");
 
-	setGlobeConfig(globeConfig);
 	generateLODTable();
 	createTileHandles();
-
-	onCameraChanged();
+	updateTileVisibility();
 }
 
 Globe::~Globe() {
@@ -217,7 +218,7 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 	for (auto& tilePosition : tileCornerPositions) {
 
 		// Convert normal to position by multiplication with radius.
-		tilePosition *= getGlobeConfig().globeRadius;
+		tilePosition *= Configuration::getInstance().getFloat("globe.radius");
 
 		// Set homogeneous component to 1 for correct projection calculation.
 		tilePosition.w = 1.f;
@@ -283,6 +284,8 @@ void Globe::showTile(int lon, int lat) {
 
 		// Start loading process.
 		myDownloader.requestTile(myZoomLevel, lon, lat);
+
+		KRONOS_LOG_DEBUG("fetching tile %d/%d", lon, lat);
 	} else {
 		// Re-use existing tile resource by reactivating it.
 		handle.setActive(true);
@@ -446,16 +449,8 @@ float Globe::getDisplayModeInterpolation() const {
 
 void Globe::onCameraChanged() {
 	updateZoomLevel();
-	updateTileVisibility();
+	updateTileVisibilityIfNeeded();
 	loadGlobeTiles();
-}
-
-void Globe::setGlobeConfig(GlobeConfig globeConfig) {
-	myGlobeConfig = globeConfig;
-}
-
-const GlobeConfig& Globe::getGlobeConfig() const {
-	return myGlobeConfig;
 }
 
 void Globe::generateLODTable() {
@@ -510,7 +505,8 @@ void Globe::updateZoomLevel() {
 	camera->GetPosition(cameraPosition.array());
 
 	// The distance between the camera and the globe's center in globe radius units.
-	float cameraDistance = cameraPosition.length() / getGlobeConfig().globeRadius;
+	float cameraDistance = cameraPosition.length() /
+	                       Configuration::getInstance().getFloat("globe.radius");
 
 	// Get the near and far distance limits from the configuration file.
 	float nearDistance = Configuration::getInstance().getFloat("globe.zoom.nearDistance");
@@ -547,12 +543,43 @@ void Globe::updateZoomLevel() {
 	this->setZoomLevel(zoomResult);
 }
 
+void Globe::updateTileVisibilityIfNeeded() {
+	updateTileVisibilityImpl(false);
+}
+
 void Globe::updateTileVisibility() {
+	updateTileVisibilityImpl(true);
+}
+
+void Globe::updateTileVisibilityImpl(bool forceUpdate) {
 	// Get current camera for transformation matrix.
 	vtkCamera* camera = getRenderer().GetActiveCamera();
 
 	if (camera == nullptr) {
 		KRONOS_LOG_WARN("Camera was null while trying to update tile visibility.");
+		return;
+	}
+
+	// Assign clipping planes in screenspace (consistency with X/Y coordinate limits).
+	double clipNear = -1.f, clipFar = 1.f;
+
+	// Get Model-View-Projection transformation matrix for globe tile position transformation.
+	vtkMatrix4x4* fullTransform = camera->GetCompositeProjectionTransformMatrix(
+	                                  (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
+	                                  clipFar);
+
+	// Check if matrix is different from last time this function was called.
+	bool isMatrixSame = true;
+	for (std::size_t i = 0; i < myCachedCameraMatrix.size(); ++i) {
+		// Compare matrix elements to cached matrix. Copy elements to cache if they are different.
+		if (myCachedCameraMatrix[i] != (*(*fullTransform)[i])) {
+			isMatrixSame = false;
+			myCachedCameraMatrix[i] = (*(*fullTransform)[i]);
+		}
+	}
+
+	// Matrix was not changed and force update is false: abort without recomputing tile visibility.
+	if (isMatrixSame && !forceUpdate) {
 		return;
 	}
 
@@ -565,14 +592,6 @@ void Globe::updateTileVisibility() {
 	// Invert & transpose to allow correctly transforming globe tile surface normals.
 	normalTransform->Invert();
 	normalTransform->Transpose();
-
-	// Assign clipping planes in screenspace (consistency with X/Y coordinate limits).
-	double clipNear = -1.f, clipFar = 1.f;
-
-	// Get Model-View-Projection transformation matrix for globe tile position transformation.
-	vtkMatrix4x4* fullTransform = camera->GetCompositeProjectionTransformMatrix(
-	                                  (float) getRenderer().GetSize()[0] / (float) getRenderer().GetSize()[1], clipNear,
-	                                  clipFar);
 
 	// Get number of tiles (vertically and horizontally).
 	unsigned int height = 1 << myZoomLevel;

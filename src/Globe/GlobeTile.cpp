@@ -1,8 +1,9 @@
 #include <Globe/Globe.hpp>
 #include <Globe/GlobeTile.hpp>
+#include <Macros.hpp>
+#include <Utils/Config/Configuration.hpp>
 #include <Utils/Graphics/TextureLoad.hpp>
 #include <Utils/Math/Functions.hpp>
-#include <Utils/Misc/Macros.hpp>
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
 #include <vtkProp.h>
@@ -30,6 +31,11 @@ GlobeTile::Location GlobeTile::Location::getWrappedLocation() const {
 RectF GlobeTile::Location::getBounds() const {
 	float size = 180.f / (1 << zoomLevel);
 	return RectF(longitude * size - 180.f, 90.f - latitude * size - size, size, size);
+}
+
+RectF GlobeTile::Location::getFlippedBounds() const {
+	RectF bounds = getBounds();
+	return RectF(bounds.x, bounds.h - bounds.y - 180.f, bounds.w, bounds.h);
 }
 
 Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const {
@@ -134,10 +140,10 @@ void GlobeTile::initShaders() {
 
 	// TODO: Find a way to get texture ID (GetTextureUnit() is missing in ParaView).
 	int textureID = 0;
-	float globeRadius = myGlobe.getGlobeConfig().globeRadius;
-	float planeSize = myGlobe.getGlobeConfig().internalPlaneSize;
+	float globeRadius = Configuration::getInstance().getFloat("globe.radius");
+	float planeSize = Configuration::getInstance().getFloat("globe.internalPlaneSize");
 	float displayModeInterpolation = 0.f;
-	float heightFactor = myGlobe.getGlobeConfig().heightFactor;
+	float heightFactor = Configuration::getInstance().getFloat("globe.heightFactor");
 
 	// Assign uniform variables.
 	myVertexShader->GetUniformVariables()->SetUniformi("heightTexture", 1, &textureID);
@@ -166,7 +172,7 @@ void GlobeTile::loadTexture(const QImage& rgb, const QImage& height) {
 
 void GlobeTile::updateUniforms() {
 	float displayModeInterpolation = myGlobe.getDisplayModeInterpolation();
-	float earthRadius = myGlobe.getGlobeConfig().earthRadius;
+	float earthRadius = Configuration::getInstance().getFloat("globe.earthRadius");
 	float minHeight = myLowerHeight / earthRadius;
 	float maxHeight = myUpperHeight / earthRadius;
 

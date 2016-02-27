@@ -209,26 +209,23 @@ private:
 		ResourceInfo() :
 			data(nullptr),
 			active(true),
-			handleCount(0)
-		{
+			handleCount(0) {
 		}
-		
-		ResourceInfo(ResourceInfo && resInfo) :
+
+		ResourceInfo(ResourceInfo&& resInfo) :
 			data(std::move(resInfo.data)),
 			active(std::move(resInfo.active)),
-			handleCount(std::move(resInfo.handleCount))
-		{
+			handleCount(std::move(resInfo.handleCount)) {
 		}
-		
-		ResourceInfo & operator=(ResourceInfo && resInfo)
-		{
+
+		ResourceInfo& operator=(ResourceInfo&& resInfo) {
 			data = std::move(resInfo.data);
 			active = std::move(resInfo.active);
 			handleCount = std::move(resInfo.handleCount);
-			
+
 			return *this;
 		}
-		
+
 		bool isActive() const {
 			return active && handleCount != 0;
 		}

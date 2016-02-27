@@ -1,7 +1,6 @@
 #ifndef STUPRO_GLOBE_HPP
 #define STUPRO_GLOBE_HPP
 
-#include <Globe/GlobeConfig.hpp>
 #include <Globe/GlobeTile.hpp>
 #include <Utils/Graphics/ResourcePool.hpp>
 #include <Utils/Math/Vector2.hpp>
@@ -17,6 +16,7 @@
 #include <atomic>
 #include <mutex>
 #include <queue>
+#include <array>
 #include <vector>
 
 class GlobeTile;
@@ -30,24 +30,12 @@ public:
 	/**
 	 * Creates the globe using the specified renderer and configuration.
 	 */
-	Globe(vtkRenderer& renderer, GlobeConfig globeConfig);
+	Globe(vtkRenderer& renderer);
 
 	/**
 	 * Virtual destructor.
 	 */
 	virtual ~Globe();
-
-	/**
-	 * Assigns the globe configuration data for this globe.
-	 *
-	 * @param globeConfig The configuration data to assign to this globe
-	 */
-	void setGlobeConfig(GlobeConfig globeConfig);
-
-	/**
-	 * @return the globe configuration data for this globe.
-	 */
-	const GlobeConfig& getGlobeConfig() const;
 
 	/**
 	 * Returns the plane mapper with an appropriate level of detail for the terrain height range in
@@ -210,9 +198,20 @@ private:
 	void updateZoomLevel();
 
 	/**
+	 * Checks if the camera has changed since the last call to this function. If this is the case,
+	 * checks which globe tiles are invisible and need to be culled.
+	 */
+	void updateTileVisibilityIfNeeded();
+
+	/**
 	 * Checks which globe tiles are invisible and need to be culled.
 	 */
 	void updateTileVisibility();
+
+	/**
+	 * Checks which globe tiles are invisible and need to be culled (implementation function).
+	 */
+	void updateTileVisibilityImpl(bool forceUpdate);
 
 	/**
 	 * Generates the LOD table for height difference -> resolution mapping.
@@ -222,8 +221,6 @@ private:
 	void onTileLoad(ImageTile tile);
 
 	vtkRenderer& myRenderer;
-
-	GlobeConfig myGlobeConfig;
 
 	vtkSmartPointer<vtkOpenGLTexture> myLoadingTexture;
 
@@ -248,6 +245,8 @@ private:
 		vtkSmartPointer<vtkPlaneSource> planeSource;
 		vtkSmartPointer<vtkPolyDataMapper> planeMapper;
 	};
+
+	std::array<double, 16> myCachedCameraMatrix;
 
 	std::vector<LODSetting> myLODTable;
 

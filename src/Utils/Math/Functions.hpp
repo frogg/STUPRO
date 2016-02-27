@@ -1,6 +1,8 @@
 #ifndef KRONOS_MATH_FUNCTIONS_HPP
 #define KRONOS_MATH_FUNCTIONS_HPP
 
+#include <algorithm>
+
 /**
  * Returns the positive modulo betwen the two specified numbers.
  *
@@ -13,6 +15,8 @@ template <typename T>
 T absoluteModulo(T a, T b) {
 	return (a % b + b) % b;
 }
+
+double toRadians(double degrees);
 
 /**
  * Linearly interpolates two values with an interpolation factor.
@@ -41,6 +45,14 @@ T getNextPowerOf2(T value) {
 		value |= value >> i;
 	}
 	return value + 1;
+}
+
+/**
+ * Limits a value to the specified min/max range.
+ */
+template <typename T>
+T clamp(T min, T value, T max) {
+	return std::max(min, std::min(value, max));
 }
 
 #endif
