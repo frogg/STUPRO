@@ -7,6 +7,8 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkPointData.h>
+#include <vtkDoubleArray.h>
+#include <vtkFloatArray.h>
 
 #include <qstring.h>
 #include <qlist.h>
@@ -15,7 +17,8 @@
 #include <Globe/Coordinate.hpp>
 
 /**
- * Abstract super class for filters that work on a Kronos point data set and extract some of those points.
+ * This class extracts the attributes of the AIRS Data, and displays them with Sliders
+ * to be able to change the AIRS_am and AIRS_pm appearance.
  */
 class AIRSFilter : public vtkDataObjectAlgorithm {
 public:
@@ -36,9 +39,17 @@ public:
 	int FillInputPortInformation(int port, vtkInformation* info) override;
     void SetInputConnection(vtkAlgorithmOutput *input) override;
 
+    //set the upper and Lower Limit for the given Time
     void setUpper(double upperLimit);
     void setLower(double lowerLimit);
 
+    //set the upper and Lower Limit for the given Ash Attribute
+    void setUpperAsh(float upperLimit);
+    void setLowerAsh(float lowerLimit);
+
+    //set the upper and Lower Limit for the given SO Attribute
+    void setUpperSO(float upperLimit);
+    void setLowerSO(float lowerLimit);
 
 
 protected:
@@ -62,6 +73,14 @@ private:
 
     double UpperLimit;
     double LowerLimit;
+
+    //upper and lower Limit for ash
+    float UpperLimitAsh;
+    float LowerLimitAsh;
+
+    //upper and lower Limit  for SO
+    float UpperLimitSO;
+    float LowerLimitSO;
 
     /**
      * Decide whether a data point should be kept in the selection.

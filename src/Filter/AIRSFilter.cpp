@@ -6,6 +6,7 @@
 #include <vtkCellArray.h>
 #include <vtkObjectFactory.h>
 #include <vtkDoubleArray.h>
+#include <vtkFloatArray.h>
 #include <iostream>
 
 vtkStandardNewMacro(AIRSFilter);
@@ -128,6 +129,26 @@ void AIRSFilter::setUpper(double upperLimit) {
 	this->Modified();
 }
 
+void AIRSFilter::setLowerAsh(float lowerLimit) {
+	this->LowerLimitAsh = lowerLimit;
+	this->Modified();
+}
+
+void AIRSFilter::setUpperAsh(float upperLimit) {
+	this->UpperLimitAsh = upperLimit;
+	this->Modified();
+}
+
+void AIRSFilter::setLowerSO(float lowerLimit) {
+	this->LowerLimitSO = lowerLimit;
+	this->Modified();
+}
+
+void AIRSFilter::setUpperSO(float upperLimit) {
+	this->UpperLimitSO = upperLimit;
+	this->Modified();
+}
+
 void AIRSFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
 	os << indent << "Filter for selecting and extracting certain data points, Kronos Project" <<
@@ -154,5 +175,18 @@ bool AIRSFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointDa
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
 	double time = timeArray->GetTuple1(pointIndex);
-	return (this->LowerLimit <= time && time <= this->UpperLimit);
+
+	vtkSmartPointer<vtkFloatArray> soArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("SO2"));
+	float so = soArray->GetTuple1(pointIndex);
+
+	vtkSmartPointer<vtkFloatArray> ashArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("ash"));
+	float ash = ashArray->GetTuple1(pointIndex);
+
+	return (this->LowerLimit <= time && time <= this->UpperLimit) && (this->LowerLimitSO <= so
+	        && so <= this->UpperLimitSO) && (this->LowerLimitAsh <= ash && ash <= this->UpperLimitAsh);
+
+
+
 }
