@@ -56,26 +56,10 @@ TEST(TestImageDownloader, GetTile) {
 	EXPECT_EQ(2, tile.getLayers().size());
 
 	MetaImage metaImage = tile.getLayers()[layerName];
-	// EXPECT_EQ((short)0, metaImage.getMinimumHeight());
-	// EXPECT_EQ((short)0, metaImage.getMaximumHeight());
 
 	QImage image = metaImage.getImage();
 	EXPECT_EQ(512, image.width());
 	EXPECT_EQ(512, image.height());
-
-	// ASSERT_THROW(downloader.getTile(layerName, -1, 0, 0), InvalidTileZoomException);
-	// ASSERT_THROW(downloader.getTile(layerName, 16, 0, 0), InvalidTileZoomException);
-
-	// for (int zoom = 0; zoom < 16; zoom++) {
-	//  ASSERT_THROW(downloader.getTile(layerName, zoom, -1, 0), InvalidTilePositionException);
-	//  ASSERT_THROW(downloader.getTile(layerName, zoom, 8 << zoom, 0),
-	//                       InvalidTilePositionException);
-	//  ASSERT_THROW(downloader.getTile(layerName, zoom, 0, -1), InvalidTilePositionException);
-	//  ASSERT_THROW(downloader.getTile(layerName, zoom, 0, 4 << zoom),
-	//                       InvalidTilePositionException);
-	// }
-	//
-	// ASSERT_THROW(downloader.getTile("non-existing layer", 0, 0, 0), InvalidLayerException);
 }
 
 TEST(TestImageDownloader, AbortDownload) {
