@@ -6,7 +6,8 @@
 #include <vtkCellArray.h>
 #include <vtkObjectFactory.h>
 #include <vtkDoubleArray.h>
-#include <iostream>
+#include <vtkUnsignedIntArray.h>
+#include <vtkUnsignedCharArray.h>
 #include <vtkIntArray.h>
 
 vtkStandardNewMacro(MIPASFilter);
@@ -130,6 +131,26 @@ void MIPASFilter::setUpper(double upperLimit) {
 	this->Modified();
 }
 
+void MIPASFilter::setLowerOrbit(int lowerLimit) {
+	this->LowerLimitOrbit = lowerLimit;
+	this->Modified();
+}
+
+void MIPASFilter::setUpperOrbit(int upperLimit) {
+	this->UpperLimitOrbit = upperLimit;
+	this->Modified();
+}
+
+void MIPASFilter::setLowerAltitude(float lowerLimit) {
+	this->LowerLimitAltitude = lowerLimit;
+	this->Modified();
+}
+
+void MIPASFilter::setUpperAltitude(float upperLimit) {
+	this->UpperLimitAltitude = upperLimit;
+	this->Modified();
+}
+
 
 
 void MIPASFilter::PrintSelf(ostream& os, vtkIndent indent) {
@@ -155,9 +176,20 @@ int MIPASFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	return 1;
 }
 bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) {
+	vtkSmartPointer<vtkUnsignedIntArray> orbit_idArray = vtkUnsignedIntArray::SafeDownCast(
+	            pointData->GetAbstractArray("orbit_id"));
+	double orbit_id = orbit_idArray->GetTuple1(pointIndex);
+
+	vtkSmartPointer<vtkFloatArray> altitudeArray = vtkFloatArray::SafeDownCast(
+	            pointData->GetAbstractArray("altitude"));
+	float altitude = altitudeArray->GetTuple1(pointIndex);
+
+
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
-
 	double time = timeArray->GetTuple1(pointIndex);
-	return (this->LowerLimit <= time && time <= this->UpperLimit);
+	return (this->LowerLimitOrbit <= orbit_id && orbit_id <= this->UpperLimitOrbit)
+	       && (this->LowerLimitAltitude <= altitude && altitude <= this->UpperLimitAltitude)
+
+	       && (this->LowerLimit <= time && time <= this->UpperLimit);
 }

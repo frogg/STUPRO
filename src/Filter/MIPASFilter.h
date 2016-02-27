@@ -8,6 +8,9 @@
 #include <vtkInformationVector.h>
 #include <vtkPointData.h>
 #include <vtkIntArray.h>
+#include <vtkFloatArray.h>
+#include <vtkUnsignedIntArray.h>
+#include <vtkUnsignedCharArray.h>
 
 #include <qstring.h>
 #include <qlist.h>
@@ -17,7 +20,8 @@
 
 
 /**
- * Abstract super class for filters that work on a Kronos point data set and extract some of those points.
+ * This class extracts the attributes of the MIPAS Data, and displays them with Sliders
+ * to be able to change it's appearance.
  */
 class MIPASFilter : public vtkDataObjectAlgorithm {
 public:
@@ -38,8 +42,17 @@ public:
 	int FillInputPortInformation(int port, vtkInformation* info) override;
     void SetInputConnection(vtkAlgorithmOutput *input) override;
 
+    //Set upper and lower Limit Time
     void setUpper(double upperLimit);
     void setLower(double lowerLimit);
+
+    //Set upper and Lower Limit Orbit
+    void setUpperOrbit(int upperLimit);
+    void setLowerOrbit(int lowerLimit);
+
+    //Set upper and lower limit altitude
+    void setUpperAltitude(float upperLimit);
+    void setLowerAltitude(float lowerLimit);
 
 
 
@@ -65,6 +78,16 @@ private:
 
     double UpperLimit;
     double LowerLimit;
+
+    //lower and upper limit for orbit
+    int UpperLimitOrbit;
+    int LowerLimitOrbit;
+
+    //lower and upper limit for altitude
+    float UpperLimitAltitude;
+    float LowerLimitAltitude;
+
+
 
 
     /**
