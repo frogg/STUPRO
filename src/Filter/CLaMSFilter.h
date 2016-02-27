@@ -19,7 +19,8 @@
 
 
 /**
- * Abstract super class for filters that work on a Kronos point data set and extract some of those points.
+ * This class extracts the attributes of the CLaMS Data, and displays them with Sliders
+ * to be able to change the CLaMS_Nabro and CLaMSPuyehue's appearance.
  */
 class CLaMSFilter : public vtkDataObjectAlgorithm {
 public:
@@ -40,27 +41,27 @@ public:
 	int FillInputPortInformation(int port, vtkInformation* info) override;
     void SetInputConnection(vtkAlgorithmOutput *input) override;
 
-    //lower and upper Limit for altitude
+    //set the lower and upper Limit for altitude
     void setUpperAltitude(float upperLimit);
     void setLowerAltitude(float lowerLimit);
 
-    //lower and upper Limit for PotTemperature
+    //set the lower and upper Limit for PotTemperature
     void setLowerPotTemperature(float lowerLimit);
     void setUpperPotTemperature(float upperLimit);
 
-    //lower and upper Limit for the vorticity
+    //set the lower and upper Limit for the vorticity
     void setLowerVorticity(float lowerLimit);
     void setUpperVorticity(float upperLimit);
 
-    //lower and upper limit for pressure
+    //set the lower and upper limit for pressure
     void setLowerPressure(float lowerLimit);
     void setUpperPressure(float upperLimit);
 
-    //lower and upper Limit for Temperature
+    //set the lower and upper Limit for Temperature
     void setLowerTemperature(float lowerLimit);
     void setUpperTemperature(float upperLimit);
 
-    //lower and upper Limit for the date
+    //set the lower and upper Limit for the date
     void setLowerDate(double lowerLimit);
     void setUpperDate(double upperLimit);
 

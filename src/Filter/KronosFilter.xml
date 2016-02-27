@@ -560,7 +560,7 @@
             </Hints>
         </SourceProxy>
 
-        <SourceProxy name="CLaMSFilter" class="CLaMSFilter" label="CLaMSFilter">
+        <SourceProxy name="CLaMSFilterPuyehue" class="CLaMSFilter" label="CLaMSFilterPuyehue">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
                 short_help="Solve SciVis-Contest with this filter">
@@ -645,6 +645,112 @@
                 <DoubleRangeDomain name="range" min="60.7511" max="1030.58" />
             </DoubleVectorProperty>
 
+
+            <DoubleVectorProperty name="Start date"
+                command="setLowerDate"
+                number_of_elements="1"
+                default_values="3.60461e+08">
+                <DoubleRangeDomain name="range" min="3.60461e+08" max="3.67664e+08" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End date"
+                command="setUpperDate"
+                number_of_elements="1"
+                default_values="3.67664e+08">
+                <DoubleRangeDomain name="range" min="3.60461e+08" max="3.67664e+08" />
+            </DoubleVectorProperty>
+            <Hints>
+                <ShowInMenu category="SciVis"/>
+            </Hints>
+        </SourceProxy>
+
+
+        <SourceProxy name="CLaMSFilterNabro" class="CLaMSFilter" label="CLaMSFilterNabro">
+            <Documentation
+                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
+                short_help="Solve SciVis-Contest with this filter">
+            </Documentation>
+            <InputProperty
+                name="CLaMS Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkCellData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+
+            <DoubleVectorProperty name="lowest altitude"
+                command="setLowerAltitude"
+                number_of_elements="1"
+                default_values="-0.0311764">
+                <DoubleRangeDomain name="range" min="-0.0311764" max="32.3995" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="Highest altitude"
+                command="setUpperAltitude"
+                number_of_elements="1"
+                default_values="32.3995">
+                <DoubleRangeDomain name="range" min="-0.0311764" max="32.3995" />
+            </DoubleVectorProperty>
+
+            <DoubleVectorProperty name="lowest pot_Temperature"
+                command="setLowerPotTemperature"
+                number_of_elements="1"
+                default_values="247.64">
+                <DoubleRangeDomain name="range" min="247.64" max="1447.37" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="highest pot_Temperature"
+                command="setUpperPotTemperature"
+                number_of_elements="1"
+                default_values="1447.37">
+                <DoubleRangeDomain name="range" min="247.64" max="1447.37" />
+            </DoubleVectorProperty>
+
+            <DoubleVectorProperty name="lowest vorticity"
+                command="setLowerVorticity"
+                number_of_elements="1"
+                default_values="-1e+30">
+                <DoubleRangeDomain name="range" min="-1e+30" max="2384.89" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="highest vorticity"
+                command="setUpperVorticity"
+                number_of_elements="1"
+                default_values="2384.89">
+                <DoubleRangeDomain name="range" min="-1e+30" max="2384.89" />
+            </DoubleVectorProperty>
+
+
+            <DoubleVectorProperty name="Start pressure"
+                command="setLowerPressure"
+                number_of_elements="1"
+                default_values="8.12409">
+                <DoubleRangeDomain name="range" min="8.12409" max="1033.3" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="End pressure"
+                command="setUpperPressure"
+                number_of_elements="1"
+                default_values="1033.3">
+                <DoubleRangeDomain name="range" min="8.12409" max="1033.3" />
+            </DoubleVectorProperty>
+
+            <DoubleVectorProperty name="lowest Temperature"
+                command="setLowerTemperature"
+                number_of_elements="1"
+                default_values="184.492">
+                <DoubleRangeDomain name="range" min="184.492" max="317.236" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="highest Temperature"
+                command="setUpperTemperature"
+                number_of_elements="1"
+                default_values="317.236">
+                <DoubleRangeDomain name="range" min="184.492" max="317.236" />
+            </DoubleVectorProperty>
+
+            
             <DoubleVectorProperty name="Start date"
                 command="setLowerDate"
                 number_of_elements="1"
@@ -676,7 +782,7 @@
         <Category name="SciVis" menu_label="SciVis">
             <Filter name="MIPASFilter" />
             <Filter name="AIRSFilter" />
-            <Filter name="CLaMSFilter"/>
+            <Filter name="CLaMSFilterPuyehue"/>
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>

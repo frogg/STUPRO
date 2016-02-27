@@ -14,7 +14,7 @@ vtkStandardNewMacro(CLaMSFilter);
 CLaMSFilter::CLaMSFilter() { };
 //CLaMSFilter::CLaMSFilter() : error(false) { }
 
-CLaMSFilter::~CLaMSFilter() { }
+CLaMSFilter::~CLaMSFilter() { };
 
 
 void CLaMSFilter::fail(QString message) {
