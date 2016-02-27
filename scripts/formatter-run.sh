@@ -45,6 +45,6 @@ if [ "$ONLY_OWN" == true ]; then
 else
 	for i in "${FORMATTER_DIRS[@]}"
 	do
-	  $COMMAND --options=.astyle-options --recursive --suffix=none "$i/*.cpp" "$i/*.hpp" "$i/*.?sh"
+	  $COMMAND --options=.astyle-options --recursive --suffix=none "$i/*.cpp" "$i/*.hpp" "$i/*.cxx" "$i/*.h" "$i/*.?sh"
 	done
 fi
