@@ -1,6 +1,7 @@
 #include <Kronos.h>
 
 #include <Utils/Misc/Exceptions.hpp>
+#include <Utils/Misc/KronosLogger.hpp>
 
 #include <exception>
 #include <iostream>
@@ -28,9 +29,10 @@ Kronos::Kronos(QObject* parent) : QObject(parent) {
     this->initialized = false;
 }
 
-
 void Kronos::onStartup() {
     std::cout << "### ON STARTUP ###" << std::endl;
+
+    registerSegfaultHandler();
 
     this->initialized = true;
 }
