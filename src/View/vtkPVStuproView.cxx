@@ -4,6 +4,7 @@
 #include <Utils/Math/Interpolator.hpp>
 #include <Utils/Math/SphericalCoordinateFunctions.h>
 #include <Utils/Misc/MakeUnique.hpp>
+#include <pqApplicationCore.h>
 #include <QCoreApplication>
 #include <QEventLoop>
 #include <vtkCamera.h>
@@ -122,8 +123,10 @@ void vtkPVStuproView::animateMove(double latitude, double longitude, double dist
 		// make sure paraview doesn't become completely unresponsive during the transition
 		// NOTE: allowing user input events to be processed would mean allowing two animations to
 		// be played at once, with each setting the camera to different locations. It'd be a mess.
-		// TODO: only call this on the client (doesn't break powerwall but spams warnings)
-		QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		// TODO: replace with ServerUtils implementation in feature/downloaderRework when merged
+		if (pqApplicationCore::instance() != nullptr) {
+			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+		}
 	}
 }
 
