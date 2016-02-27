@@ -66,7 +66,6 @@ int TemporalInterpolationFilter::RequestInformation (
 		return 0;
 	}
 
-	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
@@ -278,25 +277,18 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
 
 }
 
-void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData *inputData){
-    //QList<int> knownPoints;
-    //auto content = makeUnique<QMap<PointCoordinates, TemporalDataPoint>>() ;
-    QMap<PointCoordinates, InterpolationValue*> content;
+void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData *inputData) {
+    QMap<PointCoordinates, InterpolationValue*> timestepData;
+    
     for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
         double coordinates[3];
         inputData->GetPoint(i, coordinates);
+        
         PointCoordinates currentCoordinates(coordinates[0], coordinates[1], coordinates[2]);
         content.insert(currentCoordinates, this->createDataPoint(i, inputData));
-        
-        if(!this->allPointCooridinates.contains(currentCoordinates)){
-            this->allPointCooridinates.append(currentCoordinates);
-        }
-        //this->dataAggregator
-        //knownPoints.append(i);
-      //  std::cout << dynamic_cast<TemperatureDataPoint>(content[currentCoordinates]) ;
     }
-    //std::cout << "contentSize: " << content.count();
-    this->pointData.insert(timestep,content);
+
+    this->pointData.insert(timestep, content);
 }
 
 InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex, vtkPolyData *inputData) {
