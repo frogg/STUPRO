@@ -28,10 +28,9 @@ TemporalInterpolationFilter::TemporalInterpolationFilter() : preprocessed(false)
 }
 
 TemporalInterpolationFilter::~TemporalInterpolationFilter() {
-    for(int i=0; i<this->timestampMap.count();i++){
-        qDeleteAll(timestampMap[i]);
+    for(int i = 0; i < this->pointData.size(); i++){
+        qDeleteAll(this->pointData[i]);
     }
-    
 }
 
 void TemporalInterpolationFilter::fail(QString message) {
@@ -131,8 +130,7 @@ int TemporalInterpolationFilter::RequestData(
 		this->SetProgress(0.0);
 	}
 
-    // std::cout << "Current timestep: " << this->currentTimeStep << std::endl;
-    this->updateQMap(this->currentTimeStep, input);
+    this->storeTimestepData(this->currentTimeStep, input);
     
 	if (this->currentTimeStep < inInfo->Length(vtkStreamingDemandDrivenPipeline::TIME_STEPS())) {
 		// There are still time steps left, continue on
@@ -170,16 +168,16 @@ void TemporalInterpolationFilter::interpolateData(){
         //int numberOfGaps = 0;
         bool foundGap = false;
         //test for a specific coordinate all timesteps
-    for(int i=1; i<this->timestampMap.count();i++){
+    for(int i=1; i<this->pointData.size();i++){
         //nicht mehr lineare Laufzeit, weil contain nicht in O(1) geht
         //check if coordinate exists at this timestep
-        if(timestampMap[i].contains(coord)){
+        if(this->pointData[i].contains(coord)){
             if(foundGap){
                 //alle Zwischenpunkte interpolieren und in Map einfügen
                 //Zeitschritte
                 for(int x = firstTimestep+1; x<i; x++){
                     int distanceToFirstTimestep = x-firstTimestep;
-                    this->interpolateDataPoint(timestampMap[firstTimestep][coord], timestampMap[i][coord], distanceToFirstTimestep, x, coord, i-firstTimestep);
+                    this->interpolateDataPoint(pointData[firstTimestep][coord], pointData[i][coord], distanceToFirstTimestep, x, coord, i-firstTimestep);
                 }
                 firstTimestep = i;
                 foundGap = false;
@@ -220,7 +218,7 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
             float interpolatedTemperature = factorB * lowerValue->getTemperature() + factorA * higherValue->getTemperature();
             
             TemperatureInterpolationValue *interpolatedValue = new TemperatureInterpolationValue(priority, interpolatedTimestamp, interpolatedTemperature);
-            this->timestampMap[index].insert(coordinate,interpolatedValue);
+            this->pointData[index].insert(coordinate,interpolatedValue);
             break;
         }
         case Data::TWEETS: {
@@ -229,7 +227,7 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
             
             float interpolatedDensity = factorB * lowerValue->getDensity() + factorA * higherValue->getDensity();
             TwitterInterpolationValue *interpolatedValue = new TwitterInterpolationValue(priority, interpolatedTimestamp, interpolatedDensity);
-            this->timestampMap[index].insert(coordinate,interpolatedValue);
+            this->pointData[index].insert(coordinate,interpolatedValue);
             break;
         }
         case Data::PRECIPITATION: {
@@ -248,7 +246,7 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
             float interpolatedPrecipitationRate = factorB * lowerValue->getPrecipitationRate() + factorA *higherValue->getPrecipitationRate();
             
             PrecipitationInterpolationValue *interpolatedValue = new PrecipitationInterpolationValue(priority, interpolatedTimestamp, interpolatedPrecipitationRate, percipiationType);
-            this->timestampMap[index].insert(coordinate,interpolatedValue);
+            this->pointData[index].insert(coordinate,interpolatedValue);
             break;
         }
         case Data::WIND: {
@@ -259,7 +257,7 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
             float interpolatedSpeed = factorB * lowerValue->getSpeed() + factorA * higherValue->getSpeed();
            
             WindInterpolationValue *interpolatedValue = new WindInterpolationValue(priority, interpolatedTimestamp, interpolatedBearing, interpolatedSpeed);
-            this->timestampMap[index].insert(coordinate,interpolatedValue);
+            this->pointData[index].insert(coordinate,interpolatedValue);
             break;
         }
         case Data::CLOUD_COVERAGE: {
@@ -268,19 +266,19 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
             float interpolatedCloudCoverage = factorB * lowerValue->getCloudCoverage() + factorA *higherValue->getCloudCoverage();
 
             CloudCoverageInterpolationValue *interpolatedValue = new CloudCoverageInterpolationValue(priority, interpolatedTimestamp, interpolatedCloudCoverage);
-            this->timestampMap[index].insert(coordinate,interpolatedValue);
+            this->pointData[index].insert(coordinate,interpolatedValue);
             break;
         }
         default: {
             this->fail("The data type of this filter seems to be invalid.");
-            return new InterpolationValue();
+            return;
             break;
         }
     }
 
 }
 
-void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputData){
+void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData *inputData){
     //QList<int> knownPoints;
     //auto content = makeUnique<QMap<PointCoordinates, TemporalDataPoint>>() ;
     QMap<PointCoordinates, InterpolationValue*> content;
@@ -298,7 +296,7 @@ void TemporalInterpolationFilter::updateQMap(int timestep, vtkPolyData *inputDat
       //  std::cout << dynamic_cast<TemperatureDataPoint>(content[currentCoordinates]) ;
     }
     //std::cout << "contentSize: " << content.count();
-    this->timestampMap.insert(timestep,content);
+    this->pointData.insert(timestep,content);
 }
 
 InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex, vtkPolyData *inputData) {
@@ -348,18 +346,18 @@ void TemporalInterpolationFilter::addDataInFirstTimeStep(){
   //  std::cout << "Anzahl an erstem Zeitschritt: " <<this->timestampMap[0].count();
     //copy-on-write
     QList<PointCoordinates> missingCoordinates = this->allPointCooridinates;
-    for(auto knownCoordinate : this->timestampMap[0].keys()){
+    for(auto knownCoordinate : this->pointData[0].keys()){
         missingCoordinates.removeAll(knownCoordinate);
     }
     
     //as not sure about interator order
-    for(int i=1; i<this->timestampMap.count(); i++){
+    for(int i=1; i<this->pointData.count(); i++){
             QList<PointCoordinates> temp = missingCoordinates;
             for(auto coordinate: temp){
                 //if timestep i has missingPoint, append it on timestep 0
                 //ÜBERPRÜFEN MIT C++ 
-                if(this->timestampMap[i].contains(coordinate)){
-                    this->timestampMap[0].insert(coordinate,this->timestampMap[i][coordinate]);
+                if(this->pointData[i].contains(coordinate)){
+                    this->pointData[0].insert(coordinate,this->pointData[i][coordinate]);
                     missingCoordinates.removeAll(coordinate);
                 }
             }
@@ -377,19 +375,19 @@ bool TemporalInterpolationFilter::hasPreprocessed() {
 }
 
 void TemporalInterpolationFilter::printData(){
-    for(int i=0; i<this->timestampMap.count(); i++){
-        std::cout << "Number of Points in in Timestep: " << i << ": " << this->timestampMap[i].count() <<std::endl;
+    for(int i=0; i<this->pointData.count(); i++){
+        std::cout << "Number of Points in in Timestep: " << i << ": " << this->pointData[i].count() <<std::endl;
     }
-    std::cout << "Gesamtanzahl" <<this->timestampMap.count() <<std::endl;
+    std::cout << "Gesamtanzahl" <<this->pointData.count() <<std::endl;
 }
 
 void TemporalInterpolationFilter::addDataInLastTimeStep(){
     QList<PointCoordinates> missingCoordinates = this->allPointCooridinates;
     
     //last timestep
-    int lastTimestep = this->timestampMap.count()-1;
+    int lastTimestep = this->pointData.count()-1;
 
-    for(auto knownCoordinate : this->timestampMap[lastTimestep].keys()){
+    for(auto knownCoordinate : this->pointData[lastTimestep].keys()){
         missingCoordinates.removeAll(knownCoordinate);
     }
     
@@ -399,8 +397,8 @@ void TemporalInterpolationFilter::addDataInLastTimeStep(){
         for(auto coordinate: temp){
             //if timestep i has missingPoint, append it on timestep n
             //ÜBERPRÜFEN MIT C++
-            if(this->timestampMap[i].contains(coordinate)){
-                this->timestampMap[lastTimestep].insert(coordinate,this->timestampMap[i][coordinate]);
+            if(this->pointData[i].contains(coordinate)){
+                this->pointData[lastTimestep].insert(coordinate,this->pointData[i][coordinate]);
                 missingCoordinates.removeAll(coordinate);
             }
         }
@@ -408,7 +406,7 @@ void TemporalInterpolationFilter::addDataInLastTimeStep(){
             break;
         }
     }
-    std::cout << "Anzahl an letzen Zeitschritt: danach" <<this->timestampMap[lastTimestep].count();
+    std::cout << "Anzahl an letzen Zeitschritt: danach" <<this->pointData[lastTimestep].count();
 }
 
 

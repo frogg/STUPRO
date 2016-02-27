@@ -3,11 +3,11 @@
 
 #include <Reader/DataReader/Data.hpp>
 #include <Utils/Misc/PointCoordinates.hpp>
+#include <Filter/TemporalInterpolationFilter/InterpolationValue.hpp>
 
 #include <vtkFiltersGeneralModule.h>
 #include <vtkPassInputTypeAlgorithm.h>
 #include <vtkDataSet.h>
-#include <Filter/TemporalInterpolationFilter/InterpolationValue.hpp>
 
 #include <qstring.h>
 #include <qlist.h>
@@ -45,7 +45,12 @@ private:
      */
     void fail(QString message);
     
-    void updateQMap(int timestep, vtkPolyData *inputData);
+    /**
+     * Store the points in a poly data object in an internal representation for later interpolation.
+     * @param timestep The timestep the data should be stored under
+     * @param inputData The data to be stored
+     */
+    void storeTimestepData(int timestep, vtkPolyData *inputData);
     
     /**
      * Create a temporal data point from the data available in a `vtkPolyData` object.
@@ -54,16 +59,18 @@ private:
      * @return A temporal data point of the right type with all available data
      */
     InterpolationValue* createDataPoint(int pointIndex, vtkPolyData *inputData);
-    
-    QMap<int, QMap<PointCoordinates, InterpolationValue*>> timestampMap;
 
     void addDataInFirstTimeStep();
     void addDataInLastTimeStep();
     void printData();
     void interpolateData();
     void interpolateDataPoint(InterpolationValue *lower, InterpolationValue *higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance);
-
     QList<PointCoordinates> allPointCooridinates;
+    
+    /**
+     * This map stores nested maps for each timestep which in turn map point coordinates to their respective scalar values.
+     */
+    QMap<int, QMap<PointCoordinates, InterpolationValue*>> pointData;
     
     /**
      * Check whether this filter has successfully finished preprocessing data.
