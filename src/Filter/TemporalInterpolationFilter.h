@@ -8,6 +8,7 @@
 #include <vtkFiltersGeneralModule.h>
 #include <vtkPassInputTypeAlgorithm.h>
 #include <vtkDataSet.h>
+#include <vtkSmartPointer.h>
 
 #include <qstring.h>
 #include <qlist.h>
@@ -75,6 +76,13 @@ private:
      * @return The interpolated value
      */
     InterpolationValue* interpolateDataPoint(InterpolationValue *left, InterpolationValue *right, int leftIndex, int rightIndex, int index);
+    
+    /**
+     * Get a fully interpolated output data set for a given time.
+     * @param time The requested time value
+     * @return A smart pointer to the linearly interpolated poly data object for the given time
+     */
+    vtkSmartPointer<vtkPolyData> getOutputPolyData(double time);
     
     /**
      * This map stores nested maps for each timestep which in turn map point coordinates to their respective scalar values.

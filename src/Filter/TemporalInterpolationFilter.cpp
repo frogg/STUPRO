@@ -9,13 +9,15 @@
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkFloatArray.h>
 #include <vtkIntArray.h>
-#include <Utils/Misc/MakeUnique.hpp>
+#include <vtkCellArray.h>
 
 #include <Filter/TemporalInterpolationFilter/PrecipitationInterpolationValue.hpp>
 #include <Filter/TemporalInterpolationFilter/TemperatureInterpolationValue.hpp>
 #include <Filter/TemporalInterpolationFilter/WindInterpolationValue.hpp>
 #include <Filter/TemporalInterpolationFilter/CloudCoverageInterpolationValue.hpp>
 #include <Filter/TemporalInterpolationFilter/TwitterInterpolationValue.hpp>
+#include <Utils/Misc/MakeUnique.hpp>
+#include <Utils/Math/Functions.hpp>
 
 vtkStandardNewMacro(TemporalInterpolationFilter);
 
@@ -112,17 +114,17 @@ int TemporalInterpolationFilter::RequestData(
 		return 0;
 	}
     
+    vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+    vtkInformation* outInfo = outputVector->GetInformationObject(0);
+
+    vtkPolyData* input = vtkPolyData::GetData(inInfo);
+    vtkPolyData* output = vtkPolyData::GetData(outInfo);
+    
     if (this->hasPreprocessed()) {
-        // TODO: Output the interpolated data set from the preprocessed data using the time in the request
+        output->DeepCopy(this->getOutputPolyData(outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP())));
         request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 0);
         return 0;
     }
-
-	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-	vtkInformation* outInfo = outputVector->GetInformationObject(0);
-
-	vtkPolyData* input = vtkPolyData::GetData(inInfo);
-	vtkPolyData* output = vtkPolyData::GetData(outInfo);
 
 	if (this->currentTimeStep == 0) {
 		this->SetProgressText("Interpolating data...");
@@ -151,6 +153,238 @@ int TemporalInterpolationFilter::RequestData(
     
     request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
 	return 1;
+}
+
+vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(double time) {
+    vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
+    
+    // TODO: Interpolate between the two adjacent time steps
+    QMap<PointCoordinates, InterpolationValue*> interpolatedData = this->pointData[(int) time];
+
+    // Create the content of the output poly data object
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+	vtkCellArray* verts = vtkCellArray::New();
+	verts->Allocate(verts->EstimateSize(1, interpolatedData.size()));
+	verts->InsertNextCell(interpolatedData.size());
+
+	vtkIdType numberOfTuples[1];
+	numberOfTuples[0] = interpolatedData.size();
+
+    // Add the common priority and timestamp arrays
+	vtkSmartPointer<vtkIntArray> priorities = vtkSmartPointer<vtkIntArray>::New();
+	priorities->SetName("priorities");
+	priorities->SetNumberOfComponents(1);
+	priorities->SetNumberOfTuples(*numberOfTuples);
+
+	vtkSmartPointer<vtkIntArray> timestamps = vtkSmartPointer<vtkIntArray>::New();
+	timestamps->SetName("timestamps");
+	timestamps->SetNumberOfComponents(1);
+	timestamps->SetNumberOfTuples(*numberOfTuples);
+
+	// The current tuple index in the iteration
+	int tupleNumber = 0;
+
+	// Iterate through all data points, add their coordinates as new points and fill the
+	// array of priority and timestamp values.
+	for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = interpolatedData.begin();
+	        iterator != interpolatedData.end(); ++iterator) {
+		verts->InsertCellPoint(points->InsertNextPoint(
+		                           iterator.key().getX(),
+		                           iterator.key().getY(),
+		                           iterator.key().getZ()
+		                       ));
+
+		double priority[1] = {(double) iterator.value()->getPriority()};
+		priorities->SetTuple(tupleNumber, priority);
+
+		double timestamp[1] = {(double) iterator.value()->getTimestamp()};
+		timestamps->SetTuple(tupleNumber, timestamp);
+
+		tupleNumber++;
+	}
+    
+    dataSet->GetPointData()->AddArray(timestamps);
+    dataSet->GetPointData()->AddArray(priorities);
+    
+    switch (this->dataType) {
+        case Data::TEMPERATURE:{
+            vtkSmartPointer<vtkFloatArray> temperatures
+    		    = vtkSmartPointer<vtkFloatArray>::New();
+    		temperatures->SetNumberOfComponents(1);
+    		temperatures->SetNumberOfTuples(interpolatedData.size());
+    		temperatures->SetName("temperatures");
+
+    		int tupleNumber = 0;
+    		for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = interpolatedData.begin();
+    		        iterator != interpolatedData.end(); ++iterator) {
+    			const TemperatureInterpolationValue* dataPoint
+    			    = static_cast<const TemperatureInterpolationValue*>(iterator.value());
+
+    			double temperature[1] = {
+    				(double) dataPoint->getTemperature()
+    			};
+    			temperatures->SetTuple(tupleNumber, temperature);
+
+    			tupleNumber++;
+    		}
+
+    		dataSet->GetPointData()->AddArray(temperatures);
+            
+            break;
+        }
+        case Data::TWEETS: {
+            vtkSmartPointer<vtkFloatArray> densities
+    		    = vtkSmartPointer<vtkFloatArray>::New();
+    		densities->SetNumberOfComponents(1);
+    		densities->SetNumberOfTuples(interpolatedData.size());
+    		densities->SetName("density");
+
+    		int tupleNumber = 0;
+    		for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = interpolatedData.begin();
+    		        iterator != interpolatedData.end(); ++iterator) {
+    			const TwitterInterpolationValue* dataPoint
+    			    = static_cast<const TwitterInterpolationValue*>(iterator.value());
+
+    			double density[1] = {
+    				(double) dataPoint->getDensity()
+    			};
+    			densities->SetTuple(tupleNumber, density);
+
+    			tupleNumber++;
+    		}
+
+    		dataSet->GetPointData()->AddArray(densities);
+            
+            break;
+        }
+        case Data::PRECIPITATION: {
+            vtkSmartPointer<vtkFloatArray> precipitationRates
+    		    = vtkSmartPointer<vtkFloatArray>::New();
+    		precipitationRates->SetNumberOfComponents(1);
+    		precipitationRates->SetNumberOfTuples(interpolatedData.size());
+    		precipitationRates->SetName("precipitationRates");
+            
+            vtkSmartPointer<vtkIntArray> precipitationTypes
+    		    = vtkSmartPointer<vtkIntArray>::New();
+    		precipitationTypes->SetNumberOfComponents(1);
+    		precipitationTypes->SetNumberOfTuples(interpolatedData.size());
+    		precipitationTypes->SetName("precipitationTypes");
+
+    		int tupleNumber = 0;
+    		for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = interpolatedData.begin();
+    		        iterator != interpolatedData.end(); ++iterator) {
+    			const PrecipitationInterpolationValue* dataPoint
+    			    = static_cast<const PrecipitationInterpolationValue*>(iterator.value());
+
+    			double precipitationRate[1] = {
+    				(double) dataPoint->getPrecipitationRate()
+    			};
+    			precipitationRates->SetTuple(tupleNumber, precipitationRate);
+                
+                double precipitationType[1] = {
+    				(double) dataPoint->getPrecipitationType()
+    			};
+    			precipitationTypes->SetTuple(tupleNumber, precipitationType);
+
+    			tupleNumber++;
+    		}
+
+    		dataSet->GetPointData()->AddArray(precipitationRates);
+            dataSet->GetPointData()->AddArray(precipitationTypes);
+            
+            break;
+        }
+        case Data::WIND: {
+            vtkSmartPointer<vtkFloatArray> windDirections
+    		    = vtkSmartPointer<vtkFloatArray>::New();
+    		windDirections->SetNumberOfComponents(1);
+    		windDirections->SetNumberOfTuples(interpolatedData.size());
+    		windDirections->SetName("directions");
+            
+            vtkSmartPointer<vtkFloatArray> windSpeeds
+    		    = vtkSmartPointer<vtkFloatArray>::New();
+    		windSpeeds->SetNumberOfComponents(1);
+    		windSpeeds->SetNumberOfTuples(interpolatedData.size());
+    		windSpeeds->SetName("speeds");
+            
+            vtkSmartPointer<vtkFloatArray> velocities
+    		    = vtkSmartPointer<vtkFloatArray>::New();
+    		velocities->SetNumberOfComponents(3);
+    		velocities->SetNumberOfTuples(interpolatedData.size());
+    		velocities->SetName("velocity");
+
+    		int tupleNumber = 0;
+    		for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = interpolatedData.begin();
+    		        iterator != interpolatedData.end(); ++iterator) {
+    			const WindInterpolationValue* dataPoint
+    			    = static_cast<const WindInterpolationValue*>(iterator.value());
+
+    			double windDirection[1] = {
+    				(double) dataPoint->getBearing()
+    			};
+    			windDirections->SetTuple(tupleNumber, windDirection);
+                
+                double windSpeed[1] = {
+    				(double) dataPoint->getSpeed()
+    			};
+    			windSpeeds->SetTuple(tupleNumber, windSpeed);
+                
+                float windBearingRadian = toRadians(dataPoint->getBearing());
+    			double velocity[3] = {
+    				(double) dataPoint->getSpeed() * sin(windBearingRadian),
+    				(double) dataPoint->getSpeed() * cos(windBearingRadian),
+    				0.0
+    			};
+    			velocities->SetTuple(tupleNumber, velocity);
+
+    			tupleNumber++;
+    		}
+
+    		dataSet->GetPointData()->AddArray(windSpeeds);
+            dataSet->GetPointData()->AddArray(windDirections);
+            dataSet->GetPointData()->AddArray(velocities);
+            
+            break;
+        }
+        case Data::CLOUD_COVERAGE: {
+            vtkSmartPointer<vtkFloatArray> cloudCoverageArray
+    		    = vtkSmartPointer<vtkFloatArray>::New();
+    		cloudCoverageArray->SetNumberOfComponents(1);
+    		cloudCoverageArray->SetNumberOfTuples(interpolatedData.size());
+    		cloudCoverageArray->SetName("cloudCovers");
+
+    		int tupleNumber = 0;
+    		for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = interpolatedData.begin();
+    		        iterator != interpolatedData.end(); ++iterator) {
+    			const CloudCoverageInterpolationValue* dataPoint
+    			    = static_cast<const CloudCoverageInterpolationValue*>(iterator.value());
+
+    			double cloudCoverage[1] = {
+    				(double) dataPoint->getCloudCoverage()
+    			};
+    			cloudCoverageArray->SetTuple(tupleNumber, cloudCoverage);
+
+    			tupleNumber++;
+    		}
+
+    		dataSet->GetPointData()->AddArray(cloudCoverageArray);
+            
+            break;
+        }
+        default: {
+            this->fail("The data type of this filter seems to be invalid.");
+            return nullptr;
+            break;
+        }
+    }
+
+	// Assign points and vertices to the output data set
+	dataSet->SetPoints(points);
+	dataSet->SetVerts(verts);
+    
+    // TODO: Delete previously created interpolated data set
+
+    return dataSet;
 }
 
 void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData *inputData) {
