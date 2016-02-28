@@ -75,7 +75,8 @@ void KronosView::animateMove(double latitude, double longitude, double distance)
 	this->animateMove(latitude, longitude, distance, this->getAnimationDuration());
 }
 
-void KronosView::animateMove(double latitude, double longitude, double distance, double animationDuration) {
+void KronosView::animateMove(double latitude, double longitude, double distance,
+                             double animationDuration) {
 	bool onGlobe = this->getDisplayMode() == Globe::DisplayGlobe;
 
 	// camera positions
