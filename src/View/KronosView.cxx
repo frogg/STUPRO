@@ -72,6 +72,10 @@ void KronosView::initGlobe() {
 }
 
 void KronosView::animateMove(double latitude, double longitude, double distance) {
+	this->animateMove(latitude, longitude, distance, this->getAnimationDuration());
+}
+
+void KronosView::animateMove(double latitude, double longitude, double distance, double animationDuration) {
 	bool onGlobe = this->getDisplayMode() == Globe::DisplayGlobe;
 
 	// camera positions
@@ -104,9 +108,17 @@ void KronosView::animateMove(double latitude, double longitude, double distance)
 	double distanceControlPoint = latLongDelta.lengthTyped() / (onGlobe ? 100 : 1) + std::min(from.z,
 	                              to.z);
 
-	// animation
-	for (int i = 0; i <= 30; i++) {
-		double t = i / 30.0;
+	// get the turn angle of the camera, so we can animate it
+	double rollFrom = camera->GetRoll();
+
+	// animate the camera movement frame after frame for a total duration of about animationDuration
+	double animationTime = 0.0;
+	while (animationTime <= animationDuration) {
+		// get the start timestamp of the animation to later calculate the render time
+		auto start = std::chrono::steady_clock::now();
+
+		// calculate how far we are in the animation in a range of [0, 1]
+		double t = std::min(animationTime / animationDuration, 1.0);
 
 		// interpolate the camera position
 		Vector3d pos(
@@ -126,8 +138,8 @@ void KronosView::animateMove(double latitude, double longitude, double distance)
 		camera->SetPosition(pos.array());
 		camera->SetFocalPoint(focal.array());
 
-		// the up-vector of the camera should always face north
-		camera->SetRoll(0.0);
+		// the up-vector of the camera should always face north (0°) at the end
+		camera->SetRoll(Interpolator::quadraticInOut(t, rollFrom, 0.0));
 
 		// render the scene with the new camera position
 		this->ResetCameraClippingRange();
@@ -140,14 +152,31 @@ void KronosView::animateMove(double latitude, double longitude, double distance)
 		if (pqApplicationCore::instance() != nullptr) {
 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 		}
+
+		// calculate how long the frame took to render
+		auto end = std::chrono::steady_clock::now();
+		std::chrono::duration<double> delta = end - start;
+
+		// update the total render time
+		animationTime += delta.count();
+
+		// if the current time step was not the last but the new animation time exceeds the
+		// animation duration, set it to the duration to ensure that the last animation frame will
+		// be rendered and the animation doesn't non-deterministically stop somewhere in between
+		if (t < 1.0 && animationTime > animationDuration) {
+			animationTime = animationDuration;
+		}
 	}
 }
 
 void KronosView::moveCamera(float latitude, float longitude) {
-	this->moveCamera(latitude, longitude, 0.3);
+	this->moveCamera(latitude, longitude, this->getDefaultAnimationTargetDistance());
 }
 
 void KronosView::moveCamera(float latitude, float longitude, float distance) {
+	// make the distance scale with the globe radius
+	distance *= Configuration::getInstance().getFloat("globe.radius");
+
 	// left-right, up-down, close-far
 	Vector3d position(longitude, latitude, distance);
 
@@ -220,4 +249,20 @@ void KronosView::setAnimated(bool animated) {
 
 bool KronosView::isAnimated() {
 	return this->animated;
+}
+
+void KronosView::setAnimationDuration(double seconds) {
+	this->animationDuration = seconds;
+}
+
+double KronosView::getAnimationDuration() const {
+	return this->animationDuration;
+}
+
+void KronosView::setDefaultAnimationTargetDistance(double distance) {
+	this->defaultAnimationTargetDistance = distance;
+}
+
+double KronosView::getDefaultAnimationTargetDistance() const {
+	return this->defaultAnimationTargetDistance;
 }
