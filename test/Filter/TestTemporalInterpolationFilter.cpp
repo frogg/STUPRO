@@ -214,3 +214,54 @@ TEST(TestTemporalInterpolationFilter, TestWindData) {
 	EXPECT_FLOAT_EQ(0.37908211, windVelocityArray->GetTuple3(0)[1]);
 	EXPECT_FLOAT_EQ(0, windVelocityArray->GetTuple3(0)[2]);
 }
+
+TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
+	// Read some test data
+	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/cloud-coverage-test-data.kJson");
+
+	// Set up the filter and its input
+	vtkSmartPointer<TemporalInterpolationFilter> filter = TemporalInterpolationFilter::New();
+	filter->SetInputConnection(kronosReader->GetOutputPort());
+	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::TEMPERATURE);
+	filter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
+	
+	// Test integral values
+	QList<float> coverageValuesOfFirstPoint = QList<float>() << 0.43 << 0.86 << 0.89 << 0.35;
+	QList<float> coverageValuesOfSecondPoint = QList<float>() << 0.63 << 0.63 << 0.63 << 0.63;
+	
+	for (int t = 0; t < coverageValuesOfFirstPoint.size() - 1; t++) {
+		filter->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), t);
+		filter->Update();
+
+		// Run the filter on the input data
+		vtkSmartPointer<vtkPolyData> outputDataSet = vtkSmartPointer<vtkPolyData>::New();
+		outputDataSet->ShallowCopy(filter->GetPolyDataOutput());
+
+		ASSERT_TRUE(outputDataSet);
+
+		// Extract the filter's output
+		vtkSmartPointer<vtkFloatArray> cloudCoverageArray = vtkFloatArray::SafeDownCast(outputDataSet->GetPointData()->GetArray("cloudCovers"));
+		ASSERT_TRUE(cloudCoverageArray);
+		
+		EXPECT_FLOAT_EQ(coverageValuesOfFirstPoint[t], *cloudCoverageArray->GetTuple(0));
+		EXPECT_FLOAT_EQ(coverageValuesOfSecondPoint[t], *cloudCoverageArray->GetTuple(1));
+	}
+	
+	// Test an intermediate value
+	filter->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), 0.5);
+	filter->Update();
+
+	// Run the filter on the input data
+	vtkSmartPointer<vtkPolyData> outputDataSet = vtkSmartPointer<vtkPolyData>::New();
+	outputDataSet->ShallowCopy(filter->GetPolyDataOutput());
+
+	ASSERT_TRUE(outputDataSet);
+
+	// Extract the filter's output
+	vtkSmartPointer<vtkFloatArray> cloudCoverageArray = vtkFloatArray::SafeDownCast(outputDataSet->GetPointData()->GetArray("cloudCovers"));
+	ASSERT_TRUE(cloudCoverageArray);
+	
+	EXPECT_FLOAT_EQ(0.645, *cloudCoverageArray->GetTuple(0));
+	EXPECT_FLOAT_EQ(0.63, *cloudCoverageArray->GetTuple(1));
+}
