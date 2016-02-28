@@ -121,7 +121,10 @@ int TemporalInterpolationFilter::RequestData(
     vtkPolyData* output = vtkPolyData::GetData(outInfo);
     
     if (this->hasPreprocessed()) {
-        output->DeepCopy(this->getOutputPolyData(outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP())));
+        vtkSmartPointer<vtkPolyData> interpolatedOutput = this->getOutputPolyData(outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP()));
+        if (interpolatedOutput != nullptr) {
+            output->DeepCopy(interpolatedOutput);
+        }
         request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 0);
         return 1;
     }
@@ -163,9 +166,17 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
     float factorA = time - (int) time;
     float factorB = 1 - factorA;
     
-    for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = this->pointData[(int) time].begin();
-	        iterator != this->pointData[(int) time].end(); ++iterator) {
-        interpolatedData.insert(iterator.key(), this->interpolateDataPoint(this->pointData[((int) time)][iterator.key()], this->pointData[((int) time) + 1][iterator.key()], factorA, factorB));
+    if (time < 0 || time > this->pointData.size() - 1) {
+        return nullptr;
+    }
+    
+    if (time == this->pointData.size() - 1) {
+        interpolatedData = this->pointData[(int) time];
+    } else {
+        for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = this->pointData[(int) time].begin();
+                iterator != this->pointData[(int) time].end(); ++iterator) {
+            interpolatedData.insert(iterator.key(), this->interpolateDataPoint(this->pointData[((int) time)][iterator.key()], this->pointData[((int) time) + 1][iterator.key()], factorA, factorB));
+        }
     }
 
     // Create the content of the output poly data object
@@ -389,7 +400,9 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 	dataSet->SetPoints(points);
 	dataSet->SetVerts(verts);
     
-    qDeleteAll(interpolatedData);
+    if (time != this->pointData.size() - 1) {
+        qDeleteAll(interpolatedData);
+    }
 
     return dataSet;
 }
