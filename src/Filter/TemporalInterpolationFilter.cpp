@@ -158,8 +158,15 @@ int TemporalInterpolationFilter::RequestData(
 vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(double time) {
     vtkSmartPointer<vtkPolyData> dataSet = vtkSmartPointer<vtkPolyData>::New();
     
-    // TODO: Interpolate between the two adjacent time steps
-    QMap<PointCoordinates, InterpolationValue*> interpolatedData = this->pointData[(int) time];
+    // Interpolate between the two adjacent time steps
+    QMap<PointCoordinates, InterpolationValue*> interpolatedData;
+    float factorA = time - (int) time;
+    float factorB = 1 - factorA;
+    
+    for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = this->pointData[(int) time].begin();
+	        iterator != this->pointData[(int) time].end(); ++iterator) {
+        interpolatedData.insert(iterator.key(), this->interpolateDataPoint(this->pointData[((int) time)][iterator.key()], this->pointData[((int) time) + 1][iterator.key()], factorA, factorB));
+    }
 
     // Create the content of the output poly data object
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
@@ -382,7 +389,7 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 	dataSet->SetPoints(points);
 	dataSet->SetVerts(verts);
     
-    // TODO: Delete previously created interpolated data set
+    qDeleteAll(interpolatedData);
 
     return dataSet;
 }
@@ -479,7 +486,9 @@ void TemporalInterpolationFilter::fillTimesteps() {
             
             if (this->pointData[rightIndex].contains(allPoints[i])) {
                 for (int j = leftIndex; j <= rightIndex; j++) {
-                    this->pointData[j].insert(allPoints[i], this->interpolateDataPoint(this->pointData[leftIndex][allPoints[i]], this->pointData[rightIndex][allPoints[i]], leftIndex, rightIndex, j));
+                    float factorA = float(j - leftIndex) / float(rightIndex - leftIndex);
+                    float factorB = 1 - factorA;
+                    this->pointData[j].insert(allPoints[i], this->interpolateDataPoint(this->pointData[leftIndex][allPoints[i]], this->pointData[rightIndex][allPoints[i]], factorA, factorB));
                 }
                 
                 leftIndex = rightIndex;
@@ -488,18 +497,7 @@ void TemporalInterpolationFilter::fillTimesteps() {
     }
 }
 
-InterpolationValue* TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue *left, InterpolationValue *right, int leftIndex, int rightIndex, int index) {
-    if (leftIndex == rightIndex == index) {
-        return left;
-    }
-    
-    if (rightIndex < leftIndex || index > rightIndex || index < leftIndex) {
-        return nullptr;
-    }
-    
-    float factorA = float(index - leftIndex) / float(rightIndex - leftIndex);
-    float factorB = 1 - factorA;
-    
+InterpolationValue* TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue *left, InterpolationValue *right, float factorA, float factorB) {
     int priority;
     if (factorA >= 0.5) {
         priority = right->getPriority();

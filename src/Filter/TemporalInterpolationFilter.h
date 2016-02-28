@@ -70,12 +70,11 @@ private:
      * Create a new data point value by interpolating between two existing ones.
      * @param left Pointer to the known value to the left
      * @param right Pointer to the known value to the right
-     * @param leftIndex Index of the known value to the left
-     * @param rightIndex Index of the known value to the right
-     * @param index Index of the value to be interpolated, should be between the left and right indices
+     * @param factorA Weight of the left interpolation value
+     * @param factorB Weight of the right interpolation value
      * @return The interpolated value
      */
-    InterpolationValue* interpolateDataPoint(InterpolationValue *left, InterpolationValue *right, int leftIndex, int rightIndex, int index);
+    InterpolationValue* interpolateDataPoint(InterpolationValue *left, InterpolationValue *right, float factorA, float factorB);
     
     /**
      * Get a fully interpolated output data set for a given time.
