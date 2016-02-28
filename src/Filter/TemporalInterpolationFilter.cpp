@@ -237,13 +237,25 @@ void TemporalInterpolationFilter::fillTimesteps() {
     }
     
     this->pointData[0] = firstTimeStep;
-    this->pointData[this->pointData.size()] = lastTimeStep;
+    this->pointData[this->pointData.size() - 1] = lastTimeStep;
     
     // After this has been done, the real interpolation can start. It will fill all remaining gaps in the time steps with linearly interpolated data.
     QList<PointCoordinates> allPoints = this->pointData[0].keys();
     
     for (int i = 0; i < allPoints.size(); i++) {
-        // TODO: Do the actual work
+        int leftIndex = 0;
+        int rightIndex = 0;
+        while (leftIndex < this->pointData.size() - 1) {
+            rightIndex++;
+            
+            if (this->pointData[rightIndex].contains(allPoints[i])) {
+                for (int j = leftIndex; j <= rightIndex; j++) {
+                    this->pointData[j].insert(allPoints[i], this->interpolateDataPoint(this->pointData[leftIndex][allPoints[i]], this->pointData[rightIndex][allPoints[i]], leftIndex, rightIndex, j));
+                }
+                
+                leftIndex = rightIndex;
+            }
+        }        
     }
 }
 
