@@ -33,6 +33,11 @@ RectF GlobeTile::Location::getBounds() const {
 	return RectF(longitude * size - 180.f, 90.f - latitude * size - size, size, size);
 }
 
+RectF GlobeTile::Location::getFlippedBounds() const {
+	RectF bounds = getBounds();
+	return RectF(bounds.x, bounds.h - bounds.y - 180.f, bounds.w, bounds.h);
+}
+
 Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const {
 	RectF bounds = getBounds();
 	float lon = interpolateLinear(bounds.x, bounds.x2(), interpolation.x);

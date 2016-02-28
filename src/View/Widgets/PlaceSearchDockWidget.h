@@ -7,11 +7,11 @@
 
 class PlaceSearchDockWidget : public QDockWidget {
 public:
-    PlaceSearchDockWidget(QWidget * parent = 0, Qt::WindowFlags flags = 0);
-    ~PlaceSearchDockWidget() {}
+	PlaceSearchDockWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~PlaceSearchDockWidget() {}
 
 private:
-    PlaceSearchWidget* placeSearchWidget;
+	PlaceSearchWidget* placeSearchWidget;
 };
 
 #endif

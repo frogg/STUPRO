@@ -14,11 +14,11 @@ vtkStandardNewMacro(vtkGlobeSource);
 // and Theta directions. Theta ranges from (0,360) and phi (0,180) degrees.
 vtkGlobeSource::vtkGlobeSource(int res) : vtkSphereSource(res) {
 	// Calls the superconstructor.
-    float globeRadius = 1.0f;
-    if(Configuration::getInstance().hasKey("globe.radius")){
-        globeRadius = Configuration::getInstance().getDouble("globe.radius");
-    }
-    this->SetRadius(globeRadius);
-    this->SetThetaResolution(50);
-    this->SetPhiResolution(50);
+	float globeRadius = 1.0f;
+	if (Configuration::getInstance().hasKey("globe.radius")) {
+		globeRadius = Configuration::getInstance().getDouble("globe.radius");
+	}
+	this->SetRadius(globeRadius);
+	this->SetThetaResolution(50);
+	this->SetPhiResolution(50);
 }
