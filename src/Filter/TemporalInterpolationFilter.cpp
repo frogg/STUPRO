@@ -238,124 +238,95 @@ void TemporalInterpolationFilter::fillTimesteps() {
     
     this->pointData[0] = firstTimeStep;
     this->pointData[this->pointData.size()] = lastTimeStep;
+    
+    // After this has been done, the real interpolation can start. It will fill all remaining gaps in the time steps with linearly interpolated data.
+    QList<PointCoordinates> allPoints = this->pointData[0].keys();
+    
+    for (int i = 0; i < allPoints.size(); i++) {
+        // TODO: Do the actual work
+    }
 }
 
-/*void TemporalInterpolationFilter::interpolateData(){
-    
-    //interate over all coodinates
-    for(PointCoordinates coord : this->allPointCooridinates){
-        int firstTimestep = 0;
-        //int numberOfGaps = 0;
-        bool foundGap = false;
-        //test for a specific coordinate all timesteps
-    for(int i=1; i<this->pointData.size();i++){
-        //nicht mehr lineare Laufzeit, weil contain nicht in O(1) geht
-        //check if coordinate exists at this timestep
-        if(this->pointData[i].contains(coord)){
-            if(foundGap){
-                //alle Zwischenpunkte interpolieren und in Map einfügen
-                //Zeitschritte
-                for(int x = firstTimestep+1; x<i; x++){
-                    int distanceToFirstTimestep = x-firstTimestep;
-                    this->interpolateDataPoint(pointData[firstTimestep][coord], pointData[i][coord], distanceToFirstTimestep, x, coord, i-firstTimestep);
-                }
-                firstTimestep = i;
-                foundGap = false;
-            }else{
-                firstTimestep++;
-            }
-        }else{
-            if(!foundGap){
-                foundGap = true;
-            }
-        }
+InterpolationValue* TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue *left, InterpolationValue *right, int leftIndex, int rightIndex, int index) {
+    if (leftIndex == rightIndex == index) {
+        return left;
     }
-    }
-}*/
-
-void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower, InterpolationValue* higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance){
     
-    float factorA = distanceToFirstInterpolationTimestep / float (distance);
-    float factorB = (distance-distanceToFirstInterpolationTimestep) / float (distance);
+    if (rightIndex < leftIndex || index > rightIndex || index < leftIndex) {
+        return nullptr;
+    }
+    
+    float factorA = float(index - leftIndex) / float(rightIndex - leftIndex);
+    float factorB = 1 - factorA;
     
     int priority;
-    //take the value of the lower data point
-    if(distanceToFirstInterpolationTimestep <= distance/2){
-        priority = lower->getPriority();
-    }else{
-        priority = higher->getPriority();
+    if (factorA >= 0.5) {
+        priority = left->getPriority();
+    } else {
+        priority = right->getPriority();
     }
     
-    int interpolatedTimestamp = int(factorB * lower->getTimestamp() + factorA * higher->getTimestamp());
-    
-    
+    int interpolatedTimestamp = int(factorB * left->getTimestamp() + factorA * right->getTimestamp());
     
     switch (this->dataType) {
         case Data::TEMPERATURE:{
-            TemperatureInterpolationValue* lowerValue = static_cast<TemperatureInterpolationValue*>(lower);
-            TemperatureInterpolationValue* higherValue = static_cast<TemperatureInterpolationValue*>(higher);
+            TemperatureInterpolationValue* leftValue = static_cast<TemperatureInterpolationValue*>(left);
+            TemperatureInterpolationValue* rightValue = static_cast<TemperatureInterpolationValue*>(right);
             
-            float interpolatedTemperature = factorB * lowerValue->getTemperature() + factorA * higherValue->getTemperature();
+            float interpolatedTemperature = factorB * leftValue->getTemperature() + factorA * rightValue->getTemperature();
             
-            TemperatureInterpolationValue *interpolatedValue = new TemperatureInterpolationValue(priority, interpolatedTimestamp, interpolatedTemperature);
-            this->pointData[index].insert(coordinate,interpolatedValue);
+            return new TemperatureInterpolationValue(priority, interpolatedTimestamp, interpolatedTemperature);
             break;
         }
         case Data::TWEETS: {
-            TwitterInterpolationValue* lowerValue = static_cast<TwitterInterpolationValue*>(lower);
-            TwitterInterpolationValue* higherValue = static_cast<TwitterInterpolationValue*>(higher);
+            TwitterInterpolationValue* leftValue = static_cast<TwitterInterpolationValue*>(left);
+            TwitterInterpolationValue* rightValue = static_cast<TwitterInterpolationValue*>(right);
             
-            float interpolatedDensity = factorB * lowerValue->getDensity() + factorA * higherValue->getDensity();
-            TwitterInterpolationValue *interpolatedValue = new TwitterInterpolationValue(priority, interpolatedTimestamp, interpolatedDensity);
-            this->pointData[index].insert(coordinate,interpolatedValue);
+            float interpolatedDensity = factorB * leftValue->getDensity() + factorA * rightValue->getDensity();
+            
+            return new TwitterInterpolationValue(priority, interpolatedTimestamp, interpolatedDensity);
             break;
         }
         case Data::PRECIPITATION: {
-        
-            PrecipitationInterpolationValue* lowerValue = static_cast<PrecipitationInterpolationValue*>(lower);
-            PrecipitationInterpolationValue* higherValue = static_cast<PrecipitationInterpolationValue*>(higher);
+            PrecipitationInterpolationValue* leftValue = static_cast<PrecipitationInterpolationValue*>(left);
+            PrecipitationInterpolationValue* rightValue = static_cast<PrecipitationInterpolationValue*>(right);
             
-            PrecipitationDataPoint::PrecipitationType percipiationType;
-            
-            if(distanceToFirstInterpolationTimestep <= distance/2){
-                percipiationType = lowerValue->getPrecipitationType();
+            PrecipitationDataPoint::PrecipitationType precipiationType;
+            if(factorA >= 0.5){
+                precipiationType = leftValue->getPrecipitationType();
             }else{
-                percipiationType = higherValue->getPrecipitationType();
+                precipiationType = rightValue->getPrecipitationType();
             }
             
-            float interpolatedPrecipitationRate = factorB * lowerValue->getPrecipitationRate() + factorA *higherValue->getPrecipitationRate();
+            float interpolatedPrecipitationRate = factorB * leftValue->getPrecipitationRate() + factorA * rightValue->getPrecipitationRate();
             
-            PrecipitationInterpolationValue *interpolatedValue = new PrecipitationInterpolationValue(priority, interpolatedTimestamp, interpolatedPrecipitationRate, percipiationType);
-            this->pointData[index].insert(coordinate,interpolatedValue);
+            return new PrecipitationInterpolationValue(priority, interpolatedTimestamp, interpolatedPrecipitationRate, precipiationType);
             break;
         }
         case Data::WIND: {
-            WindInterpolationValue* lowerValue = static_cast<WindInterpolationValue*>(lower);
-            WindInterpolationValue* higherValue = static_cast<WindInterpolationValue*>(higher);
+            WindInterpolationValue* leftValue = static_cast<WindInterpolationValue*>(left);
+            WindInterpolationValue* rightValue = static_cast<WindInterpolationValue*>(right);
             
-            float interpolatedBearing = factorB * lowerValue->getBearing() + factorA *higherValue->getBearing();
-            float interpolatedSpeed = factorB * lowerValue->getSpeed() + factorA * higherValue->getSpeed();
+            float interpolatedBearing = factorB * leftValue->getBearing() + factorA * rightValue->getBearing();
+            float interpolatedSpeed = factorB * leftValue->getSpeed() + factorA * rightValue->getSpeed();
            
-            WindInterpolationValue *interpolatedValue = new WindInterpolationValue(priority, interpolatedTimestamp, interpolatedBearing, interpolatedSpeed);
-            this->pointData[index].insert(coordinate,interpolatedValue);
+            return new WindInterpolationValue(priority, interpolatedTimestamp, interpolatedBearing, interpolatedSpeed);
             break;
         }
         case Data::CLOUD_COVERAGE: {
-            CloudCoverageInterpolationValue* lowerValue = static_cast<CloudCoverageInterpolationValue*>(lower);
-            CloudCoverageInterpolationValue* higherValue = static_cast<CloudCoverageInterpolationValue*>(higher);
-            float interpolatedCloudCoverage = factorB * lowerValue->getCloudCoverage() + factorA *higherValue->getCloudCoverage();
+            CloudCoverageInterpolationValue* leftValue = static_cast<CloudCoverageInterpolationValue*>(left);
+            CloudCoverageInterpolationValue* rightValue = static_cast<CloudCoverageInterpolationValue*>(right);
+            float interpolatedCloudCoverage = factorB * leftValue->getCloudCoverage() + factorA * rightValue->getCloudCoverage();
 
-            CloudCoverageInterpolationValue *interpolatedValue = new CloudCoverageInterpolationValue(priority, interpolatedTimestamp, interpolatedCloudCoverage);
-            this->pointData[index].insert(coordinate,interpolatedValue);
+            return new CloudCoverageInterpolationValue(priority, interpolatedTimestamp, interpolatedCloudCoverage);
             break;
         }
         default: {
             this->fail("The data type of this filter seems to be invalid.");
-            return;
+            return nullptr;
             break;
         }
     }
-
 }
 
 bool TemporalInterpolationFilter::hasPreprocessed() {

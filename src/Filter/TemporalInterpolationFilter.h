@@ -65,8 +65,16 @@ private:
      */
     void fillTimesteps();
 
-    void interpolateData();
-    void interpolateDataPoint(InterpolationValue *lower, InterpolationValue *higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance);
+    /**
+     * Create a new data point value by interpolating between two existing ones.
+     * @param left Pointer to the known value to the left
+     * @param right Pointer to the known value to the right
+     * @param leftIndex Index of the known value to the left
+     * @param rightIndex Index of the known value to the right
+     * @param index Index of the value to be interpolated, should be between the left and right indices
+     * @return The interpolated value
+     */
+    InterpolationValue* interpolateDataPoint(InterpolationValue *left, InterpolationValue *right, int leftIndex, int rightIndex, int index);
     
     /**
      * This map stores nested maps for each timestep which in turn map point coordinates to their respective scalar values.
