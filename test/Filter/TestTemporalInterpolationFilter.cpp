@@ -11,6 +11,72 @@
 
 #include <qlist.h>
 
+TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
+	// Read some test data
+	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/precipitation-test-data.kJson");
+
+	// Set up the filter and its input
+	vtkSmartPointer<TemporalInterpolationFilter> filter = TemporalInterpolationFilter::New();
+	filter->SetInputConnection(kronosReader->GetOutputPort());
+	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::TEMPERATURE);
+	filter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
+	
+	// Test integral values
+	QList<float> precipitationRatesOfFirstPoint = QList<float>() << 4.45 << 7.86 << 3.72 << 4.76;
+	QList<int> precipitationTypesOfFirstPoint = QList<int>() << 2 << 3 << 4 << 3;
+	
+	QList<float> precipitationRatesOfSecondPoint = QList<float>() << 6.49 << 6.1133332 << 5.7366667 << 5.36;
+	QList<int> precipitationTypesOfSecondPoint = QList<int>() << 1 << 1 << 5 << 5;
+	
+	for (int t = 0; t < precipitationRatesOfFirstPoint.size() - 1; t++) {
+		filter->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), t);
+		filter->Update();
+
+		// Run the filter on the input data
+		vtkSmartPointer<vtkPolyData> outputDataSet = vtkSmartPointer<vtkPolyData>::New();
+		outputDataSet->ShallowCopy(filter->GetPolyDataOutput());
+
+		ASSERT_TRUE(outputDataSet);
+
+		// Extract the filter's output
+		vtkSmartPointer<vtkFloatArray> precipitationRateArray = vtkFloatArray::SafeDownCast(outputDataSet->GetPointData()->GetArray("precipitationRates"));
+		ASSERT_TRUE(precipitationRateArray);
+		
+		vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(outputDataSet->GetPointData()->GetArray("precipitationTypes"));
+		ASSERT_TRUE(precipitationTypeArray);
+		
+		EXPECT_FLOAT_EQ(precipitationRatesOfFirstPoint[t], *precipitationRateArray->GetTuple(0));
+		EXPECT_FLOAT_EQ(precipitationTypesOfFirstPoint[t], *precipitationTypeArray->GetTuple(0));
+		
+		EXPECT_FLOAT_EQ(precipitationRatesOfSecondPoint[t], *precipitationRateArray->GetTuple(1));
+		EXPECT_FLOAT_EQ(precipitationTypesOfSecondPoint[t], *precipitationTypeArray->GetTuple(1));
+	}
+	
+	// Test an intermediate value
+	filter->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), 0.5);
+	filter->Update();
+
+	// Run the filter on the input data
+	vtkSmartPointer<vtkPolyData> outputDataSet = vtkSmartPointer<vtkPolyData>::New();
+	outputDataSet->ShallowCopy(filter->GetPolyDataOutput());
+
+	ASSERT_TRUE(outputDataSet);
+
+	// Extract the filter's output
+	vtkSmartPointer<vtkFloatArray> precipitationRateArray = vtkFloatArray::SafeDownCast(outputDataSet->GetPointData()->GetArray("precipitationRates"));
+	ASSERT_TRUE(precipitationRateArray);
+	
+	vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(outputDataSet->GetPointData()->GetArray("precipitationTypes"));
+	ASSERT_TRUE(precipitationTypeArray);
+	
+	EXPECT_FLOAT_EQ(6.1549997, *precipitationRateArray->GetTuple(0));
+	EXPECT_FLOAT_EQ(3, *precipitationTypeArray->GetTuple(0));
+	
+	EXPECT_FLOAT_EQ(6.3016663, *precipitationRateArray->GetTuple(1));
+	EXPECT_FLOAT_EQ(1, *precipitationTypeArray->GetTuple(1));
+}
+
 TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
