@@ -1,6 +1,7 @@
 #include <Filter/TemporalInterpolationFilter/WindInterpolationValue.hpp>
 
-WindInterpolationValue::WindInterpolationValue(int priority, int timestamp, float bearing, float speed) : InterpolationValue(priority, timestamp), bearing(bearing), speed(speed) { }
+WindInterpolationValue::WindInterpolationValue(int priority, int timestamp, float bearing,
+        float speed) : InterpolationValue(priority, timestamp), bearing(bearing), speed(speed) { }
 WindInterpolationValue::~WindInterpolationValue() { }
 
 void WindInterpolationValue::setBearing(float bearing) {

@@ -13,7 +13,8 @@ public:
 	/**
 	 * Create a new PrecipitationInterpolationValue.
 	 */
-	PrecipitationInterpolationValue(int priority, int timestamp, float precipitationRate, PrecipitationDataPoint::PrecipitationType precipitationType);
+	PrecipitationInterpolationValue(int priority, int timestamp, float precipitationRate,
+	                                PrecipitationDataPoint::PrecipitationType precipitationType);
 	~PrecipitationInterpolationValue();
 
 	/**
@@ -27,13 +28,13 @@ public:
 	 * @return The current precipitation rate
 	 */
 	float getPrecipitationRate() const;
-	
+
 	/**
 	 * Set the precipitation type of the data point.
 	 * @param precipitationType The new precipitation type
 	 */
 	void setPrecipitationType(PrecipitationDataPoint::PrecipitationType precipitationType);
-	
+
 	/**
 	 * Get the precipitation type of this data point.
 	 * @return The precipitation type of this data point

@@ -38,7 +38,7 @@ public:
 	Coordinate getCoordinate() const;
 
 private:
-    
+
 	Coordinate coordinate;
 	Data::Type dataType;
 	int priority;

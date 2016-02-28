@@ -26,13 +26,13 @@ public:
 	 * @return The current wind bearing
 	 */
 	float getBearing() const;
-	
+
 	/**
 	 * Set the wind speed of the data point.
 	 * @param speed The new wind speed
 	 */
 	void setSpeed(float speed);
-	
+
 	/**
 	 * Get the wind speed of this data point.
 	 * @return The wind speed of this data point
