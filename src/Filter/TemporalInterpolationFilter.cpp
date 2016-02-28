@@ -145,12 +145,7 @@ int TemporalInterpolationFilter::RequestData(
 		this->currentTimeStep = 0;
 		this->SetProgressText("");
 		this->SetProgress(1.0);
-        /*this->addDataInFirstTimeStep();
-        this->addDataInLastTimeStep();
-        this->interpolateData();
-        std::cout << "Total number of points: " << this->allPointCooridinates.count();
-        
-        this->printData();*/
+        this->fillTimesteps();
         this->preprocessed = true;
 	}
     
