@@ -145,14 +145,13 @@ int TemporalInterpolationFilter::RequestData(
 		this->currentTimeStep = 0;
 		this->SetProgressText("");
 		this->SetProgress(1.0);
-        this->addDataInFirstTimeStep();
+        /*this->addDataInFirstTimeStep();
         this->addDataInLastTimeStep();
         this->interpolateData();
         std::cout << "Total number of points: " << this->allPointCooridinates.count();
         
-        this->printData();
+        this->printData();*/
         this->preprocessed = true;
-        
 	}
     
     request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 1);
@@ -216,64 +215,32 @@ InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex,
     }
 }
 
-void TemporalInterpolationFilter::addDataInFirstTimeStep(){
-  //  std::cout << "Anzahl an erstem Zeitschritt: " <<this->timestampMap[0].count();
-    //copy-on-write
-    QList<PointCoordinates> missingCoordinates = this->allPointCooridinates;
-    for(auto knownCoordinate : this->pointData[0].keys()){
-        missingCoordinates.removeAll(knownCoordinate);
-    }
+void TemporalInterpolationFilter::fillTimesteps() {
+    // First of all, fill in the first and the last time step with points, whose information only are available in the middle of the time span. This groundwork is necessary to enable easier linear interpolation of intermediate points using the algorithm below.
+    QMap<PointCoordinates, InterpolationValue*> firstTimeStep;
+    QMap<PointCoordinates, InterpolationValue*> lastTimeStep;
     
-    //as not sure about interator order
-    for(int i=1; i<this->pointData.count(); i++){
-            QList<PointCoordinates> temp = missingCoordinates;
-            for(auto coordinate: temp){
-                //if timestep i has missingPoint, append it on timestep 0
-                //ÜBERPRÜFEN MIT C++ 
-                if(this->pointData[i].contains(coordinate)){
-                    this->pointData[0].insert(coordinate,this->pointData[i][coordinate]);
-                    missingCoordinates.removeAll(coordinate);
-                }
+    for (int t = 0; t < this->pointData.size(); t++) {
+        // Iterate through all points in all time steps
+        QMap<PointCoordinates, InterpolationValue*>::const_iterator i = this->pointData[t].constBegin();
+        while (i != this->pointData[t].constEnd()) {
+            // Add newly found points to the first time step only if they are not there yet, therefore keeping the chronologically first information
+            if (!firstTimeStep.contains(i.key())) {
+                firstTimeStep.insert(i.key(), i.value());
             }
-        if(missingCoordinates.count() == 0){
-        break;
+            
+            // Always add newly found points to the last time step, therefore keeping the chronologically last information
+            lastTimeStep[i.key()] = i.value();
+            
+            ++i;
         }
     }
     
-   // std::cout << "Anzahl an erstem Zeitschritt: danach" <<this->timestampMap[0].count();
-    
+    this->pointData[0] = firstTimeStep;
+    this->pointData[this->pointData.size()] = lastTimeStep;
 }
 
-
-void TemporalInterpolationFilter::addDataInLastTimeStep(){
-    QList<PointCoordinates> missingCoordinates = this->allPointCooridinates;
-    
-    //last timestep
-    int lastTimestep = this->pointData.count()-1;
-
-    for(auto knownCoordinate : this->pointData[lastTimestep].keys()){
-        missingCoordinates.removeAll(knownCoordinate);
-    }
-    
-    //as not sure about interator order
-    for(int i=lastTimestep-1; i>=0; i--){
-        QList<PointCoordinates> temp = missingCoordinates;
-        for(auto coordinate: temp){
-            //if timestep i has missingPoint, append it on timestep n
-            //ÜBERPRÜFEN MIT C++
-            if(this->pointData[i].contains(coordinate)){
-                this->pointData[lastTimestep].insert(coordinate,this->pointData[i][coordinate]);
-                missingCoordinates.removeAll(coordinate);
-            }
-        }
-        if(missingCoordinates.count() == 0){
-            break;
-        }
-    }
-    std::cout << "Anzahl an letzen Zeitschritt: danach" <<this->pointData[lastTimestep].count();
-}
-
-void TemporalInterpolationFilter::interpolateData(){
+/*void TemporalInterpolationFilter::interpolateData(){
     
     //interate over all coodinates
     for(PointCoordinates coord : this->allPointCooridinates){
@@ -304,7 +271,7 @@ void TemporalInterpolationFilter::interpolateData(){
         }
     }
     }
-}
+}*/
 
 void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower, InterpolationValue* higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance){
     
@@ -393,13 +360,6 @@ void TemporalInterpolationFilter::interpolateDataPoint(InterpolationValue* lower
 
 bool TemporalInterpolationFilter::hasPreprocessed() {
     return this->preprocessed;
-}
-
-void TemporalInterpolationFilter::printData(){
-    for(int i=0; i<this->pointData.count(); i++){
-        std::cout << "Number of Points in in Timestep: " << i << ": " << this->pointData[i].count() <<std::endl;
-    }
-    std::cout << "Gesamtanzahl" <<this->pointData.count() <<std::endl;
 }
 
 int TemporalInterpolationFilter::RequestUpdateExtent (

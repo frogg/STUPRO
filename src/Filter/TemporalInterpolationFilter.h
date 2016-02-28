@@ -60,12 +60,13 @@ private:
      */
     InterpolationValue* createDataPoint(int pointIndex, vtkPolyData *inputData);
 
-    void addDataInFirstTimeStep();
-    void addDataInLastTimeStep();
-    void printData();
+    /**
+     * Fill in all missing points of integral time steps in this filter's point data map using linear interpolation. All scalar values are assumed to be constant up until new data is available.
+     */
+    void fillTimesteps();
+
     void interpolateData();
     void interpolateDataPoint(InterpolationValue *lower, InterpolationValue *higher, int distanceToFirstInterpolationTimestep, int index, PointCoordinates coordinate, int distance);
-    QList<PointCoordinates> allPointCooridinates;
     
     /**
      * This map stores nested maps for each timestep which in turn map point coordinates to their respective scalar values.
