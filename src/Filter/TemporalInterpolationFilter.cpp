@@ -123,7 +123,7 @@ int TemporalInterpolationFilter::RequestData(
     if (this->hasPreprocessed()) {
         output->DeepCopy(this->getOutputPolyData(outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP())));
         request->Set(vtkStreamingDemandDrivenPipeline::CONTINUE_EXECUTING(), 0);
-        return 0;
+        return 1;
     }
 
 	if (this->currentTimeStep == 0) {
@@ -502,9 +502,9 @@ InterpolationValue* TemporalInterpolationFilter::interpolateDataPoint(Interpolat
     
     int priority;
     if (factorA >= 0.5) {
-        priority = left->getPriority();
-    } else {
         priority = right->getPriority();
+    } else {
+        priority = left->getPriority();
     }
     
     int interpolatedTimestamp = int(factorB * left->getTimestamp() + factorA * right->getTimestamp());
@@ -532,16 +532,16 @@ InterpolationValue* TemporalInterpolationFilter::interpolateDataPoint(Interpolat
             PrecipitationInterpolationValue* leftValue = static_cast<PrecipitationInterpolationValue*>(left);
             PrecipitationInterpolationValue* rightValue = static_cast<PrecipitationInterpolationValue*>(right);
             
-            PrecipitationDataPoint::PrecipitationType precipiationType;
+            PrecipitationDataPoint::PrecipitationType precipitationType;
             if(factorA >= 0.5){
-                precipiationType = leftValue->getPrecipitationType();
+                precipitationType = rightValue->getPrecipitationType();
             }else{
-                precipiationType = rightValue->getPrecipitationType();
+                precipitationType = leftValue->getPrecipitationType();
             }
             
             float interpolatedPrecipitationRate = factorB * leftValue->getPrecipitationRate() + factorA * rightValue->getPrecipitationRate();
             
-            return new PrecipitationInterpolationValue(priority, interpolatedTimestamp, interpolatedPrecipitationRate, precipiationType);
+            return new PrecipitationInterpolationValue(priority, interpolatedTimestamp, interpolatedPrecipitationRate, precipitationType);
             break;
         }
         case Data::WIND: {
