@@ -53,11 +53,11 @@ TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 		            outputDataSet->GetPointData()->GetArray("precipitationTypes"));
 		ASSERT_TRUE(precipitationTypeArray);
 
-		EXPECT_FLOAT_EQ(precipitationRatesOfFirstPoint[t], *precipitationRateArray->GetTuple(0));
-		EXPECT_FLOAT_EQ(precipitationTypesOfFirstPoint[t], *precipitationTypeArray->GetTuple(0));
+		EXPECT_FLOAT_EQ(precipitationRatesOfFirstPoint[t], precipitationRateArray->GetTuple1(0));
+		EXPECT_FLOAT_EQ(precipitationTypesOfFirstPoint[t], precipitationTypeArray->GetTuple1(0));
 
-		EXPECT_FLOAT_EQ(precipitationRatesOfSecondPoint[t], *precipitationRateArray->GetTuple(1));
-		EXPECT_FLOAT_EQ(precipitationTypesOfSecondPoint[t], *precipitationTypeArray->GetTuple(1));
+		EXPECT_FLOAT_EQ(precipitationRatesOfSecondPoint[t], precipitationRateArray->GetTuple1(1));
+		EXPECT_FLOAT_EQ(precipitationTypesOfSecondPoint[t], precipitationTypeArray->GetTuple1(1));
 	}
 
 	// Test an intermediate value
@@ -79,11 +79,11 @@ TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 	            outputDataSet->GetPointData()->GetArray("precipitationTypes"));
 	ASSERT_TRUE(precipitationTypeArray);
 
-	EXPECT_FLOAT_EQ(6.1549997, *precipitationRateArray->GetTuple(0));
-	EXPECT_FLOAT_EQ(PrecipitationDataPoint::SNOW, *precipitationTypeArray->GetTuple(0));
+	EXPECT_FLOAT_EQ(6.1549997, precipitationRateArray->GetTuple1(0));
+	EXPECT_FLOAT_EQ(PrecipitationDataPoint::SNOW, precipitationTypeArray->GetTuple1(0));
 
-	EXPECT_FLOAT_EQ(6.3016663, *precipitationRateArray->GetTuple(1));
-	EXPECT_FLOAT_EQ(PrecipitationDataPoint::NONE, *precipitationTypeArray->GetTuple(1));
+	EXPECT_FLOAT_EQ(6.3016663, precipitationRateArray->GetTuple1(1));
+	EXPECT_FLOAT_EQ(PrecipitationDataPoint::NONE, precipitationTypeArray->GetTuple1(1));
 }
 
 TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
@@ -116,8 +116,8 @@ TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
 		            outputDataSet->GetPointData()->GetArray("temperatures"));
 		ASSERT_TRUE(temperatureArray);
 
-		EXPECT_FLOAT_EQ(temperaturesOfFirstPoint[t], *temperatureArray->GetTuple(0));
-		EXPECT_FLOAT_EQ(temperaturesOfSecondPoint[t], *temperatureArray->GetTuple(1));
+		EXPECT_FLOAT_EQ(temperaturesOfFirstPoint[t], temperatureArray->GetTuple1(0));
+		EXPECT_FLOAT_EQ(temperaturesOfSecondPoint[t], temperatureArray->GetTuple1(1));
 	}
 
 	// Test an intermediate value
@@ -135,8 +135,8 @@ TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
 	            outputDataSet->GetPointData()->GetArray("temperatures"));
 	ASSERT_TRUE(temperatureArray);
 
-	EXPECT_FLOAT_EQ(22.14, *temperatureArray->GetTuple(0));
-	EXPECT_FLOAT_EQ(18.8, *temperatureArray->GetTuple(1));
+	EXPECT_FLOAT_EQ(22.14, temperatureArray->GetTuple1(0));
+	EXPECT_FLOAT_EQ(18.8, temperatureArray->GetTuple1(1));
 }
 
 TEST(TestTemporalInterpolationFilter, TestWindData) {
@@ -186,14 +186,14 @@ TEST(TestTemporalInterpolationFilter, TestWindData) {
 		            outputDataSet->GetPointData()->GetArray("velocity"));
 		ASSERT_TRUE(windVelocityArray);
 
-		EXPECT_FLOAT_EQ(windSpeedsOfFirstPoint[t], *windSpeedArray->GetTuple(0));
-		EXPECT_FLOAT_EQ(windBearingsOfFirstPoint[t], *windBearingArray->GetTuple(0));
+		EXPECT_FLOAT_EQ(windSpeedsOfFirstPoint[t], windSpeedArray->GetTuple1(0));
+		EXPECT_FLOAT_EQ(windBearingsOfFirstPoint[t], windBearingArray->GetTuple1(0));
 		EXPECT_FLOAT_EQ(windVelocitiesOfFirstPoint[t].x, windVelocityArray->GetTuple3(0)[0]);
 		EXPECT_FLOAT_EQ(windVelocitiesOfFirstPoint[t].y, windVelocityArray->GetTuple3(0)[1]);
 		EXPECT_FLOAT_EQ(windVelocitiesOfFirstPoint[t].z, windVelocityArray->GetTuple3(0)[2]);
 
-		EXPECT_FLOAT_EQ(windSpeedsOfSecondPoint[t], *windSpeedArray->GetTuple(1));
-		EXPECT_FLOAT_EQ(windBearingsOfSecondPoint[t], *windBearingArray->GetTuple(1));
+		EXPECT_FLOAT_EQ(windSpeedsOfSecondPoint[t], windSpeedArray->GetTuple1(1));
+		EXPECT_FLOAT_EQ(windBearingsOfSecondPoint[t], windBearingArray->GetTuple1(1));
 		EXPECT_FLOAT_EQ(windVelocitiesOfSecondPoint[t].x, windVelocityArray->GetTuple3(1)[0]);
 		EXPECT_FLOAT_EQ(windVelocitiesOfSecondPoint[t].y, windVelocityArray->GetTuple3(1)[1]);
 		EXPECT_FLOAT_EQ(windVelocitiesOfSecondPoint[t].z, windVelocityArray->GetTuple3(1)[2]);
@@ -222,14 +222,14 @@ TEST(TestTemporalInterpolationFilter, TestWindData) {
 	            outputDataSet->GetPointData()->GetArray("velocity"));
 	ASSERT_TRUE(windVelocityArray);
 
-	EXPECT_FLOAT_EQ(0.83, *windSpeedArray->GetTuple(1));
-	EXPECT_FLOAT_EQ(323, *windBearingArray->GetTuple(1));
+	EXPECT_FLOAT_EQ(0.83, windSpeedArray->GetTuple1(1));
+	EXPECT_FLOAT_EQ(323, windBearingArray->GetTuple1(1));
 	EXPECT_FLOAT_EQ(-0.49950641, windVelocityArray->GetTuple3(1)[0]);
 	EXPECT_FLOAT_EQ(0.66286743, windVelocityArray->GetTuple3(1)[1]);
 	EXPECT_FLOAT_EQ(0, windVelocityArray->GetTuple3(1)[2]);
 
-	EXPECT_FLOAT_EQ(0.835, *windSpeedArray->GetTuple(0));
-	EXPECT_FLOAT_EQ(63, *windBearingArray->GetTuple(0));
+	EXPECT_FLOAT_EQ(0.835, windSpeedArray->GetTuple1(0));
+	EXPECT_FLOAT_EQ(63, windBearingArray->GetTuple1(0));
 	EXPECT_FLOAT_EQ(0.74399048, windVelocityArray->GetTuple3(0)[0]);
 	EXPECT_FLOAT_EQ(0.37908211, windVelocityArray->GetTuple3(0)[1]);
 	EXPECT_FLOAT_EQ(0, windVelocityArray->GetTuple3(0)[2]);
@@ -265,8 +265,8 @@ TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
 		            outputDataSet->GetPointData()->GetArray("cloudCovers"));
 		ASSERT_TRUE(cloudCoverageArray);
 
-		EXPECT_FLOAT_EQ(coverageValuesOfFirstPoint[t], *cloudCoverageArray->GetTuple(0));
-		EXPECT_FLOAT_EQ(coverageValuesOfSecondPoint[t], *cloudCoverageArray->GetTuple(1));
+		EXPECT_FLOAT_EQ(coverageValuesOfFirstPoint[t], cloudCoverageArray->GetTuple1(0));
+		EXPECT_FLOAT_EQ(coverageValuesOfSecondPoint[t], cloudCoverageArray->GetTuple1(1));
 	}
 
 	// Test an intermediate value
@@ -284,6 +284,6 @@ TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
 	            outputDataSet->GetPointData()->GetArray("cloudCovers"));
 	ASSERT_TRUE(cloudCoverageArray);
 
-	EXPECT_FLOAT_EQ(0.645, *cloudCoverageArray->GetTuple(0));
-	EXPECT_FLOAT_EQ(0.63, *cloudCoverageArray->GetTuple(1));
+	EXPECT_FLOAT_EQ(0.645, cloudCoverageArray->GetTuple1(0));
+	EXPECT_FLOAT_EQ(0.63, cloudCoverageArray->GetTuple1(1));
 }
