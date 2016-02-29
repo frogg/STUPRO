@@ -5,8 +5,8 @@
 #include <vtkPointSource.h>
 #include <vtkDataArray.h>
 #include <vtkStringArray.h>
-#include <vtkTypeInt32Array.h>
-#include <vtkTypeFloat32Array.h>
+#include <vtkIntArray.h>
+#include <vtkFloatArray.h>
 #include <vtkDoubleArray.h>
 #include <vtkPoints.h>
 #include <vtkCellArray.h>
@@ -163,14 +163,14 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 
 	// An integer array containing the priority of each data point. This is added as a convenience
 	// measure for potentially using it later on with `vtkPointSetToLabelHierarchy`.
-	vtkSmartPointer<vtkTypeInt32Array> priorities = vtkSmartPointer<vtkTypeInt32Array>::New();
+	vtkSmartPointer<vtkIntArray> priorities = vtkSmartPointer<vtkIntArray>::New();
 	priorities->SetName("priorities");
 	priorities->SetNumberOfComponents(1);
 	priorities->SetNumberOfTuples(*numberOfTuples);
 
 	// An integer array containing the timestamp of each data point. 32-bit integers are sufficient
 	// since UNIX timestamps are being used.
-	vtkSmartPointer<vtkTypeInt32Array> timestamps = vtkSmartPointer<vtkTypeInt32Array>::New();
+	vtkSmartPointer<vtkIntArray> timestamps = vtkSmartPointer<vtkIntArray>::New();
 	timestamps->SetName("timestamps");
 	timestamps->SetNumberOfComponents(1);
 	timestamps->SetNumberOfTuples(*numberOfTuples);
@@ -254,8 +254,8 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 		destinationAirportCodes->SetNumberOfComponents(relevantDataPoints.size());
 		destinationAirportCodes->SetName("destinationAirportCodes");
 
-		vtkSmartPointer<vtkTypeFloat32Array> flightLengths
-		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> flightLengths
+		    = vtkSmartPointer<vtkFloatArray>::New();
 		flightLengths->SetNumberOfComponents(1);
 		flightLengths->SetNumberOfTuples(relevantDataPoints.size());
 		flightLengths->SetName("flightLengths");
@@ -336,14 +336,14 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	}
 
 	case Data::PRECIPITATION: {
-		vtkSmartPointer<vtkTypeFloat32Array> precipitationRates
-		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> precipitationRates
+		    = vtkSmartPointer<vtkFloatArray>::New();
 		precipitationRates->SetNumberOfComponents(1);
 		precipitationRates->SetNumberOfTuples(relevantDataPoints.size());
 		precipitationRates->SetName("precipitationRates");
 
-		vtkSmartPointer<vtkTypeInt32Array> precipitationTypes
-		    = vtkSmartPointer<vtkTypeInt32Array>::New();
+		vtkSmartPointer<vtkIntArray> precipitationTypes
+		    = vtkSmartPointer<vtkIntArray>::New();
 		precipitationTypes->SetNumberOfComponents(1);
 		precipitationTypes->SetNumberOfTuples(relevantDataPoints.size());
 		precipitationTypes->SetName("precipitationTypes");
@@ -373,8 +373,8 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	}
 
 	case Data::TEMPERATURE: {
-		vtkSmartPointer<vtkTypeFloat32Array> temperatures
-		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> temperatures
+		    = vtkSmartPointer<vtkFloatArray>::New();
 		temperatures->SetNumberOfComponents(1);
 		temperatures->SetNumberOfTuples(relevantDataPoints.size());
 		temperatures->SetName("temperatures");
@@ -398,20 +398,20 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	}
 
 	case Data::WIND: {
-		vtkSmartPointer<vtkTypeFloat32Array> speeds
-		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> speeds
+		    = vtkSmartPointer<vtkFloatArray>::New();
 		speeds->SetNumberOfComponents(1);
 		speeds->SetNumberOfTuples(relevantDataPoints.size());
 		speeds->SetName("speeds");
 
-		vtkSmartPointer<vtkTypeFloat32Array> directions
-		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> directions
+		    = vtkSmartPointer<vtkFloatArray>::New();
 		directions->SetNumberOfComponents(1);
 		directions->SetNumberOfTuples(relevantDataPoints.size());
 		directions->SetName("directions");
 
-		vtkSmartPointer<vtkTypeFloat32Array> velocities
-		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> velocities
+		    = vtkSmartPointer<vtkFloatArray>::New();
 		velocities->SetNumberOfComponents(3);
 		velocities->SetNumberOfTuples(relevantDataPoints.size());
 		velocities->SetName("velocity");
@@ -452,8 +452,8 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 	}
 
 	case Data::CLOUD_COVERAGE: {
-		vtkSmartPointer<vtkTypeFloat32Array> coverageValues
-		    = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> coverageValues
+		    = vtkSmartPointer<vtkFloatArray>::New();
 		coverageValues->SetNumberOfComponents(1);
 		coverageValues->SetNumberOfTuples(relevantDataPoints.size());
 		coverageValues->SetName("cloudCovers");

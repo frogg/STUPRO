@@ -3,7 +3,7 @@
 #include <Reader/DataReader/Data.hpp>
 
 #include <vtkObjectFactory.h>
-#include <vtkTypeFloat32Array.h>
+#include <vtkFloatArray.h>
 
 WindSpeedThresholdFilter::WindSpeedThresholdFilter() { }
 WindSpeedThresholdFilter::~WindSpeedThresholdFilter() { }
@@ -16,7 +16,7 @@ QList<Data::Type> WindSpeedThresholdFilter::getCompatibleDataTypes() {
 
 bool WindSpeedThresholdFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
         vtkPointData* pointData) {
-	vtkSmartPointer<vtkTypeFloat32Array> speedArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> speedArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetArray("speeds"));
 	float speed = speedArray->GetTuple1(pointIndex);
 

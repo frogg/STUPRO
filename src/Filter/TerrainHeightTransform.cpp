@@ -5,8 +5,8 @@
  *      Author: bbq
  */
 
-#include <Exceptions.hpp>
-#include <TerrainHeightTransform.hpp>
+#include <Filter/TerrainHeightTransform.hpp>
+#include <Utils/Misc/Exceptions.hpp>
 
 TerrainHeightTransform* TerrainHeightTransform::New(bool clamped, bool forward) {
 	return new TerrainHeightTransform(clamped, forward);
