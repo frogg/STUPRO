@@ -28,7 +28,7 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
     
 
 	if (!contentData || !authorData || !numberOfRetweets) {
-		this->fail("The string arrays containing tweet contents or authors seem to be invalid.");
+		this->fail("The string arrays containing tweet contents, authors or the number of retweets seem to be invalid.");
 		return false;
 	}
 
@@ -38,32 +38,30 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 	QString content = QString::fromStdString(contentData->GetValue(pointIndex));
     int retweets = numberOfRetweets->GetValue(pointIndex);
 
-    //check at first tweet is visible because of numbers of retweets
-    if(!shouldDisplayRetweet(retweets)){
+    // First of all, check if the tweet is visible based on its number of retweets
+    if(!shouldDisplayBasedOnRetweets(retweets)) {
         return false;
     }
     
-	//if no author is in authors and no content is in visibleContent (everything should be visible by default), return this point to be visible
+	// Check the visibility of this point based on the tweet's author and content
 	if (this->visibleAuthors.count() == 0) {
 		if (this->visibleKeywords.count() == 0) {
 			return true;
 		} else {
-			return this->shouldDisplayTweetContent(content);
+			return this->shouldDisplayBasedOnTweetContent(content);
 		}
 	} else {
-
 		for (int i = 0; i < this->visibleAuthors.count(); i++) {
-
 			if (this->authorMatchingMode == CONTAINING) {
-				//containing Mode
+				// Search for a contained author name
 				if (author.contains(this->visibleAuthors.at(i), Qt::CaseInsensitive)
-				        && this->shouldDisplayTweetContent(content)) {
+				        && this->shouldDisplayBasedOnTweetContent(content)) {
 					return true;
 				}
 			} else if (this->authorMatchingMode == MATCHING) {
-				//exact match
+				// Search for an exact author name match
 				if (QString::compare(author, this->visibleAuthors.at(i), Qt::CaseInsensitive) == 0
-				        && shouldDisplayTweetContent(content)) {
+				        && shouldDisplayBasedOnTweetContent(content)) {
 					return true;
 				}
 			}
@@ -72,20 +70,22 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 	}
 }
 
-bool TwitterFilter::shouldDisplayTweetContent(QString content) {
+bool TwitterFilter::shouldDisplayBasedOnTweetContent(QString content) {
 	if (this->visibleKeywords.count() == 0) {
 		return true;
 	}
+	
 	for (int i = 0; i < visibleKeywords.count(); i++) {
-		//only filter for hashtags
+		// Only filter for hashtags
 		if (content.contains(this->visibleKeywords.at(i), Qt::CaseInsensitive)) {
 			return true;
 		}
 	}
+	
 	return false;
 }
 
-bool TwitterFilter::shouldDisplayRetweet(int retweetNumber) {
+bool TwitterFilter::shouldDisplayBasedOnRetweets(int retweetNumber) {
     return this->lowerRetweetLimit <= retweetNumber && retweetNumber <= this->upperRetweetLimit;
 }
 

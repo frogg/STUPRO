@@ -290,8 +290,8 @@
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
-            <IntVectorProperty
-              name="Author matching mode"
+            <IntVectorProperty name="AuthorMatchingMode"
+              label="Author matching mode"
               command="setAuthorMatchingMode"
               number_of_elements="1"
               default_values="0">
@@ -303,13 +303,15 @@
                 This property indicates the matching mode for authors.
                  </Documentation>
              </IntVectorProperty>
-            <StringVectorProperty name="Authors (comma-separated)"
+            <StringVectorProperty name="Authors"
+                label="Authors (comma-separated)"
                 command="setAuthors"
                 number_of_elements="1"
                 default_values=""
                 information_property="Authors whose tweets should be extracted">
             </StringVectorProperty>
-            <StringVectorProperty name="Keywords (comma-separated)"
+            <StringVectorProperty name="Keywords"
+                label="Keywords (comma-separated)"
                 command="setKeywords"
                 number_of_elements="1"
                 default_values=""
@@ -335,13 +337,10 @@
                     </RequiredProperties>
                 </FieldDataDomain>
             </StringVectorProperty>
-            <Hints>
-                <Property name="SelectRetweetInputScalars" show="0"/>
-            </Hints>
             <DoubleVectorProperty command="setRetweetThreshold"
                 default_values="0 0"
                 label="Retweet Number Range"
-                name="Retweet Number Range"
+                name="RetweetNumberRange"
                 number_of_elements="2"
                 panel_widget="double_range">
                 <ArrayRangeDomain name="range">
@@ -357,17 +356,19 @@
                 </Documentation>
             </DoubleVectorProperty>
             <PropertyGroup label="Authors">
-                <Property name="Authors (comma-separated)" />
-                <Property name="Author matching mode" />
+                <Property name="Authors" />
+                <Property name="AuthorMatchingMode" />
             </PropertyGroup>
             <PropertyGroup label="Keywords">
-                <Property name="Keywords (comma-separated)" />
+                <Property name="Keywords" />
             </PropertyGroup>
-            <PropertyGroup label="Retweets">
-                <Property name="Retweet Number Range" />
+            <PropertyGroup label="Retweet Threshold">
+                <Property name="SelectRetweetInputScalars" />
+                <Property name="RetweetNumberRange" />
             </PropertyGroup>
             <Hints>
                 <ShowInMenu category="Kronos" />
+                <Property name="SelectRetweetInputScalars" show="0"/>
             </Hints>
         </SourceProxy>
     <SourceProxy name="FlightFilter" class="FlightFilter" label="Kronos Flight Filter">
