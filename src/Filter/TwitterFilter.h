@@ -36,19 +36,19 @@ public:
 	  * @param mode (0 stands for containing, 1 for matching)
 	 */
 	void setAuthorMatchingMode(int mode);
-    
-    /**
-     * Callback method for setting flight length range.
-     * @param lowerLimit The lower flight length limit
-     * @param upperLimit The upper flight length limit
-     */
-    void setRetweetThreshold(double lowerLimit, double upperLimit);
-    
-    /**
-     * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the temperature values and the UI is hidden.
-     */
-    void ignore(int id, int port, int connection, int fieldAssociation, const char* name) { }
-    
+
+	/**
+	 * Callback method for setting flight length range.
+	 * @param lowerLimit The lower flight length limit
+	 * @param upperLimit The upper flight length limit
+	 */
+	void setRetweetThreshold(double lowerLimit, double upperLimit);
+
+	/**
+	 * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the temperature values and the UI is hidden.
+	 */
+	void ignore(int id, int port, int connection, int fieldAssociation, const char* name) { }
+
 
 private:
 	/**
@@ -75,26 +75,26 @@ private:
 	 * @return True if it should be displayed, false otherwise
 	 */
 	bool shouldDisplayBasedOnTweetContent(QString content);
-	
+
 	/**
 	 * Check whether a tweet should be displayed based on its number of retweets.
 	 * @param retweetNumber The number of retweets
 	 * @return True if it should be displayed, false otherwise
 	 */
-    bool shouldDisplayBasedOnRetweets(int retweetNumber);
+	bool shouldDisplayBasedOnRetweets(int retweetNumber);
 
 	QList<Data::Type> getCompatibleDataTypes();
 	bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
-    
+
 	/**
 	 * The lower limit of retweets whose tweets should still be displayed.
 	 */
-    double lowerRetweetLimit;
-	
+	double lowerRetweetLimit;
+
 	/**
 	 * The upper limit of retweets whose tweets should still be displayed.
 	 */
-    double upperRetweetLimit;
+	double upperRetweetLimit;
 
 	/**
 	 * Contains all author names whose tweets should be extracted.

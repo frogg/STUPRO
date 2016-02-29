@@ -41,7 +41,8 @@ TEST(TestSphericalToCartesianFilter, ValidCalls) {
 	transformed->Allocate(points->GetNumberOfPoints());
 	transform->TransformPoints(points, transformed);
 
-	for (int i = 0; i < points->GetNumberOfPoints() && i < expectedPointsAfterTransformation->GetNumberOfPoints(); i++) {
+	for (int i = 0; i < points->GetNumberOfPoints()
+	        && i < expectedPointsAfterTransformation->GetNumberOfPoints(); i++) {
 		CHECK_POINT(expectedPointsAfterTransformation->GetPoint(i), transformed->GetPoint(i), precision);
 	}
 }

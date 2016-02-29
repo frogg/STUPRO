@@ -46,7 +46,7 @@ public:
 		return (this->getX() == other.getX() && this->getY() == other.getY()
 		        && this->getZ() == other.getZ());
 	}
-	
+
 	/**
 	 * Get the distance of this point to some other coordinates.
 	 * @param other Some other coordinates
