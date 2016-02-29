@@ -26,11 +26,13 @@ TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 
 	// Test integral values
 	QList<float> precipitationRatesOfFirstPoint = QList<float>() << 4.45 << 7.86 << 3.72 << 4.76;
-	QList<int> precipitationTypesOfFirstPoint = QList<int>() << PrecipitationDataPoint::RAIN << PrecipitationDataPoint::SNOW << PrecipitationDataPoint::SLEET << PrecipitationDataPoint::SNOW;
+	QList<int> precipitationTypesOfFirstPoint = QList<int>() << PrecipitationDataPoint::RAIN <<
+	        PrecipitationDataPoint::SNOW << PrecipitationDataPoint::SLEET << PrecipitationDataPoint::SNOW;
 
 	QList<float> precipitationRatesOfSecondPoint = QList<float>() << 6.49 << 6.1133332 << 5.7366667 <<
 	        5.36;
-	QList<int> precipitationTypesOfSecondPoint = QList<int>() << PrecipitationDataPoint::NONE << PrecipitationDataPoint::NONE << PrecipitationDataPoint::HAIL << PrecipitationDataPoint::HAIL;
+	QList<int> precipitationTypesOfSecondPoint = QList<int>() << PrecipitationDataPoint::NONE <<
+	        PrecipitationDataPoint::NONE << PrecipitationDataPoint::HAIL << PrecipitationDataPoint::HAIL;
 
 	for (int t = 0; t < precipitationRatesOfFirstPoint.size() - 1; t++) {
 		filter->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), t);
