@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <Filter/TemporalInterpolationFilter.h>
+#include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 #include <Reader/vtkKronosReader.h>
 #include <Utils/Math/Vector3.hpp>
 
@@ -25,11 +26,11 @@ TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 
 	// Test integral values
 	QList<float> precipitationRatesOfFirstPoint = QList<float>() << 4.45 << 7.86 << 3.72 << 4.76;
-	QList<int> precipitationTypesOfFirstPoint = QList<int>() << 2 << 3 << 4 << 3;
+	QList<int> precipitationTypesOfFirstPoint = QList<int>() << PrecipitationDataPoint::RAIN << PrecipitationDataPoint::SNOW << PrecipitationDataPoint::SLEET << PrecipitationDataPoint::SNOW;
 
 	QList<float> precipitationRatesOfSecondPoint = QList<float>() << 6.49 << 6.1133332 << 5.7366667 <<
 	        5.36;
-	QList<int> precipitationTypesOfSecondPoint = QList<int>() << 1 << 1 << 5 << 5;
+	QList<int> precipitationTypesOfSecondPoint = QList<int>() << PrecipitationDataPoint::NONE << PrecipitationDataPoint::NONE << PrecipitationDataPoint::HAIL << PrecipitationDataPoint::HAIL;
 
 	for (int t = 0; t < precipitationRatesOfFirstPoint.size() - 1; t++) {
 		filter->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), t);
@@ -77,10 +78,10 @@ TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 	ASSERT_TRUE(precipitationTypeArray);
 
 	EXPECT_FLOAT_EQ(6.1549997, *precipitationRateArray->GetTuple(0));
-	EXPECT_FLOAT_EQ(3, *precipitationTypeArray->GetTuple(0));
+	EXPECT_FLOAT_EQ(PrecipitationDataPoint::SNOW, *precipitationTypeArray->GetTuple(0));
 
 	EXPECT_FLOAT_EQ(6.3016663, *precipitationRateArray->GetTuple(1));
-	EXPECT_FLOAT_EQ(1, *precipitationTypeArray->GetTuple(1));
+	EXPECT_FLOAT_EQ(PrecipitationDataPoint::NONE, *precipitationTypeArray->GetTuple(1));
 }
 
 TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
