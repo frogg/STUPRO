@@ -10,6 +10,8 @@
 #include <vtkFloatArray.h>
 #include <vtkIntArray.h>
 #include <vtkCellArray.h>
+#include <vtkExecutive.h>
+#include <vtkInformationExecutivePortVectorKey.h>
 
 #include <Filter/TemporalInterpolationFilter/PrecipitationInterpolationValue.hpp>
 #include <Filter/TemporalInterpolationFilter/TemperatureInterpolationValue.hpp>
@@ -70,6 +72,7 @@ int TemporalInterpolationFilter::RequestInformation (
 	}
 
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+    vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
 		this->dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
@@ -102,7 +105,21 @@ int TemporalInterpolationFilter::RequestInformation (
 		return 0;
 	}
 
-	// TODO: Check the data's state for compatibility
+    // Check the meta information containing the data's state
+	if (vtkExecutive::CONSUMERS()->Length(outInfo) == 0) {
+		if (inInfo->Has(Data::VTK_DATA_STATE())) {
+			Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
+			if (dataState != Data::RAW) {
+				this->fail(
+				    QString("This filter only works with raw input data, but the input data has the state %1.").arg(
+				        Data::getDataStateName(dataState)));
+				return 0;
+			}
+		} else {
+			this->fail("The input data has no data state information attached.");
+			return 0;
+		}
+	}
 
 	return 1;
 }
