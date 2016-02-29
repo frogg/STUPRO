@@ -181,7 +181,6 @@ int MIPASFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	return 1;
 }
 bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) {
-    return true;
     vtkSmartPointer<vtkUnsignedIntArray> orbit_idArray = vtkUnsignedIntArray::SafeDownCast(
 	            pointData->GetAbstractArray("orbit_id"));
 	double orbit_id = orbit_idArray->GetTuple1(pointIndex);
@@ -193,9 +192,7 @@ bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointD
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
 	double time = timeArray->GetTuple1(pointIndex);
-    //return true;
-    /*(this->LowerLimitOrbit <= orbit_id && orbit_id <= this->UpperLimitOrbit)
+    return (this->LowerLimitOrbit <= orbit_id && orbit_id <= this->UpperLimitOrbit)
 	       && (this->LowerLimitAltitude <= altitude && altitude <= this->UpperLimitAltitude)
 	       && (this->LowerLimit <= time && time <= this->UpperLimit);
-            */
 }
