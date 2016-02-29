@@ -28,7 +28,10 @@ void MIPASFilter::fail(QString message) {
 int MIPASFilter::RequestData(vtkInformation* info,
                              vtkInformationVector** inputVector,
                              vtkInformationVector* outputVector) {
+    std::cout << "test0";
+
 	if (this->error) {
+        std::cout << "test";
 		return 0;
 	}
 
@@ -71,8 +74,10 @@ int MIPASFilter::RequestData(vtkInformation* info,
 
 		if (!inputArray) {
 			this->fail("An input array could not be read.");
+            std::cout << "test1";
 			return 0;
 		}
+        std::cout << "test2";
 
 		vtkSmartPointer<vtkAbstractArray> outputArray = vtkAbstractArray::CreateArray(
 		            inputArray->GetDataType());
@@ -176,7 +181,8 @@ int MIPASFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	return 1;
 }
 bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) {
-	vtkSmartPointer<vtkUnsignedIntArray> orbit_idArray = vtkUnsignedIntArray::SafeDownCast(
+    return true;
+    vtkSmartPointer<vtkUnsignedIntArray> orbit_idArray = vtkUnsignedIntArray::SafeDownCast(
 	            pointData->GetAbstractArray("orbit_id"));
 	double orbit_id = orbit_idArray->GetTuple1(pointIndex);
 
@@ -187,7 +193,9 @@ bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointD
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
 	double time = timeArray->GetTuple1(pointIndex);
-	return (this->LowerLimitOrbit <= orbit_id && orbit_id <= this->UpperLimitOrbit)
+    //return true;
+    /*(this->LowerLimitOrbit <= orbit_id && orbit_id <= this->UpperLimitOrbit)
 	       && (this->LowerLimitAltitude <= altitude && altitude <= this->UpperLimitAltitude)
 	       && (this->LowerLimit <= time && time <= this->UpperLimit);
+            */
 }

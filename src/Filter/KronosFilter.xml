@@ -511,7 +511,6 @@
                 default_values="360072000.0">
                 <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
             </DoubleVectorProperty>
-
             <DoubleVectorProperty name="Starting Range SO2"
                 command="setLowerSO"
                 number_of_elements="1"
@@ -590,13 +589,13 @@
                 <DoubleRangeDomain name="range" min="3.60072e+08" max="3.60116e+08" />
             </DoubleVectorProperty>
 
-            <DoubleVectorProperty name="Starting Range SO"
+            <DoubleVectorProperty name="Starting Range SO2"
                 command="setLowerSO"
                 number_of_elements="1"
                 default_values="-2.93961">
                 <DoubleRangeDomain name="range" min="-2.93961" max="9.78427" />
             </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Range SO"
+            <DoubleVectorProperty name="Ending Range SO2"
                 command="setUpperSO"
                 number_of_elements="1"
                 default_values="9.78427">
