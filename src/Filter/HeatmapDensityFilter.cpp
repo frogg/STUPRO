@@ -19,7 +19,13 @@ HeatmapDensityFilter::HeatmapDensityFilter() {
 
 HeatmapDensityFilter::~HeatmapDensityFilter() { }
 
-void HeatmapDensityFilter::setHeatmapResolution(double heatmapResolution) {
+void HeatmapDensityFilter::setHorizontalHeatmapResolution(int horizontalHeatmapResolution) {
+    this->horizontalResolution = horizontalHeatmapResolution;
+    this->Modified();
+}
+
+void HeatmapDensityFilter::setVerticalHeatmapResolution(int verticalHeatmapResolution) {
+    this->verticalResolution = verticalHeatmapResolution;
     this->Modified();
 }
 

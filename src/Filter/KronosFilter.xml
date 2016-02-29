@@ -123,11 +123,22 @@
                     <DataType value="vtkImageData"/>
                 </DataTypeDomain>
             </InputProperty>
-            <IntVectorProperty name="Heatmap Resolution"
-                command="setHeatmapResolution"
+            <IntVectorProperty name="Horizontal"
+                label="Horizontal"
+                command="setHorizontalHeatmapResolution"
                 number_of_elements="1"
                 default_values="1">
             </IntVectorProperty>
+            <IntVectorProperty name="Vertical"
+                label="Vertical"
+                command="setVerticalHeatmapResolution"
+                number_of_elements="1"
+                default_values="1">
+            </IntVectorProperty>
+            <PropertyGroup label="Density Map Resolution">
+                <Property name="Horizontal" />
+                <Property name="Vertical" />
+            </PropertyGroup>
 	    <Hints>
 		          <ShowInMenu category="Kronos" />
 	    </Hints>

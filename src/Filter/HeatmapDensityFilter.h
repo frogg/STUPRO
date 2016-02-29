@@ -19,7 +19,17 @@ public:
     static HeatmapDensityFilter* New();
     void PrintSelf(ostream& os, vtkIndent indent) override;
     
-    void setHeatmapResolution(double heatmapResolution);
+    /**
+     * Callback method for setting the horizontal grid resolution.
+     * @param horizontalHeatmapResolution The new horizontal heatmap resolution
+     */
+    void setHorizontalHeatmapResolution(int horizontalHeatmapResolution);
+    
+    /**
+     * Callback method for setting the vertical grid resolution.
+     * @param verticalHeatmapResolution The new vertical heatmap resolution
+     */
+    void setVerticalHeatmapResolution(int verticalHeatmapResolution);
     
 protected:
     int RequestData(vtkInformation* info,
@@ -47,7 +57,14 @@ private:
     HeatmapDensityFilter(const HeatmapDensityFilter&);  // Not implemented.
     void operator=(const HeatmapDensityFilter&);  // Not implemented.
     
+    /**
+     * This filter's horizontal grid resolution.
+     */
     int horizontalResolution = 10;
+    
+    /**
+     * This filter's vertical grid resolution.
+     */
     int verticalResolution = 10;
     
     /**
