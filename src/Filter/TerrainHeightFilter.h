@@ -1,7 +1,7 @@
 #ifndef TerrainHeightFilter_hpp
 #define TerrainHeightFilter_hpp
 
-#include <Macros.hpp>
+#include <Utils/Misc/Macros.hpp>
 #include <vtkSetGet.h>
 #include <vtkTransformFilter.h>
 #include <iostream>

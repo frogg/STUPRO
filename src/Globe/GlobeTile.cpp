@@ -1,9 +1,9 @@
 #include <Globe/Globe.hpp>
 #include <Globe/GlobeTile.hpp>
-#include <Macros.hpp>
 #include <Utils/Config/Configuration.hpp>
 #include <Utils/Graphics/TextureLoad.hpp>
 #include <Utils/Math/Functions.hpp>
+#include <Utils/Misc/Macros.hpp>
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
 #include <vtkProp.h>
@@ -14,6 +14,7 @@
 #include <vtkUniformVariables.h>
 #include <algorithm>
 #include <cmath>
+#include <cstdbool>
 
 extern const char* GlobeShader_fsh;
 extern const char* GlobeShader_vsh;
