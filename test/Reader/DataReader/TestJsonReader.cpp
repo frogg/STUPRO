@@ -70,6 +70,11 @@ TEST(TestJsonReader, ReadTwitterData) {
 	    "Is this working?",
 	    testDataPoint->getContent().toStdString()
 	);
+	
+	EXPECT_EQ(
+	    3,
+	    testDataPoint->getNumberOfRetweets()
+	);
 
 	EXPECT_EQ(
 	    1439280065,
