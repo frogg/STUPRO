@@ -3,7 +3,7 @@
 #include <Reader/DataReader/Data.hpp>
 
 #include <vtkObjectFactory.h>
-#include <vtkTypeFloat32Array.h>
+#include <vtkFloatArray.h>
 
 TemperatureThresholdFilter::TemperatureThresholdFilter() { }
 TemperatureThresholdFilter::~TemperatureThresholdFilter() { }
@@ -16,7 +16,7 @@ QList<Data::Type> TemperatureThresholdFilter::getCompatibleDataTypes() {
 
 bool TemperatureThresholdFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
         vtkPointData* pointData) {
-	vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetArray("temperatures"));
 	float temperature = temperatureArray->GetTuple1(pointIndex);
 

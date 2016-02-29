@@ -1,4 +1,4 @@
-#include <Reader/DataReader/vtkInformationDataTypeKey.hpp>
+#include <Reader/DataReader/MetaInformationKeys/vtkInformationDataTypeKey.hpp>
 
 #include <vtkInformation.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
