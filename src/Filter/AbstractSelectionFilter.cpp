@@ -4,6 +4,8 @@
 #include <vtkDataObject.h>
 #include <vtkAlgorithm.h>
 #include <vtkCellArray.h>
+#include <vtkExecutive.h>
+#include <vtkInformationExecutivePortVectorKey.h>
 
 AbstractSelectionFilter::AbstractSelectionFilter() : error(false) { }
 
@@ -103,6 +105,7 @@ int AbstractSelectionFilter::RequestInformation(vtkInformation* request,
         vtkInformationVector** inputVector,
         vtkInformationVector* outputVector) {
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
 	// Create a human-readable string of all supported data types for potentially showing an error message
 	QString supportedTypes = "";
@@ -135,18 +138,22 @@ int AbstractSelectionFilter::RequestInformation(vtkInformation* request,
 	}
 
 	// Check the meta information containing the data's state
-	if (inInfo->Has(Data::VTK_DATA_STATE())) {
-		Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
-		if (dataState != Data::RAW) {
-			this->fail(
-			    QString("This filter only works with raw input data, but the input data has the state %1.").arg(
-			        Data::getDataStateName(dataState)));
+	if (vtkExecutive::CONSUMERS()->Length(outInfo) == 0) {
+		if (inInfo->Has(Data::VTK_DATA_STATE())) {
+			Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
+			if (dataState != Data::RAW) {
+				this->fail(
+					QString("This filter only works with raw input data, but the input data has the state %1.").arg(
+						Data::getDataStateName(dataState)));
+				return 0;
+			}
+		} else {
+			this->fail("The input data has no data state information attached.");
 			return 0;
 		}
-	} else {
-		this->fail("The input data has no data state information attached.");
-		return 0;
 	}
+	
+	outInfo->Set(Data::VTK_DATA_STATE(), Data::RAW);
 
 	return 1;
 }

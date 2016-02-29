@@ -7,6 +7,8 @@
 #include <vtkInformationVector.h>
 #include <vtkObjectFactory.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkExecutive.h>
+#include <vtkInformationExecutivePortVectorKey.h>
 
 vtkStandardNewMacro(TemporalAggregationFilter);
 
@@ -89,18 +91,20 @@ int TemporalAggregationFilter::RequestInformation (
 	}
 
 	// Check the meta information containing the data's state
-	if (inInfo->Has(Data::VTK_DATA_STATE())) {
-		Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
-		if (dataState != Data::RAW) {
-			this->fail(
-			    QString("This filter only works with raw input data, but the input data has the state %1.").arg(
-			        Data::getDataStateName(dataState)));
-			return 0;
-		}
-	} else {
-		this->fail("The input data has no data state information attached.");
-		return 0;
-	}
+    if (vtkExecutive::CONSUMERS()->Length(outInfo) == 0) {
+    	if (inInfo->Has(Data::VTK_DATA_STATE())) {
+    		Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
+    		if (dataState != Data::RAW) {
+    			this->fail(
+    			    QString("This filter only works with raw input data, but the input data has the state %1.").arg(
+    			        Data::getDataStateName(dataState)));
+    			return 0;
+    		}
+    	} else {
+    		this->fail("The input data has no data state information attached.");
+    		return 0;
+    	}
+    }
 
 	// Extract the time resolution from the input data's meta data
 	if (inInfo->Has(Data::VTK_TIME_RESOLUTION())) {
@@ -112,9 +116,9 @@ int TemporalAggregationFilter::RequestInformation (
 			return 0;
 		}
 	}
-
-	// Pass all data set information to the aggregator
-	this->dataAggregator.setDataSetAttributes(this->dataType, this->timeResolution);
+    
+    // Pass all data set information to the aggregator
+    this->dataAggregator.setDataSetAttributes(this->dataType, this->timeResolution);
 
 	// This filter's output is an aggregation of values over time and therefore has no time information
 	outInfo->Remove(vtkStreamingDemandDrivenPipeline::TIME_STEPS());
