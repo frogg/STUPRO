@@ -47,7 +47,8 @@ private:
     HeatmapDensityFilter(const HeatmapDensityFilter&);  // Not implemented.
     void operator=(const HeatmapDensityFilter&);  // Not implemented.
     
-    double heatmapResolution = 1.0;
+    int horizontalResolution = 10;
+    int verticalResolution = 10;
     
     /**
 	 * Boolean flag denoting whether there was an error.

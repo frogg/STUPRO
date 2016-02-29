@@ -1,12 +1,16 @@
 #include <Filter/HeatmapDensityFilter.h>
 
 #include <Reader/DataReader/Data.hpp>
+#include <Utils/Misc/PointCoordinates.hpp>
 
 #include <vtkSmartPointer.h>
 #include <vtkCellArray.h>
 #include <vtkPointData.h>
 #include <vtkExecutive.h>
 #include <vtkInformationExecutivePortVectorKey.h>
+
+#include <qmap.h>
+#include <cmath>
 
 HeatmapDensityFilter::HeatmapDensityFilter() {
     this->SetNumberOfInputPorts(1);
@@ -16,7 +20,6 @@ HeatmapDensityFilter::HeatmapDensityFilter() {
 HeatmapDensityFilter::~HeatmapDensityFilter() { }
 
 void HeatmapDensityFilter::setHeatmapResolution(double heatmapResolution) {
-    this->heatmapResolution = heatmapResolution;
     this->Modified();
 }
 
@@ -35,10 +38,11 @@ void HeatmapDensityFilter::fail(QString message) {
 int HeatmapDensityFilter::RequestData(vtkInformation* info,
                                       vtkInformationVector** inputVector,
                                       vtkInformationVector* outputVector) {
-    // get the input data
+    // Get the input data
     vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0], 0);
     
-    double bounds[6];
+    // Compute the bounds of the input data
+    double bounds[4];
     dataInput->GetBounds(bounds);
     
     double minX = bounds[0];
@@ -48,93 +52,66 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     double width = maxX - minX;
     double height = maxY - minY;
     
-    int numberOfXComponents = (int) (50.0 * this->heatmapResolution + 0.5);
-    int numberOfYComponents = (int) ((height * numberOfXComponents) / width + 0.5);
+    QMap<PointCoordinates, int> densities;
+    double horizontalStep = width / double(this->horizontalResolution);
+    double verticalStep = height / double(this->verticalResolution);
     
-    std::cout << "numberOfXComponents: " << numberOfXComponents << std::endl;
-    std::cout << "numberOfYComponents: " << numberOfYComponents << std::endl;
-    
-    double stepWidthX = (width / (numberOfXComponents-1));
-    double stepWidthY = (height / (numberOfYComponents-1));
-    
-    vtkPoints* intputDataPoints = dataInput->GetPoints();
-    
-    int numberOfDataInputPoints = intputDataPoints->GetNumberOfPoints();
-    
-    std::vector<int> density(numberOfXComponents * numberOfYComponents);
-    
-    
-    for (int x = 0; x < numberOfXComponents; x++) {
-        for (int y = 0; y < numberOfYComponents; y++) {
-            
-            int pointID = y * numberOfXComponents + x;
-            density[pointID] = 0.0;
+    // Fill the map of densities with zeroes
+    for (double x = minX; x <= maxX; x += horizontalStep) {
+        for (double y = minY; y <= maxY; y += verticalStep) {
+            densities.insert(PointCoordinates(x, y, 0), 0);
         }
     }
     
-    for (int i = 0; i < numberOfDataInputPoints; i++) {
-        
+    // Iterate through all points and add them to the nearest grid point
+    for (int i = 0; i < dataInput->GetNumberOfPoints(); i++) {
         double point[3];
-        intputDataPoints->GetPoint(i, point);
+        dataInput->GetPoint(i, point);
         
-        double relativeX = ((point[0] - minX) / width);
-        double relativeY = ((point[1] - minY) / height);
+        PointCoordinates closestGridPoint(minX, minY, 0);
+        double distance = closestGridPoint.getDistanceTo(PointCoordinates(point[0], point[1], point[2]));
         
-        
-        int x = (int)(relativeX * (numberOfXComponents-1) + 0.5);
-        int y = (int)(relativeY * (numberOfYComponents-1) + 0.5);
-        
-        
-        int pointID = y * numberOfXComponents + x;
-        
-        std::cout << "relativeX: " << relativeX << ", x: " << x << std::endl;
-        std::cout << "relativeY: " << relativeY << ", y: " << y << std::endl;
-        
-        //diese Abfrage sollte eigentlich nicht existieren müssen, aber es gibt hier manchmal falsche Werte!
-        if (pointID >= 0 && pointID < density.size()) {
-            density[pointID] = density[pointID] + 1;
-        } else {
-            std::cout << "fail" << std::endl;
+        for (double x = minX; x <= maxX; x += horizontalStep) {
+            for (double y = minY; y <= maxY; y += verticalStep) {
+                PointCoordinates currentGridPoint(x, y, 0);
+                double currentDistance = currentGridPoint.getDistanceTo(PointCoordinates(point[0], point[1], point[2]));
+                
+                if (currentDistance < distance) {
+                    closestGridPoint = currentGridPoint;
+                    distance = currentDistance;
+                }
+            }
         }
+        
+        densities[closestGridPoint] += 1;
     }
     
+    // Output the densities as a poly data object
     vtkInformation* outInfo = outputVector->GetInformationObject(0);
-    vtkSmartPointer<vtkPolyData> output = vtkPolyData::SafeDownCast(outInfo->Get(
-                                                                                 vtkDataObject::DATA_OBJECT()));
-    
+    vtkSmartPointer<vtkPolyData> output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-    
     vtkCellArray* verts = vtkCellArray::New();
+    verts->Allocate(verts->EstimateSize(1, densities.size()));
+    verts->InsertNextCell(densities.size());
     
-    // Add a cell containing all points. I don't know why we need this, but it doesn't work without.
-    verts->Allocate(verts->EstimateSize(1, numberOfXComponents * numberOfYComponents));
-    verts->InsertNextCell(numberOfXComponents * numberOfYComponents);
+    // Add the coordinates of all points and the densities as a new array
+    vtkSmartPointer<vtkIntArray> densityValues = vtkSmartPointer<vtkIntArray>::New();
+    densityValues->SetNumberOfComponents(1);
+    densityValues->SetNumberOfValues(densities.size());
+    densityValues->SetName("density");
     
-    
-    //we could also use the upper "for loops" to insert these values, but we use a second one to make it more clear to read this code. we trust the compiler to optimize this code properly.
-    for (int x = 0; x < numberOfXComponents; x++) {
-        for (int y = 0; y < numberOfYComponents; y++) {
-            double relativeX = minX + x * stepWidthX;
-            double relativeY = minY + y * stepWidthY;
-            verts->InsertCellPoint(points->InsertNextPoint(relativeX, relativeY, 0));
-        }
+    int valueIndex = 0;
+    QMap<PointCoordinates, int>::const_iterator i = densities.constBegin();
+    while (i != densities.constEnd()) {
+        verts->InsertCellPoint(points->InsertNextPoint(i.key().getX(), i.key().getY(), i.key().getZ()));
+        densityValues->InsertValue(valueIndex, i.value());
+        valueIndex++;
+        ++i;
     }
-    
     
     output->SetPoints(points);
     output->SetVerts(verts);
-    
-    vtkSmartPointer<vtkIntArray> coverageValues = vtkSmartPointer<vtkIntArray>::New();
-    coverageValues->SetNumberOfComponents(1);
-    coverageValues->SetNumberOfValues(density.size());
-    coverageValues->SetName("density");
-    
-    for (int i = 0; i < density.size(); i++) {
-        coverageValues->InsertValue(i, density[i]);
-    }
-    
-    
-    output->GetPointData()->AddArray(coverageValues);
+    output->GetPointData()->AddArray(densityValues);
     
     return 1;
 }
