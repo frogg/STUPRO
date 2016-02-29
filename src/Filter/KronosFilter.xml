@@ -441,9 +441,6 @@
                 </RequiredProperties>
             </FieldDataDomain>
         </StringVectorProperty>
-        <Hints>
-            <Property name="SelectFlightInputScalars" show="0"/>
-        </Hints>
         <DoubleVectorProperty command="setFlightLengthThreshold"
             default_values="0 0"
             label="Flight Length Range"
@@ -475,6 +472,7 @@
         </PropertyGroup>
           <Hints>
             <ShowInMenu category="Kronos" />
+            <Property name="SelectFlightInputScalars" show="0"/>
         </Hints>
     </SourceProxy>
     </ProxyGroup>
