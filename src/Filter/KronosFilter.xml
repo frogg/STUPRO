@@ -123,14 +123,13 @@
                     <DataType value="vtkImageData"/>
                 </DataTypeDomain>
             </InputProperty>
-                <IntVectorProperty name="Set the Heatmap resolution"
-                    command="setHeatmapResolution"
-                    number_of_elements="1"
-                    default_values="1">
-                <IntegerDomain name="double"/>
+            <IntVectorProperty name="Heatmap Resolution"
+                command="setHeatmapResolution"
+                number_of_elements="1"
+                default_values="1">
             </IntVectorProperty>
 	    <Hints>
-		<ShowInMenu category="Kronos" />
+		          <ShowInMenu category="Kronos" />
 	    </Hints>
         </SourceProxy>
     
