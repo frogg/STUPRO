@@ -1,84 +1,40 @@
-//
-//  TwitterHeatmapFilter.cpp
-//  kronos
-//
-//  Created by Frederik Riedel on 12.02.16.
-//
-//
+#include <Filter/HeatmapDensityFilter.h>
 
+#include <Reader/DataReader/Data.hpp>
 
-#include "HeatmapDensityFilter.h"
-
-#include "vtkUnstructuredGrid.h"
-#include "vtkCell.h"
-#include "vtkPoints.h"
-#include "vtkPointData.h"
-#include "vtkCellData.h"
-#include "vtkObjectFactory.h"
-
-#include "vtkDataObject.h"
-#include <vtkInformationVector.h>
-#include <vtkInformation.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkDataSet.h>
-
-#include <vtkCellData.h>
-#include "vtkCell.h"
-#include "vtkPoints.h"
-#include "vtkPointData.h"
-#include "vtkObjectFactory.h"
-
-#include "vtkIntArray.h"
-#include "vtkCollection.h"
-#include "vtkMergePoints.h"
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
-
-#include <vtkPolyData.h>
-#include <vtkTypeFloat32Array.h>
-#include <vtkIntArray.h>
-#include <QList>
+#include <vtkSmartPointer.h>
 #include <vtkCellArray.h>
-#include <vtkTypeInt16Array.h>
-
+#include <vtkPointData.h>
+#include <vtkExecutive.h>
+#include <vtkInformationExecutivePortVectorKey.h>
 
 HeatmapDensityFilter::HeatmapDensityFilter() {
     this->SetNumberOfInputPorts(1);
     this->SetNumberOfOutputPorts(1);
-    
 }
 
-/**
- *called from XML to set the heatmap's resolution
- */
+HeatmapDensityFilter::~HeatmapDensityFilter() { }
+
 void HeatmapDensityFilter::setHeatmapResolution(double heatmapResolution) {
     this->heatmapResolution = heatmapResolution;
     this->Modified();
 }
 
-/**
- * print self methode
- */
 void HeatmapDensityFilter::PrintSelf(ostream& os, vtkIndent indent) {
     this->Superclass::PrintSelf(os, indent);
     os << indent << "Heatmap Density Filter, Kronos Project" << endl;
 }
 
-HeatmapDensityFilter::~HeatmapDensityFilter() {}
-
 vtkStandardNewMacro(HeatmapDensityFilter)
 
+void HeatmapDensityFilter::fail(QString message) {
+	vtkErrorMacro( << message.toStdString());
+	this->error = true;
+}
 
-
-/**
- * this method is called when new a higher instance requests new data
- */
 int HeatmapDensityFilter::RequestData(vtkInformation* info,
                                       vtkInformationVector** inputVector,
                                       vtkInformationVector* outputVector) {
-    
-    
-    
     // get the input data
     vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0], 0);
     
@@ -92,9 +48,6 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     double width = maxX - minX;
     double height = maxY - minY;
     
-    
-    
-    
     int numberOfXComponents = (int) (50.0 * this->heatmapResolution + 0.5);
     int numberOfYComponents = (int) ((height * numberOfXComponents) / width + 0.5);
     
@@ -103,11 +56,6 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     
     double stepWidthX = (width / (numberOfXComponents-1));
     double stepWidthY = (height / (numberOfYComponents-1));
-    
-    
-    
-    
-    
     
     vtkPoints* intputDataPoints = dataInput->GetPoints();
     
@@ -150,14 +98,9 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
         }
     }
     
-    
-    
-    
-    
     vtkInformation* outInfo = outputVector->GetInformationObject(0);
     vtkSmartPointer<vtkPolyData> output = vtkPolyData::SafeDownCast(outInfo->Get(
                                                                                  vtkDataObject::DATA_OBJECT()));
-    
     
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     
@@ -196,9 +139,49 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
     return 1;
 }
 
+int HeatmapDensityFilter::RequestInformation(vtkInformation* request,
+        vtkInformationVector** inputVector,
+        vtkInformationVector* outputVector) {
+	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+	vtkInformation* outInfo = outputVector->GetInformationObject(0);
+
+	// Check the meta information containing the data's type
+	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
+		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
+		if (dataType != Data::TWEETS) {
+			this->fail(
+			    QString("This filter only works with Twitter data, but the input contains %1 data.").arg(
+			            Data::getDataTypeName(dataType)));
+			return 0;
+		}
+	} else {
+		this->fail("This filter only works with data read by the Kronos reader.");
+		return 0;
+	}
+
+	// Check the meta information containing the data's state
+	if (vtkExecutive::CONSUMERS()->Length(outInfo) == 0) {
+		if (inInfo->Has(Data::VTK_DATA_STATE())) {
+			Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
+			if (dataState != Data::RAW) {
+				this->fail(
+				    QString("This filter only works with raw input data, but the input data has the state %1.").arg(
+				        Data::getDataStateName(dataState)));
+				return 0;
+			}
+		} else {
+			this->fail("The input data has no data state information attached.");
+			return 0;
+		}
+	}
+
+	outInfo->Set(Data::VTK_DATA_STATE(), Data::DENSITY_MAPPED);
+
+	return 1;
+}
+
 int HeatmapDensityFilter::FillOutputPortInformation(int port, vtkInformation* info) {
     info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
-    
     return 1;
 }
 
@@ -206,4 +189,3 @@ int HeatmapDensityFilter::FillInputPortInformation(int port, vtkInformation* inf
     info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataSet");
     return 1;
 }
-

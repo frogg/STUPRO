@@ -1,25 +1,16 @@
-//
-//  TwitterHeatmapFilter.hpp
-//  kronos
-//
-//  Created by Frederik Riedel on 12.02.16.
-//
-//
+#ifndef KRONOS_HEATMAP_DENSITY_FILTER_HPP
+#define KRONOS_HEATMAP_DENSITY_FILTER_HPP
 
-#ifndef HeatmapDensityFilter_hpp
-#define HeatmapDensityFilter_hpp
-
-#include <stdio.h>
 #include <Utils/Misc/Macros.hpp>
-#include <vtkCleanUnstructuredGrid.h>
-#include <vtkPointLocator.h>
-#include <vtkTransformFilter.h>
-#include <vtkSmartPointer.h>
+
+#include <vtkInformation.h>
 #include <vtkPolyDataAlgorithm.h>
 
+#include <qstring.h>
+
 /**
- * Filter that receives vtkPolyData and calculates the data density for each point
- * the resolution can be changed dynamically
+ * Filter that receives vtkPolyData and calculates the data density for each point,
+ * the resolution can be changed dynamically.
  */
 class HeatmapDensityFilter : public vtkPolyDataAlgorithm {
     
@@ -28,30 +19,40 @@ public:
     static HeatmapDensityFilter* New();
     void PrintSelf(ostream& os, vtkIndent indent) override;
     
-    
     void setHeatmapResolution(double heatmapResolution);
     
 protected:
-    
     int RequestData(vtkInformation* info,
                     vtkInformationVector** inputVector,
                     vtkInformationVector* outputVector) override;
-    
-    
+    int RequestInformation(vtkInformation* request,
+	                       vtkInformationVector** inputVector,
+	                       vtkInformationVector* outputVector) override;
     virtual int FillInputPortInformation(int port, vtkInformation* info) override;
     virtual int FillOutputPortInformation(int port, vtkInformation* info) override;
     
+    /**
+     * Display an error message and remember that this filter does not hold valid data.
+     * @param message The error message to be shown to the user
+     */
+    void fail(QString message);
+    
 private:
+    /**
+     * Initialise a new heatmap density filter.
+     */
     HeatmapDensityFilter();
     ~HeatmapDensityFilter();
-    
     
     HeatmapDensityFilter(const HeatmapDensityFilter&);  // Not implemented.
     void operator=(const HeatmapDensityFilter&);  // Not implemented.
     
     double heatmapResolution = 1.0;
+    
+    /**
+	 * Boolean flag denoting whether there was an error.
+	 */
+	bool error;
 };
 
-
-
-#endif /* TwitterHeatmapFilter_hpp */
+#endif
