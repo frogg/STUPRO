@@ -4,7 +4,7 @@
 
 #include <vtkObjectFactory.h>
 #include <vtkPointSet.h>
-#include <vtkTypeFloat32Array.h>
+#include <vtkFloatArray.h>
 #include <vtkStringArray.h>
 
 FlightFilter::FlightFilter() {
@@ -93,7 +93,7 @@ bool FlightFilter::isVisibleBasedOnDestinationAirportCode(int pointIndex, vtkPoi
 }
 
 bool FlightFilter::isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* pointData) {
-	vtkSmartPointer<vtkTypeFloat32Array> flightLengths = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> flightLengths = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("flightLengths"));
 	double flightLength = flightLengths->GetTuple1(pointIndex);
 	return this->minFlightLength <= flightLength && flightLength <= this->maxFlightLength;
