@@ -86,36 +86,35 @@ int vtkKronosReader::RequestInformation(vtkInformation* request, vtkInformationV
 	}
 
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
-    
-    // Add information to the output vector if the data contains time information
-    if (this->jsonReader->hasTemporalData()) {
-        int amountOfTimeSteps = this->jsonReader->getAmountOfTimeSteps();
-        std::vector<double> timeSteps;
-        for (int i = 0; i < amountOfTimeSteps; i++) {
-            timeSteps.push_back(i);
-        }
-        outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(), &timeSteps[0], amountOfTimeSteps);
-        
-        double timeRange[2];
-        timeRange[0] = 0.0;
-        timeRange[1] = amountOfTimeSteps;
-        outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_RANGE(), timeRange, 2);
-    }
-    
-    // Append the data type as an entry to the output information
-    outInfo->Set(Data::VTK_DATA_TYPE(), this->jsonReader->getDataType());
-    request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TYPE());
-    
-    // Initialise the data state as an entry to the output information
-    outInfo->Set(Data::VTK_DATA_STATE(), Data::RAW);
-    request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_STATE());
-    
-    // If applicable, append the time resolution as an entry to the output information
-    if (this->jsonReader->hasTemporalData()) {
-        outInfo->Set(Data::VTK_TIME_RESOLUTION(), this->jsonReader->getTimeResolution());
-        request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_TIME_RESOLUTION());
-    }
 
+	// Add information to the output vector if the data contains time information
+	if (this->jsonReader->hasTemporalData()) {
+		int amountOfTimeSteps = this->jsonReader->getAmountOfTimeSteps();
+		std::vector<double> timeSteps;
+		for (int i = 0; i < amountOfTimeSteps; i++) {
+			timeSteps.push_back(i);
+		}
+		outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(), &timeSteps[0], amountOfTimeSteps);
+
+		double timeRange[2];
+		timeRange[0] = 0.0;
+		timeRange[1] = amountOfTimeSteps;
+		outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_RANGE(), timeRange, 2);
+	}
+
+	// Append the data type as an entry to the output information
+	outInfo->Set(Data::VTK_DATA_TYPE(), this->jsonReader->getDataType());
+	request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TYPE());
+
+	// Initialise the data state as an entry to the output information
+	outInfo->Set(Data::VTK_DATA_STATE(), Data::RAW);
+	request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_STATE());
+
+	// If applicable, append the time resolution as an entry to the output information
+	if (this->jsonReader->hasTemporalData()) {
+		outInfo->Set(Data::VTK_TIME_RESOLUTION(), this->jsonReader->getTimeResolution());
+		request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_TIME_RESOLUTION());
+	}
 
 	return 1;
 }

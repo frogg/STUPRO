@@ -143,8 +143,8 @@ int AbstractSelectionFilter::RequestInformation(vtkInformation* request,
 			Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
 			if (dataState != Data::RAW) {
 				this->fail(
-					QString("This filter only works with raw input data, but the input data has the state %1.").arg(
-						Data::getDataStateName(dataState)));
+				    QString("This filter only works with raw input data, but the input data has the state %1.").arg(
+				        Data::getDataStateName(dataState)));
 				return 0;
 			}
 		} else {
@@ -152,7 +152,7 @@ int AbstractSelectionFilter::RequestInformation(vtkInformation* request,
 			return 0;
 		}
 	}
-	
+
 	outInfo->Set(Data::VTK_DATA_STATE(), Data::RAW);
 
 	return 1;
