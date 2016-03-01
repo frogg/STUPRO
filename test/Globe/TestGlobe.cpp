@@ -16,23 +16,23 @@
 TEST(TestGlobe, tileLocation) {
 	// Left half of the globe.
 	GlobeTile::Location loc000(0, 0, 0);
-	
+
 	// Right half of the globe.
 	GlobeTile::Location loc010(0, 1, 0);
-	
+
 	// Test constructor argument order (zoom, lon, lat).
 	GlobeTile::Location loc123(1, 2, 3);
 	EXPECT_EQ(loc123.zoomLevel, 1);
 	EXPECT_EQ(loc123.longitude, 2);
 	EXPECT_EQ(loc123.latitude, 3);
-	
+
 	// Test outermost zoom level rectangle bounds. Invert Y axis of flipped tile (this only works because it is zoomLevel 0).
 	RectF rect000 = loc000.getBounds();
 	RectF rect000Flipped = loc000.getFlippedBounds();
 	RectF rect000FlippedYInvert = rect000Flipped;
 	rect000FlippedYInvert.y *= -1.f;
 	EXPECT_EQ_RECT(rect000, rect000FlippedYInvert);
-	
+
 	// Test inner tile at x=2 y=3 with zoomLevel 3.
 	// The globe should have a width of 2^4 = 16 Tiles and a height of 2^3 = 8 Tiles.
 	// This means each tile is 180°/8 = 22.5° wide and tall.

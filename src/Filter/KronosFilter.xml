@@ -410,7 +410,7 @@
                 short_help="Solve SciVis-Contest with this filter">
             </Documentation>
             <InputProperty
-                name="MIPAS Input"
+                name="Input"
                 command="SetInputConnection">
                 <ProxyGroupDomain name="groups">
                     <Group name="sources"/>
@@ -479,7 +479,7 @@
                 <ShowInMenu category="SciVis"/>
             </Hints>
         </SourceProxy>
-        <SourceProxy name="AIRSFilterAM" class="AIRSFilter" label="AIRSFilterAM">
+        <SourceProxy name="AIRSFilter" class="AIRSFilter" label="AIRSFilter">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
                 short_help="Solve SciVis-Contest with this filter">
@@ -537,9 +537,100 @@
                     The upper and lower time limits respectively
                 </Documentation>
             </DoubleVectorProperty>
+
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectSO2AIRS"
+                number_of_elements="5"
+                default_values="SO2">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <DoubleVectorProperty command="setSOThreshold"
+                default_values="0 0"
+                label="SO2"
+                name="SO2Range"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectSO2AIRS" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower SO2 limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectAshAIRS"
+                number_of_elements="5"
+                default_values="ash">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <DoubleVectorProperty command="setAshThreshold"
+                default_values="0 0"
+                label="Ash"
+                name="AshRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectAshAIRS" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower SO2 limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+
+            <PropertyGroup label="Time">
+                <Property name="TimeRange" />
+            </PropertyGroup>
+            <PropertyGroup label="SO2 Index">
+                <Property name="SO2Range" />
+            </PropertyGroup>
+            <PropertyGroup label="Ash Index">
+                <Property name="AshRange" />
+             </PropertyGroup>
+
             <Hints>
                 <ShowInMenu category="SciVis"/>
                 <Property name="SelectTimeAirs" show="0"/>
+                <Property name="SelectSO2AIRS" show="0"/>
+                <Property name="SelectAshAIRS" show="0"/>
             </Hints>
         </SourceProxy>
 
