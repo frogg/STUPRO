@@ -16,7 +16,6 @@
 
 /**
  * This class extracts the attributes of the AIRS Data, and displays them with Sliders
- * to be able to change the AIRS_am and AIRS_pm appearance.
  */
 class AIRSFilter  : public AbstractSelectionFilter {
 public:

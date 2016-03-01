@@ -1,207 +1,147 @@
-#ifndef KRONOS_ABSTRACT_SELECTION_FILTER_HPP
-#define KRONOS_ABSTRACT_SELECTION_FILTER_HPP
+#ifndef __CLaMSFilter_h
+#define __CLaMSFilter_h
 
-#include <vtkPoints.h>
-#include <vtkSmartPointer.h>
-#include <vtkDataObjectAlgorithm.h>
+#include "vtkPoints.h"
+#include "vtkDataSetAlgorithm.h"
+#include <vtkThreshold.h>
 #include <vtkInformation.h>
-#include <vtkInformationVector.h>
-#include <vtkPointData.h>
-#include <vtkUnsignedIntArray.h>
-#include <vtkDoubleArray.h>
+#include "vtkInformationVector.h"
+#include <vtkIndent.h>
+#include <vtkDataSet.h>
+#include <vtkUnstructuredGridAlgorithm.h>
+#include <vtkPolyData.h>
+#include <vtkDataObjectAlgorithm.h>
+#include <AbstractSelectionFilter.hpp>
 #include <vtkFloatArray.h>
-
-#include <qstring.h>
-#include <qlist.h>
-
-#include <Reader/DataReader/Data.hpp>
-#include <Globe/Coordinate.hpp>
-
 
 /**
  * This class extracts the attributes of the CLaMS Data, and displays them with Sliders
- * to be able to change the CLaMS_Nabro and CLaMSPuyehue's appearance.
  */
-class CLaMSFilter : public vtkDataObjectAlgorithm {
+class CLaMSFilter  : public AbstractSelectionFilter {
 public:
-
-	vtkTypeMacro(CLaMSFilter, vtkDataObjectAlgorithm)
 	static CLaMSFilter* New();
+	vtkTypeMacro(CLaMSFilter, vtkDataObjectAlgorithm);
 
-	void PrintSelf(ostream& os, vtkIndent indent) override;
+	void SetInputConnection(vtkAlgorithmOutput* input);
 
-	int RequestData(vtkInformation* info,
-	                vtkInformationVector** inputVector,
-	                vtkInformationVector* outputVector) override;
+
+	/**
+	 * This Method sets the min and max values of the Time to be represented in silders
+	 * @param lowerLimit the lower range
+	 * @param upperLimit the upper range
+	 */
+	void setTimeThreshold(double lowerLimit, double upperLimit);
+
+	/**
+	* This Method sets the min and max values of the Altitude Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setAltitudeThreshold(float lowerLimit, float upperLimit);
+
+	/**
+	* This Method sets the min and max values of the Temperature Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setTemperatureThreshold(float lowerLimit, float upperLimit);
+
+	/**
+	* This Method sets the min and max values of the Pressure Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setPressureThreshold(double lowerLimit, double upperLimit);
+
+	/**
+	* This Method sets the min and max values of the Vorticity Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setVorticityThreshold(double lowerLimit, double upperLimit);
+
+	/**
+	* This Method sets the min and max values of the Pot_Temperature Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setPotTemperatureThreshold(double lowerLimit, double upperLimit);
 	int RequestInformation(vtkInformation* request,
 	                       vtkInformationVector** inputVector,
 	                       vtkInformationVector* outputVector) override;
 
-	int FillOutputPortInformation(int port, vtkInformation* info) override;
-	int FillInputPortInformation(int port, vtkInformation* info) override;
-	void SetInputConnection(vtkAlgorithmOutput* input) override;
-
-	//set the lower and upper Limit for altitude
-	/**
-	 * Sets the upper Limit of the Altitude Index
-	 * @param upperLimit the upper Limit of the Altitude Index
-	 */
-	void setUpperAltitude(float upperLimit);
 
 	/**
-	 * Sets the lower Limit of the Altitude Index
-	 * @param lowerLimit the lower Limit of the Altitude Index
+	 * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the temperature values and the UI is hidden.
 	 */
-	void setLowerAltitude(float lowerLimit);
-
-
-	/**
-	 * Sets the lower Limit of the potential Temperature
-	 * @param lowerLimit the lower Limit of the potential Temperature
-	 */
-	void setLowerPotTemperature(float lowerLimit);
-
-	/**
-	 * Sets the upper Limit of the potential Temperature
-	 * @param upperLimit the upper Limit of the potential Temperature
-	 */
-	void setUpperPotTemperature(float upperLimit);
-
-	/**
-	 * Sets the lower Limit of the potential Vorticity
-	 * @param lowerLimit the lower Limit of the potential Vorticity
-	 */
-	void setLowerVorticity(float lowerLimit);
-
-	/**
-	 * Sets the upper Limit of the potential Vorticity
-	 * @param upperLimit the upper Limit of the potential Vorticity
-	 */
-	void setUpperVorticity(float upperLimit);
-
-	/**
-	 * Sets the lower Limit of the Pressure Index
-	 * @param lowerLimit the lower Limit of the Pressure Index
-	 */
-	void setLowerPressure(float lowerLimit);
-
-	/**
-	 * Sets the upper Limit of the Pressure Index
-	 * @param upperLimit the lower Limit of the Pressure Index
-	 */
-	void setUpperPressure(float upperLimit);
-
-	/**
-	 * Sets the lower Limit of the Temperature
-	 * @param lowerLimit the lower Limit of the Temperature
-	 */
-	void setLowerTemperature(float lowerLimit);
-	/**
-	 * Sets the upper Limit of the Temperature
-	 * @param upperLimit the lower Limit of the Temperature
-	 */
-	void setUpperTemperature(float upperLimit);
-
-	//set the lower and upper Limit for the date
-	/**
-	 * Sets the lower Limit for the Time
-	 * @param lowerLimit the lower Limit of the Time
-	 */
-	void setLowerDate(double lowerLimit);
-	/**
-	 * Sets the upper Limit for the Time
-	 * @param upperLimit the upper Limit of the Time
-	 */
-	void setUpperDate(double upperLimit);
-
-
-
-
-protected:
-	/**
-	 * Display an error message and remember that this filter does not hold valid data.
-	 * @param message The error message to be shown to the user
-	 */
-	void fail(QString message);
+	void ignore(int id, int port, int connection, int fieldAssociation, const char* name) { }
 
 private:
+
 	CLaMSFilter();
 	~CLaMSFilter();
-
-	CLaMSFilter(const CLaMSFilter&);  // Not implemented.
-	void operator=(const CLaMSFilter&);  // Not implemented.
-
-	/**
-	 * Boolean flag denoting whether there was an error.
-	 */
-	bool error;
-
+	CLaMSFilter(const CLaMSFilter&); //Not implemented
+	void operator=(const CLaMSFilter&); //Not implemented
+	QList<Data::Type> getCompatibleDataTypes() override;
+	bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) override;
 
 	/**
-	 * the upper Limit for the Altitude
+	 * the upper Limit for the Time
 	 */
-	float UpperLimitAltitude;
+	double upperTimeLimit;
+
 	/**
-	 * the lower Limit for the Altitude
+	 * the lower Limit for the Time
 	 */
-	float LowerLimitAltitude;
+	double lowerTimeLimit;
+	/**
+	 * the upper Limit for the Altitude Index
+	 */
+	float upperAltitudeLimit;
+	/**
+	 * the lower Limit for the Altitude Index
+	 */
+	float lowerAltitudeLimit;
+
+	/**
+	 * The upper Limit for the Temperature Index
+	 */
+	float upperTemperatureLimit;
+	/**
+	 * the lower Limit for the Temperature Index
+	 */
+	float lowerTemperatureLimit;
+
+	/**
+	 * the upper Limit for the Pressure
+	 */
+	double upperPressureLimit;
+
+	/**
+	 * the lower Limit for the Pressure
+	 */
+	double lowerPressureLimit;
 
 
 	/**
-	 * the lower Limit for the Potential Temperature
+	 * the upper Limit for the vorticity index
 	 */
-	float lowerPotTemperature;
-	/**
-	 * the upper Limit of the Potential Temperature
-	 */
-	float upperPotTemperature;
-
+	double upperVorticityLimit;
 
 	/**
-	 * the lower Limit for the potential Vorticity
+	 * the lower Limit for the vorticity index
 	 */
-	float lowerVorticity;
-	/**
-	 * the upper Limit for the potential Vorticity
-	 */
-	float upperVorticity;
-
+	double lowerVorticityLimit;
 
 	/**
-	 * The lower Limit for the Pressure
+	 * the upper Limit for the Pot_temperature index
 	 */
-	float lowerPressure;
-	/**
-	 * The upper Limit for the Pressure
-	 */
-	float upperPressure;
+	double upperPotTemperatureLimit;
 
 	/**
-	 * the lower Limit of the Temperature
+	 * the lower Limit for the Pot_temperature index
 	 */
-	float lowerTemperature;
-	/**
-	 * the upper Limit of the Temperature
-	 */
-	float upperTemperature;
-
-	/**
-	 * The lower Limit for the Time
-	 */
-	double lowerDate;
-	/**
-	 * The upper Limit for the Time
-	 */
-	double upperDate;
-
-	/**
-	 * Decide whether a data point should be kept in the selection.
-	 * @param pointIndex The index of the point to be checked
-	 * @param coordinate The coordinate of the point
-	 * @param pointData All scalar point data
-	 * @return True if the point should be kept, false otherwise
-	 */
-	bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
+	double lowerPotTemperatureLimit;
 
 };
 

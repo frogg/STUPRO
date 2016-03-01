@@ -801,265 +801,294 @@
             </Hints>
         </SourceProxy>
 
-        <SourceProxy name="CLaMSFilterPuyehue" class="CLaMSFilter" label="CLaMSFilterPuyehue">
-            <Documentation
-                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
-                short_help="Solve SciVis-Contest with this filter">
-            </Documentation>
-            <InputProperty
-                name="CLaMS Input"
-                command="SetInputConnection">
-                <ProxyGroupDomain name="groups">
-                    <Group name="sources"/>
-                    <Group name="filters"/>
-                </ProxyGroupDomain>
-                <DataTypeDomain name="input_type">
-                    <DataType value="vtkPolyData"/>
-                    <DataType value="vtkCellData"/>
-                    <DataType value="vtkUnstructuredGrid"/>
-                    <DataType value="vtkPointSet"/>
-                </DataTypeDomain>
-            </InputProperty>
+        <SourceProxy name="CLaMSFilter" class="CLaMSFilter" label="CLaMSFilter">
+          <Documentation
+              long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with CLaMS Data"
+              short_help="Solve SciVis-Contest with this filter">
+          </Documentation>
+          <InputProperty
+              name="Input"
+              command="SetInputConnection">
+              <ProxyGroupDomain name="groups">
+                  <Group name="sources"/>
+                  <Group name="filters"/>
+              </ProxyGroupDomain>
+              <DataTypeDomain name="input_type">
+                  <DataType value="vtkPolyData"/>
+                  <DataType value="vtkCellData"/>
+                  <DataType value="vtkUnstructuredGrid"/>
+                  <DataType value="vtkPointSet"/>
+              </DataTypeDomain>
+          </InputProperty>
 
-            <DoubleVectorProperty name="Lowest Altitude"
-                command="setLowerAltitude"
-                number_of_elements="1"
-                default_values="-0.0151925">
-                <DoubleRangeDomain name="range" min="-0.0151925" max="18.0319" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest Altitude"
-                command="setUpperAltitude"
-                number_of_elements="1"
-                default_values="18.0319">
-                <DoubleRangeDomain name="range" min="-0.0151925" max="18.0319" />
-            </DoubleVectorProperty>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectTime"
+              number_of_elements="5"
+              default_values="time">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setTimeThreshold"
+              default_values="0 0"
+              label="Time"
+              name="TimeRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectTime" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower time limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
-            <DoubleVectorProperty name="Lowest pot_Temperature"
-                command="setLowerPotTemperature"
-                number_of_elements="1"
-                default_values="240.141">
-                <DoubleRangeDomain name="range" min="240.141" max="431.165" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest pot_Temperature"
-                command="setUpperPotTemperature"
-                number_of_elements="1"
-                default_values="431.165">
-                <DoubleRangeDomain name="range" min="240.141" max="431.165" />
-            </DoubleVectorProperty>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectAltitude"
+              number_of_elements="5"
+              default_values="altitude">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setAltitudeThreshold"
+              default_values="0 0"
+              label="Altitude"
+              name="AltitudeRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectAltitude" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Altitude limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
-            <DoubleVectorProperty name="Lowest Vorticity"
-                command="setLowerVorticity"
-                number_of_elements="1"
-                default_values="-1e+30">
-                <DoubleRangeDomain name="range" min="-1e+30" max="6.92938" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest Vorticity"
-                command="setUpperVorticity"
-                number_of_elements="1"
-                default_values="6.92938">
-                <DoubleRangeDomain name="range" min="-1e+30" max="6.92938" />
-            </DoubleVectorProperty>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectTemperature"
+              number_of_elements="5"
+              default_values="temperature">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setTemperatureThreshold"
+              default_values="0 0"
+              label="Temperature"
+              name="TemperatureRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectTemperature" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Temperature limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
-            <DoubleVectorProperty name="Starting Temperature"
-                command="setLowerTemperature"
-                number_of_elements="1"
-                default_values="187.766">
-                <DoubleRangeDomain name="range" min="187.766" max="305.673" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest Temperature"
-                command="setUpperTemperature"
-                number_of_elements="1"
-                default_values="305.673">
-                <DoubleRangeDomain name="range" min="187.766" max="305.673" />
-            </DoubleVectorProperty>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectPressure"
+              number_of_elements="5"
+              default_values="pressure">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setPressureThreshold"
+              default_values="0 0"
+              label="Pressure"
+              name="PressureRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectPressure" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Pressure limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
-            <DoubleVectorProperty name="Starting Pressure"
-                command="setLowerPressure"
-                number_of_elements="1"
-                default_values="60.7511">
-                <DoubleRangeDomain name="range" min="60.7511" max="1030.58" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest Pressure"
-                command="setUpperPressure"
-                number_of_elements="1"
-                default_values="1030.58">
-                <DoubleRangeDomain name="range" min="60.7511" max="1030.58" />
-            </DoubleVectorProperty>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectVorticity"
+              number_of_elements="5"
+              default_values="pot_vorticity">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setVorticityThreshold"
+              default_values="0 0"
+              label="Vorticity"
+              name="VorticityRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectVorticity" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower potential Vorticity limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
-
-            <DoubleVectorProperty name="Starting Time"
-                command="setLowerDate"
-                number_of_elements="1"
-                default_values="3.60461e+08">
-                <DoubleRangeDomain name="range" min="3.60461e+08" max="3.67664e+08" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Time"
-                command="setUpperDate"
-                number_of_elements="1"
-                default_values="3.67664e+08">
-                <DoubleRangeDomain name="range" min="3.60461e+08" max="3.67664e+08" />
-            </DoubleVectorProperty>
-
-
-            <PropertyGroup label="Altitude">
-                <Property name="Lowest Altitude" />
-                <Property name="Highest Altitude" />
-            </PropertyGroup>
-            <PropertyGroup label="potential Temperature">
-                <Property name="Lowest pot_Temperature" />
-                <Property name="Highest pot_Temperature" />
-            </PropertyGroup>
-            <PropertyGroup label="potential Vorticity">
-                <Property name="Lowest Vorticity" />
-                <Property name="Highest Vorticity" />
-            </PropertyGroup>
-            <PropertyGroup label="Temperature">
-                <Property name="Starting Temperature" />
-                <Property name="Highest Temperature" />
-            </PropertyGroup>
-            <PropertyGroup label="Pressure">
-                <Property name="Starting Pressure" />
-                <Property name="Highest Pressure" />
-            </PropertyGroup>
-            <PropertyGroup label="Time">
-                <Property name="Starting Time" />
-                <Property name="Ending Time" />
-            </PropertyGroup>
-
-            <Hints>
-                <ShowInMenu category="SciVis"/>
-            </Hints>
-        </SourceProxy>
-
-
-        <SourceProxy name="CLaMSFilterNabro" class="CLaMSFilter" label="CLaMSFilterNabro">
-            <Documentation
-                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
-                short_help="Solve SciVis-Contest with this filter">
-            </Documentation>
-            <InputProperty
-                name="CLaMS Input"
-                command="SetInputConnection">
-                <ProxyGroupDomain name="groups">
-                    <Group name="sources"/>
-                    <Group name="filters"/>
-                </ProxyGroupDomain>
-                <DataTypeDomain name="input_type">
-                    <DataType value="vtkPolyData"/>
-                    <DataType value="vtkCellData"/>
-                    <DataType value="vtkUnstructuredGrid"/>
-                    <DataType value="vtkPointSet"/>
-                </DataTypeDomain>
-            </InputProperty>
-
-            <DoubleVectorProperty name="Lowest Altitude"
-                command="setLowerAltitude"
-                number_of_elements="1"
-                default_values="-0.0311764">
-                <DoubleRangeDomain name="range" min="-0.0311764" max="32.3995" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest Altitude"
-                command="setUpperAltitude"
-                number_of_elements="1"
-                default_values="32.3995">
-                <DoubleRangeDomain name="range" min="-0.0311764" max="32.3995" />
-            </DoubleVectorProperty>
-
-            <DoubleVectorProperty name="Starting pot_Temperature"
-                command="setLowerPotTemperature"
-                number_of_elements="1"
-                default_values="247.64">
-                <DoubleRangeDomain name="range" min="247.64" max="1447.37" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest pot_Temperature"
-                command="setUpperPotTemperature"
-                number_of_elements="1"
-                default_values="1447.37">
-                <DoubleRangeDomain name="range" min="247.64" max="1447.37" />
-            </DoubleVectorProperty>
-
-            <DoubleVectorProperty name="Starting vorticity"
-                command="setLowerVorticity"
-                number_of_elements="1"
-                default_values="-1e+30">
-                <DoubleRangeDomain name="range" min="-1e+30" max="2384.89" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest vorticity"
-                command="setUpperVorticity"
-                number_of_elements="1"
-                default_values="2384.89">
-                <DoubleRangeDomain name="range" min="-1e+30" max="2384.89" />
-            </DoubleVectorProperty>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectPotTemperature"
+              number_of_elements="5"
+              default_values="pot_temperature">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setPotTemperatureThreshold"
+              default_values="0 0"
+              label="PotTemperature"
+              name="PotTemperatureRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectPotTemperature" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower potential Temperature limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
 
-            <DoubleVectorProperty name="Starting pressure"
-                command="setLowerPressure"
-                number_of_elements="1"
-                default_values="8.12409">
-                <DoubleRangeDomain name="range" min="8.12409" max="1033.3" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest pressure"
-                command="setUpperPressure"
-                number_of_elements="1"
-                default_values="1033.3">
-                <DoubleRangeDomain name="range" min="8.12409" max="1033.3" />
-            </DoubleVectorProperty>
 
-            <DoubleVectorProperty name="Starting Temperature"
-                command="setLowerTemperature"
-                number_of_elements="1"
-                default_values="184.492">
-                <DoubleRangeDomain name="range" min="184.492" max="317.236" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest Temperature"
-                command="setUpperTemperature"
-                number_of_elements="1"
-                default_values="317.236">
-                <DoubleRangeDomain name="range" min="184.492" max="317.236" />
-            </DoubleVectorProperty>
+          <PropertyGroup label="Time">
+              <Property name="TimeRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Altitude">
+              <Property name="AltitudeRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Temperature">
+              <Property name="TemperatureRange" />
+          </PropertyGroup>
+           <PropertyGroup label="Pressure">
+               <Property name="PressureRange" />
+           </PropertyGroup>
+           <PropertyGroup label="Vorticity">
+                <Property name="VorticityRange" />
+           </PropertyGroup>
+           <PropertyGroup label="Pot_Temperature">
+               <Property name="PotTemperatureRange" />
+          </PropertyGroup>
 
-            <DoubleVectorProperty name="Starting Time"
-                command="setLowerDate"
-                number_of_elements="1"
-                default_values="361217000.0">
-                <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Time"
-                command="setUpperDate"
-                number_of_elements="1"
-                default_values="368582000.0">
-                <DoubleRangeDomain name="range" min="361217000.0" max="368582000.0" />
-            </DoubleVectorProperty>
+          <Hints>
+              <ShowInMenu category="SciVis"/>
+              <Property name="SelectTime" show="0"/>
+              <Property name="SelectAltitude" show="0"/>
+              <Property name="SelectTemperature" show="0"/>
+              <Property name="SelectPressure" show="0"/>
+              <Property name="SelectVorticity" show="0"/>
+              <Property name="SelectPotTemperature" show="0"/>
+          </Hints>
+      </SourceProxy>
 
-            <PropertyGroup label="Altitude">
-                <Property name="Lowest Altitude" />
-                <Property name="Highest Altitude" />
-            </PropertyGroup>
-            <PropertyGroup label="potential Temperature">
-                <Property name="Starting pot_Temperature" />
-                <Property name="Highest pot_Temperature" />
-            </PropertyGroup>
-            <PropertyGroup label="potential Vorticity">
-                <Property name="Starting vorticity" />
-                <Property name="Highest vorticity" />
-            </PropertyGroup>
-            <PropertyGroup label="Temperature">
-                <Property name="Starting Temperature" />
-                <Property name="Highest Temperature" />
-            </PropertyGroup>
-            <PropertyGroup label="Pressure">
-                <Property name="Starting pressure" />
-                <Property name="Highest pressure" />
-            </PropertyGroup>
-            <PropertyGroup label="Time">
-                <Property name="Starting Time" />
-                <Property name="Ending Time" />
-            </PropertyGroup>
 
-            <Hints>
-                <ShowInMenu category="SciVis"/>
-            </Hints>
-        </SourceProxy>
+
 
     </ProxyGroup>
     <ParaViewFilters>
