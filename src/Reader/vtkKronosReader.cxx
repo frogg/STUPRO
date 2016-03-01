@@ -90,7 +90,6 @@ int vtkKronosReader::RequestInformation(vtkInformation* request, vtkInformationV
 	// Add information to the output vector if the data contains time information
 	if (this->jsonReader->hasTemporalData()) {
 		int amountOfTimeSteps = this->jsonReader->getAmountOfTimeSteps();
-
 		std::vector<double> timeSteps;
 		for (int i = 0; i < amountOfTimeSteps; i++) {
 			timeSteps.push_back(i);
@@ -106,6 +105,10 @@ int vtkKronosReader::RequestInformation(vtkInformation* request, vtkInformationV
 	// Append the data type as an entry to the output information
 	outInfo->Set(Data::VTK_DATA_TYPE(), this->jsonReader->getDataType());
 	request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TYPE());
+
+	// Initialise the data state as an entry to the output information
+	outInfo->Set(Data::VTK_DATA_STATE(), Data::RAW);
+	request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_STATE());
 
 	// If applicable, append the time resolution as an entry to the output information
 	if (this->jsonReader->hasTemporalData()) {

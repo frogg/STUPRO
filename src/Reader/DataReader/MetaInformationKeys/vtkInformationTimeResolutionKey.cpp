@@ -1,4 +1,4 @@
-#include <Reader/DataReader/vtkInformationTimeResolutionKey.hpp>
+#include <Reader/DataReader/MetaInformationKeys/vtkInformationTimeResolutionKey.hpp>
 
 #include <vtkInformation.h>
 #include <vtkStreamingDemandDrivenPipeline.h>

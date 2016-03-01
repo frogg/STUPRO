@@ -9,7 +9,7 @@
 #include <vtkPoints.h>
 #include <vtkCellArray.h>
 #include <vtkDataArray.h>
-#include <vtkTypeFloat32Array.h>
+#include <vtkFloatArray.h>
 
 DataAggregator::DataAggregator() : lastTimeIndex(0) { }
 
@@ -35,7 +35,7 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 	case Data::PRECIPITATION: {
 		vtkSmartPointer<vtkDataArray> abstractPrecipitationRateArray =
 		    pointData->GetArray("precipitationRates");
-		vtkSmartPointer<vtkTypeFloat32Array> precipitationRateArray = vtkTypeFloat32Array::SafeDownCast(
+		vtkSmartPointer<vtkFloatArray> precipitationRateArray = vtkFloatArray::SafeDownCast(
 		            abstractPrecipitationRateArray);
 		double currentPrecipitationRate = precipitationRateArray->GetValue(pointIndex);
 
@@ -64,7 +64,7 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 	}
 	case Data::TEMPERATURE: {
 		vtkSmartPointer<vtkDataArray> abstractTemperatureArray = pointData->GetArray("temperatures");
-		vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(
+		vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
 		            abstractTemperatureArray);
 		double currentTemperature = temperatureArray->GetValue(pointIndex);
 
@@ -89,12 +89,12 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 	}
 	case Data::WIND: {
 		vtkSmartPointer<vtkDataArray> abstractVelocitiesArray = pointData->GetArray("speeds");
-		vtkSmartPointer<vtkTypeFloat32Array> velocitiesArray = vtkTypeFloat32Array::SafeDownCast(
+		vtkSmartPointer<vtkFloatArray> velocitiesArray = vtkFloatArray::SafeDownCast(
 		            abstractVelocitiesArray);
 		double currentVelocity = velocitiesArray->GetValue(pointIndex);
 
 		vtkSmartPointer<vtkDataArray> abstractBearingsArray = pointData->GetArray("directions");
-		vtkSmartPointer<vtkTypeFloat32Array> bearingsArray = vtkTypeFloat32Array::SafeDownCast(
+		vtkSmartPointer<vtkFloatArray> bearingsArray = vtkFloatArray::SafeDownCast(
 		            abstractBearingsArray);
 		double currentBearing = bearingsArray->GetValue(pointIndex);
 
@@ -122,7 +122,7 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 	}
 	case Data::CLOUD_COVERAGE: {
 		vtkSmartPointer<vtkDataArray> abstractCoverageArray = pointData->GetArray("cloudCovers");
-		vtkSmartPointer<vtkTypeFloat32Array> coverageArray = vtkTypeFloat32Array::SafeDownCast(
+		vtkSmartPointer<vtkFloatArray> coverageArray = vtkFloatArray::SafeDownCast(
 		            abstractCoverageArray);
 		double currentCoverage = coverageArray->GetValue(pointIndex);
 
@@ -164,8 +164,8 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
 	switch (this->dataType) {
 	case Data::PRECIPITATION: {
 		// Create the array that will hold the aggregated precipitation amounts
-		vtkSmartPointer<vtkTypeFloat32Array> aggregatedPrecipitationAmounts =
-		    vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> aggregatedPrecipitationAmounts =
+		    vtkSmartPointer<vtkFloatArray>::New();
 		aggregatedPrecipitationAmounts->SetNumberOfComponents(1);
 		aggregatedPrecipitationAmounts->SetNumberOfTuples(this->aggregatedData.size());
 		aggregatedPrecipitationAmounts->SetName("Accumulated Precipitation Amounts");
@@ -194,8 +194,8 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
 	}
 	case Data::TEMPERATURE: {
 		// Create the array that will hold the aggregated temperatures
-		vtkSmartPointer<vtkTypeFloat32Array> aggregatedTemperatures =
-		    vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> aggregatedTemperatures =
+		    vtkSmartPointer<vtkFloatArray>::New();
 		aggregatedTemperatures->SetNumberOfComponents(1);
 		aggregatedTemperatures->SetNumberOfTuples(this->aggregatedData.size());
 		aggregatedTemperatures->SetName("Average Temperatures");
@@ -223,21 +223,21 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
 	}
 	case Data::WIND: {
 		// Create the array that will hold the aggregated wind speeds
-		vtkSmartPointer<vtkTypeFloat32Array> aggregatedSpeeds = vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> aggregatedSpeeds = vtkSmartPointer<vtkFloatArray>::New();
 		aggregatedSpeeds->SetNumberOfComponents(1);
 		aggregatedSpeeds->SetNumberOfTuples(this->aggregatedData.size());
 		aggregatedSpeeds->SetName("Average Wind Speeds");
 
 		// Create the array that will hold the aggregated wind bearings
-		vtkSmartPointer<vtkTypeFloat32Array> aggregatedDirections =
-		    vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> aggregatedDirections =
+		    vtkSmartPointer<vtkFloatArray>::New();
 		aggregatedDirections->SetNumberOfComponents(1);
 		aggregatedDirections->SetNumberOfTuples(this->aggregatedData.size());
 		aggregatedDirections->SetName("Average Wind Directions");
 
 		// Create the array that will hold the aggregated wind velocity vectors
-		vtkSmartPointer<vtkTypeFloat32Array> aggregatedVelocities =
-		    vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> aggregatedVelocities =
+		    vtkSmartPointer<vtkFloatArray>::New();
 		aggregatedVelocities->SetNumberOfComponents(3);
 		aggregatedVelocities->SetNumberOfTuples(this->aggregatedData.size());
 		aggregatedVelocities->SetName("velocity");
@@ -282,8 +282,8 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
 	}
 	case Data::CLOUD_COVERAGE: {
 		// Create the array that will hold the aggregated cloud coverage values
-		vtkSmartPointer<vtkTypeFloat32Array> aggregatedCoverageValues =
-		    vtkSmartPointer<vtkTypeFloat32Array>::New();
+		vtkSmartPointer<vtkFloatArray> aggregatedCoverageValues =
+		    vtkSmartPointer<vtkFloatArray>::New();
 		aggregatedCoverageValues->SetNumberOfComponents(1);
 		aggregatedCoverageValues->SetNumberOfTuples(this->aggregatedData.size());
 		aggregatedCoverageValues->SetName("Average Cloud Coverage Values");
