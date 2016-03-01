@@ -318,20 +318,21 @@
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
-            <IntVectorProperty
-                name="Author matching mode"
-                command="setAuthorMatchingMode"
-                number_of_elements="1"
-                default_values="0">
-                <EnumerationDomain name="enum">
-                    <Entry value="0" text="Containing"/>
-                    <Entry value="1" text="Matching"/>
+            <IntVectorProperty name="AuthorMatchingMode"
+              label="Author matching mode"
+              command="setAuthorMatchingMode"
+              number_of_elements="1"
+              default_values="0">
+              <EnumerationDomain name="enum">
+                <Entry value="0" text="Containing"/>
+                <Entry value="1" text="Matching"/>
                 </EnumerationDomain>
                 <Documentation>
-                    This property indicates the matching mode for authors.
-                </Documentation>
-            </IntVectorProperty>
-            <StringVectorProperty name="Authors (comma-separated)"
+                This property indicates the matching mode for authors.
+                 </Documentation>
+             </IntVectorProperty>
+            <StringVectorProperty name="Authors"
+                label="Authors (comma-separated)"
                 command="setAuthors"
                 number_of_elements="1"
                 default_values=""
