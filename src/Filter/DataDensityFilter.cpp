@@ -34,18 +34,10 @@
 
 #include <sstream>
 
-DataDensityFilter::DataDensityFilter() {
-	//take this transformation, true -> it transforms per default
-
-	Locator = vtkSmartPointer<vtkPointLocator>::New();
-	Locator->SetTolerance(toleranceValue);
-
-
-}
+DataDensityFilter::DataDensityFilter() {}
 
 void DataDensityFilter::setToleranceValue(int newTolerance) {
 	toleranceValue = newTolerance;
-	Locator->SetTolerance(toleranceValue);
 	this->Modified();
 }
 
@@ -69,12 +61,8 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
-
-
 	//-------------------------------------------------------
 	// Get the actual objects from the obtained information
-
-	//vtkDataObject* input = vtkDataObject::GetData(inputVector[0]);
 	vtkDataSet* input = vtkDataSet::SafeDownCast(
 	                        inInfo->Get(vtkDataObject::DATA_OBJECT()));
 	vtkUnstructuredGrid* output = vtkUnstructuredGrid::SafeDownCast(
@@ -158,9 +146,15 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 
 
 
-	vtkIdType num = input->GetNumberOfPoints();
+	vtkIdType num = centroids->GetNumberOfPoints();
+
 	output->Allocate(num);
 	output->SetPoints(centroids);
+
+
+
+
+
 	output->Squeeze();
 
 	return 1;
