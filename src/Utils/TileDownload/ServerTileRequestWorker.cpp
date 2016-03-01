@@ -1,10 +1,9 @@
 #include <Utils/TileDownload/ServerTileRequestWorker.hpp>
 #include <Utils/TileDownload/ImageCache.hpp>
 
-ServerTileRequestWorker::ServerTileRequestWorker(QSet<QString> layers,
-        OnTileFetched onTileFetched,
-        OnTileFetchFailed onTileFetchFailed)
-	: TileRequestWorker(layers, onTileFetched, onTileFetchFailed) {
+ServerTileRequestWorker::ServerTileRequestWorker(QSet<QString> layers, OnTileFetched onTileFetched,
+        OnTileFetchFailed onTileFetchFailed, QString configFile)
+	: TileRequestWorker(layers, onTileFetched, onTileFetchFailed, configFile) {
 	this->cacheRetrievalThread = std::thread(&ServerTileRequestWorker::cacheRetrievalLoop, this);
 }
 

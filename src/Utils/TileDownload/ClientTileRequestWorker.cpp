@@ -9,8 +9,8 @@
 
 ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
         TileRequestWorker::OnTileFetched onTileFetched,
-        TileRequestWorker::OnTileFetchFailed onTileFetchFailed)
-	: TileRequestWorker(layers, onTileFetched, onTileFetchFailed) {
+        TileRequestWorker::OnTileFetchFailed onTileFetchFailed, QString configFile)
+	: TileRequestWorker(layers, onTileFetched, onTileFetchFailed, configFile) {
 	QObject::connect(
 	    &this->networkManager, SIGNAL(finished(QNetworkReply*)),
 	    this, SLOT(downloadFinished(QNetworkReply*))

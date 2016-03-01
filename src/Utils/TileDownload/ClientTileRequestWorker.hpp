@@ -50,9 +50,11 @@ public:
 	 * @param layers            the ImageTile layers to fetch
 	 * @param onTileFetched     callback that will be called when a tile was successfully loaded
 	 * @param onTileFetchFailed callback that will be called on fetching failures
+	 * @param configFile        path to the JSON file from which to read the layer config
 	 */
 	ClientTileRequestWorker(QSet<QString> layers, TileRequestWorker::OnTileFetched onTileFetched,
-	                        TileRequestWorker::OnTileFetchFailed onTileFetchFailed);
+	                        TileRequestWorker::OnTileFetchFailed onTileFetchFailed,
+	                        QString configFile = "./res/layers.json");
 
 	virtual ~ClientTileRequestWorker();
 

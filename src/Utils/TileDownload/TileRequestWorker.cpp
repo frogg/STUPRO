@@ -7,8 +7,9 @@
 
 TileRequestWorker::TileRequestWorker(QSet<QString> layers,
                                      OnTileFetched onTileFetched,
-                                     OnTileFetchFailed onTileFetchFailed)
-	: layerConfig(ConfigUtil::loadConfigFile("./res/layers.json")),
+                                     OnTileFetchFailed onTileFetchFailed,
+                                     QString configFile)
+	: layerConfig(ConfigUtil::loadConfigFile(configFile)),
 	  layers(layers),
 	  onTileFetched(onTileFetched),
 	  onTileFetchFailed(onTileFetchFailed),
