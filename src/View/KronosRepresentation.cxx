@@ -15,6 +15,7 @@
 vtkStandardNewMacro(KronosRepresentation);
 //----------------------------------------------------------------------------
 KronosRepresentation::KronosRepresentation() {
+	this->error = false;
 	//Set nummber of input connections.
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(0);
