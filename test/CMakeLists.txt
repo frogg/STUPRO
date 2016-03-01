@@ -79,6 +79,12 @@ if(NOT ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${TEST_BIN_DIR}"))
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/res ${TEST_BIN_DIR}/res
     )
+    # copy over the test server folder after each vuild
+    add_custom_command(
+        TARGET UnitTester
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test-server ${TEST_BIN_DIR}/test-server
+    )
     # delete the resource folder when executing make clean
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${TEST_BIN_DIR}/res")
 endif()
