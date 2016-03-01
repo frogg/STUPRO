@@ -17,8 +17,8 @@
 #include <vtkStringArray.h>
 #include <vtkAbstractArray.h>
 #include <vtkDataArray.h>
-#include <vtkTypeInt32Array.h>
-#include <vtkTypeFloat32Array.h>
+#include <vtkIntArray.h>
+#include <vtkFloatArray.h>
 #include <vtkDoubleArray.h>
 
 TEST(TestJsonReader, ReadCityData) {
@@ -155,7 +155,7 @@ TEST(TestJsonReader, WriteCitiesToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
 	        ->GetArray("priorities");
 	ASSERT_TRUE(abstractPriorityArray);
-	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
 	            abstractPriorityArray
 	        );
 	ASSERT_TRUE(priorityArray);
@@ -202,11 +202,87 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 	    destinationArray->GetTuple2(0)[1]
 	);
 
+	// Test the associated array of origin airport codes
+	vtkSmartPointer<vtkAbstractArray> abstractOriginAirportCodesArray = polyData->GetPointData()
+	        ->GetAbstractArray("originAirportCodes");
+	ASSERT_TRUE(abstractOriginAirportCodesArray);
+	vtkSmartPointer<vtkStringArray> originAirportCodesArray = vtkStringArray::SafeDownCast(
+	            abstractOriginAirportCodesArray
+	        );
+	ASSERT_TRUE(originAirportCodesArray);
+
+	EXPECT_EQ(
+	    1,
+	    originAirportCodesArray->GetNumberOfValues()
+	);
+
+	EXPECT_EQ(
+	    "DXB",
+	    originAirportCodesArray->GetValue(0)
+	);
+
+	// Test the associated array of destination airport codes
+	vtkSmartPointer<vtkAbstractArray> abstractDestinationAirportCodesArray = polyData->GetPointData()
+	        ->GetAbstractArray("destinationAirportCodes");
+	ASSERT_TRUE(abstractDestinationAirportCodesArray);
+	vtkSmartPointer<vtkStringArray> destinationAirportCodesArray = vtkStringArray::SafeDownCast(
+	            abstractDestinationAirportCodesArray
+	        );
+	ASSERT_TRUE(destinationAirportCodesArray);
+
+	EXPECT_EQ(
+	    1,
+	    destinationAirportCodesArray->GetNumberOfValues()
+	);
+
+	EXPECT_EQ(
+	    "LAX",
+	    destinationAirportCodesArray->GetValue(0)
+	);
+
+	// Test the associated array of airline names
+	vtkSmartPointer<vtkAbstractArray> abstractAirlineArray = polyData->GetPointData()
+	        ->GetAbstractArray("airlines");
+	ASSERT_TRUE(abstractAirlineArray);
+	vtkSmartPointer<vtkStringArray> airlineArray = vtkStringArray::SafeDownCast(
+	            abstractAirlineArray
+	        );
+	ASSERT_TRUE(airlineArray);
+
+	EXPECT_EQ(
+	    1,
+	    airlineArray->GetNumberOfValues()
+	);
+
+	EXPECT_EQ(
+	    "Lufthansa",
+	    airlineArray->GetValue(0)
+	);
+
+	// Test the associated array of flight lengths
+	vtkSmartPointer<vtkDataArray> abstractFlightLengthArray = polyData->GetPointData()
+	        ->GetArray("flightLengths");
+	ASSERT_TRUE(abstractFlightLengthArray);
+	vtkSmartPointer<vtkFloatArray> flightLengthArray = vtkFloatArray::SafeDownCast(
+	            abstractFlightLengthArray
+	        );
+	ASSERT_TRUE(flightLengthArray);
+
+	EXPECT_EQ(
+	    1,
+	    flightLengthArray->GetNumberOfComponents()
+	);
+
+	EXPECT_FLOAT_EQ(
+	    12380.654,
+	    flightLengthArray->GetValue(0)
+	);
+
 	// Test the associated array of data point priorities
 	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
 	        ->GetArray("priorities");
 	ASSERT_TRUE(abstractPriorityArray);
-	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
 	            abstractPriorityArray
 	        );
 	ASSERT_TRUE(priorityArray);
@@ -271,7 +347,7 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractTimestampArray = polyData->GetPointData()
 	        ->GetArray("timestamps");
 	ASSERT_TRUE(abstractTimestampArray);
-	vtkSmartPointer<vtkTypeInt32Array> timestampArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
 	            abstractTimestampArray
 	        );
 	ASSERT_TRUE(timestampArray);
@@ -290,7 +366,7 @@ TEST(TestJsonReader, WriteTweetsToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
 	        ->GetArray("priorities");
 	ASSERT_TRUE(abstractPriorityArray);
-	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
 	            abstractPriorityArray
 	        );
 	ASSERT_TRUE(priorityArray);
@@ -317,7 +393,7 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractPrecipitationRateArray = polyData->GetPointData()
 	        ->GetArray("precipitationRates");
 	ASSERT_TRUE(abstractPrecipitationRateArray);
-	vtkSmartPointer<vtkTypeFloat32Array> precipitationRateArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> precipitationRateArray = vtkFloatArray::SafeDownCast(
 	            abstractPrecipitationRateArray
 	        );
 	ASSERT_TRUE(precipitationRateArray);
@@ -335,7 +411,7 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	// Test the associated array of precipitation types
 	vtkSmartPointer<vtkDataArray> abstractPrecipitationTypeArray = polyData->GetPointData()
 	        ->GetArray("precipitationTypes");
-	vtkSmartPointer<vtkTypeInt32Array> precipitationTypeArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(
 	            abstractPrecipitationTypeArray
 	        );
 	ASSERT_TRUE(precipitationTypeArray);
@@ -349,7 +425,7 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractTimestampArray = polyData->GetPointData()
 	        ->GetArray("timestamps");
 	ASSERT_TRUE(abstractTimestampArray);
-	vtkSmartPointer<vtkTypeInt32Array> timestampArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
 	            abstractTimestampArray
 	        );
 	ASSERT_TRUE(timestampArray);
@@ -368,7 +444,7 @@ TEST(TestJsonReader, WritePrecipitationToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
 	        ->GetArray("priorities");
 	ASSERT_TRUE(abstractPriorityArray);
-	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
 	            abstractPriorityArray
 	        );
 	ASSERT_TRUE(priorityArray);
@@ -395,7 +471,7 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractTemperatureArray = polyData->GetPointData()
 	        ->GetArray("temperatures");
 	ASSERT_TRUE(abstractTemperatureArray);
-	vtkSmartPointer<vtkTypeFloat32Array> temperatureArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
 	            abstractTemperatureArray
 	        );
 	ASSERT_TRUE(temperatureArray);
@@ -414,7 +490,7 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractTimestampArray = polyData->GetPointData()
 	        ->GetArray("timestamps");
 	ASSERT_TRUE(abstractTimestampArray);
-	vtkSmartPointer<vtkTypeInt32Array> timestampArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
 	            abstractTimestampArray
 	        );
 	ASSERT_TRUE(timestampArray);
@@ -433,7 +509,7 @@ TEST(TestJsonReader, WriteTemperatureToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
 	        ->GetArray("priorities");
 	ASSERT_TRUE(abstractPriorityArray);
-	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
 	            abstractPriorityArray
 	        );
 	ASSERT_TRUE(priorityArray);
@@ -460,7 +536,7 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractSpeedsArray = polyData->GetPointData()
 	        ->GetArray("speeds");
 	ASSERT_TRUE(abstractSpeedsArray);
-	vtkSmartPointer<vtkTypeFloat32Array> speedsArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> speedsArray = vtkFloatArray::SafeDownCast(
 	            abstractSpeedsArray
 	        );
 	ASSERT_TRUE(speedsArray);
@@ -479,7 +555,7 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractDirectionsArray = polyData->GetPointData()
 	        ->GetArray("directions");
 	ASSERT_TRUE(abstractDirectionsArray);
-	vtkSmartPointer<vtkTypeFloat32Array> directionsArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> directionsArray = vtkFloatArray::SafeDownCast(
 	            abstractDirectionsArray
 	        );
 	ASSERT_TRUE(directionsArray);
@@ -498,7 +574,7 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractTimestampArray = polyData->GetPointData()
 	        ->GetArray("timestamps");
 	ASSERT_TRUE(abstractTimestampArray);
-	vtkSmartPointer<vtkTypeInt32Array> timestampArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
 	            abstractTimestampArray
 	        );
 	ASSERT_TRUE(timestampArray);
@@ -517,7 +593,7 @@ TEST(TestJsonReader, WriteWindToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
 	        ->GetArray("priorities");
 	ASSERT_TRUE(abstractPriorityArray);
-	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
 	            abstractPriorityArray
 	        );
 	ASSERT_TRUE(priorityArray);
@@ -544,7 +620,7 @@ TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractCoverageArray = polyData->GetPointData()
 	        ->GetArray("cloudCovers");
 	ASSERT_TRUE(abstractCoverageArray);
-	vtkSmartPointer<vtkTypeFloat32Array> coverageArray = vtkTypeFloat32Array::SafeDownCast(
+	vtkSmartPointer<vtkFloatArray> coverageArray = vtkFloatArray::SafeDownCast(
 	            abstractCoverageArray
 	        );
 	ASSERT_TRUE(coverageArray);
@@ -563,7 +639,7 @@ TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractTimestampArray = polyData->GetPointData()
 	        ->GetArray("timestamps");
 	ASSERT_TRUE(abstractTimestampArray);
-	vtkSmartPointer<vtkTypeInt32Array> timestampArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
 	            abstractTimestampArray
 	        );
 	ASSERT_TRUE(timestampArray);
@@ -582,7 +658,7 @@ TEST(TestJsonReader, WriteCloudCoverageToVtkPolyData) {
 	vtkSmartPointer<vtkDataArray> abstractPriorityArray = polyData->GetPointData()
 	        ->GetArray("priorities");
 	ASSERT_TRUE(abstractPriorityArray);
-	vtkSmartPointer<vtkTypeInt32Array> priorityArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
 	            abstractPriorityArray
 	        );
 	ASSERT_TRUE(priorityArray);

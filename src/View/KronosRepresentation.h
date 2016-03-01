@@ -23,9 +23,9 @@
 class VTK_EXPORT KronosRepresentation : public vtkGeometryRepresentationWithFaces
 {
 public:
-  static KronosRepresentation* New();
+	static KronosRepresentation* New();
 
-  vtkTypeMacro(KronosRepresentation, vtkGeometryRepresentationWithFaces);
+	vtkTypeMacro(KronosRepresentation, vtkGeometryRepresentationWithFaces);
 
   void PrintSelf(ostream& os, vtkIndent indent) override;
   /**

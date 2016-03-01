@@ -1,9 +1,32 @@
 {
   "globe": {
-    "radius": 100.0,
-    "planeSize": 1.0,
-    "heightFactor": 0.05,
-    "transitionEffectSpeed": 2.0
+    "radius": 1.0,
+    "flatMapSize" : {
+      "width": 4.0,
+      "height": 2.0
+    },
+    "earthRadius": 6367444.7,
+    "internalPlaneSize": 1.0,
+    "heightFactor": 10.0,
+    "transitionEffectSpeed": 0.125,
+    "tilePoolSize": 64,
+    "timerDelay": 17,
+    "terrainHeightFilter" : {
+      "heightmapZoomLevel": 1
+    },
+    "zoom": {
+      "nearDistance": 1.05,
+      "nearZoom": 5,
+      "farDistance": 7.5,
+      "farZoom": 0,
+      "expScale": 6.0
+    },
+    "lod": {
+      "minimumHeightDifference": 20.0,
+      "minimumResolution": 16,
+      "maximumHeightDifference": 500.0,
+      "maximumResolution": 128
+    }
   },
   "dataReader": {
     "maximumPriority": 10,

@@ -3,7 +3,7 @@
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkDataArray.h>
-#include <vtkTypeInt32Array.h>
+#include <vtkIntArray.h>
 #include <vtkPointData.h>
 #include <vtkInformation.h>
 
@@ -24,7 +24,7 @@ void testDataSet(vtkSmartPointer<vtkUnstructuredGrid> dataSet, int expectedPoint
 	// Extract the array of precipitation types and check its type and size
 	vtkSmartPointer<vtkDataArray> abstractPrecipitationTypeArray = dataSet->GetPointData()
 	        ->GetArray("precipitationTypes");
-	vtkSmartPointer<vtkTypeInt32Array> precipitationTypeArray = vtkTypeInt32Array::SafeDownCast(
+	vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(
 	            abstractPrecipitationTypeArray);
 	ASSERT_TRUE(precipitationTypeArray);
 	ASSERT_EQ(expectedPointAmount, precipitationTypeArray->GetNumberOfTuples());
@@ -52,6 +52,7 @@ TEST(TestPrecipitationTypeFilter, TestFilter) {
 	vtkSmartPointer<PrecipitationTypeFilter> filter = PrecipitationTypeFilter::New();
 	filter->SetInputData(0, inputDataSet);
 	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::PRECIPITATION);
+	filter->GetInputInformation()->Set(Data::VTK_DATA_STATE(), Data::RAW);
 	filter->Update();
 
 	// Test the filter's output without excluding any precipitation type

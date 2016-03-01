@@ -1,22 +1,22 @@
 <ServerManagerConfiguration>
 	<ProxyGroup name="views">
 		<!-- Register the view using the corresponding class. -->
-		<StuproViewProxy name="StuproView"
-			class="vtkPVStuproView"
+		<KronosViewProxy name="KronosView"
+			class="KronosView"
 			label="Kronos View"
 			processes="client|renderserver|dataserver"
 			base_proxygroup="views"
 			base_proxyname="RenderView">
 
-		<!--
-		Adds a button to the property-panel to switch the display mode.
-		The command-attribute has to be a method in the view-class.
-		-->
-		<Property name="SwitchCurrentDisplaymode"
-			animateable="1"
-			command="switchCurrentDisplayMode" />
-    </StuproViewProxy>
-  </ProxyGroup>
+			<!--
+			Adds a button to the property-panel to switch the display mode.
+			The command-attribute has to be a method in the view-class.
+			-->
+			<Property name="SwitchCurrentDisplaymode"
+				animateable="1"
+				command="switchCurrentDisplayMode" />
+	    </KronosViewProxy>
+	  </ProxyGroup>
     <ProxyGroup name="representations">
         <RepresentationProxy name="Meta Info Representation"
             class="KronosRepresentation"
@@ -37,12 +37,12 @@
              </PropertyGroup>
 
         </RepresentationProxy>
-        
+
         <Extension name="GeometryRepresentation">
             <!-- this adds to what is already defined in PVRepresentationBase to the Kronos Representation -->
             <RepresentationType subproxy="Meta Info Representation"
             text="Meta Infos Representation" subtype="Surface" />
-            
+
             <SubProxy>
                 <Proxy name="Meta Info Representation"
                     proxygroup="representations" proxyname="Meta Info Representation">
@@ -52,7 +52,7 @@
                     <Exception name="Visibility" />
                     <Exception name="Representation" />
                 </ShareProperties>
-                
+
             </SubProxy>
         </Extension>
     </ProxyGroup>

@@ -2,6 +2,7 @@
 #define KRONOS_UTILS_KRONOS_LOGGER_HPP
 
 #include <iostream>
+#include <QString>
 
 // #define KRONOS_LOG_FILE_NAMES
 #define KRONOS_ENABLE_LOGGING
@@ -41,7 +42,11 @@ inline void kronos_log(const char* debugLevel, const char* function, const char*
                        const char* message, Args... args) {
 	char formatted[KRONOS_MAX_LOG_MSG_LENGTH];
 
-	sprintf(formatted, message, args...);
+#ifndef _MSC_VER
+	snprintf(formatted, KRONOS_MAX_LOG_MSG_LENGTH, message, args...);
+#else
+	sprintf_s(formatted, KRONOS_MAX_LOG_MSG_LENGTH, message, args...);
+#endif
 
 	std::cout << debugLevel << " "
 	          << function
@@ -50,6 +55,12 @@ inline void kronos_log(const char* debugLevel, const char* function, const char*
 #endif
 	          << ": " << formatted
 	          << COLOR_DEFAULT << std::endl;
+};
+
+template<typename... Args>
+inline void kronos_log(const char* debugLevel, const char* function, const char* file, int line,
+                       const QString message, Args... args) {
+	kronos_log(debugLevel, function, file, line, message.toStdString().c_str(), args...);
 };
 
 #ifdef KRONOS_ENABLE_LOGGING
@@ -67,5 +78,31 @@ inline void kronos_log(const char* debugLevel, const char* function, const char*
 	#define KRONOS_LOG_ERROR(message, ...) /* */
 	#define KRONOS_LOG_FATAL(message, ...) /* */
 #endif
+
+#ifdef __GNUC__
+#include <execinfo.h>
+#include <signal.h>
+#include <unistd.h>
+
+inline void handleSegfault(int sig) {
+	int items = 10;
+	void* array[items];
+	size_t size;
+
+	size = backtrace(array, items);
+
+	fprintf(stderr, "Error: signal %d:\n", sig);
+
+	backtrace_symbols_fd(array, size, STDERR_FILENO);
+	exit(1);
+}
+#endif
+
+inline void registerSegfaultHandler() {
+#ifdef __GNUC__
+	signal(SIGSEGV, handleSegfault);
+	KRONOS_LOG_INFO("Registered segfault handler");
+#endif
+}
 
 #endif

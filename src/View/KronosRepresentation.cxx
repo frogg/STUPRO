@@ -181,14 +181,14 @@ int KronosRepresentation::FillInputPortInformation(int port, vtkInformation *inf
 }
 //----------------------------------------------------------------------------
 void KronosRepresentation::fail(QString message) {
-    vtkErrorMacro( << message.toStdString());
-    this->error = true;
+	vtkErrorMacro( << message.toStdString());
+	this->error = true;
 }
 //----------------------------------------------------------------------------
-void KronosRepresentation::PrintSelf(ostream& os, vtkIndent indent)
-{
-    //Print superclass
-    this->Superclass::PrintSelf(os, indent);
-    os << indent << "Representation for Data read by the Kronosreader. This class is part of the Kronos Project." <<
+void KronosRepresentation::PrintSelf(ostream& os, vtkIndent indent) {
+	//Print superclass
+	this->Superclass::PrintSelf(os, indent);
+	os << indent <<
+	   "Representation for Data read by the Kronosreader. This class is part of the Kronos Project." <<
 	   endl;
 }
