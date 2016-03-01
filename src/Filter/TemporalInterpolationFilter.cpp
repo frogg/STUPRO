@@ -72,7 +72,7 @@ int TemporalInterpolationFilter::RequestInformation (
 	}
 
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
-    vtkInformation* outInfo = outputVector->GetInformationObject(0);
+	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
 		this->dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
@@ -105,7 +105,7 @@ int TemporalInterpolationFilter::RequestInformation (
 		return 0;
 	}
 
-    // Check the meta information containing the data's state
+	// Check the meta information containing the data's state
 	if (vtkExecutive::CONSUMERS()->Length(outInfo) == 0) {
 		if (inInfo->Has(Data::VTK_DATA_STATE())) {
 			Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
