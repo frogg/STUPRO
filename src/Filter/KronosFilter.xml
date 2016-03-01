@@ -498,7 +498,7 @@
                   </RequiredProperties>
               </ArrayRangeDomain>
               <Documentation>
-                  The upper and lower SO2 limits respectively
+                  The upper and lower Altitude limits respectively
               </Documentation>
           </DoubleVectorProperty>
 
@@ -537,7 +537,85 @@
                   </RequiredProperties>
               </ArrayRangeDomain>
               <Documentation>
-                  The upper and lower SO2 limits respectively
+                  The upper and lower Orbit limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectDetection"
+              number_of_elements="5"
+              default_values="detection">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setDetectionThreshold"
+              default_values="0 0"
+              label="Detection"
+              name="DetectionRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectDetection" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Detection limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectProfile"
+              number_of_elements="5"
+              default_values="profile_id">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setProfileThreshold"
+              default_values="0 0"
+              label="Profile"
+              name="ProfileRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectProfile" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Profile limits respectively
               </Documentation>
           </DoubleVectorProperty>
 
@@ -550,12 +628,20 @@
           <PropertyGroup label="Orbit">
               <Property name="OrbitRange" />
            </PropertyGroup>
+           <PropertyGroup label="Detection">
+             <Property name="DetectionRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Profile">
+            <Property name="ProfileRange" />
+          </PropertyGroup>
 
           <Hints>
               <ShowInMenu category="SciVis"/>
               <Property name="SelectTime" show="0"/>
               <Property name="SelectAltitude" show="0"/>
               <Property name="SelectOrbit" show="0"/>
+              <Property name="SelectDetection" show="0"/>
+              <Property name="SelectProfile" show="0" />
           </Hints>
       </SourceProxy>
 
@@ -693,7 +779,7 @@
                     </RequiredProperties>
                 </ArrayRangeDomain>
                 <Documentation>
-                    The upper and lower SO2 limits respectively
+                    The upper and lower Ash limits respectively
                 </Documentation>
             </DoubleVectorProperty>
 

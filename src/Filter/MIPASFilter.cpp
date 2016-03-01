@@ -16,6 +16,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkFloatArray.h>
 #include <vtkUnsignedIntArray.h>
+#include <vtkUnsignedCharArray.h>
 
 
 vtkStandardNewMacro(MIPASFilter);
@@ -43,6 +44,12 @@ bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 	vtkSmartPointer<vtkUnsignedIntArray> orbitArray = vtkUnsignedIntArray::SafeDownCast(
 	            pointData->GetAbstractArray("orbit_id"));
 
+	vtkSmartPointer<vtkUnsignedCharArray> profileArray = vtkUnsignedCharArray::SafeDownCast(
+	            pointData->GetAbstractArray("profile_id"));
+
+	vtkSmartPointer<vtkUnsignedCharArray> detectionArray = vtkUnsignedCharArray::SafeDownCast(
+	            pointData->GetAbstractArray("detection"));
+
 	if (!timeArray || !altitudeArray || !orbitArray) {
 		this->fail("One of the arrays (\"time\", \"altitude\" or \"orbit_id\") seems to be invalid or missing.");
 		return 0;
@@ -51,10 +58,14 @@ bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 	double time = timeArray->GetTuple1(pointIndex);
 	float altitude = altitudeArray->GetTuple1(pointIndex);
 	int orbit = orbitArray->GetTuple1(pointIndex);
+	char detection = detectionArray->GetTuple1(pointIndex);
+	char profile = profileArray->GetTuple1(pointIndex);
 
 	return (this->lowerTimeLimit <= time && time <= this->upperTimeLimit)
 	       && (this->lowerAltitudeLimit <= altitude && altitude <= this->upperAltitudeLimit) &&
-	       (this->lowerOrbitLimit <= orbit && orbit <= this->upperOrbitLimit);
+	       (this->lowerOrbitLimit <= orbit && orbit <= this->upperOrbitLimit)
+	       && (this->lowerDetectionLimit <= detection && detection <= this->upperDetectionLimit)
+	       && (this->lowerProfileLimit <= profile && profile <= this->upperProfileLimit);
 }
 
 void MIPASFilter::SetInputConnection(vtkAlgorithmOutput* input) {
@@ -76,5 +87,17 @@ void MIPASFilter::setAltitudeThreshold(float lowerLimit, float upperLimit ) {
 void MIPASFilter::setOrbitThreshold(float lowerLimit, float upperLimit) {
 	this->lowerOrbitLimit = lowerLimit;
 	this->upperOrbitLimit = upperLimit;
+	this->Modified();
+}
+
+void MIPASFilter::setDetectionThreshold(double lowerLimit, double upperLimit) {
+	this->lowerDetectionLimit = lowerLimit;
+	this->upperDetectionLimit = upperLimit;
+	this->Modified();
+}
+
+void MIPASFilter::setProfileThreshold(double lowerLimit, double upperLimit) {
+	this->lowerProfileLimit = lowerLimit;
+	this->upperProfileLimit = upperLimit;
 	this->Modified();
 }

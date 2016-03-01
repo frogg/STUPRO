@@ -47,7 +47,19 @@ public:
 	*/
 	void setOrbitThreshold(float lowerLimit, float upperLimit);
 
+	/**
+	* This Method sets the min and max values of the Detection Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setDetectionThreshold(double lowerLimit, double upperLimit);
 
+	/**
+	* This Method sets the min and max values of the Profile Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setProfileThreshold(double lowerLimit, double upperLimit);
 	int RequestInformation(vtkInformation* request,
 	                       vtkInformationVector** inputVector,
 	                       vtkInformationVector* outputVector) override;
@@ -93,6 +105,27 @@ private:
 	 * the lower Limit for the Orbit Index
 	 */
 	float lowerOrbitLimit;
+
+	/**
+	 * the upper Limit for the Detection
+	 */
+	double upperDetectionLimit;
+
+	/**
+	 * the lower Limit for the Detection
+	 */
+	double lowerDetectionLimit;
+
+
+	/**
+	 * the upper Limit for the profile index
+	 */
+	double upperProfileLimit;
+
+	/**
+	 * the lower Limit for the profile index
+	 */
+	double lowerProfileLimit;
 
 };
 
