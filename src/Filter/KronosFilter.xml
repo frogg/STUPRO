@@ -104,10 +104,11 @@
                 <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
-        <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
+
+        <SourceProxy name="HeatmapDensityFilter" class="HeatmapDensityFilter" label="Heatmap Density Filter">
             <Documentation
-                long_help="This filter can limit temperature data points to a specified temperature range"
-                short_help="Limit temperature data to a specified temperature range">
+                long_help="This filter can interpolate group points and return the data."
+                short_help="This filter can interpolate group points and return the data">
             </Documentation>
             <InputProperty
                 name="Input"
@@ -117,6 +118,45 @@
                     <Group name="filters"/>
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkPointSet"/>
+                    <DataType value="vtkImageData"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <IntVectorProperty name="Horizontal"
+                label="Horizontal"
+                command="setHorizontalHeatmapResolution"
+                number_of_elements="1"
+                default_values="64">
+            </IntVectorProperty>
+            <IntVectorProperty name="Vertical"
+                label="Vertical"
+                command="setVerticalHeatmapResolution"
+                number_of_elements="1"
+                default_values="64">
+            </IntVectorProperty>
+            <PropertyGroup label="Density Map Resolution">
+                <Property name="Horizontal" />
+                <Property name="Vertical" />
+            </PropertyGroup>
+	    <Hints>
+		          <ShowInMenu category="Kronos" />
+	    </Hints>
+        </SourceProxy>
+    
+    <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
+        <Documentation
+            long_help="This filter can limit temperature data points to a specified temperature range"
+            short_help="Limit temperature data to a specified temperature range">
+        </Documentation>
+        <InputProperty
+            name="Input"
+            command="SetInputConnection">
+            <ProxyGroupDomain name="groups">
+                <Group name="sources"/>
+                <Group name="filters"/>
+            </ProxyGroupDomain>
+            <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
@@ -261,8 +301,8 @@
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
-            <IntVectorProperty
-              name="Author matching mode"
+            <IntVectorProperty name="AuthorMatchingMode"
+              label="Author matching mode"
               command="setAuthorMatchingMode"
               number_of_elements="1"
               default_values="0">
@@ -274,27 +314,72 @@
                 This property indicates the matching mode for authors.
                  </Documentation>
              </IntVectorProperty>
-            <StringVectorProperty name="Authors (comma-separated)"
+            <StringVectorProperty name="Authors"
+                label="Authors (comma-separated)"
                 command="setAuthors"
                 number_of_elements="1"
                 default_values=""
                 information_property="Authors whose tweets should be extracted">
             </StringVectorProperty>
-            <StringVectorProperty name="Keywords (comma-separated)"
+            <StringVectorProperty name="Keywords"
+                label="Keywords (comma-separated)"
                 command="setKeywords"
                 number_of_elements="1"
                 default_values=""
                 information_property="All tweets containing at least one of these keywords will be extracted">
             </StringVectorProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectRetweetInputScalars"
+                number_of_elements="5"
+                default_values="numberOfRetweets">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <DoubleVectorProperty command="setRetweetThreshold"
+                default_values="0 0"
+                label="Retweet Number Range"
+                name="RetweetNumberRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectRetweetInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower retweet number.
+                </Documentation>
+            </DoubleVectorProperty>
             <PropertyGroup label="Authors">
-                <Property name="Authors (comma-separated)" />
-                <Property name="Author matching mode" />
+                <Property name="Authors" />
+                <Property name="AuthorMatchingMode" />
             </PropertyGroup>
             <PropertyGroup label="Keywords">
-                <Property name="Keywords (comma-separated)" />
+                <Property name="Keywords" />
+            </PropertyGroup>
+            <PropertyGroup label="Retweet Threshold">
+                <Property name="SelectRetweetInputScalars" />
+                <Property name="RetweetNumberRange" />
             </PropertyGroup>
             <Hints>
                 <ShowInMenu category="Kronos" />
+                <Property name="SelectRetweetInputScalars" show="0"/>
             </Hints>
         </SourceProxy>
     <SourceProxy name="FlightFilter" class="FlightFilter" label="Kronos Flight Filter">
@@ -367,9 +452,6 @@
                 </RequiredProperties>
             </FieldDataDomain>
         </StringVectorProperty>
-        <Hints>
-            <Property name="SelectFlightInputScalars" show="0"/>
-        </Hints>
         <DoubleVectorProperty command="setFlightLengthThreshold"
             default_values="0 0"
             label="Flight Length Range"
@@ -401,6 +483,7 @@
         </PropertyGroup>
           <Hints>
             <ShowInMenu category="Kronos" />
+            <Property name="SelectFlightInputScalars" show="0"/>
         </Hints>
     </SourceProxy>
     </ProxyGroup>
@@ -408,6 +491,7 @@
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
             <Filter name="PrecipitationTypeFilter" />
+            <Filter name="TwitterHeatmapFilter" />
             <Filter name="FlightFilter" />
             <Filter name="TemporalAggregationFilter" />
             <Filter name="TemperatureThresholdFilter" />

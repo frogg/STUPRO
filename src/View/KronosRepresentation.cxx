@@ -32,6 +32,7 @@ KronosRepresentation::KronosRepresentation() {
 
 //----------------------------------------------------------------------------
 KronosRepresentation::~KronosRepresentation() {}
+
 //---------------------------------------------------------------------------
 int KronosRepresentation::RequestInformation(vtkInformation* request,
         vtkInformationVector** inputVector,
