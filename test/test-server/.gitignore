@@ -1,0 +1,3 @@
+# node things
+*.log
+node_modules
