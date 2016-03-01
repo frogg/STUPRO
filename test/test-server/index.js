@@ -34,28 +34,37 @@ delayRouter.get('/invalid', function(req, res) {
 });
 app.use('/delay', delayRouter);
 
-app.listen('3000', function() {
+app.use('/exit', function(req, res) {
+  res.end();
+  if (server) {
+    server.close();
+    console.log('Tile Server shut down');
+    process.exit();
+  }
+});
+
+var server = app.listen('3000', function() {
   console.log('Tile Server started successfully');
 });
 
 
 function sendSatelliteImage(res) {
   return function() {
-    res.set('Content-Type', 'image/png');
+    res.status(200).set('Content-Type', 'image/png');
     res.send(satelliteImage);
   }
 }
 
 function sendHeightmap(res) {
   return function() {
-    res.set('Content-Type', 'application/bil16');
+    res.status(200).set('Content-Type', 'application/bil16');
     res.send(heightmapImage);
   }
 }
 
 function sendInvalid(res) {
   return function() {
-    res.set('Content-Type', 'application/invalid');
+    res.status(200).set('Content-Type', 'application/invalid');
     res.send('invalid content');
   }
 }
