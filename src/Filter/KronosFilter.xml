@@ -499,140 +499,51 @@
                 </DataTypeDomain>
             </InputProperty>
 
-            <DoubleVectorProperty name="Starting Time"
-                command="setLower"
-                number_of_elements="1"
-                default_values="360029000.0">
-                <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectTimeAirs"
+                number_of_elements="5"
+                default_values="time">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <Hints>
+                <Property name="SelectTimeAirs" show="0"/>
+            </Hints>
+            <DoubleVectorProperty command="setTimeThreshold"
+                default_values="0 0"
+                label="Time"
+                name="TimeRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectTimeAirs" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower time limits respectively
+                </Documentation>
             </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Time"
-                command="setUpper"
-                number_of_elements="1"
-                default_values="360072000.0">
-                <DoubleRangeDomain name="range" min="360029000.0" max="360072000.0" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Starting Range SO2"
-                command="setLowerSO"
-                number_of_elements="1"
-                default_values="-2.20437">
-                <DoubleRangeDomain name="range" min="-2.20437" max="10.7381" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Range SO2"
-                command="setUpperSO"
-                number_of_elements="1"
-                default_values="10.7381">
-                <DoubleRangeDomain name="range" min="-2.20437" max="10.7381" />
-            </DoubleVectorProperty>
-
-            <DoubleVectorProperty name="Starting Range Ash"
-                command="setLowerAsh"
-                number_of_elements="1"
-                default_values="-7.53248">
-                <DoubleRangeDomain name="range" min="-7.53248" max="17.147" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Range Ash"
-                command="setUpperAsh"
-                number_of_elements="1"
-                default_values="17.147">
-                <DoubleRangeDomain name="range" min="-7.53248" max="17.147" />
-            </DoubleVectorProperty>
-
-            <PropertyGroup label="Time">
-                <Property name="Starting Time" />
-                <Property name="Ending Time" />
-            </PropertyGroup>
-            <PropertyGroup label="SO2 Index">
-                <Property name="Starting Range SO2" />
-                <Property name="Ending Range SO2" />
-            </PropertyGroup>
-            <PropertyGroup label="Ash Index">
-                <Property name="Starting Range Ash" />
-                <Property name="Ending Range Ash" />
-            </PropertyGroup>
-
-
             <Hints>
                 <ShowInMenu category="SciVis"/>
             </Hints>
         </SourceProxy>
-
-        <SourceProxy name="AIRSFilterPM" class="AIRSFilter" label="AIRSFilterPM">
-            <Documentation
-                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
-                short_help="Solve SciVis-Contest with this filter">
-            </Documentation>
-            <InputProperty
-                name="AIRS Input"
-                command="SetInputConnection">
-                <ProxyGroupDomain name="groups">
-                    <Group name="sources"/>
-                    <Group name="filters"/>
-                </ProxyGroupDomain>
-                <DataTypeDomain name="input_type">
-                    <DataType value="vtkPolyData"/>
-                    <DataType value="vtkCellData"/>
-                    <DataType value="vtkUnstructuredGrid"/>
-                    <DataType value="vtkPointSet"/>
-                </DataTypeDomain>
-            </InputProperty>
-
-            <DoubleVectorProperty name="Starting Time"
-                command="setLower"
-                number_of_elements="1"
-                default_values="3.60072e+08">
-                <DoubleRangeDomain name="range" min="3.60072e+08" max="3.60116e+08" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Time"
-                command="setUpper"
-                number_of_elements="1"
-                default_values="3.60116e+08">
-                <DoubleRangeDomain name="range" min="3.60072e+08" max="3.60116e+08" />
-            </DoubleVectorProperty>
-
-            <DoubleVectorProperty name="Starting Range SO2"
-                command="setLowerSO"
-                number_of_elements="1"
-                default_values="-2.93961">
-                <DoubleRangeDomain name="range" min="-2.93961" max="9.78427" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Range SO2"
-                command="setUpperSO"
-                number_of_elements="1"
-                default_values="9.78427">
-                <DoubleRangeDomain name="range" min="-2.93961" max="9.78427" />
-            </DoubleVectorProperty>
-
-            <DoubleVectorProperty name="Starting Range Ash"
-                command="setLowerAsh"
-                number_of_elements="1"
-                default_values="-4.07154">
-                <DoubleRangeDomain name="range" min="-4.07154" max="28.2891" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Range Ash"
-                command="setUpperAsh"
-                number_of_elements="1"
-                default_values="28.2891">
-                <DoubleRangeDomain name="range" min="-4.07154" max="28.2891" />
-            </DoubleVectorProperty>
-
-            <PropertyGroup label="Time">
-                <Property name="Starting Time" />
-                <Property name="Ending Time" />
-            </PropertyGroup>
-            <PropertyGroup label="SO2 Index">
-                <Property name="Starting Range SO2" />
-                <Property name="Ending Range SO2" />
-            </PropertyGroup>
-            <PropertyGroup label="Ash Index">
-                <Property name="Starting Range Ash" />
-                <Property name="Ending Range Ash" />
-            </PropertyGroup>
-
-            <Hints>
-                <ShowInMenu category="SciVis"/>
-            </Hints>
-        </SourceProxy>
-
 
         <SourceProxy name="CLaMSFilterPuyehue" class="CLaMSFilter" label="CLaMSFilterPuyehue">
             <Documentation
