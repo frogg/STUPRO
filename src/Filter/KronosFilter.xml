@@ -405,80 +405,161 @@
         </SourceProxy>
 
         <SourceProxy name="MIPASFilter" class="MIPASFilter" label="MIPASFilter">
-            <Documentation
-                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with MIPAS Data"
-                short_help="Solve SciVis-Contest with this filter">
-            </Documentation>
-            <InputProperty
-                name="Input"
-                command="SetInputConnection">
-                <ProxyGroupDomain name="groups">
-                    <Group name="sources"/>
-                    <Group name="filters"/>
-                </ProxyGroupDomain>
-                <DataTypeDomain name="input_type">
-                    <DataType value="vtkPolyData"/>
-                    <DataType value="vtkCellData"/>
-                    <DataType value="vtkUnstructuredGrid"/>
-                    <DataType value="vtkPointSet"/>
-                </DataTypeDomain>
-            </InputProperty>
+          <Documentation
+              long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with MIPAS Data"
+              short_help="Solve SciVis-Contest with this filter">
+          </Documentation>
+          <InputProperty
+              name="Input"
+              command="SetInputConnection">
+              <ProxyGroupDomain name="groups">
+                  <Group name="sources"/>
+                  <Group name="filters"/>
+              </ProxyGroupDomain>
+              <DataTypeDomain name="input_type">
+                  <DataType value="vtkPolyData"/>
+                  <DataType value="vtkCellData"/>
+                  <DataType value="vtkUnstructuredGrid"/>
+                  <DataType value="vtkPointSet"/>
+              </DataTypeDomain>
+          </InputProperty>
 
-            <DoubleVectorProperty name="Lowest Altitude"
-                command="setLowerAltitude"
-                number_of_elements="1"
-                default_values="4.516">
-                <DoubleRangeDomain name="range" min="4.516" max="30.0" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Highest Altitude"
-                command="setUpperAltitude"
-                number_of_elements="1"
-                default_values="30.0">
-                <DoubleRangeDomain name="range" min="4.516" max="30.0" />
-            </DoubleVectorProperty>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectTime"
+              number_of_elements="5"
+              default_values="time">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setTimeThreshold"
+              default_values="0 0"
+              label="Time"
+              name="TimeRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectTime" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower time limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
-            <IntVectorProperty name="Starting Range Orbit"
-                command="setLowerOrbit"
-                number_of_elements="1"
-                default_values="48379">
-                <IntRangeDomain name="range" min="48379" max="49701" />
-            </IntVectorProperty>
-            <IntVectorProperty name="Ending Range Orbit"
-                command="setUpperOrbit"
-                number_of_elements="1"
-                default_values="49701">
-                <IntRangeDomain name="range" min="48379" max="49701" />
-            </IntVectorProperty>
-            <DoubleVectorProperty name="Starting Time"
-                command="setLower"
-                number_of_elements="1"
-                default_values="360205000.0">
-                <DoubleRangeDomain name="range" min="360205000.0" max="368156000.0" />
-            </DoubleVectorProperty>
-            <DoubleVectorProperty name="Ending Time"
-                command="setUpper"
-                number_of_elements="1"
-                default_values="368156000.0">
-                <DoubleRangeDomain name="range" min="360205000.0" max="368156000.0" />
-            </DoubleVectorProperty>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectAltitude"
+              number_of_elements="5"
+              default_values="altitude">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setAltitudeThreshold"
+              default_values="0 0"
+              label="Altitude"
+              name="AltitudeRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectAltitude" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower SO2 limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
-            <PropertyGroup label="Altitude">
-                <Property name="Lowest Altitude" />
-                <Property name="Highest Altitude" />
-            </PropertyGroup>
-            <PropertyGroup label="Orbit">
-                <Property name="Starting Range Orbit" />
-                <Property name="Ending Range Orbit" />
-            </PropertyGroup>
-            <PropertyGroup label="Time">
-                <Property name="Starting Time" />
-                <Property name="Ending Time" />
-            </PropertyGroup>
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectOrbit"
+              number_of_elements="5"
+              default_values="orbit_id">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setOrbitThreshold"
+              default_values="0 0"
+              label="Orbit"
+              name="OrbitRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectOrbit" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower SO2 limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
 
-            <Hints>
-                <ShowInMenu category="SciVis"/>
-            </Hints>
-        </SourceProxy>
+          <PropertyGroup label="Time">
+              <Property name="TimeRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Altitude">
+              <Property name="AltitudeRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Orbit">
+              <Property name="OrbitRange" />
+           </PropertyGroup>
+
+          <Hints>
+              <ShowInMenu category="SciVis"/>
+              <Property name="SelectTime" show="0"/>
+              <Property name="SelectAltitude" show="0"/>
+              <Property name="SelectOrbit" show="0"/>
+          </Hints>
+      </SourceProxy>
+
+
         <SourceProxy name="AIRSFilter" class="AIRSFilter" label="AIRSFilter">
             <Documentation
                 long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"

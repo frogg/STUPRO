@@ -1,143 +1,98 @@
-#ifndef KRONOS_ABSTRACT_SELECTION_FILTER_HPP
-#define KRONOS_ABSTRACT_SELECTION_FILTER_HPP
+#ifndef __MIPASFilter_h
+#define __MIPASFilter_h
 
-#include <vtkPoints.h>
-#include <vtkSmartPointer.h>
-#include <vtkDataObjectAlgorithm.h>
+#include "vtkPoints.h"
+#include "vtkDataSetAlgorithm.h"
+#include <vtkThreshold.h>
 #include <vtkInformation.h>
-#include <vtkInformationVector.h>
-#include <vtkPointData.h>
-#include <vtkIntArray.h>
+#include "vtkInformationVector.h"
+#include <vtkIndent.h>
+#include <vtkDataSet.h>
+#include <vtkUnstructuredGridAlgorithm.h>
+#include <vtkPolyData.h>
+#include <vtkDataObjectAlgorithm.h>
+#include <AbstractSelectionFilter.hpp>
 #include <vtkFloatArray.h>
-#include <vtkUnsignedIntArray.h>
-#include <vtkUnsignedCharArray.h>
-
-#include <qstring.h>
-#include <qlist.h>
-
-#include <Reader/DataReader/Data.hpp>
-#include <Globe/Coordinate.hpp>
-
 
 /**
  * This class extracts the attributes of the MIPAS Data, and displays them with Sliders
- * to be able to change it's appearance.
+ * to be able to change the AIRS_am and AIRS_pm appearance.
  */
-class MIPASFilter : public vtkDataObjectAlgorithm {
+class MIPASFilter  : public AbstractSelectionFilter {
 public:
-
-	vtkTypeMacro(MIPASFilter, vtkDataObjectAlgorithm)
 	static MIPASFilter* New();
+	vtkTypeMacro(MIPASFilter, vtkDataObjectAlgorithm);
 
-	void PrintSelf(ostream& os, vtkIndent indent) override;
+	void SetInputConnection(vtkAlgorithmOutput* input);
 
-	int RequestData(vtkInformation* info,
-	                vtkInformationVector** inputVector,
-	                vtkInformationVector* outputVector) override;
+
+	/**
+	 * This Method sets the min and max values of the Time to be represented in silders
+	 * @param lowerLimit the lower range
+	 * @param upperLimit the upper range
+	 */
+	void setTimeThreshold(double lowerLimit, double upperLimit);
+
+	/**
+	* This Method sets the min and max values of the Altitude Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setAltitudeThreshold(float lowerLimit, float upperLimit);
+
+	/**
+	* This Method sets the min and max values of the Orbit Index to be represented in silders
+	* @param lowerLimit the lower range
+	* @param upperLimit the upper range
+	*/
+	void setOrbitThreshold(float lowerLimit, float upperLimit);
+
+	
 	int RequestInformation(vtkInformation* request,
 	                       vtkInformationVector** inputVector,
 	                       vtkInformationVector* outputVector) override;
 
-	int FillOutputPortInformation(int port, vtkInformation* info) override;
-	int FillInputPortInformation(int port, vtkInformation* info) override;
-	void SetInputConnection(vtkAlgorithmOutput* input) override;
 
 	/**
-	 * Sets the upper Limit for Time
-	 * @param upperLimit the upper Limit of the Time
+	 * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the temperature values and the UI is hidden.
 	 */
-	void setUpper(double upperLimit);
-
-	/**
-	 * Sets th lower Limit for Time
-	 * @param lowerLimit the lower Limit of the Time
-	 */
-	void setLower(double lowerLimit);
-
-	/**
-	 * Sets the upper Limit of the Orbit
-	 * @param upperLimit the upper Limit of the Orbit
-	 */
-	void setUpperOrbit(int upperLimit);
-
-	/**
-	 * Sets th upper Limit for Orbit
-	 * @param lowerLimit the lower Limit of the Orbit
-	 */
-	void setLowerOrbit(int lowerLimit);
-
-	/**
-	 * Sets the upper Limit of the Altitude
-	 * @param upperLimit the upper Limit of the Altitude
-	 */
-	void setUpperAltitude(float upperLimit);
-
-	/**
-	 * Sets the lower Limit of the Altitude
-	 * @param lowerLimit the upper Limit of the Altitude
-	 */
-	void setLowerAltitude(float lowerLimit);
-
-
-
-
-protected:
-	/**
-	 * Display an error message and remember that this filter does not hold valid data.
-	 * @param message The error message to be shown to the user
-	 */
-	void fail(QString message);
+	void ignore(int id, int port, int connection, int fieldAssociation, const char* name) { }
 
 private:
+
 	MIPASFilter();
 	~MIPASFilter();
-
-	MIPASFilter(const MIPASFilter&);  // Not implemented.
-	void operator=(const MIPASFilter&);  // Not implemented.
-
-	/**
-	 * Boolean flag denoting whether there was an error.
-	 */
-	bool error;
+	MIPASFilter(const MIPASFilter&); //Not implemented
+	void operator=(const MIPASFilter&); //Not implemented
+	QList<Data::Type> getCompatibleDataTypes() override;
+	bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) override;
 
 	/**
-	 * upper limit for the time
+	 * the upper Limit for the Time
 	 */
-	double UpperLimit;
-	/**
-	 * lower limit for the time
-	 */
-	double LowerLimit;
+	double upperTimeLimit;
 
 	/**
-	 * upper limit for orbit
+	 * the lower Limit for the Time
 	 */
-	int UpperLimitOrbit;
+	double lowerTimeLimit;
 	/**
-	 * lower limit for orbit
+	 * the upper Limit for the Altitude Index
 	 */
-	int LowerLimitOrbit;
-
+	float upperAltitudeLimit;
 	/**
-	 * upper limit for altitude
+	 * the lower Limit for the Altitude Index
 	 */
-	float UpperLimitAltitude;
-	/**
-	 * lower limit for altitude
-	 */
-	float LowerLimitAltitude;
-
-
-
+	float lowerAltitudeLimit;
 
 	/**
-	 * Decide whether a data point should be kept in the selection.
-	 * @param pointIndex The index of the point to be checked
-	 * @param coordinate The coordinate of the point
-	 * @param pointData All scalar point data
-	 * @return True if the point should be kept, false otherwise
+	 * The upper Limit for the Orbit Index
 	 */
-	bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
+	float upperOrbitLimit;
+	/**
+	 * the lower Limit for the Orbit Index
+	 */
+	float lowerOrbitLimit;
 
 };
 
