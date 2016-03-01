@@ -47,7 +47,7 @@ public:
 	*/
 	void setOrbitThreshold(float lowerLimit, float upperLimit);
 
-	
+
 	int RequestInformation(vtkInformation* request,
 	                       vtkInformationVector** inputVector,
 	                       vtkInformationVector* outputVector) override;

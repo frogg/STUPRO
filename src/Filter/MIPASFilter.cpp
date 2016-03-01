@@ -23,8 +23,8 @@ MIPASFilter::MIPASFilter() {}
 MIPASFilter::~MIPASFilter() {}
 
 int MIPASFilter::RequestInformation(vtkInformation* request,
-                                   vtkInformationVector** inputVector,
-                                   vtkInformationVector* outputVector) {
+                                    vtkInformationVector** inputVector,
+                                    vtkInformationVector* outputVector) {
 	return 1;
 }
 
@@ -33,7 +33,7 @@ QList<Data::Type> MIPASFilter::getCompatibleDataTypes() {
 }
 
 bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
-                               vtkPointData* pointData) {
+                                vtkPointData* pointData) {
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
 
