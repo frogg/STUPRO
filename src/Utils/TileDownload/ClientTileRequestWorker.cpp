@@ -18,13 +18,13 @@ ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
 
 	QTimer* timer = new QTimer(this);
 	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(processJobQueue()));
-	timer->start();
+	timer->start(1);
 }
 
 ClientTileRequestWorker::~ClientTileRequestWorker() { }
 
 void ClientTileRequestWorker::scheduleJob(WorkerJob job) {
-	KRONOS_LOG_DEBUG("scheduling download job for %d, (%d,%d)",
+	KRONOS_LOG_DEBUG("scheduling download job for (%d,%d,%d)",
 	                 job.incompleteTile.getZoomLevel(),
 	                 job.incompleteTile.getTileX(),
 	                 job.incompleteTile.getTileY()
