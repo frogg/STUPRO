@@ -28,6 +28,32 @@
 		<ShowInMenu category="Kronos" />
 	    </Hints>
         </SourceProxy>
+		<SourceProxy name="TerrainHeightFilter" class="TerrainHeightFilter"
+			label="Kronos Terrain Height">
+			<Documentation
+				long_help="This filter samples the terrain height at the latitude/longitude of a point and adjusts the point's height accordingly"
+				short_help="Adjust point position by terrain height">
+			</Documentation>
+			<InputProperty name="Input" command="SetInputConnection">
+				<ProxyGroupDomain name="groups">
+					<Group name="sources" />
+					<Group name="filters" />
+				</ProxyGroupDomain>
+				<DataTypeDomain name="input_type">
+					<DataType value="vtkPointSet" />
+					<DataType value="vtkImageData" />
+					<DataType value="vtkRectilinearGrid" />
+				</DataTypeDomain>
+			</InputProperty>
+			<IntVectorProperty name="clamping" command="setClampingEnabled"
+				label="Clamp negative heightmap values to 0" number_of_elements="1"
+				default_values="1">
+				<BooleanDomain name="bool" />
+			</IntVectorProperty>
+			<Hints>
+				<ShowInMenu category="Kronos" />
+			</Hints>
+		</SourceProxy>
         <SourceProxy name="PrecipitationTypeFilter" class="PrecipitationTypeFilter" label="Kronos Precipitation Filter">
             <Documentation
                 long_help="This filter can extract data from precipitation point sets read by a Kronos reader depending on the precipitation type of each point."
@@ -444,6 +470,7 @@
             <Filter name="WindSpeedThresholdFilter" />
             <Filter name="TwitterFilter" />
 			<Filter name="DataDensityFilter"/>
+			<Filter name="TerrainHeightFilter" />
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>

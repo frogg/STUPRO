@@ -15,11 +15,9 @@ public:
 	 * be exported to an integer array for the data points to be passed through the ParaView
 	 * pipeline. Therefore, changing values may negatively impact the semantics of components that
 	 * take these integer values for granted.
-	 * Unfortunately, these values need to start with the value one since VTK's selection extraction
-	 * seems not to behave well with values of zero.
 	 */
 	enum PrecipitationType {
-		NONE = 1, RAIN = 2, SNOW = 3, SLEET = 4, HAIL = 5
+		NONE = 0, RAIN = 1, SNOW = 2, SLEET = 3, HAIL = 4
 	};
 
 	/**

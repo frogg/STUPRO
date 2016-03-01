@@ -22,4 +22,8 @@ struct InvalidStateException : public KronosException {
 	InvalidStateException(QString reason) : KronosException(reason) { }
 };
 
+struct NoBackwardTransformationException : public KronosException {
+	NoBackwardTransformationException(QString reason) : KronosException(reason) { }
+};
+
 #endif
