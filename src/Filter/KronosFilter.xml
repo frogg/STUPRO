@@ -127,13 +127,13 @@
                 label="Horizontal"
                 command="setHorizontalHeatmapResolution"
                 number_of_elements="1"
-                default_values="1">
+                default_values="64">
             </IntVectorProperty>
             <IntVectorProperty name="Vertical"
                 label="Vertical"
                 command="setVerticalHeatmapResolution"
                 number_of_elements="1"
-                default_values="1">
+                default_values="64">
             </IntVectorProperty>
             <PropertyGroup label="Density Map Resolution">
                 <Property name="Horizontal" />
