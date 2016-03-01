@@ -485,7 +485,7 @@
                 short_help="Solve SciVis-Contest with this filter">
             </Documentation>
             <InputProperty
-                name="AIRS Input"
+                name="Input"
                 command="SetInputConnection">
                 <ProxyGroupDomain name="groups">
                     <Group name="sources"/>
@@ -519,9 +519,6 @@
                     </RequiredProperties>
                 </FieldDataDomain>
             </StringVectorProperty>
-            <Hints>
-                <Property name="SelectTimeAirs" show="0"/>
-            </Hints>
             <DoubleVectorProperty command="setTimeThreshold"
                 default_values="0 0"
                 label="Time"
@@ -542,6 +539,7 @@
             </DoubleVectorProperty>
             <Hints>
                 <ShowInMenu category="SciVis"/>
+                <Property name="SelectTimeAirs" show="0"/>
             </Hints>
         </SourceProxy>
 

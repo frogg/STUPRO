@@ -47,3 +47,4 @@ void AIRSFilter::setTimeThreshold(double lowerLimit, double upperLimit){
     this->Modified();
 }
 
+
