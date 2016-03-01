@@ -60,12 +60,12 @@ private:
 	/**
 	 * This filter's horizontal grid resolution.
 	 */
-	int horizontalResolution = 10;
+	int horizontalResolution = 1;
 
 	/**
 	 * This filter's vertical grid resolution.
 	 */
-	int verticalResolution = 10;
+	int verticalResolution = 1;
 
 	/**
 	 * Boolean flag denoting whether there was an error.

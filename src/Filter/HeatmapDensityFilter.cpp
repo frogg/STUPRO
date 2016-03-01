@@ -6,6 +6,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkCellArray.h>
 #include <vtkPointData.h>
+#include <vtkInformationVector.h>
+#include <vtkObjectFactory.h>
 
 #include <qmap.h>
 #include <cmath>
@@ -32,7 +34,7 @@ void HeatmapDensityFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	os << indent << "Heatmap Density Filter, Kronos Project" << endl;
 }
 
-vtkStandardNewMacro(HeatmapDensityFilter)
+vtkStandardNewMacro(HeatmapDensityFilter);
 
 void HeatmapDensityFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());
@@ -46,7 +48,7 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 	vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0], 0);
 
 	// Compute the bounds of the input data
-	double bounds[4];
+	double bounds[6];
 	dataInput->GetBounds(bounds);
 
 	double minX = bounds[0];
@@ -61,9 +63,9 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 	double verticalStep = height / double(this->verticalResolution);
 
 	// Fill the map of densities with zeroes
-	for (double x = minX; x <= maxX; x += horizontalStep) {
-		for (double y = minY; y <= maxY; y += verticalStep) {
-			densities.insert(PointCoordinates(x, y, 0), 0);
+	for (int x = 0; x <= this->horizontalResolution; x++) {
+		for (int y = 0; y <= this->verticalResolution; y++) {
+			densities[PointCoordinates(minX + (x * horizontalStep), minY + (y * verticalStep), 0)] = 0;
 		}
 	}
 
@@ -71,24 +73,8 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 	for (int i = 0; i < dataInput->GetNumberOfPoints(); i++) {
 		double point[3];
 		dataInput->GetPoint(i, point);
-
-		PointCoordinates closestGridPoint(minX, minY, 0);
-		double distance = closestGridPoint.getDistanceTo(PointCoordinates(point[0], point[1], point[2]));
-
-		for (double x = minX; x <= maxX; x += horizontalStep) {
-			for (double y = minY; y <= maxY; y += verticalStep) {
-				PointCoordinates currentGridPoint(x, y, 0);
-				double currentDistance = currentGridPoint.getDistanceTo(PointCoordinates(point[0], point[1],
-				                         point[2]));
-
-				if (currentDistance < distance) {
-					closestGridPoint = currentGridPoint;
-					distance = currentDistance;
-				}
-			}
-		}
-
-		densities[closestGridPoint] += 1;
+		
+		densities[PointCoordinates(minX + (round((point[0] - minX) / horizontalStep) * horizontalStep), minY + (round((point[1] - minY) / verticalStep) * verticalStep), 0)] += 1;
 	}
 
 	// Output the densities as a poly data object
