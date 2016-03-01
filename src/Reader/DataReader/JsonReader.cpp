@@ -108,7 +108,8 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    depth,
 			    jsonValue[i]["timestamp"].GetInt(),
 			    jsonValue[i]["author"].GetString(),
-			    jsonValue[i]["content"].GetString()
+			    jsonValue[i]["content"].GetString(),
+			    jsonValue[i]["numberOfRetweets"].GetInt()
 			);
 			break;
 		case Data::PRECIPITATION: {
