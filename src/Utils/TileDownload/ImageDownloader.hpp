@@ -25,8 +25,9 @@ public:
 	 * Creates a new ImageDownloader using the default callback for aborted downloads.
 	 *
 	 * @param onTileFetched   the callback to call whenever a tile has finished loading.
+	 * @param configFile      path to the JSON file from which to read the layer config
 	 */
-	ImageDownloader(OnTileFetched onTileFetched);
+	ImageDownloader(OnTileFetched onTileFetched, QString configFile = "./res/layers.json");
 
 	/**
 	 * Creates a new ImageDownloader using the default callback for aborted downloads.
@@ -34,16 +35,20 @@ public:
 	 * @param onTileFetched   the callback to call whenever a tile has finished loading.
 	 * @param requestedLayers a map containing layername - layerdescription objects to be used for
 	 *                        loading the tiles.
+	 * @param configFile      path to the JSON file from which to read the layer config
 	 */
-	ImageDownloader(OnTileFetched onTileFetched, QSet<QString> requestedLayers);
+	ImageDownloader(OnTileFetched onTileFetched, QSet<QString> requestedLayers,
+	                QString configFile = "./res/layers.json");
 
 	/**
 	 * Creates a new ImageDownloader using different callbacks for finished downloads and aborted ones.
 	 *
 	 * @param onTileFetched the callback to call whenever a tile has finished loading.
 	 * @param onTileFetchFailed the callback to call when a tile download was aborted or failed
+	 * @param configFile      path to the JSON file from which to read the layer config
 	 */
-	ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed);
+	ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed,
+	                QString configFile = "./res/layers.json");
 
 	/**
 	 * Creates a new ImageDownloader using different callbacks for finished downloads and aborted ones.
@@ -52,9 +57,10 @@ public:
 	 * @param onTileFetchFailed the callback to call when a tile download was aborted or failed
 	 * @param requestedLayers   a map containing layername - layerdescription objects to be used for
 	 *                          loading the tiles.
+	 * @param configFile      path to the JSON file from which to read the layer config
 	 */
 	ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed,
-	                QSet<QString> requestedLayers);
+	                QSet<QString> requestedLayers, QString configFile = "./res/layers.json");
 
 	/**
 	 * Fetches images of all layers at the given location.

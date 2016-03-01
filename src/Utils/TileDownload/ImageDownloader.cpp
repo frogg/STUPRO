@@ -8,23 +8,27 @@
 
 #include <thread>
 
-ImageDownloader::ImageDownloader(OnTileFetched onTileFetched)
-	: ImageDownloader(onTileFetched, ImageDownloader::defaultErrorHandler) { }
+ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, QString configFile)
+	: ImageDownloader(onTileFetched, ImageDownloader::defaultErrorHandler, configFile) { }
 
-ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, QSet<QString> requestedLayers)
-	: ImageDownloader(onTileFetched, ImageDownloader::defaultErrorHandler, requestedLayers) { }
-
-ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed)
-	: ImageDownloader(onTileFetched, onTileFetchFailed, ImageDownloader::getAllAvailableLayers()) { }
+ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, QSet<QString> requestedLayers,
+                                 QString configFile)
+	: ImageDownloader(onTileFetched, ImageDownloader::defaultErrorHandler, requestedLayers,
+	                  configFile) { }
 
 ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed,
-                                 QSet<QString> requestedLayers) {
+                                 QString configFile)
+	: ImageDownloader(onTileFetched, onTileFetchFailed, ImageDownloader::getAllAvailableLayers(),
+	                  configFile) { }
+
+ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed,
+                                 QSet<QString> requestedLayers, QString configFile) {
 	if (ServerUtils::isClient()) {
 		this->requestWorker = std::unique_ptr<TileRequestWorker>(new ClientTileRequestWorker(
-		                          requestedLayers, onTileFetched, onTileFetchFailed));
+		                          requestedLayers, onTileFetched, onTileFetchFailed, configFile));
 	} else {
 		this->requestWorker = std::unique_ptr<TileRequestWorker>(new ServerTileRequestWorker(
-		                          requestedLayers, onTileFetched, onTileFetchFailed));
+		                          requestedLayers, onTileFetched, onTileFetchFailed, configFile));
 	}
 }
 
