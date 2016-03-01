@@ -73,8 +73,9 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
 	for (int i = 0; i < dataInput->GetNumberOfPoints(); i++) {
 		double point[3];
 		dataInput->GetPoint(i, point);
-		
-		densities[PointCoordinates(minX + (round((point[0] - minX) / horizontalStep) * horizontalStep), minY + (round((point[1] - minY) / verticalStep) * verticalStep), 0)] += 1;
+
+		densities[PointCoordinates(minX + (round((point[0] - minX) / horizontalStep) * horizontalStep),
+		                           minY + (round((point[1] - minY) / verticalStep) * verticalStep), 0)] += 1;
 	}
 
 	// Output the densities as a poly data object
