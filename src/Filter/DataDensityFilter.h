@@ -11,15 +11,17 @@
 
 #include <stdio.h>
 #include <Utils/Misc/Macros.hpp>
-#include <vtkCleanUnstructuredGrid.h>
+#include <vtkPolyData.h>
+#include <vtkDataObjectAlgorithm.h>
 #include <vtkPointLocator.h>
 #include <vtkTransformFilter.h>
 #include <vtkSmartPointer.h>
+#include <vtkUnstructuredGrid.h>
 
-class DataDensityFilter : public vtkCleanUnstructuredGrid {
+class DataDensityFilter : public vtkDataObjectAlgorithm {
 
 public:
-	vtkTypeMacro(DataDensityFilter, vtkCleanUnstructuredGrid)
+	vtkTypeMacro(DataDensityFilter, vtkDataObjectAlgorithm)
 	static DataDensityFilter* New();
 	void PrintSelf(ostream& os, vtkIndent indent) override;
 
@@ -33,7 +35,8 @@ protected:
 	                vtkInformationVector* outputVector) override;
 
 
-	virtual int FillInputPortInformation(int port, vtkInformation* info) override;
+	int FillInputPortInformation(int port, vtkInformation* info) override;
+	int FillOutputPortInformation(int port, vtkInformation* info) override;
 
 
 private:

@@ -1,7 +1,7 @@
 
 
 #include "DataDensityFilter.h"
-#include "KronosLogger.hpp"
+#include <Utils/Misc/KronosLogger.hpp>
 
 #include "vtkUnstructuredGrid.h"
 #include "vtkCell.h"
@@ -19,6 +19,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkKMeansStatistics.h>
 #include <vtkMultiBlockDataSet.h>
+#include <vtkCellArray.h>
 
 #include <vtkCellData.h>
 #include "vtkCell.h"
@@ -63,10 +64,10 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 
 	//-------------------------------------------------------
 	// Get the actual objects from the obtained information
-	vtkDataSet* input = vtkDataSet::SafeDownCast(
-	                        inInfo->Get(vtkDataObject::DATA_OBJECT()));
-	vtkUnstructuredGrid* output = vtkUnstructuredGrid::SafeDownCast(
-	                                  outInfo->Get(vtkDataObject::DATA_OBJECT()));
+	vtkPolyData* input = vtkPolyData::SafeDownCast(
+	                        inInfo->Get(vtkPolyData::DATA_OBJECT()));
+	vtkPolyData* output = vtkPolyData::SafeDownCast(
+	                                  outInfo->Get(vtkPolyData::DATA_OBJECT()));
 	output->GetCellData()->PassData(input->GetCellData());
 	output->GetPointData()->PassData(input->GetPointData());
 
@@ -107,7 +108,7 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 	kMeansStatistics->Update();
 
 	// Display the results
-	kMeansStatistics->GetOutput()->Dump();
+	// kMeansStatistics->GetOutput()->Dump();
 
 
 	/* The clusters
@@ -137,16 +138,21 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 	vtkDoubleArray* coord0 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 0"));
 	vtkDoubleArray* coord1 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 1"));
 	vtkDoubleArray* coord2 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 2"));
+	
+	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
+	vertices->Allocate(vertices->EstimateSize(1, coord0->GetNumberOfTuples()));
+	vertices->InsertNextCell(coord0->GetNumberOfTuples());
 
 	for (unsigned int i = 0; i < coord0->GetNumberOfTuples(); ++i) {
-		centroids->InsertNextPoint(coord0->GetValue(i), coord1->GetValue(i), coord2->GetValue(i));
-		std::cout << coord0->GetValue(i) << " " << coord1->GetValue(i) << " " << coord2->GetValue(
-		              i) << std::endl;
+		vertices->InsertCellPoint(centroids->InsertNextPoint(coord0->GetValue(i), coord1->GetValue(i), coord2->GetValue(i)));
+		/*std::cout << coord0->GetValue(i) << " " << coord1->GetValue(i) << " " << coord2->GetValue(
+		              i) << std::endl;*/
 	}
+	
+	output->SetPoints(centroids);
+	output->SetVerts(vertices);
 
-
-
-	vtkIdType num = centroids->GetNumberOfPoints();
+	/*vtkIdType num = centroids->GetNumberOfPoints();
 
 	output->Allocate(num);
 	output->SetPoints(centroids);
@@ -155,12 +161,17 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 
 
 
-	output->Squeeze();
+	output->Squeeze();*/
 
 	return 1;
 }
 
+int DataDensityFilter::FillOutputPortInformation(int port, vtkInformation* info) {
+	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
+	return 1;
+}
+
 int DataDensityFilter::FillInputPortInformation(int port, vtkInformation* info) {
-	info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataSet");
+	info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
 	return 1;
 }
