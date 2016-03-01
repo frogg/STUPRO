@@ -1,22 +1,9 @@
-//
-//  DataDensityFilter.hpp
-//  kronos
-//
-//  Created by Frederik Riedel on 12.02.16.
-//
-//
+#ifndef KRONOS_DATA_DENSITY_FILTER_HPP
+#define KRONOS_DATA_DENSITY_FILTER_HPP
 
-#ifndef DataDensityFilter_hpp
-#define DataDensityFilter_hpp
-
-#include <stdio.h>
 #include <Utils/Misc/Macros.hpp>
-#include <vtkPolyData.h>
+
 #include <vtkDataObjectAlgorithm.h>
-#include <vtkPointLocator.h>
-#include <vtkTransformFilter.h>
-#include <vtkSmartPointer.h>
-#include <vtkUnstructuredGrid.h>
 
 class DataDensityFilter : public vtkDataObjectAlgorithm {
 
@@ -24,12 +11,14 @@ public:
 	vtkTypeMacro(DataDensityFilter, vtkDataObjectAlgorithm)
 	static DataDensityFilter* New();
 	void PrintSelf(ostream& os, vtkIndent indent) override;
-
-	int toleranceValue = 0;
-	void setToleranceValue(int newTolerance);
+	
+	/**
+	 * Callback method for setting the percentage of points to keep.
+	 * @param percentage The new percentage of points to keep
+	 */
+	void setDataPercentage(double percentage);
 
 protected:
-
 	int RequestData(vtkInformation* info,
 	                vtkInformationVector** inputVector,
 	                vtkInformationVector* outputVector) override;
@@ -38,17 +27,22 @@ protected:
 	int FillInputPortInformation(int port, vtkInformation* info) override;
 	int FillOutputPortInformation(int port, vtkInformation* info) override;
 
-
 private:
+	/**
+	 * Initiate a new data density filter.
+	 */
 	DataDensityFilter();
 	~DataDensityFilter();
 
-
 	DataDensityFilter(const DataDensityFilter&);  // Not implemented.
 	void operator=(const DataDensityFilter&);  // Not implemented.
+	
+	/**
+	 * The percentage of points that should be kept. 1 refers to keeping all points, 0 means keeping one point.
+	 * May be pretty slow for values that are close to 1.
+	 */
+	double dataPercentage;
 
 };
 
-
-
-#endif /* DataDensityFilter_hpp */
+#endif

@@ -503,13 +503,18 @@
                     <DataType value="vtkPolyData"/>
                 </DataTypeDomain>
             </InputProperty>
-                <IntVectorProperty name="Set the LOD value"
-                    command="setToleranceValue"
-                    number_of_elements="1"
-                    default_values="1">
-            </IntVectorProperty>
+            <DoubleVectorProperty name="DataPercentage"
+                label="Percentage of points to keep"
+                command="setDataPercentage"
+                number_of_elements="1"
+                default_values="0.01">
+                <DoubleRangeDomain name="range" min="0.0" max="1.0" />
+            </DoubleVectorProperty>
+        <PropertyGroup label="Data Point Reduction">
+            <Property name="DataPercentage" />
+        </PropertyGroup>
 	    <Hints>
-		<ShowInMenu category="Kronos" />
+		    <ShowInMenu category="Kronos" />
 	    </Hints>
 		</SourceProxy>
     </ProxyGroup>

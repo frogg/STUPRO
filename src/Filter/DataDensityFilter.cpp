@@ -1,47 +1,23 @@
+#include <Filter/DataDensityFilter.h>
 
-
-#include "DataDensityFilter.h"
-#include <Utils/Misc/KronosLogger.hpp>
-
-#include "vtkUnstructuredGrid.h"
-#include "vtkCell.h"
-#include "vtkPoints.h"
-#include "vtkPointData.h"
-#include "vtkCellData.h"
-#include "vtkObjectFactory.h"
-
-#include "vtkDataObject.h"
-#include <vtkInformationVector.h>
-#include <vtkInformation.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkDataSet.h>
-#include <vtkTable.h>
-#include <vtkDoubleArray.h>
+#include <vtkDataObject.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 #include <vtkKMeansStatistics.h>
-#include <vtkMultiBlockDataSet.h>
+#include <vtkDoubleArray.h>
+#include <vtkTable.h>
 #include <vtkCellArray.h>
-
-#include <vtkCellData.h>
-#include "vtkCell.h"
-#include "vtkPoints.h"
-#include "vtkPointData.h"
-#include "vtkObjectFactory.h"
-
-#include "vtkIntArray.h"
-#include "vtkCollection.h"
-#include "vtkMergePoints.h"
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
+#include <vtkMultiBlockDataSet.h>
 
 #include <sstream>
+#include <algorithm>
 
-DataDensityFilter::DataDensityFilter() {}
+DataDensityFilter::DataDensityFilter() { }
 
-void DataDensityFilter::setToleranceValue(int newTolerance) {
-	toleranceValue = newTolerance;
+void DataDensityFilter::setDataPercentage(double percentage) {
+	this->dataPercentage = percentage;
 	this->Modified();
 }
-
 
 void DataDensityFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
@@ -55,26 +31,18 @@ vtkStandardNewMacro(DataDensityFilter)
 int DataDensityFilter::RequestData(vtkInformation* info,
                                    vtkInformationVector** inputVector,
                                    vtkInformationVector* outputVector) {
-
-
-
 	// Get output information from the request vectors
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
-	//-------------------------------------------------------
 	// Get the actual objects from the obtained information
-	vtkPolyData* input = vtkPolyData::SafeDownCast(
-	                        inInfo->Get(vtkPolyData::DATA_OBJECT()));
-	vtkPolyData* output = vtkPolyData::SafeDownCast(
-	                                  outInfo->Get(vtkPolyData::DATA_OBJECT()));
-	output->GetCellData()->PassData(input->GetCellData());
-	output->GetPointData()->PassData(input->GetPointData());
+	vtkPolyData* input = vtkPolyData::SafeDownCast(inInfo->Get(vtkPolyData::DATA_OBJECT()));
+	vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkPolyData::DATA_OBJECT()));
 
 	// Get the points into the format needed for KMeans
-	vtkSmartPointer<vtkTable> inputData =
-	    vtkSmartPointer<vtkTable>::New();
+	vtkSmartPointer<vtkTable> inputData = vtkSmartPointer<vtkTable>::New();
 
+	// Create the table needed for the KMeans statistics filter
 	for (int c = 0; c < 3; ++c) {
 		std::stringstream colName;
 		colName << "coord " << c;
@@ -97,71 +65,42 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 	    vtkSmartPointer<vtkKMeansStatistics>::New();
 
 	kMeansStatistics->SetInputData(vtkStatisticsAlgorithm::INPUT_DATA, inputData);
-
 	kMeansStatistics->SetColumnStatus(inputData->GetColumnName(0), 1);
 	kMeansStatistics->SetColumnStatus(inputData->GetColumnName(1), 1);
 	kMeansStatistics->SetColumnStatus(inputData->GetColumnName(2), 1);
-	//kMeansStatistics->SetColumnStatus( "Testing", 1 );
 	kMeansStatistics->RequestSelectedColumns();
-	kMeansStatistics->SetAssessOption(true);
-	kMeansStatistics->SetDefaultNumberOfClusters(toleranceValue);
+	
+	// Set the default number of clusters to the number of points that should be kept
+	kMeansStatistics->SetDefaultNumberOfClusters(std::max(int(this->dataPercentage * input->GetNumberOfPoints()), 1));
+	
+	// Make the filter only do one iteration for a better performance since we do not need a precise kMeans approximation
+	kMeansStatistics->SetMaxNumIterations(1);
+	
 	kMeansStatistics->Update();
 
-	// Display the results
-	// kMeansStatistics->GetOutput()->Dump();
-
-
-	/* The clusters
-	vtkSmartPointer<vtkIntArray> clusterArray =
-	    vtkSmartPointer<vtkIntArray>::New();
-	clusterArray->SetNumberOfComponents(1);
-	clusterArray->SetName("ClusterId");
-
-	for (int r = 0; r < kMeansStatistics->GetOutput()->GetNumberOfRows(); r++) {
-		vtkVariant v = kMeansStatistics->GetOutput()->GetValue(r,
-		               kMeansStatistics->GetOutput()->GetNumberOfColumns() - 1);
-		std::cout << "Point " << r << " is in cluster " << v.ToInt() << std::endl;
-		clusterArray->InsertNextValue(v.ToInt());
-	}
-	*/
-
-
+	// Extract the calculated cluster centers from the filter
 	vtkSmartPointer<vtkPoints> centroids =
 	    vtkSmartPointer<vtkPoints>::New();
-
-	// Output the cluster centers / centroids
 
 	vtkMultiBlockDataSet* outputMetaDS = vtkMultiBlockDataSet::SafeDownCast(
 	        kMeansStatistics->GetOutputDataObject(vtkStatisticsAlgorithm::OUTPUT_MODEL));
 	vtkSmartPointer<vtkTable> outputMeta = vtkTable::SafeDownCast(outputMetaDS->GetBlock(0));
-	//vtkSmartPointer<vtkTable> outputMeta = vtkTable::SafeDownCast( outputMetaDS->GetBlock( 1 ) );
+	
 	vtkDoubleArray* coord0 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 0"));
 	vtkDoubleArray* coord1 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 1"));
 	vtkDoubleArray* coord2 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 2"));
 	
+	// Output the centroids to a new data set
 	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
 	vertices->Allocate(vertices->EstimateSize(1, coord0->GetNumberOfTuples()));
 	vertices->InsertNextCell(coord0->GetNumberOfTuples());
 
-	for (unsigned int i = 0; i < coord0->GetNumberOfTuples(); ++i) {
+	for (int i = 0; i < coord0->GetNumberOfTuples(); ++i) {
 		vertices->InsertCellPoint(centroids->InsertNextPoint(coord0->GetValue(i), coord1->GetValue(i), coord2->GetValue(i)));
-		/*std::cout << coord0->GetValue(i) << " " << coord1->GetValue(i) << " " << coord2->GetValue(
-		              i) << std::endl;*/
 	}
 	
 	output->SetPoints(centroids);
 	output->SetVerts(vertices);
-
-	/*vtkIdType num = centroids->GetNumberOfPoints();
-
-	output->Allocate(num);
-	output->SetPoints(centroids);
-
-
-
-
-
-	output->Squeeze();*/
 
 	return 1;
 }
