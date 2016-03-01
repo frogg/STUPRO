@@ -1,0 +1,35 @@
+{
+  "satelliteImageryDelay": {
+    "baseUrl": "http://localhost:3000/delay/satelliteImagery?q=",
+    "mimeType": "image/jpeg",
+    "tileSize": 512,
+    "zoomLevels": [
+      {
+        "minimalZoomLevel": 0,
+        "layers": "BlueMarble-200405"
+      }
+    ]
+  },
+  "heightmapDelay": {
+    "baseUrl": "http://localhost:3000/delay/heightmap?q=",
+    "mimeType": "application/bil16",
+    "tileSize": 512,
+    "zoomLevels": [
+      {
+        "minimalZoomLevel": 0,
+        "layers": "NASA_SRTM30_900m_Tiled"
+      }
+    ]
+  },
+  "invalidDelay": {
+    "baseUrl": "http://localhost:3000/delay/invalid?q=",
+    "mimeType": "application/invalid",
+    "tileSize": 512,
+    "zoomLevels": [
+      {
+        "minimalZoomLevel": 0,
+        "layers": "NASA_SRTM30_900m_Tiled"
+      }
+    ]
+  }
+}
