@@ -19,27 +19,25 @@ vtkStandardNewMacro(vtkSMStuproViewProxy);
 vtkSMStuproViewProxy::vtkSMStuproViewProxy() { }
 vtkSMStuproViewProxy::~vtkSMStuproViewProxy() { }
 
-void vtkSMStuproViewProxy::moveCamera(float latitude, float longitude)
-{
-    vtkClientServerStream stream;
-    stream << vtkClientServerStream::Invoke
-           << VTKOBJECT(this)
-           << "moveCamera"
-           << latitude
-           << longitude
-           << vtkClientServerStream::End;
-    this->ExecuteStream(stream);
+void vtkSMStuproViewProxy::moveCamera(float latitude, float longitude) {
+	vtkClientServerStream stream;
+	stream << vtkClientServerStream::Invoke
+	       << VTKOBJECT(this)
+	       << "moveCamera"
+	       << latitude
+	       << longitude
+	       << vtkClientServerStream::End;
+	this->ExecuteStream(stream);
 }
 
-void vtkSMStuproViewProxy::moveCamera(float latitude, float longitude, float distance)
-{
-    vtkClientServerStream stream;
-    stream << vtkClientServerStream::Invoke
-           << VTKOBJECT(this)
-           << "moveCamera"
-           << latitude
-           << longitude
-           << distance
-           << vtkClientServerStream::End;
-    this->ExecuteStream(stream);
+void vtkSMStuproViewProxy::moveCamera(float latitude, float longitude, float distance) {
+	vtkClientServerStream stream;
+	stream << vtkClientServerStream::Invoke
+	       << VTKOBJECT(this)
+	       << "moveCamera"
+	       << latitude
+	       << longitude
+	       << distance
+	       << vtkClientServerStream::End;
+	this->ExecuteStream(stream);
 }

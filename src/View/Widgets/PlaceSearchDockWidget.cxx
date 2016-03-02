@@ -6,8 +6,8 @@
 #include <QIcon>
 #include <QSize>
 
-PlaceSearchDockWidget::PlaceSearchDockWidget(QWidget * parent, Qt::WindowFlags flags)
-        : QDockWidget("Find Places", parent, flags) {
-    this->placeSearchWidget = new PlaceSearchWidget(this);
-    this->setWidget(this->placeSearchWidget);
+PlaceSearchDockWidget::PlaceSearchDockWidget(QWidget* parent, Qt::WindowFlags flags)
+	: QDockWidget("Find Places", parent, flags) {
+	this->placeSearchWidget = new PlaceSearchWidget(this);
+	this->setWidget(this->placeSearchWidget);
 }

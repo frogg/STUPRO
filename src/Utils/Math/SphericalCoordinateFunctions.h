@@ -20,18 +20,18 @@ inline double getGlobeRadius() {
  * @return the cartesian position of gps
  */
 template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
-    
-    //Radian of longitude
-    const T lonInRadian = gps.x * KRONOS_PI / 180;
-    //Radian of latitude
-    const T latInRadian = gps.y * KRONOS_PI / 180;
 
-    Vector3<T> retVal;
-    //WATCH OUT: order of theses assignement, because of ParaView coordinate systems
-    retVal.z = (getGlobeRadius() + gps.z) * cos(latInRadian) * cos(lonInRadian);
-    retVal.x = (getGlobeRadius() + gps.z) * cos(latInRadian) * sin(lonInRadian);
-    retVal.y = (getGlobeRadius() + gps.z) * sin(latInRadian);
-    return retVal;
+	//Radian of longitude
+	const T lonInRadian = gps.x * KRONOS_PI / 180;
+	//Radian of latitude
+	const T latInRadian = gps.y * KRONOS_PI / 180;
+
+	Vector3<T> retVal;
+	//WATCH OUT: order of theses assignement, because of ParaView coordinate systems
+	retVal.z = (getGlobeRadius() + gps.z) * cos(latInRadian) * cos(lonInRadian);
+	retVal.x = (getGlobeRadius() + gps.z) * cos(latInRadian) * sin(lonInRadian);
+	retVal.y = (getGlobeRadius() + gps.z) * sin(latInRadian);
+	return retVal;
 }
 
 template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T jacobian[3][3]) {
@@ -39,8 +39,8 @@ template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T 
     const T latInRadian = gps.y * KRONOS_PI / 180;
     
     //calculate first row of jacobian
-    jacobian[0][0] = (getGlobeRadius() + gps.z) * cos(latInRadian)* cos(lonInRadian)* KRONOS_PI / 180;
-    jacobian[0][1] = (getGlobeRadius() + gps.z) * sin(lonInRadian)* (-1) * sin(latInRadian)* KRONOS_PI / 180;
+    jacobian[0][0] = (getGlobeRadius() + gps.z) * cos(latInRadian) * cos(lonInRadian)* KRONOS_PI / 180;
+    jacobian[0][1] = (getGlobeRadius() + gps.z) * sin(lonInRadian) * (-1) * sin(latInRadian)* KRONOS_PI / 180;
     jacobian[0][2] = 1 * cos(latInRadian)* sin(lonInRadian);
     
     //calculate second row of jacobian
@@ -62,14 +62,14 @@ template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T 
  */
 template<typename T> Vector3<T> sphericalToCartesianFlat(const Vector3<T>& gps) {
 
-    Vector3<T> retVal;
-    
+	Vector3<T> retVal;
+
 	// Scale to 2D map size
-    retVal.x = (gps.x / 90.0) * getGlobeRadius();
-    retVal.y = (gps.y / 90.0) * getGlobeRadius();
-    retVal.z = gps.z;
-    
-    return retVal;
+	retVal.x = (gps.x / 90.0) * getGlobeRadius();
+	retVal.y = (gps.y / 90.0) * getGlobeRadius();
+	retVal.z = gps.z;
+
+	return retVal;
 }
 
 template<typename T> void sphericalToCartesianFlatJacobian(const Vector3<T>& gps, T jacobian[3][3]) {
