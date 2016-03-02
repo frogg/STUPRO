@@ -10,8 +10,8 @@
  * @return the globe radius
  */
 inline double getGlobeRadius() {
-    static double globeRadius = Configuration::getInstance().getDouble("globe.radius");
-    return globeRadius;
+	static double globeRadius = Configuration::getInstance().getDouble("globe.radius");
+	return globeRadius;
 }
 
 /**
@@ -104,11 +104,11 @@ template<typename T> void sphericalToCartesianFlatJacobian(const Vector3<T>& gps
  * @return the gps position of point
  */
 template<typename T> Vector3<T> cartesianToSpherical(const Vector3<T>& point) {
-    Vector3<T> retVal;
-    retVal.z = point.length() - getGlobeRadius();
-    retVal.x = atan2(point.x, point.z) * 180 / KRONOS_PI;
-    retVal.y = asin(point.y / point.length()) * 180 / KRONOS_PI;
-    return retVal;
+	Vector3<T> retVal;
+	retVal.z = point.length() - getGlobeRadius();
+	retVal.x = atan2(point.x, point.z) * 180 / KRONOS_PI;
+	retVal.y = asin(point.y / point.length()) * 180 / KRONOS_PI;
+	return retVal;
 }
 
 /**
@@ -136,15 +136,15 @@ template<typename T> float distance(const Vector3<T>& point1, const Vector3<T>& 
  * @return the scaled position
  */
 template<typename T> Vector3<T> scaleTo(const Vector3<T>& gps, const T targetLength) {
-    return Vector3<T>(gps.x, gps.y, targetLength);
+	return Vector3<T>(gps.x, gps.y, targetLength);
 }
 
 /**
  * Get the point right between two other points (in spherical sense, so the result has the middle abs of gps1 and gps2)
  */
 template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Vector3<T>& gps2) {
-    Vector3<T> cartesian1 = sphericalToCartesian(gps1) / 2;
-    Vector3<T> cartesian2 = sphericalToCartesian(gps2) / 2;
+	Vector3<T> cartesian1 = sphericalToCartesian(gps1) / 2;
+	Vector3<T> cartesian2 = sphericalToCartesian(gps2) / 2;
 	Vector3<T> newPoint = cartesianToSpherical(cartesian1 + cartesian2);
 	return scaleTo(newPoint, (gps1.z + gps2.z) / 2);
 }
