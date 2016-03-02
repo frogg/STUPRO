@@ -5,6 +5,7 @@
 #include <vtkInformation.h>
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
+#include <vtkCellData.h>
 
 #include <QVector>
 #include <QString>
@@ -46,6 +47,14 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 		return 0;
 	}
 
+	// copy some attributes etc.
+	output->CopyStructure(input);
+
+	output->GetPointData()->PassData(input->GetPointData());
+	output->GetCellData()->PassData(input->GetCellData());
+	output->GetFieldData()->PassData(input->GetFieldData());
+
+	// generate the geodesics
 	vtkPoints* points = vtkPoints::New();
 	output->SetPoints(points);
 	vtkCellArray* lines = vtkCellArray::New();
