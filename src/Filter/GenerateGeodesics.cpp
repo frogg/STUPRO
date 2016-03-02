@@ -6,6 +6,8 @@
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
 #include <vtkCellData.h>
+#include <vtkSmartPointer.h>
+#include <vtkStringArray.h>
 
 #include <QVector>
 #include <QString>
@@ -19,6 +21,11 @@ typedef Vector3d Cartesian;
 vtkStandardNewMacro(GenerateGeodesics)
 
 #define DESTINATION_ARRAY_NAME "destinations"
+#define PRIORITY_ARRAY_NAME "priorities"
+#define AIRLINE_ARRAY_NAME "airlines"
+#define START_CODE_ARRAY_NAME "originAirportCodes"
+#define DEST_CODE_ARRAY_NAME "destinationAirportCodes"
+#define LENGTH_ARRAY_NAME "flightLengths"
 
 void GenerateGeodesics::PrintSelf(std::ostream& os, vtkIndent indent) {
 	Superclass::PrintSelf(os, indent);
@@ -47,21 +54,40 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 		return 0;
 	}
 
-	// copy some attributes etc.
-	output->CopyStructure(input);
-
-	output->GetPointData()->PassData(input->GetPointData());
-	output->GetCellData()->PassData(input->GetCellData());
-	output->GetFieldData()->PassData(input->GetFieldData());
-
 	// generate the geodesics
 	vtkPoints* points = vtkPoints::New();
 	output->SetPoints(points);
 	vtkCellArray* lines = vtkCellArray::New();
 	output->SetLines(lines);
 
+	/*
+	 * copy arrays as far as necessary
+	 */
 	vtkDataArray* startPoints = input->GetPoints()->GetData();
 	vtkDataArray* destinationPoints = input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME);
+	vtkIntArray* inPrio = vtkIntArray::SafeDownCast(input->GetPointData()->GetArray(PRIORITY_ARRAY_NAME));
+	vtkStringArray* inAirline = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(AIRLINE_ARRAY_NAME));
+	vtkStringArray* inStartCode = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(START_CODE_ARRAY_NAME));
+	vtkStringArray* inDestCode = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(DEST_CODE_ARRAY_NAME));
+	vtkFloatArray* inFlightLength = vtkFloatArray::SafeDownCast(input->GetPointData()->GetArray(LENGTH_ARRAY_NAME));
+
+	vtkSmartPointer<vtkIntArray> priorities  = vtkSmartPointer<vtkIntArray>::New();
+	priorities->SetNumberOfComponents(1);
+	priorities->SetName(PRIORITY_ARRAY_NAME);
+	output->GetCellData()->AddArray(priorities);
+	vtkSmartPointer<vtkStringArray> airlines  = vtkSmartPointer<vtkStringArray>::New();
+	airlines->SetName(AIRLINE_ARRAY_NAME);
+	output->GetCellData()->AddArray(airlines);
+	vtkSmartPointer<vtkStringArray> startCode  = vtkSmartPointer<vtkStringArray>::New();
+	startCode->SetName(START_CODE_ARRAY_NAME);
+	output->GetCellData()->AddArray(startCode);
+	vtkSmartPointer<vtkStringArray> destCode  = vtkSmartPointer<vtkStringArray>::New();
+	destCode->SetName(DESTINATION_ARRAY_NAME);
+	output->GetCellData()->AddArray(destCode);
+	vtkSmartPointer<vtkFloatArray> flightLengths  = vtkSmartPointer<vtkFloatArray>::New();
+	flightLengths->SetNumberOfComponents(1);
+	flightLengths->SetName(LENGTH_ARRAY_NAME);
+	output->GetCellData()->AddArray(flightLengths);
 
 	// for each flight
 	for (int flight = 0; flight < numberOfFlights; flight++) {
@@ -74,6 +100,14 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 		                0);
 
 		insertNextFlight(start, destination, output);
+
+		while (priorities->GetSize() < output->GetLines()->GetNumberOfCells()) {
+			priorities->InsertNextValue(inPrio->GetValue(flight));
+			airlines->InsertNextValue(inAirline->GetValue(flight));
+			startCode->InsertNextValue(inStartCode->GetValue(flight));
+			destCode->InsertNextValue(inDestCode->GetValue(flight));
+			flightLengths->InsertNextValue(distance(start, destination));
+		}
 	}
 
 	return 1;
