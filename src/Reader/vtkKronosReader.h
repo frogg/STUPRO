@@ -3,6 +3,7 @@
 
 #include <vtkPolyDataAlgorithm.h>
 #include <memory>
+#include <thread>
 #include <QString>
 
 #include <Reader/DataReader/JsonReader.hpp>
@@ -91,6 +92,11 @@ private:
 	 * Unique pointer to the `JsonReader` that is used with this reader.
 	 */
 	std::unique_ptr<JsonReader> jsonReader;
+	
+	/**
+	 * This thread will pre-cache data in the background once the reader has been created.
+	 */
+	std::thread cacheThread;
 
 };
 

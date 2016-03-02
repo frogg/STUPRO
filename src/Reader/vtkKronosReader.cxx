@@ -14,7 +14,6 @@
 
 #include <math.h>
 #include <algorithm>
-#include <thread>
 #include <vector>
 
 vtkStandardNewMacro(vtkKronosReader);
@@ -36,6 +35,8 @@ vtkKronosReader::vtkKronosReader() : error(false), zoomLevel(0) {
 }
 
 vtkKronosReader::~vtkKronosReader() {
+	this->jsonReader->abortCaching();
+	this->cacheThread.join();
 	this->jsonReader.reset();
 }
 
@@ -49,8 +50,7 @@ void vtkKronosReader::SetFileName(std::string name) {
 		return;
 	}
 
-	std::thread cacheThread(&JsonReader::cacheAllData, this->jsonReader.get());
-	cacheThread.detach();
+	this->cacheThread = std::thread(&JsonReader::cacheAllData, this->jsonReader.get());
 }
 
 void vtkKronosReader::SetCameraPosition(double x, double y, double z) {

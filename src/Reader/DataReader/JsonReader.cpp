@@ -16,7 +16,7 @@
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
                        bool temporal,
                        int timeResolution) : filePath(path), temporal(temporal), dataType(dataType),
-	timeResolution(timeResolution) {
+	timeResolution(timeResolution), cachingAbortRequested(false) {
 	this->cachingEnabled = true;
 	this->pointDataSet = PointDataSet();
 
@@ -211,18 +211,34 @@ bool JsonReader::isCachingEnabled() const {
 
 void JsonReader::cacheAllData() {
 	this->setCachingEnabled(true);
+    
+    if (this->hasTemporalData()) {
+        for (int currentTime = 0; currentTime < this->getAmountOfTimeSteps(); currentTime++) {            
+            for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
+        	        i++) {
+                if (this->cachingAbortRequested) {
+                    this->cachingAbortRequested = false;
+                    return;
+                }
+                
+        		this->getVtkDataSet(i, currentTime);
+        	}
+        }
+    } else {
+        for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
+    	        i++) {
+            if (this->cachingAbortRequested) {
+                this->cachingAbortRequested = false;
+                return;
+            }
+            
+    		this->getVtkDataSet(i);
+    	}
+    }
+}
 
-	for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
-	        i++) {
-		if (this->hasTemporalData()) {
-			for (float currentTime = 0.0f; currentTime <= 1.0f;
-			        currentTime += (this->endTime - this->startTime) / (this->timeResolution * 1.0f)) {
-				this->getVtkDataSet(i, currentTime);
-			}
-		} else {
-			this->getVtkDataSet(i);
-		}
-	}
+void JsonReader::abortCaching() {
+	this->cachingAbortRequested = true;
 }
 
 void JsonReader::clearCache() {
