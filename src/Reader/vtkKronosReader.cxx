@@ -39,7 +39,7 @@ vtkKronosReader::~vtkKronosReader() {
 		this->jsonReader->abortCaching();
 		this->cacheThread.join();
 	}
-	
+
 	this->jsonReader.reset();
 }
 
