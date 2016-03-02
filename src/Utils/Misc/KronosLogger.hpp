@@ -79,4 +79,30 @@ inline void kronos_log(const char* debugLevel, const char* function, const char*
 	#define KRONOS_LOG_FATAL(message, ...) /* */
 #endif
 
+#ifdef __GNUC__
+#include <execinfo.h>
+#include <signal.h>
+#include <unistd.h>
+
+inline void handleSegfault(int sig) {
+	int items = 10;
+	void* array[items];
+	size_t size;
+
+	size = backtrace(array, items);
+
+	fprintf(stderr, "Error: signal %d:\n", sig);
+
+	backtrace_symbols_fd(array, size, STDERR_FILENO);
+	exit(1);
+}
+#endif
+
+inline void registerSegfaultHandler() {
+#ifdef __GNUC__
+	signal(SIGSEGV, handleSegfault);
+	KRONOS_LOG_INFO("Registered segfault handler");
+#endif
+}
+
 #endif
