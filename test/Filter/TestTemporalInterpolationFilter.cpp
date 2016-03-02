@@ -301,7 +301,7 @@ TEST(TestTemporalInterpolationFilter, TestTwitterDensityData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
 	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/twitter-test-data.kJson");
-	
+
 	// Set up the density heatmap filter and its input
 	vtkSmartPointer<HeatmapDensityFilter> densityFilter = HeatmapDensityFilter::New();
 	densityFilter->SetInputConnection(kronosReader->GetOutputPort());
@@ -312,11 +312,13 @@ TEST(TestTemporalInterpolationFilter, TestTwitterDensityData) {
 	densityFilter->Update();
 
 	// Set up the temporal interpolation filter and its input
-	vtkSmartPointer<TemporalInterpolationFilter> interpolationFilter = TemporalInterpolationFilter::New();
+	vtkSmartPointer<TemporalInterpolationFilter> interpolationFilter =
+	    TemporalInterpolationFilter::New();
 	interpolationFilter->SetInputConnection(densityFilter->GetOutputPort());
 
 	// Test an intermediate value
-	interpolationFilter->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), 0.5);
+	interpolationFilter->GetOutputInformation(0)->Set(
+	    vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), 0.5);
 	interpolationFilter->Update();
 
 	// Run the filter on the input data

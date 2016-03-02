@@ -243,10 +243,10 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 		tupleNumber++;
 	}
 
-    if (this->dataType != Data::TWEETS) {
-        dataSet->GetPointData()->AddArray(timestamps);
-    	dataSet->GetPointData()->AddArray(priorities);
-    }
+	if (this->dataType != Data::TWEETS) {
+		dataSet->GetPointData()->AddArray(timestamps);
+		dataSet->GetPointData()->AddArray(priorities);
+	}
 
 	switch (this->dataType) {
 	case Data::TEMPERATURE: {
@@ -447,20 +447,20 @@ void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData* i
 
 InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex,
         vtkPolyData* inputData) {
-    int priority = 0;
-    int timestamp = 0;
-            
-    if (this->dataType != Data::TWEETS) {
-        // Twitter data can only be density-mapped and is therefore a special case
-        
-        vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
-                    inputData->GetPointData()->GetArray("priorities"));
-        priority = priorityArray->GetValue(pointIndex);
+	int priority = 0;
+	int timestamp = 0;
 
-        vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
-                    inputData->GetPointData()->GetArray("timestamps"));
-        timestamp = timestampArray->GetValue(pointIndex);
-    }
+	if (this->dataType != Data::TWEETS) {
+		// Twitter data can only be density-mapped and is therefore a special case
+
+		vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
+		            inputData->GetPointData()->GetArray("priorities"));
+		priority = priorityArray->GetValue(pointIndex);
+
+		vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
+		            inputData->GetPointData()->GetArray("timestamps"));
+		timestamp = timestampArray->GetValue(pointIndex);
+	}
 
 	switch (this->dataType) {
 	case Data::TEMPERATURE: {
