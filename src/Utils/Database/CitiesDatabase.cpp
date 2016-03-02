@@ -25,7 +25,7 @@ QList<City> CitiesDatabase::getCity(QString name) {
 		throw QueryExecutionFailedException(this->query.lastError());
 	}
 
-	KRONOS_LOG_DEBUG(this->query.executedQuery().toStdString().c_str());
+	KRONOS_LOG_DEBUG(this->query.executedQuery());
 
 	QList<City> cities;
 	while (this->query.next()) {

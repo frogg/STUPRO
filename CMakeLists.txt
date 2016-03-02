@@ -22,11 +22,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${KRONOS_BIN_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${KRONOS_BIN_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${KRONOS_BIN_DIR})
 
-option(SAVE_TEMPS "Save temporary files" OFF)
-if(SAVE_TEMPS)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -save-temps")
-endif(SAVE_TEMPS)
-
 # register subprojects
 add_subdirectory(src)
 
