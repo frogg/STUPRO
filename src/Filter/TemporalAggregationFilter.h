@@ -13,7 +13,7 @@
 #include <qlist.h>
 #include <qmap.h>
 
-class VTKFILTERSGENERAL_EXPORT TemporalAggregationFilter : public vtkPassInputTypeAlgorithm {
+class TemporalAggregationFilter : public vtkPassInputTypeAlgorithm {
 public:
 	static TemporalAggregationFilter* New();
 
