@@ -94,9 +94,14 @@ public:
 	void cacheAllData();
 
 	/**
-	 * Clear all cached vtkPolyData
+	 * Clear all cached vtkPolyData.
 	 */
 	void clearCache();
+
+	/**
+	 * Abort a caching process that may be in progress.
+	 */
+	void abortCaching();
 
 private:
 	/**
@@ -149,6 +154,12 @@ private:
 	 * Boolean flag denoting whether a cache should be used
 	 */
 	bool cachingEnabled;
+
+	/**
+	 * Boolean flag denoting whether a caching process in progress should be aborted.
+	 * To be used when caching is done in a different thread.
+	 */
+	bool cachingAbortRequested;
 
 	/**
 	 * Get all data stored in the file this reader uses, pruned by a specified zoom level and time

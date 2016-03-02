@@ -16,7 +16,7 @@
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
                        bool temporal,
                        int timeResolution) : filePath(path), temporal(temporal), dataType(dataType),
-	timeResolution(timeResolution) {
+	timeResolution(timeResolution), cachingAbortRequested(false) {
 	this->cachingEnabled = true;
 	this->pointDataSet = PointDataSet();
 
@@ -108,7 +108,8 @@ void JsonReader::indexDataPoints(rapidjson::Value& jsonValue, int depth) {
 			    depth,
 			    jsonValue[i]["timestamp"].GetInt(),
 			    jsonValue[i]["author"].GetString(),
-			    jsonValue[i]["content"].GetString()
+			    jsonValue[i]["content"].GetString(),
+			    jsonValue[i]["numberOfRetweets"].GetInt()
 			);
 			break;
 		case Data::PRECIPITATION: {
@@ -211,17 +212,33 @@ bool JsonReader::isCachingEnabled() const {
 void JsonReader::cacheAllData() {
 	this->setCachingEnabled(true);
 
-	for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
-	        i++) {
-		if (this->hasTemporalData()) {
-			for (float currentTime = 0.0f; currentTime <= 1.0f;
-			        currentTime += (this->endTime - this->startTime) / (this->timeResolution * 1.0f)) {
+	if (this->hasTemporalData()) {
+		for (int currentTime = 0; currentTime < this->getAmountOfTimeSteps(); currentTime++) {
+			for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
+			        i++) {
+				if (this->cachingAbortRequested) {
+					this->cachingAbortRequested = false;
+					return;
+				}
+
 				this->getVtkDataSet(i, currentTime);
 			}
-		} else {
+		}
+	} else {
+		for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
+		        i++) {
+			if (this->cachingAbortRequested) {
+				this->cachingAbortRequested = false;
+				return;
+			}
+
 			this->getVtkDataSet(i);
 		}
 	}
+}
+
+void JsonReader::abortCaching() {
+	this->cachingAbortRequested = true;
 }
 
 void JsonReader::clearCache() {

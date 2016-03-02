@@ -1,31 +1,31 @@
 #ifndef KRONOS_KRONOS_MAIN_H
 #define KRONOS_KRONOS_MAIN_H
 
-#include <View/vtkPVStuproView.h>
+#include <View/KronosView.h>
 
 #include <QObject>
 
 class Kronos : public QObject {
-    Q_OBJECT;
+	Q_OBJECT;
 
 public:
-    static Kronos* getInstance();
+	static Kronos* getInstance();
 
-    Kronos(QObject* parent = 0);
-    ~Kronos() {}
+	Kronos(QObject* parent = 0);
+	~Kronos() {}
 
 
-    /* listeners for paraview events */
-    void onStartup();
-    void onShutdown();
+	/* listeners for paraview events */
+	void onStartup();
+	void onShutdown();
 
-    /* getters/setters for class related properties */
-    bool isInitialized();
+	/* getters/setters for class related properties */
+	bool isInitialized();
 
 private:
-    static Kronos* instance;
+	static Kronos* instance;
 
-    bool initialized;
+	bool initialized;
 };
 
 #endif

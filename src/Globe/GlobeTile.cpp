@@ -1,9 +1,9 @@
 #include <Globe/Globe.hpp>
 #include <Globe/GlobeTile.hpp>
-#include <Macros.hpp>
 #include <Utils/Config/Configuration.hpp>
 #include <Utils/Graphics/TextureLoad.hpp>
 #include <Utils/Math/Functions.hpp>
+#include <Utils/Misc/Macros.hpp>
 #include <vtkMapper.h>
 #include <vtkOpenGLProperty.h>
 #include <vtkProp.h>
@@ -14,6 +14,7 @@
 #include <vtkUniformVariables.h>
 #include <algorithm>
 #include <cmath>
+#include <cstdbool>
 
 extern const char* GlobeShader_fsh;
 extern const char* GlobeShader_vsh;
@@ -31,6 +32,11 @@ GlobeTile::Location GlobeTile::Location::getWrappedLocation() const {
 RectF GlobeTile::Location::getBounds() const {
 	float size = 180.f / (1 << zoomLevel);
 	return RectF(longitude * size - 180.f, 90.f - latitude * size - size, size, size);
+}
+
+RectF GlobeTile::Location::getFlippedBounds() const {
+	RectF bounds = getBounds();
+	return RectF(bounds.x, bounds.h - bounds.y - 180.f, bounds.w, bounds.h);
 }
 
 Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const {
