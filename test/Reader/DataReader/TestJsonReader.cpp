@@ -72,6 +72,11 @@ TEST(TestJsonReader, ReadTwitterData) {
 	);
 
 	EXPECT_EQ(
+	    3,
+	    testDataPoint->getNumberOfRetweets()
+	);
+
+	EXPECT_EQ(
 	    1439280065,
 	    testDataPoint->getTimestamp()
 	);
