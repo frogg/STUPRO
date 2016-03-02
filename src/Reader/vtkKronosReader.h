@@ -26,6 +26,11 @@ public:
 	 * @param z Z value of the camera position
 	 */
 	void SetCameraPosition(double x, double y, double z);
+	
+	/**
+	 * Abort and wait for any background data caching that may be in progress.
+	 */
+	void abortCaching();
 
 	/**
 	 * Initialize a new Kronos reader.

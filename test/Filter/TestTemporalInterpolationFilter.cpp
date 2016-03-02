@@ -84,6 +84,8 @@ TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 
 	EXPECT_FLOAT_EQ(6.3016663, precipitationRateArray->GetTuple1(1));
 	EXPECT_FLOAT_EQ(PrecipitationDataPoint::NONE, precipitationTypeArray->GetTuple1(1));
+	
+	kronosReader->abortCaching();
 }
 
 TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
@@ -137,6 +139,8 @@ TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
 
 	EXPECT_FLOAT_EQ(22.14, temperatureArray->GetTuple1(0));
 	EXPECT_FLOAT_EQ(18.8, temperatureArray->GetTuple1(1));
+	
+	kronosReader->abortCaching();
 }
 
 TEST(TestTemporalInterpolationFilter, TestWindData) {
@@ -233,6 +237,8 @@ TEST(TestTemporalInterpolationFilter, TestWindData) {
 	EXPECT_FLOAT_EQ(0.74399048, windVelocityArray->GetTuple3(0)[0]);
 	EXPECT_FLOAT_EQ(0.37908211, windVelocityArray->GetTuple3(0)[1]);
 	EXPECT_FLOAT_EQ(0, windVelocityArray->GetTuple3(0)[2]);
+	
+	kronosReader->abortCaching();
 }
 
 TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
@@ -286,4 +292,6 @@ TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
 
 	EXPECT_FLOAT_EQ(0.645, cloudCoverageArray->GetTuple1(0));
 	EXPECT_FLOAT_EQ(0.63, cloudCoverageArray->GetTuple1(1));
+	
+	kronosReader->abortCaching();
 }
