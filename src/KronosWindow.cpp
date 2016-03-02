@@ -1,15 +1,19 @@
+#include <KronosWindow.hpp>
+#include "ui_KronosWindow.h"
+
 #include <pqHelpReaction.h>
 #include <pqParaViewBehaviors.h>
 #include <pqParaViewMenuBuilders.h>
-#include <qmainwindow.h>
-#include <qnamespace.h>
-#include <qstring.h>
-#include <KronosWindow.hpp>
 #include <pqActiveObjects.h>
 #include <pqObjectBuilder.h>
 #include <pqApplicationCore.h>
+#include <pqDeleteReaction.h>
+#include <pqLoadDataReaction.h>
 
-#include "ui_KronosWindow.h"
+#include <qurl.h>
+#include <qmainwindow.h>
+#include <qnamespace.h>
+#include <qstring.h>
 
 /**
  * This class basically provides the default ParaView
@@ -84,4 +88,29 @@ KronosWindow::~KronosWindow() {
 void KronosWindow::showHelpForProxy(const QString& proxyname) {
 	pqHelpReaction::showHelp(
 	    QString("qthelp://paraview.org/paraview/%1.html").arg(proxyname));
+}
+
+void KronosWindow::dragEnterEvent(QDragEnterEvent *evt) {
+	evt->acceptProposedAction();
+}
+
+void KronosWindow::dropEvent(QDropEvent *evt) {
+	QList<QUrl> urls = evt->mimeData()->urls();
+	if (urls.isEmpty()) {
+	return;
+	}
+
+	QList<QString> files;
+
+	foreach(QUrl url,urls) {
+		if (!url.toLocalFile().isEmpty()) {
+			files.append(url.toLocalFile());
+		}
+	}
+
+	if (files.empty() || files.first().isEmpty()) {
+		return;
+	}
+	
+	pqLoadDataReaction::loadData(files);
 }

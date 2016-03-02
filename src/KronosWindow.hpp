@@ -5,6 +5,9 @@
 #include <qobjectdefs.h>
 #include <qstring.h>
 
+#include <QDragEnterEvent>
+#include <QDropEvent>
+
 /**
  * This class is the main window used to start our
  * custom application.
@@ -16,6 +19,10 @@ class KronosWindow : public QMainWindow {
 public:
 	KronosWindow();
 	~KronosWindow();
+	
+protected:
+	void dragEnterEvent(QDragEnterEvent *evt);
+	void dropEvent(QDropEvent *evt);
 
 protected slots:
 	void showHelpForProxy(const QString& proxyname);
