@@ -92,7 +92,7 @@ private:
 	 * Unique pointer to the `JsonReader` that is used with this reader.
 	 */
 	std::unique_ptr<JsonReader> jsonReader;
-	
+
 	/**
 	 * This thread will pre-cache data in the background once the reader has been created.
 	 */

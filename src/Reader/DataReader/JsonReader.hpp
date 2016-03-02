@@ -97,7 +97,7 @@ public:
 	 * Clear all cached vtkPolyData.
 	 */
 	void clearCache();
-	
+
 	/**
 	 * Abort a caching process that may be in progress.
 	 */
@@ -154,7 +154,7 @@ private:
 	 * Boolean flag denoting whether a cache should be used
 	 */
 	bool cachingEnabled;
-	
+
 	/**
 	 * Boolean flag denoting whether a caching process in progress should be aborted.
 	 * To be used when caching is done in a different thread.

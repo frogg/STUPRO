@@ -211,30 +211,30 @@ bool JsonReader::isCachingEnabled() const {
 
 void JsonReader::cacheAllData() {
 	this->setCachingEnabled(true);
-    
-    if (this->hasTemporalData()) {
-        for (int currentTime = 0; currentTime < this->getAmountOfTimeSteps(); currentTime++) {            
-            for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
-        	        i++) {
-                if (this->cachingAbortRequested) {
-                    this->cachingAbortRequested = false;
-                    return;
-                }
-                
-        		this->getVtkDataSet(i, currentTime);
-        	}
-        }
-    } else {
-        for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
-    	        i++) {
-            if (this->cachingAbortRequested) {
-                this->cachingAbortRequested = false;
-                return;
-            }
-            
-    		this->getVtkDataSet(i);
-    	}
-    }
+
+	if (this->hasTemporalData()) {
+		for (int currentTime = 0; currentTime < this->getAmountOfTimeSteps(); currentTime++) {
+			for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
+			        i++) {
+				if (this->cachingAbortRequested) {
+					this->cachingAbortRequested = false;
+					return;
+				}
+
+				this->getVtkDataSet(i, currentTime);
+			}
+		}
+	} else {
+		for (int i = 0; i <= Configuration::getInstance().getInteger("dataReader.maximumPriority");
+		        i++) {
+			if (this->cachingAbortRequested) {
+				this->cachingAbortRequested = false;
+				return;
+			}
+
+			this->getVtkDataSet(i);
+		}
+	}
 }
 
 void JsonReader::abortCaching() {
