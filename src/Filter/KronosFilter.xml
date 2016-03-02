@@ -24,13 +24,13 @@
 				<BooleanDomain name="bool"/>
 	    	</IntVectorProperty>
         </SourceProxy>
-    	<SourceProxy name="GenerateGeodesics" class="GenerateGeodesics" label="Kronos Generate Flight Geodesics">
+        <SourceProxy name="GenerateGeodesics" class="GenerateGeodesics" label="Kronos Generate Flight Geodesics">
             <Documentation
                 long_help=""
                 short_help="">
             </Documentation>
             <InputProperty name="Input"
-                           command="SetInputConnection">
+                command="SetInputConnection">
                 <ProxyGroupDomain name="groups">
                     <Group name="sources"/>
                     <Group name="filters"/>
@@ -40,23 +40,23 @@
                 </DataTypeDomain>
             </InputProperty>
             <DoubleVectorProperty name="ArcSize"
-            			command="setArcSize"
-            			number_of_elements="1"
-            			default_values="0.0">
-            	<DoubleRangeDomain name="arc" min="0.0" max="1.0" />
-	    	</DoubleVectorProperty>
+                command="setArcSize"
+                number_of_elements="1"
+                default_values="0.0">
+                <DoubleRangeDomain name="arc" min="0.0" max="1.0" />
+            </DoubleVectorProperty>
             <DoubleVectorProperty name="Level of detail"
-            			command="setLoD"
-            			number_of_elements="1"
-            			default_values="0.0">
-            	<DoubleRangeDomain name="Level of detail" min="0.0" max="1.0" />
-	    	</DoubleVectorProperty>
-	    	<IntVectorProperty name="limit calculation depth"
-            			command="setLimitDepth"
-            			number_of_elements="1"
-            			default_values="1">
-				<BooleanDomain name="bool"/>
-	    	</IntVectorProperty>
+                command="setLoD"
+                number_of_elements="1"
+                default_values="0.0">
+                <DoubleRangeDomain name="Level of detail" min="0.0" max="1.0" />
+            </DoubleVectorProperty>
+            <IntVectorProperty name="limit calculation depth"
+                command="setLimitDepth"
+                number_of_elements="1"
+                default_values="1">
+                <BooleanDomain name="bool"/>
+            </IntVectorProperty>
         </SourceProxy>
 		<SourceProxy name="TerrainHeightFilter" class="TerrainHeightFilter"
 			label="Kronos Terrain Height">

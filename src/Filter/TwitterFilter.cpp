@@ -77,7 +77,7 @@ bool TwitterFilter::shouldDisplayBasedOnTweetContent(QString content) {
 	}
 
 	for (int i = 0; i < visibleKeywords.count(); i++) {
-		//only filter for hashtags
+		// Only filter for hashtags
 		if (content.contains(this->visibleKeywords.at(i), Qt::CaseInsensitive)) {
 			return true;
 		}
