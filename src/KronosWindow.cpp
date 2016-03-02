@@ -61,7 +61,8 @@ KronosWindow::KronosWindow() {
 	this->tabifyDockWidget(this->Internals->colorMapEditorDock, this->Internals->memoryInspectorDock);
 	this->tabifyDockWidget(this->Internals->colorMapEditorDock, this->Internals->timeInspectorDock);
 	this->tabifyDockWidget(this->Internals->colorMapEditorDock, this->Internals->comparativePanelDock);
-	this->tabifyDockWidget(this->Internals->colorMapEditorDock, this->Internals->collaborationPanelDock);
+	this->tabifyDockWidget(this->Internals->colorMapEditorDock,
+	                       this->Internals->collaborationPanelDock);
 
 	this->Internals->selectionDisplayDock->hide();
 	this->Internals->animationViewDock->hide();
@@ -80,9 +81,10 @@ KronosWindow::KronosWindow() {
 	this->tabifyDockWidget(this->Internals->propertiesDock, this->Internals->displayPropertiesDock);
 	this->tabifyDockWidget(this->Internals->propertiesDock, this->Internals->informationDock);
 
-	pqSettings *settings = pqApplicationCore::instance()->settings();
-	int propertiesPanelMode = settings->value("GeneralSettings.PropertiesPanelMode", vtkPVGeneralSettings::ALL_IN_ONE).toInt();
-	
+	pqSettings* settings = pqApplicationCore::instance()->settings();
+	int propertiesPanelMode = settings->value("GeneralSettings.PropertiesPanelMode",
+	                          vtkPVGeneralSettings::ALL_IN_ONE).toInt();
+
 	switch (propertiesPanelMode) {
 	case vtkPVGeneralSettings::SEPARATE_DISPLAY_PROPERTIES:
 		delete this->Internals->viewPropertiesPanel;
@@ -91,7 +93,7 @@ KronosWindow::KronosWindow() {
 		this->Internals->viewPropertiesDock = NULL;
 
 		this->Internals->propertiesPanel->setPanelMode(
-		pqPropertiesPanel::SOURCE_PROPERTIES|pqPropertiesPanel::VIEW_PROPERTIES);
+		    pqPropertiesPanel::SOURCE_PROPERTIES | pqPropertiesPanel::VIEW_PROPERTIES);
 		break;
 
 	case vtkPVGeneralSettings::SEPARATE_VIEW_PROPERTIES:
@@ -100,7 +102,8 @@ KronosWindow::KronosWindow() {
 		this->Internals->displayPropertiesPanel = NULL;
 		this->Internals->displayPropertiesDock = NULL;
 
-		this->Internals->propertiesPanel->setPanelMode(pqPropertiesPanel::SOURCE_PROPERTIES|pqPropertiesPanel::DISPLAY_PROPERTIES);
+		this->Internals->propertiesPanel->setPanelMode(pqPropertiesPanel::SOURCE_PROPERTIES |
+		        pqPropertiesPanel::DISPLAY_PROPERTIES);
 		break;
 
 	case vtkPVGeneralSettings::ALL_SEPARATE:
@@ -126,16 +129,19 @@ KronosWindow::KronosWindow() {
 
 	// Enable help from the properties panel.
 	QObject::connect(this->Internals->propertiesPanel,
-	SIGNAL(helpRequested(const QString&, const QString&)), this, SLOT(showHelpForProxy(const QString&, const QString&)));
+	                 SIGNAL(helpRequested(const QString&, const QString&)), this, SLOT(showHelpForProxy(const QString&,
+	                         const QString&)));
 
 	/// Hook delete to pqDeleteReaction.
 	QAction* tempDeleteAction = new QAction(this);
 	pqDeleteReaction* handler = new pqDeleteReaction(tempDeleteAction);
-	handler->connect(this->Internals->propertiesPanel, SIGNAL(deleteRequested(pqPipelineSource*)), SLOT(deleteSource(pqPipelineSource*)));
+	handler->connect(this->Internals->propertiesPanel, SIGNAL(deleteRequested(pqPipelineSource*)),
+	                 SLOT(deleteSource(pqPipelineSource*)));
 
 	// Set up color editor
 	/// Provide access to the color-editor panel for the application.
-	pqApplicationCore::instance()->registerManager("COLOR_EDITOR_PANEL", this->Internals->colorMapEditorDock);
+	pqApplicationCore::instance()->registerManager("COLOR_EDITOR_PANEL",
+	        this->Internals->colorMapEditorDock);
 
 	// Populate application menus with actions.
 	pqParaViewMenuBuilders::buildFileMenu(*this->Internals->menu_File);
@@ -171,7 +177,7 @@ KronosWindow::KronosWindow() {
 	// Final step, define application behaviors. Since we want all ParaView
 	// behaviors, we use this convenience method.
 	new pqParaViewBehaviors(this, this);
-	
+
 	// Enable help for from the object inspector.
 	/*QObject::connect(this->Internals->proxyTabWidget,
 		SIGNAL(helpRequested(QString)),
@@ -192,11 +198,11 @@ void KronosWindow::showHelpForProxy(const QString& proxyname) {
 	    QString("qthelp://paraview.org/paraview/%1.html").arg(proxyname));
 }
 
-void KronosWindow::dragEnterEvent(QDragEnterEvent *evt) {
+void KronosWindow::dragEnterEvent(QDragEnterEvent* evt) {
 	evt->acceptProposedAction();
 }
 
-void KronosWindow::dropEvent(QDropEvent *evt) {
+void KronosWindow::dropEvent(QDropEvent* evt) {
 	QList<QUrl> urls = evt->mimeData()->urls();
 	if (urls.isEmpty()) {
 		return;
@@ -204,7 +210,7 @@ void KronosWindow::dropEvent(QDropEvent *evt) {
 
 	QList<QString> files;
 
-	foreach(QUrl url,urls) {
+	foreach (QUrl url, urls) {
 		if (!url.toLocalFile().isEmpty()) {
 			files.append(url.toLocalFile());
 		}
@@ -213,6 +219,6 @@ void KronosWindow::dropEvent(QDropEvent *evt) {
 	if (files.empty() || files.first().isEmpty()) {
 		return;
 	}
-	
+
 	pqLoadDataReaction::loadData(files);
 }

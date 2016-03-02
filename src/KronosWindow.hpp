@@ -19,10 +19,10 @@ class KronosWindow : public QMainWindow {
 public:
 	KronosWindow();
 	~KronosWindow();
-	
+
 protected:
-	void dragEnterEvent(QDragEnterEvent *evt);
-	void dropEvent(QDropEvent *evt);
+	void dragEnterEvent(QDragEnterEvent* evt);
+	void dropEvent(QDropEvent* evt);
 
 protected slots:
 	void showHelpForProxy(const QString& proxyname);
