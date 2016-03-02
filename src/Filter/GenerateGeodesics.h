@@ -13,8 +13,8 @@ public:
 	void PrintSelf(ostream& os, vtkIndent indent) override;
 
 	int RequestData(vtkInformation* info,
-					vtkInformationVector** inputVector,
-					vtkInformationVector* outputVector) override;
+	                vtkInformationVector** inputVector,
+	                vtkInformationVector* outputVector) override;
 
 	int FillOutputPortInformation(int, vtkInformation* info) override;
 
@@ -60,7 +60,7 @@ private:
 	 * @param dataSet the data set to insert the points
 	 */
 	void insertNextFlight(const Vector3<double>& start, const Vector3<double>& end,
-						  vtkPolyData* const dataSet);
+	                      vtkPolyData* const dataSet);
 
 	/**
 	 * @brief insertAndConnectPoints insert and connect the points.
@@ -78,7 +78,7 @@ private:
 	 * @return the center point of a circle through point1 and point2 with radius
 	 */
 	Vector3<double> getCircleCenterPoint(const Vector3<double>& point1, const Vector3<double>& point2,
-										 double radius);
+	                                     double radius);
 
 	/**
 	 * @brief getPointInbetween calculates point between point1 and point2.
@@ -89,7 +89,7 @@ private:
 	 * @return a point inbetween
 	 */
 	Vector3<double> getPointInbetween(const Vector3<double>& point1, const Vector3<double>& point2,
-									  const Vector3<double>& center);
+	                                  const Vector3<double>& center);
 
 	/**
 	 * @brief movePointToOppositeSide translates the point to the opposite side of the map(that is +- 180 lat)

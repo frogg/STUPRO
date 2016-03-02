@@ -127,7 +127,7 @@ template<typename T> T abs(const Vector3<T>& gps) {
  * @return the distance of the two points
  */
 template<typename T> float distance(const Vector3<T>& point1, const Vector3<T>& point2) {
-    return (sphericalToCartesian(point1) - sphericalToCartesian(point2)).length();
+	return (sphericalToCartesian(point1) - sphericalToCartesian(point2)).length();
 }
 
 /**
