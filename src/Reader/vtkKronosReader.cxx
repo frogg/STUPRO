@@ -35,8 +35,11 @@ vtkKronosReader::vtkKronosReader() : error(false), zoomLevel(0) {
 }
 
 vtkKronosReader::~vtkKronosReader() {
-	this->jsonReader->abortCaching();
-	this->cacheThread.join();
+	if (this->jsonReader) {
+		this->jsonReader->abortCaching();
+		this->cacheThread.join();
+	}
+	
 	this->jsonReader.reset();
 }
 
