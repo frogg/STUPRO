@@ -39,14 +39,7 @@
 
 template<typename... Args>
 inline void kronos_log(const char* debugLevel, const char* function, const char* file, int line,
-                       const char* message, Args... args) {
-	char formatted[KRONOS_MAX_LOG_MSG_LENGTH];
-
-#ifndef _MSC_VER
-	snprintf(formatted, KRONOS_MAX_LOG_MSG_LENGTH, message, args...);
-#else
-	sprintf_s(formatted, KRONOS_MAX_LOG_MSG_LENGTH, message, args...);
-#endif
+					   const char *const formatted) {
 
 	std::cout << debugLevel << " "
 	          << function
@@ -55,21 +48,29 @@ inline void kronos_log(const char* debugLevel, const char* function, const char*
 #endif
 	          << ": " << formatted
 	          << COLOR_DEFAULT << std::endl;
-};
-
-template<typename... Args>
-inline void kronos_log(const char* debugLevel, const char* function, const char* file, int line,
-                       const QString message, Args... args) {
-	kronos_log(debugLevel, function, file, line, message.toStdString().c_str(), args...);
-};
+}
 
 #ifdef KRONOS_ENABLE_LOGGING
-	#define KRONOS_LOG_VERBOSE(message, ...) kronos_log(COLOR_GREY   "[VERBOSE]" COLOR_DEFAULT, FUNCTION_NAME, __FILE__, __LINE__, message, ##__VA_ARGS__)
-	#define KRONOS_LOG_DEBUG(message, ...)   kronos_log(COLOR_CYAN   "[ DEBUG ]" COLOR_DEFAULT, FUNCTION_NAME, __FILE__, __LINE__, message, ##__VA_ARGS__)
-	#define KRONOS_LOG_INFO(message, ...)    kronos_log(COLOR_BLUE   "[ INFO  ]" COLOR_DEFAULT, FUNCTION_NAME, __FILE__, __LINE__, message, ##__VA_ARGS__)
-	#define KRONOS_LOG_WARN(message, ...)    kronos_log(COLOR_YELLOW "[WARNING]" COLOR_DEFAULT, FUNCTION_NAME, __FILE__, __LINE__, message, ##__VA_ARGS__)
-	#define KRONOS_LOG_ERROR(message, ...)   kronos_log(COLOR_RED    "[ ERROR ]" COLOR_DEFAULT, FUNCTION_NAME, __FILE__, __LINE__, message, ##__VA_ARGS__)
-	#define KRONOS_LOG_FATAL(message, ...)   kronos_log(COLOR_RED    "[ FATAL ]"              , FUNCTION_NAME, __FILE__, __LINE__, message, ##__VA_ARGS__)
+	#ifndef _MSC_VER
+		#define KRONOS_LOG(level, message, ...) { \
+			char formatted[KRONOS_MAX_LOG_MSG_LENGTH]; \
+			snprintf(formatted, KRONOS_MAX_LOG_MSG_LENGTH, message, ##__VA_ARGS__); \
+			kronos_log(level, FUNCTION_NAME, __FILE__, __LINE__, formatted); \
+		}
+	#else
+		#define KRONOS_LOG(level, message, ...) { \
+			char formatted[KRONOS_MAX_LOG_MSG_LENGTH]; \
+			sprintf_s(formatted, KRONOS_MAX_LOG_MSG_LENGTH, message, ##__VA_ARGS__); \
+			kronos_log(level, FUNCTION_NAME, __FILE__, __LINE__, formatted); \
+		}
+	#endif
+
+	#define KRONOS_LOG_VERBOSE(message, ...) KRONOS_LOG(COLOR_GREY   "[VERBOSE]" COLOR_DEFAULT, message, ##__VA_ARGS__)
+	#define KRONOS_LOG_DEBUG(message, ...)   KRONOS_LOG(COLOR_CYAN   "[ DEBUG ]" COLOR_DEFAULT, message, ##__VA_ARGS__)
+	#define KRONOS_LOG_INFO(message, ...)    KRONOS_LOG(COLOR_BLUE   "[ INFO  ]" COLOR_DEFAULT, message, ##__VA_ARGS__)
+	#define KRONOS_LOG_WARN(message, ...)    KRONOS_LOG(COLOR_YELLOW "[WARNING]" COLOR_DEFAULT, message, ##__VA_ARGS__)
+	#define KRONOS_LOG_ERROR(message, ...)   KRONOS_LOG(COLOR_RED    "[ ERROR ]" COLOR_DEFAULT, message, ##__VA_ARGS__)
+	#define KRONOS_LOG_FATAL(message, ...)   KRONOS_LOG(COLOR_RED    "[ FATAL ]"              , message, ##__VA_ARGS__)
 #else
 	#define KRONOS_LOG_VERBOSE(message, ...) /* */
 	#define KRONOS_LOG_DEBUG(message, ...) /* */
