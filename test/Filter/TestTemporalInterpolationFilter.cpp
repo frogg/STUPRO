@@ -13,7 +13,6 @@
 
 #include <qlist.h>
 
-/*#ifndef TRAVIS
 TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
@@ -288,5 +287,3 @@ TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
 	EXPECT_FLOAT_EQ(0.645, cloudCoverageArray->GetTuple1(0));
 	EXPECT_FLOAT_EQ(0.63, cloudCoverageArray->GetTuple1(1));
 }
-#endif
-*/
