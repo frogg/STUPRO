@@ -55,6 +55,43 @@ template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T 
     
 }
 
+/**
+ * Convert the spherical (gps) to the cartesian representation, with flat map projection
+ * @param gps the gps position to convert
+ * @return the cartesian position of gps
+ */
+template<typename T> Vector3<T> sphericalToCartesianFlat(const Vector3<T>& gps) {
+
+    Vector3<T> retVal;
+    
+	// Scale to 2D map size
+    retVal.x = (gps.x / 90.0) * getGlobeRadius();
+    retVal.y = (gps.y / 90.0) * getGlobeRadius();
+    retVal.z = gps.z;
+    
+    return retVal;
+}
+
+template<typename T> void sphericalToCartesianFlatJacobian(const Vector3<T>& gps, T jacobian[3][3]) {
+
+	T factor = (1.0 / 90.0) * getGlobeRadius();
+	
+    //calculate first row of jacobian
+    jacobian[0][0] = factor;
+    jacobian[0][1] = 0;
+    jacobian[0][2] = 0;
+    
+    //calculate second row of jacobian
+    jacobian[1][0] = 0;
+    jacobian[1][1] = factor;
+    jacobian[1][2] = 0;
+    
+    //calculate third row of jacobian
+    jacobian[2][0] = 0;
+    jacobian[2][1] = 0;
+    jacobian[2][2] = 1;
+}
+
 
 
 /**
