@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <Filter/TemporalInterpolationFilter.h>
+#include <Filter/HeatmapDensityFilter.h>
 #include <Reader/DataReader/DataPoints/TemporalDataPoints/PrecipitationDataPoint.hpp>
 #include <Reader/vtkKronosReader.h>
 #include <Utils/Math/Vector3.hpp>
@@ -292,6 +293,47 @@ TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
 
 	EXPECT_FLOAT_EQ(0.645, cloudCoverageArray->GetTuple1(0));
 	EXPECT_FLOAT_EQ(0.63, cloudCoverageArray->GetTuple1(1));
+
+	kronosReader->abortCaching();
+}
+
+TEST(TestTemporalInterpolationFilter, TestTwitterDensityData) {
+	// Read some test data
+	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/twitter-test-data.kJson");
+	
+	// Set up the density heatmap filter and its input
+	vtkSmartPointer<HeatmapDensityFilter> densityFilter = HeatmapDensityFilter::New();
+	densityFilter->SetInputConnection(kronosReader->GetOutputPort());
+	densityFilter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::TWEETS);
+	densityFilter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
+	densityFilter->setHorizontalHeatmapResolution(1);
+	densityFilter->setVerticalHeatmapResolution(1);
+	densityFilter->Update();
+
+	// Set up the temporal interpolation filter and its input
+	vtkSmartPointer<TemporalInterpolationFilter> interpolationFilter = TemporalInterpolationFilter::New();
+	interpolationFilter->SetInputConnection(densityFilter->GetOutputPort());
+
+	// Test an intermediate value
+	interpolationFilter->GetOutputInformation(0)->Set(vtkStreamingDemandDrivenPipeline::UPDATE_TIME_STEP(), 0.5);
+	interpolationFilter->Update();
+
+	// Run the filter on the input data
+	vtkSmartPointer<vtkPolyData> outputDataSet = vtkSmartPointer<vtkPolyData>::New();
+	outputDataSet->ShallowCopy(interpolationFilter->GetPolyDataOutput());
+
+	ASSERT_TRUE(outputDataSet);
+
+	// Extract the filter's output
+	vtkSmartPointer<vtkFloatArray> densityArray = vtkFloatArray::SafeDownCast(
+	            outputDataSet->GetPointData()->GetArray("density"));
+	ASSERT_TRUE(densityArray);
+
+	EXPECT_FLOAT_EQ(3.5, densityArray->GetTuple1(0));
+	EXPECT_FLOAT_EQ(3, densityArray->GetTuple1(1));
+	EXPECT_FLOAT_EQ(3.5, densityArray->GetTuple1(2));
+	EXPECT_FLOAT_EQ(3, densityArray->GetTuple1(3));
 
 	kronosReader->abortCaching();
 }
