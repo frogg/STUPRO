@@ -65,11 +65,16 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	 */
 	vtkDataArray* startPoints = input->GetPoints()->GetData();
 	vtkDataArray* destinationPoints = input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME);
-	vtkIntArray* inPrio = vtkIntArray::SafeDownCast(input->GetPointData()->GetArray(PRIORITY_ARRAY_NAME));
-	vtkStringArray* inAirline = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(AIRLINE_ARRAY_NAME));
-	vtkStringArray* inStartCode = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(START_CODE_ARRAY_NAME));
-	vtkStringArray* inDestCode = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(DEST_CODE_ARRAY_NAME));
-	vtkFloatArray* inFlightLength = vtkFloatArray::SafeDownCast(input->GetPointData()->GetArray(LENGTH_ARRAY_NAME));
+	vtkIntArray* inPrio = vtkIntArray::SafeDownCast(input->GetPointData()->GetArray(
+	                          PRIORITY_ARRAY_NAME));
+	vtkStringArray* inAirline = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(
+	                                AIRLINE_ARRAY_NAME));
+	vtkStringArray* inStartCode = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(
+	                                  START_CODE_ARRAY_NAME));
+	vtkStringArray* inDestCode = vtkStringArray::SafeDownCast(input->GetPointData()->GetAbstractArray(
+	                                 DEST_CODE_ARRAY_NAME));
+	vtkFloatArray* inFlightLength = vtkFloatArray::SafeDownCast(input->GetPointData()->GetArray(
+	                                    LENGTH_ARRAY_NAME));
 
 	vtkSmartPointer<vtkIntArray> priorities  = vtkSmartPointer<vtkIntArray>::New();
 	priorities->SetNumberOfComponents(1);
