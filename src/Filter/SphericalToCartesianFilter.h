@@ -20,6 +20,13 @@ public:
 	/**
 	 * Documentation see vtkAlgorithm
 	 */
+	int RequestData(vtkInformation *info,
+					vtkInformationVector **input,
+					vtkInformationVector *output) override;
+
+	/**
+	 * Documentation see vtkAlgorithm
+	 */
 	int FillOutputPortInformation(int, vtkInformation* info) override;
 
 	/**

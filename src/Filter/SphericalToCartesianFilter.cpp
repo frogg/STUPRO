@@ -21,7 +21,10 @@
 
 #include <vtkPVInformationKeys.h>
 #include <vtkAbstractTransform.h>
+
 #include "GeometryTransform.hpp"
+#include "Reader/DataReader/Data.hpp"
+#include "Utils/Misc/KronosLogger.hpp"
 
 #include <cmath>
 
@@ -39,6 +42,24 @@ vtkStandardNewMacro(SphericalToCartesianFilter)
 void SphericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
 	os << indent << "Spherical to cartesian coordinate conversion, Kronos Project" << endl;
+}
+
+int SphericalToCartesianFilter::RequestData(vtkInformation* info, vtkInformationVector** input,
+        vtkInformationVector* output) {
+
+	if (info->Get(Data::VTK_DATA_TRANSFORMATION()) == Data::TRANSFORMED) {
+		KRONOS_LOG_ERROR("The data set is already transformed");
+		return 1;
+	}
+	int retVal = Superclass::RequestData(info, input, output);
+
+	if (((GeometryTransform*) this->Transform)->getTransform()) {
+		output->GetInformationObject(0)->Set(Data::VTK_DATA_TRANSFORMATION(), Data::TRANSFORMED);
+	} else {
+		output->GetInformationObject(0)->Set(Data::VTK_DATA_TRANSFORMATION(), Data::CONDENSED);
+	}
+
+	return retVal;
 }
 
 int SphericalToCartesianFilter::FillOutputPortInformation(int, vtkInformation* info) {

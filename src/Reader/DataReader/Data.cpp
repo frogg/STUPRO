@@ -2,9 +2,10 @@
 
 #include <vtkInformationIntegerKey.h>
 
-vtkInformationKeyMacro(Data, VTK_DATA_TYPE, DataType);
-vtkInformationKeyMacro(Data, VTK_DATA_STATE, DataState);
-vtkInformationKeyMacro(Data, VTK_TIME_RESOLUTION, TimeResolution);
+vtkInformationKeyMacro(Data, VTK_DATA_TYPE, DataType)
+vtkInformationKeyMacro(Data, VTK_DATA_STATE, DataState)
+vtkInformationKeyMacro(Data, VTK_TIME_RESOLUTION, TimeResolution)
+vtkInformationKeyMacro(Data, VTK_DATA_TRANSFORMATION, DataTransformation)
 
 static QMap<Data::Type, QString> dataTypeNameMap() {
 	QMap<Data::Type, QString> map;
@@ -28,6 +29,15 @@ static QMap<Data::State, QString> dataStateNameMap() {
 }
 const QMap<Data::State, QString> Data::DATA_STATE_NAMES = dataStateNameMap();
 
+static QMap<Data::Transformation, QString> dataTransformationNameMap() {
+	QMap<Data::Transformation, QString> map;
+	map.insert(Data::UNTRANSFORMED, "Untransformed");
+	map.insert(Data::CONDENSED, "Condensed to the map size");
+	map.insert(Data::TRANSFORMED, "Transformed");
+	return map;
+}
+const QMap<Data::Transformation, QString> Data::DATA_TRANSFORMATION_NAMES = dataTransformationNameMap();
+
 bool Data::isTemporal(const Data::Type dataType) {
 	return (
 	           dataType == TWEETS || dataType == PRECIPITATION || dataType == TEMPERATURE ||
@@ -41,4 +51,8 @@ QString Data::getDataTypeName(const Data::Type dataType) {
 
 QString Data::getDataStateName(const Data::State dataState) {
 	return Data::DATA_STATE_NAMES.value(dataState);
+}
+
+QString Data::getDataTransformationName(const Data::Transformation dataTransformation) {
+	return Data::DATA_TRANSFORMATION_NAMES.value(dataTransformation);
 }
