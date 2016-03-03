@@ -41,6 +41,10 @@ int AbstractSelectionFilter::RequestData(vtkInformation* info,
 		if (this->evaluatePoint(i, Coordinate(coordinates[0], coordinates[1]), inputData->GetPointData())) {
 			selectedPoints.append(i);
 		}
+
+		if (this->error) {
+			return 0;
+		}
 	}
 
 	// Create the content of the output poly data object

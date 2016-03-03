@@ -1,6 +1,6 @@
 {
   "globe": {
-    "radius": 1.0,
+    "radius": 90.0,
     "flatMapSize" : {
       "width": 4.0,
       "height": 2.0
