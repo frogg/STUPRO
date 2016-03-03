@@ -48,7 +48,6 @@ public:
 	 */
 	virtual bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) = 0;
 
-protected:
 	/**
 	 * Display an error message and remember that this filter does not hold valid data.
 	 * @param message The error message to be shown to the user

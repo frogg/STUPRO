@@ -572,9 +572,10 @@ void Globe::updateTileVisibilityImpl(bool forceUpdate) {
 	bool isMatrixSame = true;
 	for (std::size_t i = 0; i < myCachedCameraMatrix.size(); ++i) {
 		// Compare matrix elements to cached matrix. Copy elements to cache if they are different.
-		if (myCachedCameraMatrix[i] != (*(*fullTransform)[i])) {
+		double cell = (*fullTransform)[i % 4][i / 4];
+		if (myCachedCameraMatrix[i] != cell) {
 			isMatrixSame = false;
-			myCachedCameraMatrix[i] = (*(*fullTransform)[i]);
+			myCachedCameraMatrix[i] = cell;
 		}
 	}
 

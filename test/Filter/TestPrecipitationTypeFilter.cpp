@@ -52,6 +52,7 @@ TEST(TestPrecipitationTypeFilter, TestFilter) {
 	vtkSmartPointer<PrecipitationTypeFilter> filter = PrecipitationTypeFilter::New();
 	filter->SetInputData(0, inputDataSet);
 	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::PRECIPITATION);
+	filter->GetInputInformation()->Set(Data::VTK_DATA_STATE(), Data::RAW);
 	filter->Update();
 
 	// Test the filter's output without excluding any precipitation type
