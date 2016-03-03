@@ -1,7 +1,6 @@
 #include <Utils/TileDownload/ClientTileRequestWorker.hpp>
 
 #include <Utils/Misc/MakeUnique.hpp>
-#include <Utils/Misc/KronosLogger.hpp>
 
 #include <QNetworkRequest>
 #include <QRegExp>
@@ -24,12 +23,6 @@ ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
 ClientTileRequestWorker::~ClientTileRequestWorker() { }
 
 void ClientTileRequestWorker::scheduleJob(WorkerJob job) {
-	KRONOS_LOG_DEBUG("scheduling download job for (%d,%d,%d)",
-	                 job.incompleteTile.getZoomLevel(),
-	                 job.incompleteTile.getTileX(),
-	                 job.incompleteTile.getTileY()
-	                );
-
 	this->jobQueue.append(job);
 }
 
@@ -61,8 +54,10 @@ void ClientTileRequestWorker::processJobQueue() {
 }
 
 void ClientTileRequestWorker::handleAbortRequest() {
-	KRONOS_LOG_DEBUG("downloader received abort");
-	// abort all pending replies
+    // cancel jobs which aren't started yet
+    this->jobQueue.clear();
+
+    // abort all pending replies
 	for (auto job : this->pendingDownloadJobs) {
 		for (auto reply : job->pendingReplies) {
 			reply->abort();
@@ -78,22 +73,22 @@ void ClientTileRequestWorker::removeDownloadJob(ImageDownloadJob* downloadJob) {
 }
 
 void ClientTileRequestWorker::downloadFinished(QNetworkReply* reply) {
-	KRONOS_LOG_DEBUG("download finished");
-
-	// delete the reply as soon as control is returned to the event loop
-	reply->deleteLater();
-
 	try {
 		this->handleDownload(reply);
 	} catch (std::exception const& e) {
-		KRONOS_LOG_DEBUG("download finished with exception: %s", e.what());
-		this->onTileFetchFailed(e);
+        // we'll need to create a new exception to throw. If we just pass on the exception we just
+        // catched, its copy constructor will be called, effectively slicing off the derived part
+        // of the exception (which contains the actual error message)
+        // doing so, we'll loose all type information on what exact error was thrown, but at least
+        // the error message is correct
+		this->onTileFetchFailed(KronosException(QString(e.what())));
 	}
+
+    // delete the reply as soon as control is returned to the event loop
+	reply->deleteLater();
 }
 
 void ClientTileRequestWorker::handleDownload(QNetworkReply* reply) {
-	KRONOS_LOG_DEBUG("handling download");
-
 	// get and remove the metadata object from the reply -> replyJobMeta map. Putting it into a
 	// unique_ptr will make sure that the object is deleted as soon as we leave the current scope.
 	std::unique_ptr<ImageDownloadJobMetaData> meta(this->replyJobMetaMapping.take(reply));
@@ -148,7 +143,6 @@ void ClientTileRequestWorker::handleDownload(QNetworkReply* reply) {
 }
 
 void ClientTileRequestWorker::checkStatusCode(QNetworkReply* reply) {
-	KRONOS_LOG_DEBUG("checking download status code");
 	QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
 	if (!statusCode.isValid()) {
 		throw InvalidReplyException();
@@ -160,7 +154,6 @@ void ClientTileRequestWorker::checkStatusCode(QNetworkReply* reply) {
 
 void ClientTileRequestWorker::handleReplyContent(QNetworkReply* reply,
         ImageDownloadJobMetaData* meta) {
-	KRONOS_LOG_DEBUG("handling reply content");
 	std::unique_ptr<MetaImage> metaImage = nullptr;
 
 	meta->job->missingLayers.remove(meta->layer);
@@ -196,7 +189,6 @@ void ClientTileRequestWorker::handleReplyContent(QNetworkReply* reply,
 }
 
 MetaImage ClientTileRequestWorker::decodeBil16(const QByteArray& rawData, int width, int height) {
-	KRONOS_LOG_DEBUG("decoding bil16");
 	// ensure the raw data contains two bytes of data for every pixel of the image
 	if (rawData.size() != width * height * 2) {
 		QString errorMessage("Expected raw data length of %1b, but %2b were given");
