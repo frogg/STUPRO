@@ -26,15 +26,6 @@
             <Documentation>
                 Representation to visualize Input from Kronos Reader.
             </Documentation>
-             <PropertyGroup label="Miscellaneous">
-                 <IntVectorProperty name="SwitchDepthBuffer"
-                     command="switchDepthBuffer"
-                     number_of_elements="1"
-                     default_values="1">
-                     <BooleanDomain name="bool"
-                     panel_visibility="always"/>
-                 </IntVectorProperty>
-             </PropertyGroup>
 
         </RepresentationProxy>
 
