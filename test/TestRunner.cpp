@@ -31,10 +31,8 @@ int main(int argc, char* argv[]) {
 	setLoggerOutStream(out);
 
 	// start the test runner
-	KRONOS_LOG_INFO("Starting Test Runner");
 	KronosTestRunner runner(argc, argv);
 	int exitCode = runner.run();
-	KRONOS_LOG_INFO("Test Runner finished");
 
 	return exitCode;
 }
