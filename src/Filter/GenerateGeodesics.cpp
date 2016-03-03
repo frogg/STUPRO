@@ -39,7 +39,7 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	vtkPolyData* output = vtkPolyData::GetData(outputVector);
 
 	if (!input) {
-		vtkErrorMacro( << "Input Error. Aborting...");
+		KRONOS_LOG_ERROR("Input Error. Aborting...");
 		return 0;
 	}
 
@@ -48,10 +48,12 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	if (!input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)
 	        || input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() !=
 	        numberOfFlights) {
-		vtkErrorMacro( << "The input data has an unexpected format. Details:" << endl
-		               << "    Number of input arrays: " << input->GetPointData()->GetNumberOfArrays() << endl
-		               << "    Array size: " << numberOfFlights << " and "
-		               << input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples());
+		KRONOS_LOG_ERROR("The input data has an unexpected format. Details:\n"
+		                 "    Number of input arrays: %i\n"
+		                 "    Array size: %i and %i",
+		                 input->GetPointData()->GetNumberOfArrays(),
+		                 numberOfFlights,
+		                 input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples());
 		return 0;
 	}
 
@@ -199,10 +201,9 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 			treeDepth--;
 		}
 		if (this->limitCalcDepth && treeDepth > 10) {
-			vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point."
-			                 << endl
-			                 << "Remove the limit of the calculation depth if you need more detail. This may"
-			                 << " result in an infinity loop though, so be careful.")
+			KRONOS_LOG_WARN("  ==>> Possibly caught in infinite calculation. Advancing to next point.\n"
+			                "Remove the limit of the calculation depth if you need more detail. This may"
+			                " result in an infinity loop though, so be careful.");
 			index++;
 			treeDepth--;
 		}
