@@ -44,9 +44,9 @@ void TestTileDownload::SetUpTestCase() {
 	npmInstall.start("npm install");
 	if (!npmInstall.waitForFinished(10000)) {
 		throw KronosException(
-			"Error executing `npm install`:\n"+
-			QString(npmInstall.readAllStandardError()) + "\n---\n" +
-			QString(npmInstall.readAllStandardOutput())
+		    "Error executing `npm install`:\n" +
+		    QString(npmInstall.readAllStandardError()) + "\n---\n" +
+		    QString(npmInstall.readAllStandardOutput())
 		);
 	}
 
@@ -59,7 +59,8 @@ void TestTileDownload::SetUpTestCase() {
 
 	// wait until the server started listening
 	QString stdOut = "";
-	while (!(stdOut += testServer->readAllStandardOutput()).contains("Tile Server started successfully")) {
+	while (!(stdOut +=
+	             testServer->readAllStandardOutput()).contains("Tile Server started successfully")) {
 		QString err = testServer->readAllStandardError();
 		if (testServer->readAllStandardError().size() != 0) {
 			throw KronosException("Server errored: %s" + err);
@@ -174,7 +175,7 @@ TEST_F(TestTileDownload, Client_AbortAllRequests) {
 		FAIL() << "future.get() should throw an exception";
 	} catch (std::exception const& e) {
 		EXPECT_TRUE(QString(e.what()).startsWith("The download was aborted."))
-				<< "future.get() should throw a DownloadAbortedException";
+		        << "future.get() should throw a DownloadAbortedException";
 	}
 
 	// make sure to delete the worker on Qt's main thread

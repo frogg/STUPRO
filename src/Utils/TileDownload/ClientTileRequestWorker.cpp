@@ -54,10 +54,10 @@ void ClientTileRequestWorker::processJobQueue() {
 }
 
 void ClientTileRequestWorker::handleAbortRequest() {
-    // cancel jobs which aren't started yet
-    this->jobQueue.clear();
+	// cancel jobs which aren't started yet
+	this->jobQueue.clear();
 
-    // abort all pending replies
+	// abort all pending replies
 	for (auto job : this->pendingDownloadJobs) {
 		for (auto reply : job->pendingReplies) {
 			reply->abort();
@@ -76,15 +76,15 @@ void ClientTileRequestWorker::downloadFinished(QNetworkReply* reply) {
 	try {
 		this->handleDownload(reply);
 	} catch (std::exception const& e) {
-        // we'll need to create a new exception to throw. If we just pass on the exception we just
-        // catched, its copy constructor will be called, effectively slicing off the derived part
-        // of the exception (which contains the actual error message)
-        // doing so, we'll loose all type information on what exact error was thrown, but at least
-        // the error message is correct
+		// we'll need to create a new exception to throw. If we just pass on the exception we just
+		// catched, its copy constructor will be called, effectively slicing off the derived part
+		// of the exception (which contains the actual error message)
+		// doing so, we'll loose all type information on what exact error was thrown, but at least
+		// the error message is correct
 		this->onTileFetchFailed(KronosException(QString(e.what())));
 	}
 
-    // delete the reply as soon as control is returned to the event loop
+	// delete the reply as soon as control is returned to the event loop
 	reply->deleteLater();
 }
 
