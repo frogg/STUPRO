@@ -3,10 +3,10 @@ sudo: required
 dist: trusty
 before_install:
   - sudo apt-get update > /dev/null
-  - sudo apt-get -q -y install cmake
-  - sudo apt-get -q -y install ccache
-  - sudo apt-get -q -y install openmpi-common openmpi-bin libopenmpi-dev
-  - sudo apt-get -q -y install libqt4-dev qt4-dev-tools libqt4-xmlpatterns
+  - sudo apt-get --no-install-recommends -q -y install cmake
+  - sudo apt-get --no-install-recommends -q -y install ccache
+  - sudo apt-get --no-install-recommends -q -y install openmpi-common openmpi-bin libopenmpi-dev
+  - sudo apt-get --no-install-recommends -q -y install libqt4-dev qt4-dev-tools libqt4-xmlpatterns
   # - sudo apt-get -qq install qtbase5-dev
 
   # run build preparation script
