@@ -510,6 +510,13 @@
                 default_values="0.01">
                 <DoubleRangeDomain name="range" min="0.0" max="1.0" />
             </DoubleVectorProperty>
+			<DoubleVectorProperty name="DensityDistance"
+                label="Absorptioni radius of points"
+                command="setDensityDistance"
+                number_of_elements="1"
+                default_values="1">
+                <DoubleRangeDomain name="range" min="1" max="10000" />
+            </DoubleVectorProperty>
         <PropertyGroup label="Data Point Reduction">
             <Property name="DataPercentage" />
         </PropertyGroup>
