@@ -1,4 +1,5 @@
 #include <Utils/TileDownload/ClientTileRequestWorker.hpp>
+#include <Utils/TileDownload/ImageCache.hpp>
 
 #include <Utils/Misc/MakeUnique.hpp>
 
@@ -184,7 +185,13 @@ void ClientTileRequestWorker::handleReplyContent(QNetworkReply* reply,
 	}
 
 	if (metaImage != nullptr) {
+		// add the image to the incomplete tile
 		meta->job->incompleteTile.getLayers()[meta->layer] = *metaImage;
+
+		// cache the image
+		ImageTile tile = meta->job->incompleteTile;
+		ImageCache::getInstance().cacheImage(*metaImage, meta->layer, tile.getZoomLevel(), tile.getTileX(),
+		                                     tile.getTileY());
 	}
 }
 

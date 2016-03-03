@@ -24,13 +24,12 @@ void ServerTileRequestWorker::handleAbortRequest() {
 void ServerTileRequestWorker::cacheRetrievalLoop() {
 	while (!this->isShutdownRequested()) {
 		// check if missing images now appeared in the cache
-		if (this->pendingCacheRetrievalJobs.isEmpty()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-			continue;
+		if (!this->pendingCacheRetrievalJobs.isEmpty()) {
+			WorkerJob job = this->pendingCacheRetrievalJobs.dequeue();
+			this->handleCacheRequest(job);
 		}
 
-		WorkerJob job = this->pendingCacheRetrievalJobs.dequeue();
-		this->handleCacheRequest(job);
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
