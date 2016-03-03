@@ -19,6 +19,7 @@ public:
 	 */
 	void setDataPercentage(double percentage);
 	void setDensityDistance(double distance);
+	void setKMeansEnabled(bool enableKMeans);
 
 protected:
 
@@ -48,7 +49,10 @@ private:
 	 * May be pretty slow for values that are close to 1.
 	 */
 	double dataPercentage;
+
 	double densityDistance;
+
+	bool kMeansEnabled;
 };
 
 #endif

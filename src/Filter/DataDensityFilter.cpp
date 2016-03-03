@@ -27,6 +27,11 @@ void DataDensityFilter::setDensityDistance(double distance) {
 	this->Modified();
 }
 
+void DataDensityFilter::setKMeansEnabled(bool kMeans) {
+	this->kMeansEnabled = kMeans;
+	this->Modified();
+}
+
 void DataDensityFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	this->Superclass::PrintSelf(os, indent);
 	os << indent << "Twitter Filter, Kronos Project" << endl;
@@ -105,29 +110,36 @@ void DataDensityFilter::NormalFilter(vtkPolyData* input, vtkPolyData* output) {
 	std::vector<int> absorbArray(input->GetNumberOfPoints(), -1);
 	vtkSmartPointer<vtkPoints> resultPoints =
 	    vtkSmartPointer<vtkPoints>::New();
-	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
-	vertices->Allocate(vertices->EstimateSize(1, resultPoints->GetNumberOfPoints()));
-	vertices->InsertNextCell(resultPoints->GetNumberOfPoints());
 
-	for (int r = 0; r < input->GetNumberOfPoints(); ++r) {
+
+	for (int r = 0; r < input->GetNumberOfPoints(); r++) {
 		if (absorbArray[r] == -1) {
 			double p[3];
 			input->GetPoint(r, p);
 			PointCoordinates firstCoords(p[1], p[2], p[3]);
 
-			for (int j = 0; j < input->GetNumberOfPoints(); ++j) {
+			for (int j = 0; j < input->GetNumberOfPoints(); j++) {
 				if (absorbArray[j] == -1) {
 					double o[3];
 					input->GetPoint(j, o);
 					PointCoordinates secondCoords(o[1], o[2], o[3]);
-					if (firstCoords.getDistanceTo(secondCoords) <= densityDistance) {
+					if (firstCoords.getDistanceTo(secondCoords) < densityDistance) {
 						absorbArray[j] = 0;
 					}
 				}
 			}
-			vertices->InsertCellPoint(resultPoints->InsertNextPoint(p));
+			resultPoints->InsertNextPoint(p);
 		}
 	}
+	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
+	vertices->Allocate(vertices->EstimateSize(1, resultPoints->GetNumberOfPoints()));
+	vertices->InsertNextCell(resultPoints->GetNumberOfPoints());
+
+	for (int i = 0; i < resultPoints->GetNumberOfPoints(); i++) {
+
+		vertices->InsertCellPoint(i);
+	}
+
 	output->SetPoints(resultPoints);
 	output->SetVerts(vertices);
 }
@@ -147,7 +159,11 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 	vtkPolyData* input = vtkPolyData::SafeDownCast(inInfo->Get(vtkPolyData::DATA_OBJECT()));
 	vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkPolyData::DATA_OBJECT()));
 
-	NormalFilter(input, output);
+	if (kMeansEnabled) {
+		KMeansDensityFilter(input, output);
+	} else {
+		NormalFilter(input, output);
+	}
 
 	return 1;
 }
