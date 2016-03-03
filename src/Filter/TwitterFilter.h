@@ -37,6 +37,19 @@ public:
 	 */
 	void setAuthorMatchingMode(int mode);
 
+	/**
+	 * Callback method for setting flight length range.
+	 * @param lowerLimit The lower flight length limit
+	 * @param upperLimit The upper flight length limit
+	 */
+	void setRetweetThreshold(double lowerLimit, double upperLimit);
+
+	/**
+	 * Callback for the input array selection. This has to exist for the filter to be correctly assembled but can be ignored since the scalar is locked to the temperature values and the UI is hidden.
+	 */
+	void ignore(int id, int port, int connection, int fieldAssociation, const char* name) { }
+
+
 private:
 	/**
 	 * Initialize a new instance of the Twitter filter.
@@ -51,13 +64,37 @@ private:
 		CONTAINING, MATCHING
 	};
 
-	//determines the mode how author names are filtered
+	/**
+	 * The mode how author names are filtered.
+	 */
 	TwitterFilter::Mode authorMatchingMode;
 
-	bool shouldDisplayTweetContent(QString content);
+	/**
+	 * Check whether a tweet should be displayed based on its content.
+	 * @param content The content of the tweet
+	 * @return True if it should be displayed, false otherwise
+	 */
+	bool shouldDisplayBasedOnTweetContent(QString content);
+
+	/**
+	 * Check whether a tweet should be displayed based on its number of retweets.
+	 * @param retweetNumber The number of retweets
+	 * @return True if it should be displayed, false otherwise
+	 */
+	bool shouldDisplayBasedOnRetweets(int retweetNumber);
 
 	QList<Data::Type> getCompatibleDataTypes();
 	bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData);
+
+	/**
+	 * The lower limit of retweets whose tweets should still be displayed.
+	 */
+	double lowerRetweetLimit;
+
+	/**
+	 * The upper limit of retweets whose tweets should still be displayed.
+	 */
+	double upperRetweetLimit;
 
 	/**
 	 * Contains all author names whose tweets should be extracted.

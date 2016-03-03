@@ -72,6 +72,11 @@ TEST(TestJsonReader, ReadTwitterData) {
 	);
 
 	EXPECT_EQ(
+	    3,
+	    testDataPoint->getNumberOfRetweets()
+	);
+
+	EXPECT_EQ(
 	    1439280065,
 	    testDataPoint->getTimestamp()
 	);
@@ -194,12 +199,12 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 
 	EXPECT_FLOAT_EQ(
 	    34.052223,
-	    destinationArray->GetTuple2(0)[0]
+	    destinationArray->GetTuple2(0)[1]
 	);
 
 	EXPECT_FLOAT_EQ(
 	    -118.242775,
-	    destinationArray->GetTuple2(0)[1]
+	    destinationArray->GetTuple2(0)[0]
 	);
 
 	// Test the associated array of origin airport codes

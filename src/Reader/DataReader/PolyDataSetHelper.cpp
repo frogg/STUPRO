@@ -276,8 +276,8 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 
 			// Insert the new destination as a new tuple of latitude and longitude
 			double coordinates[2] = {
-				dataPoint->getDestination().lat(),
-				dataPoint->getDestination().lon()
+				dataPoint->getDestination().lon(),
+				dataPoint->getDestination().lat()
 			};
 			destinations->SetTuple(tupleNumber, coordinates);
 
@@ -311,6 +311,12 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 		contents->SetNumberOfComponents(relevantDataPoints.size());
 		contents->SetName("contents");
 
+		vtkSmartPointer<vtkIntArray> numberOfRetweets = vtkSmartPointer<vtkIntArray>::New();
+		numberOfRetweets->SetNumberOfComponents(1);
+		numberOfRetweets->SetNumberOfValues(relevantDataPoints.size());
+		numberOfRetweets->SetName("numberOfRetweets");
+
+		int i = 0;
 		for (QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
 		        iterator != relevantDataPoints.end(); ++iterator) {
 			const TweetDataPoint* dataPoint = dynamic_cast<const TweetDataPoint*>(
@@ -319,10 +325,13 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 
 			authors->InsertNextValue(dataPoint->getAuthor().toStdString());
 			contents->InsertNextValue(dataPoint->getContent().toStdString());
+			numberOfRetweets->InsertValue(i, (int) dataPoint->getNumberOfRetweets());
+			i++;
 		}
 
 		dataSet->GetPointData()->AddArray(authors);
 		dataSet->GetPointData()->AddArray(contents);
+		dataSet->GetPointData()->AddArray(numberOfRetweets);
 		break;
 	}
 

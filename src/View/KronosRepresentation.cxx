@@ -38,6 +38,7 @@ KronosRepresentation::KronosRepresentation() : error(false), inPowerwallMode(fal
 
 //----------------------------------------------------------------------------
 KronosRepresentation::~KronosRepresentation() {}
+
 //---------------------------------------------------------------------------
 int KronosRepresentation::RequestInformation(vtkInformation* request,
         vtkInformationVector** inputVector,
