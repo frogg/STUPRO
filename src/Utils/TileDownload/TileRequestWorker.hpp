@@ -60,7 +60,7 @@ public:
 	/**
 	 * Callback used to notify about errors that occurred trying to fetch tiles.
 	 */
-	typedef std::function<void(std::exception)> OnTileFetchFailed;
+	typedef std::function<void(std::exception const&)> OnTileFetchFailed;
 
 	/**
 	 * Initializes a TileRequestWorker responsible to fetch ImageTiles with the given layers.
