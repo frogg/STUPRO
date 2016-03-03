@@ -14,6 +14,7 @@
 
 #include "Utils/Math/Vector3.hpp"
 #include "Utils/Math/SphericalCoordinateFunctions.h"
+#include "Utils/Misc/KronosLogger.hpp"
 
 typedef Vector3d GPS;
 typedef Vector3d Cartesian;
@@ -106,7 +107,7 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 
 		insertNextFlight(start, destination, output);
 
-		while (priorities->GetSize() < output->GetLines()->GetNumberOfCells()) {
+		while (priorities->GetNumberOfTuples() < output->GetLines()->GetNumberOfCells()) {
 			priorities->InsertNextValue(inPrio->GetValue(flight));
 			airlines->InsertNextValue(inAirline->GetValue(flight));
 			startCode->InsertNextValue(inStartCode->GetValue(flight));
@@ -141,7 +142,7 @@ void GenerateGeodesics::setArcSize(double value) {
 void GenerateGeodesics::setLoD(double value) {
 	// maxLenOfLineSegment should always be \in (0, radius] and grow exponentially
 	this->maxLenOfLineSegment = Configuration::getInstance().getDouble("globe.radius")
-	                            * (pow(2, 1 - value) - 0.99);
+	                            * pow(2, - 10 * value);
 	this->Modified();
 }
 
