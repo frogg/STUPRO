@@ -20,36 +20,62 @@
 
 class TestTileDownload : public ::testing::Test {
 public:
-	TestTileDownload();
-	~TestTileDownload();
+	TestTileDownload() = default;
+	~TestTileDownload() = default;
 
 	static bool nodeAvailable();
 
+	static void SetUpTestCase();
+	static void TearDownTestCase();
+
 protected:
-	QProcess testServer;
+	static QProcess* testServer;
 };
 
-TestTileDownload::TestTileDownload() {
+QProcess* TestTileDownload::testServer = nullptr;
+
+void TestTileDownload::SetUpTestCase() {
 	if (!TestTileDownload::nodeAvailable()) {
 		throw KronosException("Node not found");
 	}
 	QProcess npmInstall;
-	npmInstall.setWorkingDirectory("./test-server");
+	npmInstall.setWorkingDirectory(QCoreApplication::applicationDirPath() + "/test-server/");
+	npmInstall.setProcessChannelMode(QProcess::MergedChannels);
 	npmInstall.start("npm install");
-	if (!npmInstall.waitForFinished()) {
-		throw KronosException("Error executing `npm install`");
+	if (!npmInstall.waitForFinished(10000)) {
+		throw KronosException(
+			"Error executing `npm install`:\n"+
+			QString(npmInstall.readAllStandardError()) + "\n---\n" +
+			QString(npmInstall.readAllStandardOutput())
+		);
 	}
 
-	this->testServer.setWorkingDirectory("./test-server");
-	this->testServer.start("npm start");
-	if (!this->testServer.waitForStarted()) {
+	testServer = new QProcess();
+	testServer->setWorkingDirectory(QCoreApplication::applicationDirPath() + "/test-server/");
+	testServer->start("node index.js");
+	if (!testServer->waitForStarted()) {
 		throw KronosException("Error running `npm start`");
+	}
+
+	// wait until the server started listening
+	QString stdOut = "";
+	while (!(stdOut += testServer->readAllStandardOutput()).contains("Tile Server started successfully")) {
+		QString err = testServer->readAllStandardError();
+		if (testServer->readAllStandardError().size() != 0) {
+			throw KronosException("Server errored: %s" + err);
+		}
+		if (testServer->waitForFinished(100)) {
+			KRONOS_LOG_FATAL(QString(testServer->readAllStandardError()));
+			KRONOS_LOG_ERROR("###" + stdOut + QString(testServer->readAllStandardOutput()) + "###");
+			throw KronosException("Unexpected server exit: " + QString::number(testServer->exitCode()));
+		}
 	}
 }
 
-TestTileDownload::~TestTileDownload() {
-	this->testServer.kill();
-	this->testServer.waitForFinished();
+void TestTileDownload::TearDownTestCase() {
+	testServer->kill();
+	testServer->waitForFinished();
+	testServer->deleteLater();
 }
 
 bool TestTileDownload::nodeAvailable() {
