@@ -1,3 +1,10 @@
+/*=========================================================================
+
+  This class is based on the vtkLabelPlacementMapper class.
+  with a fix that labels are drawn in 2D mode too.
+
+=========================================================================*/
+
 #include "KronosLabelMapper.h"
 #include <Utils/Config/Configuration.hpp>
 #include "vtkActor2D.h"
@@ -421,6 +428,11 @@ public:
     }
 };
 
+/*
+ * This is based on the vtkLabelMapper
+ */
+
+
 vtkStandardNewMacro(KronosLabelMapper);
 vtkCxxSetObjectMacro(KronosLabelMapper, AnchorTransform, vtkCoordinate);
 vtkCxxSetObjectMacro(KronosLabelMapper, RenderStrategy, vtkLabelRenderStrategy);
@@ -430,7 +442,7 @@ KronosLabelMapper::KronosLabelMapper()
 {
   this->AnchorTransform = vtkCoordinate::New();
   this->AnchorTransform->SetCoordinateSystemToWorld();
-  this->MaximumLabelFraction = 0.01; // Take up no more than 5% of screen real estate with labels.
+  this->MaximumLabelFraction = 0.01; // Take up no more than 1% of screen real estate with labels.
   this->Buckets = 0;
   this->PositionsAsNormals = false;
   this->IteratorType = vtkLabelHierarchy::QUEUE;
@@ -439,6 +451,7 @@ KronosLabelMapper::KronosLabelMapper()
   if(Configuration::getInstance().hasKey(key)){
       this->VisiblePoints->SetTolerance(Configuration::getInstance().getFloat(key));
     }else{
+      // Works pretty good around 0.05 tolerance.
       this->VisiblePoints->SetTolerance(0.05);
     }
   this->UseUnicodeStrings = false;

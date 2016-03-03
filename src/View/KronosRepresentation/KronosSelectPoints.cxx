@@ -1,3 +1,10 @@
+/*=========================================================================
+
+  This class is based on the vtkSelectVisiblePoints class.
+  with a fix that labels are drawn in 2D mode too.
+
+=========================================================================*/
+
 #include "KronosSelectPoints.h"
 
 #include "vtkCamera.h"
@@ -234,6 +241,7 @@ bool KronosSelectPoints::IsPointOccluded(
   double xx[4] = {x[0], x[1], x[2], 1.0};
 
   this->CompositePerspectiveTransform->MultiplyPoint(xx, view);
+  //Fixed normalisation bug.
   if (view[3] == 0.0)
     {
 

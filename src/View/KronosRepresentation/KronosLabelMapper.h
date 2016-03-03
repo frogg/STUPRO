@@ -1,33 +1,9 @@
 /*=========================================================================
 
-  Program:   Visualization Toolkit
-  Module:    KronosLabelMapper.h
-
-  Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
-  All rights reserved.
-  See Copyright.txt or http://www.kitware.com/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notice for more information.
+  This class is based on the vtkLabelPlacementMapper class.
+  with a fix that labels are drawn in 2D mode too.
 
 =========================================================================*/
-/*-------------------------------------------------------------------------
-  Copyright 2008 Sandia Corporation.
-  Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-  the U.S. Government retains certain rights in this software.
--------------------------------------------------------------------------*/
-// .NAME KronosLabelMapper - Places and renders non-overlapping labels.
-//
-// .SECTION Description
-// To use this mapper, first send your data through vtkPointSetToLabelHierarchy,
-// which takes a set of points, associates special arrays to the points (label,
-// priority, etc.), and produces a prioritized spatial tree of labels.
-//
-// This mapper then takes that hierarchy (or hierarchies) as input, and every
-// frame will decide which labels and/or icons to place in order of priority,
-// and will render only those labels/icons. A label render strategy is used to
-// render the labels, and can use e.g. FreeType or Qt for rendering.
 
 #ifndef __KronosLabelMapper_h
 #define __KronosLabelMapper_h

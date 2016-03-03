@@ -72,9 +72,10 @@ int KronosRepresentation::RequestData(vtkInformation* request,
         return 0;
     }
     
-    if(inputVector[0]->GetNumberOfInformationObjects()==1 &&  !inPowerwallMode){
+    if(inputVector[0]->GetNumberOfInformationObjects()==1){
         vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
         vtkPolyData *input = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+    
         if(this->inPowerwallMode){
             if(input->GetPointData()->HasArray("names")){
                 currentDataType=Data::CITIES;
@@ -150,7 +151,6 @@ void KronosRepresentation::SetVisibility(bool val)
 bool KronosRepresentation::AddToView(vtkView* view)
 {
     //Adds the actors to the view.
-    std::cout << "Added to view" << endl;
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {
@@ -162,7 +162,6 @@ bool KronosRepresentation::AddToView(vtkView* view)
 bool KronosRepresentation::RemoveFromView(vtkView* view)
 {
     //Removes the actors from the view.
-    std::cout << "remove to view" << endl;
     vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
     if (rview)
     {

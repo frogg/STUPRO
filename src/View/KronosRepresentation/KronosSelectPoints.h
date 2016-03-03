@@ -1,3 +1,10 @@
+/*=========================================================================
+
+  This class is based on the vtkSelectVisiblePoints class.
+  with a fix that labels are drawn in 2D mode too.
+
+=========================================================================*/
+
 #ifndef __KronosSelectPoints_h
 #define __KronosSelectPoints_h
 
