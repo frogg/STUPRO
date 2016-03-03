@@ -7,6 +7,10 @@
       {
         "minimalZoomLevel": 0,
         "layers": "BlueMarble-200405"
+      },
+      {
+        "minimalZoomLevel": 8,
+        "layers": "BlueMarble-200405,esat"
       }
     ]
   },
@@ -18,6 +22,14 @@
       {
         "minimalZoomLevel": 0,
         "layers": "NASA_SRTM30_900m_Tiled"
+      },
+      {
+        "minimalZoomLevel": 4,
+        "layers": "NASA_SRTM30_900m_Tiled,aster_v2"
+      },
+      {
+        "minimalZoomLevel": 8,
+        "layers": "NASA_SRTM30_900m_Tiled,aster_v2,USGS-NED"
       }
     ]
   },
