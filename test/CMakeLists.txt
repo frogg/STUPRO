@@ -6,7 +6,11 @@ set(MAIN_CLASS
     ${CMAKE_CURRENT_SOURCE_DIR}/TestRunner.hpp
 )
 
-set(CMAKE_AUTOMOC TRUE)
+set(TEST_MOC_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/TestRunner.hpp"
+)
+
+# set(CMAKE_AUTOMOC TRUE)
 
 # find ParaView headers and libraries
 find_package(ParaView REQUIRED)
@@ -25,6 +29,13 @@ else()
     include(${QT_USE_FILE})
 endif()
 
+# wrap classes inheriting from QObject
+if("${KRONOS_QT_VERSION}" STREQUAL "5")
+    QT5_WRAP_CPP(TEST_MOC_FILES ${TEST_MOC_SRCS})
+else()
+    QT4_WRAP_CPP(TEST_MOC_FILES ${TEST_MOC_SRCS})
+endif()
+
 # find GTest headers and libraries
 find_package(GoogleTest REQUIRED)
 
@@ -41,7 +52,7 @@ include_directories(${CMAKE_SOURCE_DIR}/libs)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 # create an executable for the test runner
-add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES})
+add_executable(UnitTester ${MAIN_CLASS} ${Test_SOURCES} ${TEST_MOC_FILES})
 
 # set C++ standard to C++11
 set_property(TARGET UnitTester PROPERTY CXX_STANDARD 11)
