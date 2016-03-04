@@ -60,10 +60,10 @@ protected:
 	 *  Reprentation for the Tweet Data
 	 */
 	void TweetRepresentation(vtkPolyData* input);
-    /**
-     *  Reprentation for the Flight Data
-     */
-    void FlightRepresentation(vtkPolyData* input);
+	/**
+	 *  Reprentation for the Flight Data
+	 */
+	void FlightRepresentation(vtkPolyData* input);
 
 private:
 	KronosRepresentation(const KronosRepresentation&); // Not implemented
