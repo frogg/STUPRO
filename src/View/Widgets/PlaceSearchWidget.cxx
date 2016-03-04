@@ -1,6 +1,5 @@
 #include <View/Widgets/PlaceSearchWidget.h>
 
-#include <Kronos.h>
 #include <Utils/Misc/KronosLogger.hpp>
 #include <View/vtkSMKronosViewProxy.h>
 
@@ -8,22 +7,14 @@
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QIcon>
-#include <QSize>
-
-#include <vtkCamera.h>
-#include <vtkRenderWindow.h>
-#include <vtkSMRenderViewProxy.h>
 
 #include <pqActiveObjects.h>
-#include <pqApplicationCore.h>
 #include <pqRenderView.h>
-#include <pqServerManagerModel.h>
-
-#include <iostream>
 
 PlaceSearchWidget::PlaceSearchWidget(QWidget* parent, Qt::WindowFlags flags)
 	: QWidget(parent, flags) {
+	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+
 	// lay out the top level children vertically
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->setMargin(2);
@@ -56,7 +47,9 @@ PlaceSearchWidget::PlaceSearchWidget(QWidget* parent, Qt::WindowFlags flags)
 
 	// initialize the list that will later display the search results
 	this->resultList = new QListView(this);
+	this->resultList->setMinimumHeight(48);
 	this->resultList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	this->resultList->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	// initialize the model that will later hold the search results
 	this->resultListModel = new CityListModel(this);
 	this->resultList->setModel(this->resultListModel);
@@ -106,9 +99,7 @@ void PlaceSearchWidget::startSearch() {
 		return;
 	}
 
-	KRONOS_LOG_DEBUG("Querying cities");
 	QList<City> cities = this->citiesDatabase->getCity(this->searchBar->text());
-	KRONOS_LOG_DEBUG("Queried cities, count: %d", cities.size());
 
 	if (cities.size() > 0) {
 		this->resultListModel->beginAdd(cities.size());
@@ -116,7 +107,6 @@ void PlaceSearchWidget::startSearch() {
 			this->resultListModel->add(cities[i]);
 		}
 		this->resultListModel->endAdd();
-		KRONOS_LOG_DEBUG("Added cities");
 
 		QModelIndex index = this->resultListModel->index(0);
 		this->resultList->selectionModel()->select(index, QItemSelectionModel::SelectCurrent);

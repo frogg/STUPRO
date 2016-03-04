@@ -447,7 +447,7 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 
 		dataSet->GetPointData()->AddArray(speeds);
 		dataSet->GetPointData()->AddArray(directions);
-		dataSet->GetPointData()->AddArray(velocities);
+		dataSet->GetPointData()->SetVectors(velocities);
 		break;
 	}
 
