@@ -66,8 +66,9 @@ void TestTileDownload::SetUpTestCase() {
 			throw KronosException("Server errored: %s" + err);
 		}
 		if (testServer->waitForFinished(100)) {
-			KRONOS_LOG_FATAL(QString(testServer->readAllStandardError()));
-			KRONOS_LOG_ERROR("###" + stdOut + QString(testServer->readAllStandardOutput()) + "###");
+			KRONOS_LOG_FATAL("%s", QString(testServer->readAllStandardError()).toStdString().c_str());
+			KRONOS_LOG_ERROR("%s", ("###" + stdOut + QString(testServer->readAllStandardOutput()) +
+			                        "###").toStdString().c_str());
 			throw KronosException("Unexpected server exit: " + QString::number(testServer->exitCode()));
 		}
 	}
