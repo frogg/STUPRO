@@ -20,7 +20,6 @@ inline double getGlobeRadius() {
  * @return the cartesian position of gps
  */
 template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
-
 	//Radian of longitude
 	const T lonInRadian = gps.x * KRONOS_PI / 180;
 	//Radian of latitude
@@ -150,4 +149,3 @@ template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Ve
 }
 
 #endif // SPHERICAL_COORDINATE_FUNCTIONS
-
