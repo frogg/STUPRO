@@ -314,6 +314,9 @@ void Globe::showTile(int lon, int lat) {
 		// Get reference to underlying globe tile.
 		GlobeTile& tile = handle.getResource();
 
+		// Update the tile's shader uniforms (in case display mode has changed).
+		tile.updateUniforms();
+
 		// Make tile visible.
 		tile.setVisibile(true);
 	}
