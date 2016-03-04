@@ -24,11 +24,11 @@ ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed 
 ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed onTileFetchFailed,
                                  QSet<QString> requestedLayers, QString configFile) {
 	if (ServerUtils::isClient()) {
-		this->requestWorker = std::unique_ptr<TileRequestWorker>(new ClientTileRequestWorker(
-		                          requestedLayers, onTileFetched, onTileFetchFailed, configFile));
+		this->requestWorker = makeUnique<ClientTileRequestWorker>(requestedLayers, onTileFetched,
+		                      onTileFetchFailed, configFile);
 	} else {
-		this->requestWorker = std::unique_ptr<TileRequestWorker>(new ServerTileRequestWorker(
-		                          requestedLayers, onTileFetched, onTileFetchFailed, configFile));
+		this->requestWorker = makeUniqur<ServerTileRequestWorker>(requestedLayers, onTileFetched,
+		                      onTileFetchFailed, configFile));
 	}
 }
 
