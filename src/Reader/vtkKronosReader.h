@@ -18,7 +18,7 @@ public:
 	 * @param name Path of the file that should be read
 	 */
 	void SetFileName(std::string name);
-	
+
 	/**
 	 * Set the name of the file this reader should use.
 	 * @param name Path of the file that should be read
@@ -109,7 +109,7 @@ private:
 	 * This thread will pre-cache data in the background once the reader has been created.
 	 */
 	std::thread cacheThread;
-	
+
 	/**
 	 * Boolean flag denoting whether this reader has been caching data in the background.
 	 */

@@ -14,7 +14,8 @@
 TEST(TestDensityHeatmapFilter, TestTwitterData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
-	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/twitter-test-data.kJson", false);
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/twitter-test-data.kJson",
+	                          false);
 
 	// Set up the filter and its input
 	vtkSmartPointer<HeatmapDensityFilter> filter = HeatmapDensityFilter::New();
