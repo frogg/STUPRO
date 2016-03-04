@@ -181,6 +181,7 @@ private:
 	Globe::DisplayMode displayMode;
 	std::unique_ptr<Globe> globe;
 	vtkSmartPointer<vtkCallbackCommand> cameraModifiedCallback;
+	vtkSmartPointer<vtkCallbackCommand> activeCameraCallback;
 
 	/** determines whether camera movement should be animated or not */
 	bool animated = true;

@@ -32,20 +32,50 @@ void KronosView::initParameters() {
 }
 
 void KronosView::initRenderer() {
-	this->cameraModifiedCallback = vtkCallbackCommand::New();
+	// Check if renderer exists.
+	if (this->GetRenderer()) {
+		// Create camera modification callback.
+		this->cameraModifiedCallback = vtkCallbackCommand::New();
 
-	this->cameraModifiedCallback->SetCallback(
-	[](vtkObject * object, unsigned long eid, void* clientdata, void* calldata) {
-		KronosView* view = (KronosView*)clientdata;
-		if (view->getGlobe()) {
-			view->getGlobe()->onCameraChanged();
-		}
-	});
+		// Update globe whenever camera is changed.
+		this->cameraModifiedCallback->SetCallback(
+		[](vtkObject * object, unsigned long eid, void* clientdata, void* calldata) {
+			KronosView* view = (KronosView*)clientdata;
+			if (view->getGlobe()) {
+				view->getGlobe()->onCameraChanged();
+			}
+		});
 
-	this->cameraModifiedCallback->SetClientData(this);
+		// Pass pointer to this object.
+		this->cameraModifiedCallback->SetClientData(this);
 
-	this->GetRenderer()->AddObserver(vtkCommand::ResetCameraClippingRangeEvent,
-	                                 this->cameraModifiedCallback);
+		// Observe all camera state changes.
+		this->GetRenderer()->AddObserver(vtkCommand::ResetCameraClippingRangeEvent,
+		                                 this->cameraModifiedCallback);
+
+		// Create active camera callback.
+		this->activeCameraCallback = vtkCallbackCommand::New();
+
+		// Set camera position correctly whenever active camera is changed.
+		this->activeCameraCallback->SetCallback(
+		[](vtkObject * object, unsigned long eid, void* clientdata, void* calldata) {
+			KronosView* view = (KronosView*)clientdata;
+
+			// Calculate default camera position.
+			float radius = Configuration::getInstance().getFloat("globe.radius");
+			float outermostZoomDistance = Configuration::getInstance().getFloat("globe.zoom.farDistance");
+			float distance = radius * outermostZoomDistance * 1.05f;
+
+			// Move camera to default position.
+			view->GetRenderer()->GetActiveCamera()->SetPosition(0, 0, distance);
+		});
+
+		// Pass pointer to this object.
+		this->activeCameraCallback->SetClientData(this);
+
+		// Observe all active camera changes.
+		this->GetRenderer()->AddObserver(vtkCommand::ActiveCameraEvent, this->activeCameraCallback);
+	}
 }
 
 void KronosView::initGlobe() {
@@ -53,22 +83,25 @@ void KronosView::initGlobe() {
 	// using the current renderer.
 	this->globe = makeUnique<Globe>(*this->GetRenderer());
 
-	// Dirty workaround: Create a transparent box around the globe.
-	float radius = Configuration::getInstance().getFloat("globe.radius");
+	// Check if renderer exists.
+	if (this->GetRenderer()) {
+		// Create an invisible box around the globe to prevent incorrect clipping range.
+		float radius = Configuration::getInstance().getFloat("globe.radius");
 
-	vtkSmartPointer<vtkCubeSource> cube = vtkCubeSource::New();
-	cube->SetXLength(radius * 2);
-	cube->SetYLength(radius * 2);
-	cube->SetZLength(radius * 2);
+		vtkSmartPointer<vtkCubeSource> cube = vtkCubeSource::New();
+		cube->SetXLength(radius * 2);
+		cube->SetYLength(radius * 2);
+		cube->SetZLength(radius * 2);
 
-	vtkSmartPointer<vtkPolyDataMapper> cubeMapper = vtkPolyDataMapper::New();
-	cubeMapper->SetInputConnection(cube->GetOutputPort());
+		vtkSmartPointer<vtkPolyDataMapper> cubeMapper = vtkPolyDataMapper::New();
+		cubeMapper->SetInputConnection(cube->GetOutputPort());
 
-	vtkSmartPointer<vtkActor> cubeActor = vtkActor::New();
-	cubeActor->SetMapper(cubeMapper);
-	cubeActor->GetProperty()->SetOpacity(0);
+		vtkSmartPointer<vtkActor> cubeActor = vtkActor::New();
+		cubeActor->SetMapper(cubeMapper);
+		cubeActor->GetProperty()->SetOpacity(0);
 
-	this->GetRenderer()->AddActor(cubeActor);
+		this->GetRenderer()->AddActor(cubeActor);
+	}
 }
 
 void KronosView::animateMove(double latitude, double longitude, double distance) {
@@ -218,13 +251,8 @@ float KronosView::getCameraDistance() {
 	y -= cy;
 	z -= cz;
 
-	return sqrt(
-	           x * x +
-	           y * y +
-	           z * z
-	       );
+	return sqrt(x * x + y * y + z * z);
 }
-
 
 void KronosView::switchCurrentDisplayMode() {
 	// Invert the display mode and set the interpolation using a static cast.

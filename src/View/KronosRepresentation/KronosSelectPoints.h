@@ -14,7 +14,7 @@
 class vtkRenderer;
 class vtkMatrix4x4;
 
-class VTKRENDERINGCORE_EXPORT KronosSelectPoints : public vtkPolyDataAlgorithm {
+class KronosSelectPoints : public vtkPolyDataAlgorithm {
 public:
 	vtkTypeMacro(KronosSelectPoints, vtkPolyDataAlgorithm);
 	void PrintSelf(ostream& os, vtkIndent indent);
