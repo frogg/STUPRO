@@ -47,17 +47,28 @@ void SphericalToCartesianFilter::PrintSelf(ostream& os, vtkIndent indent) {
 int SphericalToCartesianFilter::RequestData(vtkInformation* info, vtkInformationVector** input,
         vtkInformationVector* output) {
 
-	if (info->Get(Data::VTK_DATA_TRANSFORMATION()) == Data::TRANSFORMED) {
+	int obj = info->Get(Data::VTK_DATA_TRANSFORMATION());
+	vtkInformation* outInfo = output->GetInformationObject(0);
+	vtkWarningMacro("State: " << Data::getDataTransformationName((Data::Transformation)
+	                obj).toStdString() << " " << info->Has(Data::VTK_DATA_TRANSFORMATION()));
+	if (info->Get(Data::VTK_DATA_TRANSFORMATION()) != Data::UNTRANSFORMED) {
 		KRONOS_LOG_ERROR("The data set is already transformed");
 		return 1;
+	} else if (((GeometryTransform*) this->Transform)->getTransform()) {
+		outInfo->Set(Data::VTK_DATA_TRANSFORMATION(), Data::TRANSFORMED);
+	} else {
+		outInfo->Set(Data::VTK_DATA_TRANSFORMATION(), Data::CONDENSED);
 	}
+	info->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TRANSFORMATION());
+	outInfo->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TRANSFORMATION());
+
+
 	int retVal = Superclass::RequestData(info, input, output);
 
-	if (((GeometryTransform*) this->Transform)->getTransform()) {
-		output->GetInformationObject(0)->Set(Data::VTK_DATA_TRANSFORMATION(), Data::TRANSFORMED);
-	} else {
-		output->GetInformationObject(0)->Set(Data::VTK_DATA_TRANSFORMATION(), Data::CONDENSED);
-	}
+	//	KRONOS_LOG_DEBUG("Key: %s", Data::getDataTransformationName(info->Get(Data::VTK_DATA_TRANSFORMATION())));
+	obj = output->GetInformationObject(0)->Get(Data::VTK_DATA_TRANSFORMATION());
+	vtkWarningMacro("State: " << Data::getDataTransformationName((Data::Transformation)
+	                obj).toStdString() << " " << info->Has(Data::VTK_DATA_TRANSFORMATION()));
 
 	return retVal;
 }

@@ -12,7 +12,7 @@
  */
 class vtkInformationDataTransformationKey : public vtkInformationIntegerKey {
 public:
-	vtkTypeMacro(vtkInformationDataTransformationKey, vtkInformationIntegerKey);
+	vtkTypeMacro(vtkInformationDataTransformationKey, vtkInformationIntegerKey)
 	void PrintSelf(ostream& os, vtkIndent indent);
 
 	vtkInformationDataTransformationKey(const char* name, const char* location);
@@ -25,8 +25,8 @@ public:
 	 * downstream.
 	 */
 	virtual void CopyDefaultInformation(vtkInformation* request,
-										vtkInformation* fromInfo,
-										vtkInformation* toInfo);
+	                                    vtkInformation* fromInfo,
+	                                    vtkInformation* toInfo);
 
 private:
 	vtkInformationDataTransformationKey(const vtkInformationDataTransformationKey&); // Not implemented.

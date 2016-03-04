@@ -35,7 +35,7 @@ public:
 	 * A VTK information key for storing the transformation of the data in an object that will be passed
 	 * through the pipeline.
 	 */
-	static vtkInformationDataTransformationKey *VTK_DATA_TRANSFORMATION();
+	static vtkInformationDataTransformationKey* VTK_DATA_TRANSFORMATION();
 
 	/**
 	 * Enum that denotes a data type. Do not assign values to these. Adding a new data type here

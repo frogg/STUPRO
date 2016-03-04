@@ -20,9 +20,9 @@ public:
 	/**
 	 * Documentation see vtkAlgorithm
 	 */
-	int RequestData(vtkInformation *info,
-					vtkInformationVector **input,
-					vtkInformationVector *output) override;
+	int RequestData(vtkInformation* info,
+	                vtkInformationVector** input,
+	                vtkInformationVector* output) override;
 
 	/**
 	 * Documentation see vtkAlgorithm

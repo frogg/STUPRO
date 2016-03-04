@@ -36,7 +36,8 @@ static QMap<Data::Transformation, QString> dataTransformationNameMap() {
 	map.insert(Data::TRANSFORMED, "Transformed");
 	return map;
 }
-const QMap<Data::Transformation, QString> Data::DATA_TRANSFORMATION_NAMES = dataTransformationNameMap();
+const QMap<Data::Transformation, QString> Data::DATA_TRANSFORMATION_NAMES =
+    dataTransformationNameMap();
 
 bool Data::isTemporal(const Data::Type dataType) {
 	return (
