@@ -178,30 +178,30 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 
 	// Get location of current tile.
 	GlobeTile::Location loc(myZoomLevel, lon, lat);
-	
+
 	// Create array of tile corner positions.
 	std::array<Vector4f, 4> tileCornerPositions;
 
 	// Perform backface culling for globe (not applicable for flat map).
 	if (getDisplayMode() == DisplayGlobe) {
-	
+
 		// Assume that the current tile is not visible.
 		bool visible = false;
-	
+
 		// Calculate surface normals of the current tile's corners.
 		std::array<Vector4f, 4> tileCornerNormals;
 		tileCornerNormals[0] = Vector4f(loc.getNormalVector(Vector2f(0.f, 0.f)), 0.f);
 		tileCornerNormals[1] = Vector4f(loc.getNormalVector(Vector2f(0.f, 1.f)), 0.f);
 		tileCornerNormals[2] = Vector4f(loc.getNormalVector(Vector2f(1.f, 0.f)), 0.f);
 		tileCornerNormals[3] = Vector4f(loc.getNormalVector(Vector2f(1.f, 1.f)), 0.f);
-	
+
 		// Copy array in case it is needed for position calculations later.
 		tileCornerPositions = tileCornerNormals;
-	
+
 		for (auto& tileNormal : tileCornerNormals) {
 			// Transform the surface normal by the normal transformation matrix calculated earlier.
 			normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
-	
+
 			// Check if normal points away from the camera.
 			if (tileNormal.xyz().dot(cameraDirection) < 0.f) {
 				// Other direction? Tile is facing towards viewer, disallow backface culling.
@@ -209,7 +209,7 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 				break;
 			}
 		}
-	
+
 		// If tile is facing away from camera, it can not possibly be visible.
 		if (!visible) {
 			return false;
@@ -224,21 +224,19 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 			// Set homogeneous component to 1 for correct projection calculation.
 			tilePosition.w = 1.f;
 		}
-	}
-	else
-	{
+	} else {
 		// Get flat map bounding rectangle for current globe tile.
 		RectF bounds = loc.getBounds();
-		
+
 		// Calculate downscaling factor.
 		float scaleFactor = Configuration::getInstance().getFloat("globe.radius") / 90;
-		
+
 		// Downscale rectangle to match flat map size.
 		bounds.x *= scaleFactor;
 		bounds.y *= scaleFactor;
 		bounds.w *= scaleFactor;
 		bounds.h *= scaleFactor;
-		
+
 		// Assign tile corner positions.
 		tileCornerPositions[0] = Vector4f(bounds.x1y1(), 0.f, 1.f);
 		tileCornerPositions[1] = Vector4f(bounds.x2y1(), 0.f, 1.f);
