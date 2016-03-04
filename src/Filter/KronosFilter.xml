@@ -1,32 +1,62 @@
 <ServerManagerConfiguration>
     <ProxyGroup name="filters">
-            <SourceProxy name="SphericalToCartesianFilter" class="SphericalToCartesianFilter" label="Kronos Spherical to Cartesian">
+    	<SourceProxy name="SphericalToCartesianFilter" class="SphericalToCartesianFilter" label="Kronos Spherical to Cartesian">
             <Documentation
                 long_help="This filter can convert GPS data (longitude/latitude/height) to cartesian coordinates in order to 'wrap' the data around a globe."
                 short_help="Convert GPS-Data to cartesian coordinates">
             </Documentation>
-            <InputProperty
-                name="Input"
-                command="SetInputConnection">
+            <InputProperty name="Input"
+                           command="SetInputConnection">
                 <ProxyGroupDomain name="groups">
                     <Group name="sources"/>
                     <Group name="filters"/>
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
-		    <DataType value="vtkImageData"/>
-		    <DataType value="vtkRectilinearGrid"/>
+		    		<DataType value="vtkImageData"/>
+		    		<DataType value="vtkRectilinearGrid"/>
                 </DataTypeDomain>
             </InputProperty>
-	    <IntVectorProperty name="transform"
+	    	<IntVectorProperty name="transform"
             			command="setTransform"
             			number_of_elements="1"
             			default_values="1">
-		<BooleanDomain name="bool"/>
-	    </IntVectorProperty>
-	    <Hints>
-		<ShowInMenu category="Kronos" />
-	    </Hints>
+				<BooleanDomain name="bool"/>
+	    	</IntVectorProperty>
+        </SourceProxy>
+        <SourceProxy name="GenerateGeodesics" class="GenerateGeodesics" label="Kronos Generate Flight Geodesics">
+            <Documentation
+                long_help=""
+                short_help="">
+            </Documentation>
+            <InputProperty name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <DoubleVectorProperty name="ArcSize"
+                command="setArcSize"
+                number_of_elements="1"
+                default_values="0.0">
+                <DoubleRangeDomain name="arc" min="0.0" max="1.0" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="Level of detail"
+                command="setLoD"
+                number_of_elements="1"
+                default_values="0.0">
+                <DoubleRangeDomain name="Level of detail" min="0.3" max="1.0" />
+            </DoubleVectorProperty>
+            <IntVectorProperty name="limit calculation depth"
+                command="setLimitDepth"
+                number_of_elements="1"
+                default_values="1">
+                <BooleanDomain name="bool"/>
+            </IntVectorProperty>
         </SourceProxy>
 		<SourceProxy name="TerrainHeightFilter" class="TerrainHeightFilter"
 			label="Kronos Terrain Height">
@@ -71,43 +101,44 @@
                 </DataTypeDomain>
             </InputProperty>
             <IntVectorProperty name="Display precipitation of undefined type"
-             command="enableUndefined"
-             number_of_elements="1"
-             default_values="1">
+                command="enableUndefined"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <IntVectorProperty name="Display rain"
-             command="enableRain"
-             number_of_elements="1"
-             default_values="1">
+                command="enableRain"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <IntVectorProperty name="Display snow"
-             command="enableSnow"
-             number_of_elements="1"
-             default_values="1">
+                command="enableSnow"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <IntVectorProperty name="Display sleet"
-             command="enableSleet"
-             number_of_elements="1"
-             default_values="1">
+                command="enableSleet"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <IntVectorProperty name="Display hail"
-             command="enableHail"
-             number_of_elements="1"
-             default_values="1">
+                command="enableHail"
+                number_of_elements="1"
+                default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
             <Hints>
                 <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
-        <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
+
+        <SourceProxy name="HeatmapDensityFilter" class="HeatmapDensityFilter" label="Heatmap Density Filter">
             <Documentation
-                long_help="This filter can limit temperature data points to a specified temperature range"
-                short_help="Limit temperature data to a specified temperature range">
+                long_help="This filter can interpolate group points and return the data."
+                short_help="This filter can interpolate group points and return the data">
             </Documentation>
             <InputProperty
                 name="Input"
@@ -117,6 +148,45 @@
                     <Group name="filters"/>
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkPointSet"/>
+                    <DataType value="vtkImageData"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <IntVectorProperty name="Horizontal"
+                label="Horizontal"
+                command="setHorizontalHeatmapResolution"
+                number_of_elements="1"
+                default_values="64">
+            </IntVectorProperty>
+            <IntVectorProperty name="Vertical"
+                label="Vertical"
+                command="setVerticalHeatmapResolution"
+                number_of_elements="1"
+                default_values="64">
+            </IntVectorProperty>
+            <PropertyGroup label="Density Map Resolution">
+                <Property name="Horizontal" />
+                <Property name="Vertical" />
+            </PropertyGroup>
+	    <Hints>
+		          <ShowInMenu category="Kronos" />
+	    </Hints>
+        </SourceProxy>
+    
+    <SourceProxy name="TemperatureThresholdFilter" class="TemperatureThresholdFilter" label="Kronos Temperature Threshold Filter">
+        <Documentation
+            long_help="This filter can limit temperature data points to a specified temperature range"
+            short_help="Limit temperature data to a specified temperature range">
+        </Documentation>
+        <InputProperty
+            name="Input"
+            command="SetInputConnection">
+            <ProxyGroupDomain name="groups">
+                <Group name="sources"/>
+                <Group name="filters"/>
+            </ProxyGroupDomain>
+            <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
@@ -130,13 +200,13 @@
                     name="array_list">
                     <RequiredProperties>
                         <Property function="Input"
-                            name="Input" />
+                        name="Input" />
                     </RequiredProperties>
                 </ArrayListDomain>
                 <FieldDataDomain name="field_list">
                     <RequiredProperties>
                         <Property function="Input"
-                            name="Input" />
+                        name="Input" />
                     </RequiredProperties>
                 </FieldDataDomain>
             </StringVectorProperty>
@@ -192,13 +262,13 @@
                     name="array_list">
                     <RequiredProperties>
                         <Property function="Input"
-                            name="Input" />
+                        name="Input" />
                     </RequiredProperties>
                 </ArrayListDomain>
                 <FieldDataDomain name="field_list">
                     <RequiredProperties>
                         <Property function="Input"
-                            name="Input" />
+                        name="Input" />
                     </RequiredProperties>
                 </FieldDataDomain>
             </StringVectorProperty>
@@ -245,6 +315,23 @@
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>
+        <SourceProxy name="TemporalInterpolationFilter" class="TemporalInterpolationFilter" label="Kronos Temporal Interpolation Filter">
+            <Documentation
+                long_help="This filter can fill in missing data points using linear interpolation."
+                short_help="Interpolate temporal data points">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+        </SourceProxy>
         <SourceProxy name="TwitterFilter" class="TwitterFilter" label="Kronos Twitter Filter">
             <Documentation
                 long_help="This filter can extract data from twitter point sets read by a Kronos reader depending on the author and keywords."
@@ -261,8 +348,8 @@
                     <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
-            <IntVectorProperty
-              name="Author matching mode"
+            <IntVectorProperty name="AuthorMatchingMode"
+              label="Author matching mode"
               command="setAuthorMatchingMode"
               number_of_elements="1"
               default_values="0">
@@ -274,146 +361,888 @@
                 This property indicates the matching mode for authors.
                  </Documentation>
              </IntVectorProperty>
-            <StringVectorProperty name="Authors (comma-separated)"
+            <StringVectorProperty name="Authors"
+                label="Authors (comma-separated)"
                 command="setAuthors"
                 number_of_elements="1"
                 default_values=""
                 information_property="Authors whose tweets should be extracted">
             </StringVectorProperty>
-            <StringVectorProperty name="Keywords (comma-separated)"
+            <StringVectorProperty name="Keywords"
+                label="Keywords (comma-separated)"
                 command="setKeywords"
                 number_of_elements="1"
                 default_values=""
                 information_property="All tweets containing at least one of these keywords will be extracted">
             </StringVectorProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectRetweetInputScalars"
+                number_of_elements="5"
+                default_values="numberOfRetweets">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <DoubleVectorProperty command="setRetweetThreshold"
+                default_values="0 0"
+                label="Retweet Number Range"
+                name="RetweetNumberRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectRetweetInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower retweet number.
+                </Documentation>
+            </DoubleVectorProperty>
             <PropertyGroup label="Authors">
-                <Property name="Authors (comma-separated)" />
-                <Property name="Author matching mode" />
+                <Property name="Authors" />
+                <Property name="AuthorMatchingMode" />
             </PropertyGroup>
             <PropertyGroup label="Keywords">
-                <Property name="Keywords (comma-separated)" />
+                <Property name="Keywords" />
+            </PropertyGroup>
+            <PropertyGroup label="Retweet Threshold">
+                <Property name="SelectRetweetInputScalars" />
+                <Property name="RetweetNumberRange" />
+            </PropertyGroup>
+            <Hints>
+                <ShowInMenu category="Kronos" />
+                <Property name="SelectRetweetInputScalars" show="0"/>
+            </Hints>
+        </SourceProxy>
+        <SourceProxy name="FlightFilter" class="FlightFilter" label="Kronos Flight Filter">
+            <Documentation
+                long_help="This filter can extract data from flight point sets read by a Kronos reader depending on the airlines, flight distance, start and destination airport."
+                short_help="Extract data based on the airlines, flight distance, start and destination airport">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+            <IntVectorProperty name="AirlineMatchingMode"
+                label="Airline Matching Mode"
+                command="setAirlineMatchingMode"
+                number_of_elements="1"
+                default_values="0">
+                <EnumerationDomain name="enum">
+                    <Entry value="0" text="Containing"/>
+                    <Entry value="1" text="Matching"/>
+                </EnumerationDomain>
+                <Documentation>
+                    This property sets the matching mode for the airlines.
+                </Documentation>
+            </IntVectorProperty>
+            <StringVectorProperty name="AirlineNames"
+                label="Airline names (comma-separated)"
+                command="setAirline"
+                number_of_elements="1"
+                default_values=""
+                information_property="Airline names">
+            </StringVectorProperty>
+            <StringVectorProperty name="OriginAirportCodes"
+                label="Origin airport codes (comma-separated)"
+                command="setOriginAirportCode"
+                number_of_elements="1"
+                default_values=""
+                information_property="Set the airport code of the origin airports">
+            </StringVectorProperty>
+            <StringVectorProperty name="DestinationAirportCodes"
+                label="Destination airport codes (comma-separated)"
+                command="setDestinationAirportCode"
+                number_of_elements="1"
+                default_values=""
+                information_property="Set the airport code of the destination airports">
+            </StringVectorProperty>
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectFlightInputScalars"
+                number_of_elements="5"
+                default_values="flightLengths">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <Hints>
+                <Property name="SelectFlightInputScalars" show="0"/>
+            </Hints>
+            <DoubleVectorProperty command="setFlightLengthThreshold"
+                default_values="0 0"
+                label="Flight Length Range"
+                name="FlightLengthRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectFlightInputScalars" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower flight length limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+            <PropertyGroup label="Airline">
+                <Property name="AirlineMatchingMode" />
+                <Property name="AirlineNames" />
+            </PropertyGroup>
+            <PropertyGroup label="Airports">
+                <Property name="OriginAirportCodes" />
+                <Property name="DestinationAirportCodes" />
+            </PropertyGroup>
+            <PropertyGroup label="Flight Length Threshold">
+                <Property name="FlightLengthRange" />
             </PropertyGroup>
             <Hints>
                 <ShowInMenu category="Kronos" />
             </Hints>
         </SourceProxy>
-    <SourceProxy name="FlightFilter" class="FlightFilter" label="Kronos Flight Filter">
-        <Documentation
-            long_help="This filter can extract data from flight point sets read by a Kronos reader depending on the airlines, flight distance, start and destination airport."
-            short_help="Extract data based on the airlines, flight distance, start and destination airport">
-        </Documentation>
-        <InputProperty
-            name="Input"
-            command="SetInputConnection">
-            <ProxyGroupDomain name="groups">
-                <Group name="sources"/>
-                <Group name="filters"/>
-            </ProxyGroupDomain>
-            <DataTypeDomain name="input_type">
-                <DataType value="vtkPointSet"/>
-            </DataTypeDomain>
-        </InputProperty>
-        <IntVectorProperty name="AirlineMatchingMode"
-            label="Airline Matching Mode"
-            command="setAirlineMatchingMode"
-            number_of_elements="1"
-            default_values="0">
-            <EnumerationDomain name="enum">
-                <Entry value="0" text="Containing"/>
-                <Entry value="1" text="Matching"/>
-            </EnumerationDomain>
-            <Documentation>
-                This property sets the matching mode for the airlines.
-            </Documentation>
-        </IntVectorProperty>
-        <StringVectorProperty name="AirlineNames"
-            label="Airline names (comma-separated)"
-            command="setAirline"
-            number_of_elements="1"
-            default_values=""
-            information_property="Airline names">
-        </StringVectorProperty>
-        <StringVectorProperty name="OriginAirportCodes"
-            label="Origin airport codes (comma-separated)"
-            command="setOriginAirportCode"
-            number_of_elements="1"
-            default_values=""
-            information_property="Set the airport code of the origin airports">
-        </StringVectorProperty>
-        <StringVectorProperty name="DestinationAirportCodes"
-            label="Destination airport codes (comma-separated)"
-            command="setDestinationAirportCode"
-            number_of_elements="1"
-            default_values=""
-            information_property="Set the airport code of the destination airports">
-        </StringVectorProperty>
-        <StringVectorProperty command="ignore"
-            element_types="0 0 0 0 2"
-            label="Scalars"
-            name="SelectFlightInputScalars"
-            number_of_elements="5"
-            default_values="flightLengths">
-            <ArrayListDomain attribute_type="Scalars"
-                name="array_list">
-                <RequiredProperties>
-                    <Property function="Input"
-                        name="Input" />
-                </RequiredProperties>
-            </ArrayListDomain>
-            <FieldDataDomain name="field_list">
-                <RequiredProperties>
-                    <Property function="Input"
-                        name="Input" />
-                </RequiredProperties>
-            </FieldDataDomain>
-        </StringVectorProperty>
-        <Hints>
-            <Property name="SelectFlightInputScalars" show="0"/>
-        </Hints>
-        <DoubleVectorProperty command="setFlightLengthThreshold"
-            default_values="0 0"
-            label="Flight Length Range"
-            name="FlightLengthRange"
-            number_of_elements="2"
-            panel_widget="double_range">
-            <ArrayRangeDomain name="range">
-                <RequiredProperties>
-                    <Property function="Input"
-                    name="Input" />
-                    <Property function="ArraySelection"
-                    name="SelectFlightInputScalars" />
-                </RequiredProperties>
-            </ArrayRangeDomain>
-            <Documentation>
-                The upper and lower flight length limits respectively
-            </Documentation>
-        </DoubleVectorProperty>
-        <PropertyGroup label="Airline">
-            <Property name="AirlineMatchingMode" />
-            <Property name="AirlineNames" />
-        </PropertyGroup>
-        <PropertyGroup label="Airports">
-            <Property name="OriginAirportCodes" />
-            <Property name="DestinationAirportCodes" />
-        </PropertyGroup>
-        <PropertyGroup label="Flight Length Threshold">
-            <Property name="FlightLengthRange" />
-        </PropertyGroup>
+
+        <SourceProxy name="MIPASFilter" class="MIPASFilter" label="MIPASFilter">
+          <Documentation
+              long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with MIPAS Data"
+              short_help="Solve SciVis-Contest with this filter">
+          </Documentation>
+          <InputProperty
+              name="Input"
+              command="SetInputConnection">
+              <ProxyGroupDomain name="groups">
+                  <Group name="sources"/>
+                  <Group name="filters"/>
+              </ProxyGroupDomain>
+              <DataTypeDomain name="input_type">
+                  <DataType value="vtkPolyData"/>
+                  <DataType value="vtkCellData"/>
+                  <DataType value="vtkUnstructuredGrid"/>
+                  <DataType value="vtkPointSet"/>
+              </DataTypeDomain>
+          </InputProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectTime"
+              number_of_elements="5"
+              default_values="time">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setTimeThreshold"
+              default_values="0 0"
+              label="Time"
+              name="TimeRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectTime" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower time limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectAltitude"
+              number_of_elements="5"
+              default_values="altitude">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setAltitudeThreshold"
+              default_values="0 0"
+              label="Altitude"
+              name="AltitudeRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectAltitude" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Altitude limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectOrbit"
+              number_of_elements="5"
+              default_values="orbit_id">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setOrbitThreshold"
+              default_values="0 0"
+              label="Orbit"
+              name="OrbitRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectOrbit" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Orbit limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectDetection"
+              number_of_elements="5"
+              default_values="detection">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setDetectionThreshold"
+              default_values="0 0"
+              label="Detection"
+              name="DetectionRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectDetection" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Detection limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectProfile"
+              number_of_elements="5"
+              default_values="profile_id">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setProfileThreshold"
+              default_values="0 0"
+              label="Profile"
+              name="ProfileRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectProfile" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Profile limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <PropertyGroup label="Time">
+              <Property name="TimeRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Altitude">
+              <Property name="AltitudeRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Orbit">
+              <Property name="OrbitRange" />
+           </PropertyGroup>
+           <PropertyGroup label="Detection">
+             <Property name="DetectionRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Profile">
+            <Property name="ProfileRange" />
+          </PropertyGroup>
+
           <Hints>
-            <ShowInMenu category="Kronos" />
-        </Hints>
-    </SourceProxy>
+              <ShowInMenu category="SciVis"/>
+              <Property name="SelectTime" show="0"/>
+              <Property name="SelectAltitude" show="0"/>
+              <Property name="SelectOrbit" show="0"/>
+              <Property name="SelectDetection" show="0"/>
+              <Property name="SelectProfile" show="0" />
+          </Hints>
+      </SourceProxy>
+
+
+        <SourceProxy name="AIRSFilter" class="AIRSFilter" label="AIRSFilter">
+            <Documentation
+                long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with AIRS Data"
+                short_help="Solve SciVis-Contest with this filter">
+            </Documentation>
+            <InputProperty
+                name="Input"
+                command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkCellData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
+                </DataTypeDomain>
+            </InputProperty>
+
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectTimeAirs"
+                number_of_elements="5"
+                default_values="time">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <DoubleVectorProperty command="setTimeThreshold"
+                default_values="0 0"
+                label="Time"
+                name="TimeRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectTimeAirs" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower time limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectSO2AIRS"
+                number_of_elements="5"
+                default_values="SO2">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <DoubleVectorProperty command="setSOThreshold"
+                default_values="0 0"
+                label="SO2"
+                name="SO2Range"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectSO2AIRS" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower SO2 limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+
+            <StringVectorProperty command="ignore"
+                element_types="0 0 0 0 2"
+                label="Scalars"
+                name="SelectAshAIRS"
+                number_of_elements="5"
+                default_values="ash">
+                <ArrayListDomain attribute_type="Scalars"
+                    name="array_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </ArrayListDomain>
+                <FieldDataDomain name="field_list">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                    </RequiredProperties>
+                </FieldDataDomain>
+            </StringVectorProperty>
+            <DoubleVectorProperty command="setAshThreshold"
+                default_values="0 0"
+                label="Ash"
+                name="AshRange"
+                number_of_elements="2"
+                panel_widget="double_range">
+                <ArrayRangeDomain name="range">
+                    <RequiredProperties>
+                        <Property function="Input"
+                        name="Input" />
+                        <Property function="ArraySelection"
+                        name="SelectAshAIRS" />
+                    </RequiredProperties>
+                </ArrayRangeDomain>
+                <Documentation>
+                    The upper and lower Ash limits respectively
+                </Documentation>
+            </DoubleVectorProperty>
+
+            <PropertyGroup label="Time">
+                <Property name="TimeRange" />
+            </PropertyGroup>
+            <PropertyGroup label="SO2 Index">
+                <Property name="SO2Range" />
+            </PropertyGroup>
+            <PropertyGroup label="Ash Index">
+                <Property name="AshRange" />
+             </PropertyGroup>
+
+            <Hints>
+                <ShowInMenu category="SciVis"/>
+                <Property name="SelectTimeAirs" show="0"/>
+                <Property name="SelectSO2AIRS" show="0"/>
+                <Property name="SelectAshAIRS" show="0"/>
+            </Hints>
+        </SourceProxy>
+
+        <SourceProxy name="CLaMSFilter" class="CLaMSFilter" label="CLaMSFilter">
+          <Documentation
+              long_help="Use the SciVis Filter to solve every problem related to the SciVis-Contest 2014 with CLaMS Data"
+              short_help="Solve SciVis-Contest with this filter">
+          </Documentation>
+          <InputProperty
+              name="Input"
+              command="SetInputConnection">
+              <ProxyGroupDomain name="groups">
+                  <Group name="sources"/>
+                  <Group name="filters"/>
+              </ProxyGroupDomain>
+              <DataTypeDomain name="input_type">
+                  <DataType value="vtkPolyData"/>
+                  <DataType value="vtkCellData"/>
+                  <DataType value="vtkUnstructuredGrid"/>
+                  <DataType value="vtkPointSet"/>
+              </DataTypeDomain>
+          </InputProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectTime"
+              number_of_elements="5"
+              default_values="time">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setTimeThreshold"
+              default_values="0 0"
+              label="Time"
+              name="TimeRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectTime" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower time limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectAltitude"
+              number_of_elements="5"
+              default_values="altitude">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setAltitudeThreshold"
+              default_values="0 0"
+              label="Altitude"
+              name="AltitudeRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectAltitude" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Altitude limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectTemperature"
+              number_of_elements="5"
+              default_values="temperature">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setTemperatureThreshold"
+              default_values="0 0"
+              label="Temperature"
+              name="TemperatureRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectTemperature" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Temperature limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectPressure"
+              number_of_elements="5"
+              default_values="pressure">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setPressureThreshold"
+              default_values="0 0"
+              label="Pressure"
+              name="PressureRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectPressure" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower Pressure limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectVorticity"
+              number_of_elements="5"
+              default_values="pot_vorticity">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setVorticityThreshold"
+              default_values="0 0"
+              label="Vorticity"
+              name="VorticityRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectVorticity" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower potential Vorticity limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+          <StringVectorProperty command="ignore"
+              element_types="0 0 0 0 2"
+              label="Scalars"
+              name="SelectPotTemperature"
+              number_of_elements="5"
+              default_values="pot_temperature">
+              <ArrayListDomain attribute_type="Scalars"
+                  name="array_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </ArrayListDomain>
+              <FieldDataDomain name="field_list">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                  </RequiredProperties>
+              </FieldDataDomain>
+          </StringVectorProperty>
+          <DoubleVectorProperty command="setPotTemperatureThreshold"
+              default_values="0 0"
+              label="PotTemperature"
+              name="PotTemperatureRange"
+              number_of_elements="2"
+              panel_widget="double_range">
+              <ArrayRangeDomain name="range">
+                  <RequiredProperties>
+                      <Property function="Input"
+                      name="Input" />
+                      <Property function="ArraySelection"
+                      name="SelectPotTemperature" />
+                  </RequiredProperties>
+              </ArrayRangeDomain>
+              <Documentation>
+                  The upper and lower potential Temperature limits respectively
+              </Documentation>
+          </DoubleVectorProperty>
+
+
+
+          <PropertyGroup label="Time">
+              <Property name="TimeRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Altitude">
+              <Property name="AltitudeRange" />
+          </PropertyGroup>
+          <PropertyGroup label="Temperature">
+              <Property name="TemperatureRange" />
+          </PropertyGroup>
+           <PropertyGroup label="Pressure">
+               <Property name="PressureRange" />
+           </PropertyGroup>
+           <PropertyGroup label="Vorticity">
+                <Property name="VorticityRange" />
+           </PropertyGroup>
+           <PropertyGroup label="Pot_Temperature">
+               <Property name="PotTemperatureRange" />
+          </PropertyGroup>
+
+          <Hints>
+              <ShowInMenu category="SciVis"/>
+              <Property name="SelectTime" show="0"/>
+              <Property name="SelectAltitude" show="0"/>
+              <Property name="SelectTemperature" show="0"/>
+              <Property name="SelectPressure" show="0"/>
+              <Property name="SelectVorticity" show="0"/>
+              <Property name="SelectPotTemperature" show="0"/>
+          </Hints>
+      </SourceProxy>
+
+
+
+
     </ProxyGroup>
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
+            <Filter name="GenerateGeodesics" />
             <Filter name="PrecipitationTypeFilter" />
+            <Filter name="TwitterHeatmapFilter" />
             <Filter name="FlightFilter" />
             <Filter name="TemporalAggregationFilter" />
+            <Filter name="TemporalInterpolationFilter" />
             <Filter name="TemperatureThresholdFilter" />
             <Filter name="WindSpeedThresholdFilter" />
             <Filter name="TwitterFilter" />
-			<Filter name="TerrainHeightFilter" />
+            <Filter name="TerrainHeightFilter" />
+        </Category>
+        <Category name="SciVis" menu_label="SciVis">
+            <Filter name="MIPASFilter" />
+            <Filter name="AIRSFilterAM" />
+            <Filter name="AIRSFilterPM" />
+            <Filter name="CLaMSFilterPuyehue" />
+            <Filter name="CLaMSFilterNabro" />
         </Category>
     </ParaViewFilters>
 </ServerManagerConfiguration>
