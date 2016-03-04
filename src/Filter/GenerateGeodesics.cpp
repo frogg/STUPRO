@@ -15,6 +15,7 @@
 #include "Utils/Math/Vector3.hpp"
 #include "Utils/Math/SphericalCoordinateFunctions.h"
 #include "Utils/Misc/KronosLogger.hpp"
+#include "Utils/Misc/Macros.hpp"
 
 typedef Vector3d GPS;
 typedef Vector3d Cartesian;
@@ -134,7 +135,7 @@ int GenerateGeodesics::FillInputPortInformation(int, vtkInformation* info) {
 
 void GenerateGeodesics::setArcSize(double value) {
 	// this value is statistically determined
-	double v1 = 0.95 - 0.95 * pow(M_E, -4.25 * value);
+	double v1 = 0.95 - 0.95 * pow(KRONOS_E, -4.25 * value);
 	double v2 = cbrt(0.85 * value);
 	this->radius = (v1 + v2) / 2;
 

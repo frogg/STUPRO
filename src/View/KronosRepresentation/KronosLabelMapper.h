@@ -15,7 +15,7 @@ class vtkCoordinate;
 class vtkLabelRenderStrategy;
 class KronosSelectPoints;
 
-class VTKRENDERINGLABEL_EXPORT KronosLabelMapper : public vtkMapper2D {
+class KronosLabelMapper : public vtkMapper2D {
 public:
 	static KronosLabelMapper* New();
 	vtkTypeMacro(KronosLabelMapper, vtkMapper2D);

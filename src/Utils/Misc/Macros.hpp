@@ -22,6 +22,11 @@
 #define KRONOS_PI 3.141592653589793238462643383279502884L
 
 /**
+ * Mathematical e constant.
+ */
+#define KRONOS_E 2.7182818284590452353602874713526624978L
+
+/**
  * KRONOS_NOTHROW Macro.
  *
  * Usable at the end of a function declaration to guarantee that it will never throw exceptions.
