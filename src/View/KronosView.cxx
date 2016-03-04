@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <Utils/Config/Configuration.hpp>
 #include <Utils/Math/Interpolator.hpp>
-#include <Utils/Math/SphericalCoordinateFunctions.h>
+#include <Utils/Math/GeographicFunctions.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
 #include <pqApplicationCore.h>
 #include <QCoreApplication>

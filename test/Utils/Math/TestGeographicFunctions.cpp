@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <Utils/Math/SphericalCoordinateFunctions.h>
+#include <Utils/Math/GeographicFunctions.hpp>
 #include <Utils/Misc/Macros.hpp>
 
 #define EXPECT_EQ_TOLERANCE(X1, X2, TOL) { \

@@ -1,11 +1,12 @@
-#ifndef SPHERICAL_COORDINATE_FUNCTIONS
-#define SPHERICAL_COORDINATE_FUNCTIONS
+#ifndef KRONOS_GEOGRAPHIC_FUNCTIONS
+#define KRONOS_GEOGRAPHIC_FUNCTIONS
 
-#include"Vector3.hpp"
-#include"Utils/Misc/Macros.hpp"
-#include "Utils/Config/Configuration.hpp"
+#include <Utils/Math/Vector3.hpp>
+#include <Utils/Misc/Macros.hpp>
+#include <Utils/Config/Configuration.hpp>
 #include <Globe/Coordinate.hpp>
 #include <Utils/Math/Functions.hpp>
+
 #include <math.h>
 
 /**
@@ -159,4 +160,4 @@ template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Ve
  */
 double calculateDistance(Coordinate startPoint, Coordinate endPoint);
 
-#endif // SPHERICAL_COORDINATE_FUNCTIONS
+#endif

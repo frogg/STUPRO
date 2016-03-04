@@ -4,7 +4,7 @@
 #include <vtkAbstractTransform.h>
 
 #include "Utils/Math/Vector3.hpp"
-#include "Utils/Math/SphericalCoordinateFunctions.h"
+#include "Utils/Math/GeographicFunctions.hpp"
 #include "Utils/Misc/Macros.hpp"
 #include "Utils/Misc/Exceptions.hpp"
 
