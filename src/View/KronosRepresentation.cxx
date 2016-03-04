@@ -16,7 +16,7 @@
 vtkStandardNewMacro(KronosRepresentation);
 //----------------------------------------------------------------------------
 KronosRepresentation::KronosRepresentation() : error(false), inPowerwallMode(false) {
-	this->SetNumberOfInputPorts(2);
+	
 
 	//Create Object of Everything used;
 	this->labelActor = vtkSmartPointer<vtkActor2D>::New();
@@ -50,7 +50,7 @@ int KronosRepresentation::RequestInformation(vtkInformation* request,
 	}
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
 		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
-		if (dataType != Data::CITIES && dataType != Data::TWEETS) {
+        if (dataType != Data::CITIES && dataType != Data::TWEETS && dataType != Data::FLIGHTS) {
 			this->fail(
 			    QString("This Representation only works with City and Tweet data, but the input contains %1 data.").arg(
 			        Data::getDataTypeName(dataType)));
@@ -76,25 +76,31 @@ int KronosRepresentation::RequestData(vtkInformation* request,
 		vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 		vtkPolyData* input = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-		if (this->inPowerwallMode) {
+		if (this->inPowerwallMode && false) {
 			if (input->GetPointData()->HasArray("names")) {
 				currentDataType = Data::CITIES;
 
 			}
-			if (input->GetPointData()->HasArray("content")) {
+			if (input->GetPointData()->HasArray("authors")) {
 				currentDataType = Data::TWEETS;
 			}
+            if (input->GetPointData()->HasArray("airlines")) {
+                currentDataType = Data::FLIGHTS;
+            }
+            
 		}
 		switch (currentDataType) {
 		case Data::CITIES:
-			CitiesRepresentation(input);
-
+            CitiesRepresentation(input);
 			break;
 		case Data::TWEETS:
-			TweetRepresentation(input);
+			//TweetRepresentation(input);
 			break;
-		default:
-			break;
+        case Data::FLIGHTS:
+            //FlightRepresentation(input);
+            break;
+        default:
+            break;
 		};
 
 	}
@@ -127,7 +133,7 @@ void KronosRepresentation::TweetRepresentation(vtkPolyData* input) {
 	//Generate the label hierarchy and filter the points according to the priorities.
 	this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
 	this->pointSetToLabelHierarchyFilter->SetInputData(input);
-	this->pointSetToLabelHierarchyFilter->SetLabelArrayName("author");
+	this->pointSetToLabelHierarchyFilter->SetLabelArrayName("authors");
 	this->pointSetToLabelHierarchyFilter->SetPriorityArrayName("priorities");
 	this->pointSetToLabelHierarchyFilter->Update();
 
@@ -139,6 +145,24 @@ void KronosRepresentation::TweetRepresentation(vtkPolyData* input) {
 	//Add the mappers to the actors.
 	this->labelActor->SetMapper(labelMapper);
 
+}
+//----------------------------------------------------------------------------
+void KronosRepresentation::FlightRepresentation(vtkPolyData* input) {
+    //Generate the label hierarchy and filter the points according to the priorities.
+    this->pointSetToLabelHierarchyFilter = vtkSmartPointer<vtkPointSetToLabelHierarchy>::New();
+    this->pointSetToLabelHierarchyFilter->SetInputData(input);
+    this->pointSetToLabelHierarchyFilter->SetLabelArrayName("airlines");
+    this->pointSetToLabelHierarchyFilter->SetPriorityArrayName("priorities");
+    this->pointSetToLabelHierarchyFilter->Update();
+    
+    //Create the labelmapper
+    this->labelMapper = vtkSmartPointer<KronosLabelMapper>::New();
+    this->labelMapper->SetInputConnection(pointSetToLabelHierarchyFilter->GetOutputPort());
+    this->labelMapper->SetUseDepthBuffer(this->useDepthBuffer);
+    
+    //Add the mappers to the actors.
+    this->labelActor->SetMapper(labelMapper);
+    
 }
 //----------------------------------------------------------------------------
 void KronosRepresentation::SetVisibility(bool val) {
