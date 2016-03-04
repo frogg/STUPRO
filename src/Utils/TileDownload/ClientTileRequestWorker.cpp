@@ -196,13 +196,13 @@ void ClientTileRequestWorker::handleReplyContent(QNetworkReply* reply,
 }
 
 void ClientTileRequestWorker::setMaxJobCount(int jobCount) {
-    if (jobCount >= 1) {
-        this->maxJobCount = jobCount;
-    }
+	if (jobCount >= 1) {
+		this->maxJobCount = jobCount;
+	}
 }
 
 int ClientTileRequestWorker::getMaxJobCount() {
-    return this->maxJobCount;
+	return this->maxJobCount;
 }
 
 MetaImage ClientTileRequestWorker::decodeBil16(const QByteArray& rawData, int width, int height) {
