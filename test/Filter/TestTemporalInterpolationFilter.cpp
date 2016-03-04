@@ -17,7 +17,7 @@
 TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
-	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/precipitation-test-data.kJson");
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/precipitation-test-data.kJson", false);
 
 	// Set up the filter and its input
 	vtkSmartPointer<TemporalInterpolationFilter> filter = TemporalInterpolationFilter::New();
@@ -85,14 +85,12 @@ TEST(TestTemporalInterpolationFilter, TestPrecipitationData) {
 
 	EXPECT_FLOAT_EQ(6.3016663, precipitationRateArray->GetTuple1(1));
 	EXPECT_FLOAT_EQ(PrecipitationDataPoint::NONE, precipitationTypeArray->GetTuple1(1));
-
-	kronosReader->abortCaching();
 }
 
 TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
-	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/temperature-test-data.kJson");
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/temperature-test-data.kJson", false);
 
 	// Set up the filter and its input
 	vtkSmartPointer<TemporalInterpolationFilter> filter = TemporalInterpolationFilter::New();
@@ -140,14 +138,12 @@ TEST(TestTemporalInterpolationFilter, TestTemperatureData) {
 
 	EXPECT_FLOAT_EQ(22.14, temperatureArray->GetTuple1(0));
 	EXPECT_FLOAT_EQ(18.8, temperatureArray->GetTuple1(1));
-
-	kronosReader->abortCaching();
 }
 
 TEST(TestTemporalInterpolationFilter, TestWindData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
-	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/wind-test-data.kJson");
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/wind-test-data.kJson", false);
 
 	// Set up the filter and its input
 	vtkSmartPointer<TemporalInterpolationFilter> filter = TemporalInterpolationFilter::New();
@@ -238,14 +234,12 @@ TEST(TestTemporalInterpolationFilter, TestWindData) {
 	EXPECT_FLOAT_EQ(0.74399048, windVelocityArray->GetTuple3(0)[0]);
 	EXPECT_FLOAT_EQ(0.37908211, windVelocityArray->GetTuple3(0)[1]);
 	EXPECT_FLOAT_EQ(0, windVelocityArray->GetTuple3(0)[2]);
-
-	kronosReader->abortCaching();
 }
 
 TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
-	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/cloud-coverage-test-data.kJson");
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/cloud-coverage-test-data.kJson", false);
 
 	// Set up the filter and its input
 	vtkSmartPointer<TemporalInterpolationFilter> filter = TemporalInterpolationFilter::New();
@@ -293,14 +287,12 @@ TEST(TestTemporalInterpolationFilter, TestCloudCoverageData) {
 
 	EXPECT_FLOAT_EQ(0.645, cloudCoverageArray->GetTuple1(0));
 	EXPECT_FLOAT_EQ(0.63, cloudCoverageArray->GetTuple1(1));
-
-	kronosReader->abortCaching();
 }
 
 TEST(TestTemporalInterpolationFilter, TestTwitterDensityData) {
 	// Read some test data
 	vtkSmartPointer<vtkKronosReader> kronosReader = vtkSmartPointer<vtkKronosReader>::New();
-	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/twitter-test-data.kJson");
+	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/twitter-test-data.kJson", false);
 
 	// Set up the density heatmap filter and its input
 	vtkSmartPointer<HeatmapDensityFilter> densityFilter = HeatmapDensityFilter::New();
@@ -336,6 +328,4 @@ TEST(TestTemporalInterpolationFilter, TestTwitterDensityData) {
 	EXPECT_FLOAT_EQ(3, densityArray->GetTuple1(1));
 	EXPECT_FLOAT_EQ(3.5, densityArray->GetTuple1(2));
 	EXPECT_FLOAT_EQ(3, densityArray->GetTuple1(3));
-
-	kronosReader->abortCaching();
 }
