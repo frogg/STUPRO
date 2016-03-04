@@ -4,7 +4,7 @@ double calculateDistance(Coordinate startPoint, Coordinate endPoint) {
 	double earthRadius = 6372.8;
 
 	double latitudeDifference = toRadians(endPoint.lat() - startPoint.lat());
-	double longitudeDifference = toRadians(endPoint.lon() - startPoint.lat());
+	double longitudeDifference = toRadians(endPoint.lon() - startPoint.lon());
 	double firstLatitude = toRadians(startPoint.lat());
 	double secondLatitude = toRadians(endPoint.lat());
 
