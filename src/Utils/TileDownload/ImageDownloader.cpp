@@ -27,8 +27,8 @@ ImageDownloader::ImageDownloader(OnTileFetched onTileFetched, OnTileFetchFailed 
 		this->requestWorker = makeUnique<ClientTileRequestWorker>(requestedLayers, onTileFetched,
 		                      onTileFetchFailed, configFile);
 	} else {
-		this->requestWorker = makeUniqur<ServerTileRequestWorker>(requestedLayers, onTileFetched,
-		                      onTileFetchFailed, configFile));
+		this->requestWorker = makeUnique<ServerTileRequestWorker>(requestedLayers, onTileFetched,
+		                      onTileFetchFailed, configFile);
 	}
 }
 
