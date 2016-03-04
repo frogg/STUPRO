@@ -1,6 +1,8 @@
 #ifndef KRONOS_WIND_VELOCITY_VECTOR_CALCULATION_FILTER_HPP
 #define KRONOS_WIND_VELOCITY_VECTOR_CALCULATION_FILTER_HPP
 
+#include <Reader/DataReader/Data.hpp>
+
 #include <vtkPoints.h>
 #include <vtkSmartPointer.h>
 #include <vtkDataObjectAlgorithm.h>
@@ -44,6 +46,11 @@ private:
 	 * Boolean flag denoting whether there was an error.
 	 */
 	bool error;
+	
+	/**
+	 * The state of this filter's input data.
+	 */
+	Data::State dataState;
 };
 
 #endif

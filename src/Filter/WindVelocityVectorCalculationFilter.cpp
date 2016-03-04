@@ -6,7 +6,6 @@
 #include <vtkExecutive.h>
 #include <vtkInformationExecutivePortVectorKey.h>
 
-#include <Reader/DataReader/Data.hpp>
 #include <Utils/Math/Functions.hpp>
 
 WindVelocityVectorCalculationFilter::WindVelocityVectorCalculationFilter() : error(false) { }
@@ -32,10 +31,22 @@ int WindVelocityVectorCalculationFilter::RequestData(vtkInformation* info,
 	vtkInformation* outputInformation = outputVector->GetInformationObject(0);
 	vtkPolyData* outputData = vtkPolyData::SafeDownCast(outputInformation->Get(
 	                          vtkDataObject::DATA_OBJECT()));
+	
+	// Get the right array depending on this filter's input data state
+	QString speedArrayName;
+	QString directionArrayName;
+	
+	if (this->dataState == Data::RAW) {
+		speedArrayName = "speeds";
+		directionArrayName = "directions";
+	} else {
+		speedArrayName = "Average Wind Speeds";
+		directionArrayName = "Average Wind Directions";
+	}
 							  
 	// Extract data arrays from the input data
-	vtkSmartPointer<vtkFloatArray> speedArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("speeds"));
-	vtkSmartPointer<vtkFloatArray> directionArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray("directions"));
+	vtkSmartPointer<vtkFloatArray> speedArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray(speedArrayName.toStdString().c_str()));
+	vtkSmartPointer<vtkFloatArray> directionArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray(directionArrayName.toStdString().c_str()));
 	
 	// Copy over all existing information since we only want to add an array
 	outputData->DeepCopy(inputData);
@@ -88,11 +99,12 @@ int WindVelocityVectorCalculationFilter::RequestInformation(vtkInformation* requ
 	// Check the meta information containing the data's state
 	if (vtkExecutive::CONSUMERS()->Length(outInfo) == 0) {
 		if (inInfo->Has(Data::VTK_DATA_STATE())) {
-			Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
-			if (dataState != Data::RAW) {
+			this->dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
+
+			if (this->dataState != Data::RAW && this->dataState != Data::AGGREGATED) {
 				this->fail(
-				    QString("This filter only works with raw input data, but the input data has the state %1.").arg(
-				        Data::getDataStateName(dataState)));
+				    QString("This filter only works with raw and aggregated input data, but the input data has the state %1.").arg(
+				        Data::getDataStateName(this->dataState)));
 				return 0;
 			}
 		} else {
@@ -100,8 +112,6 @@ int WindVelocityVectorCalculationFilter::RequestInformation(vtkInformation* requ
 			return 0;
 		}
 	}
-
-	outInfo->Set(Data::VTK_DATA_STATE(), Data::RAW);
 
 	return 1;
 }
