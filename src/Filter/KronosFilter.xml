@@ -24,6 +24,24 @@
 				<BooleanDomain name="bool"/>
 	    	</IntVectorProperty>
         </SourceProxy>
+        <SourceProxy name="WindVelocityVectorCalculationFilter" class="WindVelocityVectorCalculationFilter" label="Kronos Wind Velocity Vector Calculation Filter">
+            <Documentation
+                long_help="This filter can calculate velocity vectors from given wind data for use with flow visualisation."
+                short_help="Calculate wind velocity vectors">
+            </Documentation>
+            <InputProperty name="Input"
+                           command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
+                </DataTypeDomain>
+            </InputProperty>
+        </SourceProxy>
         <SourceProxy name="GenerateGeodesics" class="GenerateGeodesics" label="Kronos Generate Flight Geodesics">
             <Documentation
                 long_help=""
@@ -1236,6 +1254,7 @@
             <Filter name="WindSpeedThresholdFilter" />
             <Filter name="TwitterFilter" />
             <Filter name="TerrainHeightFilter" />
+            <Filter name="WindVelocityVectorCalculationFilter" />
         </Category>
         <Category name="SciVis" menu_label="SciVis">
             <Filter name="MIPASFilter" />
