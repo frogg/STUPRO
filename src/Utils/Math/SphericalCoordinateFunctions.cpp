@@ -1,4 +1,4 @@
-#include <Utils/Math/GeographicFunctions.hpp>
+#include <Utils/Math/SphericalCoordinateFunctions.h>
 
 double calculateDistance(Coordinate startPoint, Coordinate endPoint) {
 	double earthRadius = 6372.8;

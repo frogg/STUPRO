@@ -11,7 +11,7 @@
 
 #include <Reader/DataReader/PolyDataSetHelper.hpp>
 #include <Utils/Config/Configuration.hpp>
-#include <Utils/Math/GeographicFunctions.hpp>
+#include <Utils/Math/SphericalCoordinateFunctions.h>
 
 JsonReader::JsonReader(rapidjson::Value& jsonDocument, Data::Type dataType, QString path,
                        bool temporal,

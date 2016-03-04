@@ -4,6 +4,9 @@
 #include"Vector3.hpp"
 #include"Utils/Misc/Macros.hpp"
 #include "Utils/Config/Configuration.hpp"
+#include <Globe/Coordinate.hpp>
+#include <Utils/Math/Functions.hpp>
+#include <math.h>
 
 /**
  * @brief getGlobeRadius get the radius of the globe
@@ -147,5 +150,13 @@ template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Ve
 	Vector3<T> newPoint = cartesianToSpherical(cartesian1 + cartesian2);
 	return scaleTo(newPoint, (gps1.z + gps2.z) / 2);
 }
+
+/**
+ * Calculate the distance between two coordinates in kilometres using the Haversine formula.
+ * @param startPoint The first point
+ * @param endPoint The second point
+ * @return The distance between the two points in kilometres
+ */
+double calculateDistance(Coordinate startPoint, Coordinate endPoint);
 
 #endif // SPHERICAL_COORDINATE_FUNCTIONS
