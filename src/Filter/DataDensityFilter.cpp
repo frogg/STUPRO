@@ -15,6 +15,14 @@
 #include <algorithm>
 #include <Utils/Misc/PointCoordinates.hpp>
 
+//TESTING
+#include <vtkPointData.h>
+#include <vtkAbstractArray.h>
+#include <vtkFloatArray.h>
+#include <vtkSetGet.h>
+#include <vtkInformation.h>
+#include <vtkInformationDoubleKey.h>
+
 DataDensityFilter::DataDensityFilter() { }
 
 void DataDensityFilter::setDataPercentage(double percentage) {
@@ -111,23 +119,38 @@ void DataDensityFilter::NormalFilter(vtkPolyData* input, vtkPolyData* output) {
 	vtkSmartPointer<vtkPoints> resultPoints =
 	    vtkSmartPointer<vtkPoints>::New();
 
+	vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
+	            input->GetPointData()->GetArray("temperatures"));
+
+	vtkSmartPointer<vtkFloatArray> tempValues = vtkSmartPointer<vtkFloatArray>::New();
+	tempValues->SetNumberOfComponents(1);
+	tempValues->SetName("temperatures");
+
+
+	/* Get all attribute arrays
+	for (int count = 0; count < input->GetPointData()->GetNumberOfArrays(); count++) {
+		vtkErrorMacro( << "PointData stuff : " << input->GetPointData()->GetArrayName(count));
+	}
+	*/
 
 	for (int r = 0; r < input->GetNumberOfPoints(); r++) {
 		if (absorbArray[r] == -1) {
 			double p[3];
 			input->GetPoint(r, p);
-			PointCoordinates firstCoords(p[1], p[2], p[3]);
-
+			float temp = temperatureArray->GetValue(r);
+			PointCoordinates firstCoords(p[0], p[1], p[2]);
 			for (int j = 0; j < input->GetNumberOfPoints(); j++) {
 				if (absorbArray[j] == -1) {
 					double o[3];
 					input->GetPoint(j, o);
-					PointCoordinates secondCoords(o[1], o[2], o[3]);
+					PointCoordinates secondCoords(o[0], o[1], o[2]);
 					if (firstCoords.getDistanceTo(secondCoords) < densityDistance) {
+						temp = (temp + temperatureArray->GetValue(j)) / 2;
 						absorbArray[j] = 0;
 					}
 				}
 			}
+			tempValues->InsertNextValue(temp);
 			resultPoints->InsertNextPoint(p);
 		}
 	}
@@ -136,12 +159,12 @@ void DataDensityFilter::NormalFilter(vtkPolyData* input, vtkPolyData* output) {
 	vertices->InsertNextCell(resultPoints->GetNumberOfPoints());
 
 	for (int i = 0; i < resultPoints->GetNumberOfPoints(); i++) {
-
 		vertices->InsertCellPoint(i);
 	}
 
 	output->SetPoints(resultPoints);
 	output->SetVerts(vertices);
+	output->GetPointData()->AddArray(tempValues);
 }
 
 DataDensityFilter::~DataDensityFilter() {}
