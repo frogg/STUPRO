@@ -109,7 +109,7 @@ int TemporalInterpolationFilter::RequestInformation (
 	if (vtkExecutive::CONSUMERS()->Length(outInfo) == 0) {
 		if (inInfo->Has(Data::VTK_DATA_STATE())) {
 			Data::State dataState = static_cast<Data::State>(inInfo->Get(Data::VTK_DATA_STATE()));
-			if (dataState != Data::RAW) {
+			if (dataState != Data::RAW && dataState != Data::DENSITY_MAPPED) {
 				this->fail(
 				    QString("This filter only works with raw input data, but the input data has the state %1.").arg(
 				        Data::getDataStateName(dataState)));
@@ -243,8 +243,10 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 		tupleNumber++;
 	}
 
-	dataSet->GetPointData()->AddArray(timestamps);
-	dataSet->GetPointData()->AddArray(priorities);
+	if (this->dataType != Data::TWEETS) {
+		dataSet->GetPointData()->AddArray(timestamps);
+		dataSet->GetPointData()->AddArray(priorities);
+	}
 
 	switch (this->dataType) {
 	case Data::TEMPERATURE: {
@@ -430,13 +432,20 @@ void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData* i
 
 InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex,
         vtkPolyData* inputData) {
-	vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
-	            inputData->GetPointData()->GetArray("priorities"));
-	int priority = priorityArray->GetValue(pointIndex);
+	int priority = 0;
+	int timestamp = 0;
 
-	vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
-	            inputData->GetPointData()->GetArray("timestamps"));
-	int timestamp = timestampArray->GetValue(pointIndex);
+	if (this->dataType != Data::TWEETS) {
+		// Twitter data can only be density-mapped and is therefore a special case
+
+		vtkSmartPointer<vtkIntArray> priorityArray = vtkIntArray::SafeDownCast(
+		            inputData->GetPointData()->GetArray("priorities"));
+		priority = priorityArray->GetValue(pointIndex);
+
+		vtkSmartPointer<vtkIntArray> timestampArray = vtkIntArray::SafeDownCast(
+		            inputData->GetPointData()->GetArray("timestamps"));
+		timestamp = timestampArray->GetValue(pointIndex);
+	}
 
 	switch (this->dataType) {
 	case Data::TEMPERATURE: {
@@ -447,9 +456,9 @@ InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex,
 		break;
 	}
 	case Data::TWEETS: {
-		vtkSmartPointer<vtkFloatArray> densityArray = vtkFloatArray::SafeDownCast(
+		vtkSmartPointer<vtkIntArray> densityArray = vtkIntArray::SafeDownCast(
 		            inputData->GetPointData()->GetArray("density"));
-		return new TwitterInterpolationValue(priority, timestamp, densityArray->GetValue(pointIndex));
+		return new TwitterInterpolationValue(densityArray->GetValue(pointIndex));
 		break;
 	}
 	case Data::PRECIPITATION: {
@@ -563,7 +572,7 @@ InterpolationValue* TemporalInterpolationFilter::interpolateDataPoint(Interpolat
 
 		float interpolatedDensity = factorB * leftValue->getDensity() + factorA * rightValue->getDensity();
 
-		return new TwitterInterpolationValue(priority, interpolatedTimestamp, interpolatedDensity);
+		return new TwitterInterpolationValue(interpolatedDensity);
 		break;
 	}
 	case Data::PRECIPITATION: {

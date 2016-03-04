@@ -12,7 +12,7 @@ public:
 	/**
 	 * Create a new TwitterInterpolationValue.
 	 */
-	TwitterInterpolationValue(int priority, int timestamp, float density);
+	TwitterInterpolationValue(float density);
 	~TwitterInterpolationValue();
 
 	/**
