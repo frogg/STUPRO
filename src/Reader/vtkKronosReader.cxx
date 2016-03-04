@@ -18,7 +18,7 @@
 
 vtkStandardNewMacro(vtkKronosReader);
 
-vtkKronosReader::vtkKronosReader() : error(false), zoomLevel(0) {
+vtkKronosReader::vtkKronosReader() : error(false), zoomLevel(0), cachingInThread(false) {
 	// Initialize values that are read from the program configuration
 	try {
 		this->globeRadius = Configuration::getInstance().getDouble("globe.radius");
@@ -40,13 +40,13 @@ vtkKronosReader::~vtkKronosReader() {
 }
 
 void vtkKronosReader::abortCaching() {
-	if (this->jsonReader) {
+	if (this->jsonReader && this->cachingInThread) {
 		this->jsonReader->abortCaching();
 		this->cacheThread.join();
 	}
 }
 
-void vtkKronosReader::SetFileName(std::string name) {
+void vtkKronosReader::SetFileName(std::string name, bool startCaching) {
 	this->fileName = QString::fromStdString(name);
 
 	try {
@@ -56,7 +56,14 @@ void vtkKronosReader::SetFileName(std::string name) {
 		return;
 	}
 
-	this->cacheThread = std::thread(&JsonReader::cacheAllData, this->jsonReader.get());
+	if (startCaching) {
+		this->cacheThread = std::thread(&JsonReader::cacheAllData, this->jsonReader.get());
+		this->cachingInThread = true;
+	}
+}
+
+void vtkKronosReader::SetFileName(std::string name) {
+	this->SetFileName(name, true);
 }
 
 void vtkKronosReader::SetCameraPosition(double x, double y, double z) {
