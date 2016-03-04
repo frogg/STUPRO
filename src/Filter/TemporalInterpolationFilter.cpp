@@ -347,12 +347,6 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 		windSpeeds->SetNumberOfTuples(interpolatedData.size());
 		windSpeeds->SetName("speeds");
 
-		vtkSmartPointer<vtkFloatArray> velocities
-		    = vtkSmartPointer<vtkFloatArray>::New();
-		velocities->SetNumberOfComponents(3);
-		velocities->SetNumberOfTuples(interpolatedData.size());
-		velocities->SetName("velocity");
-
 		int tupleNumber = 0;
 		for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = interpolatedData.begin();
 		        iterator != interpolatedData.end(); ++iterator) {
@@ -369,20 +363,11 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 			};
 			windSpeeds->SetTuple(tupleNumber, windSpeed);
 
-			float windBearingRadian = toRadians(dataPoint->getBearing());
-			double velocity[3] = {
-				(double) dataPoint->getSpeed()* sin(windBearingRadian),
-				(double) dataPoint->getSpeed()* cos(windBearingRadian),
-				0.0
-			};
-			velocities->SetTuple(tupleNumber, velocity);
-
 			tupleNumber++;
 		}
 
 		dataSet->GetPointData()->AddArray(windSpeeds);
 		dataSet->GetPointData()->AddArray(windDirections);
-		dataSet->GetPointData()->AddArray(velocities);
 
 		break;
 	}
