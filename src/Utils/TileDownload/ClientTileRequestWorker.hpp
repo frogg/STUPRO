@@ -72,14 +72,17 @@ protected:
 	virtual void handleAbortRequest();
 
 private:
-	/** Queue used to schedule jobs for the timer callback to process */
+	/** Queue used to schedule jobs for the timer callback to process. */
 	QQueue<WorkerJob> jobQueue;
 
 	/** The set containing all pending download jobs. */
 	QSet<ImageDownloadJob*> pendingDownloadJobs;
 
-	/** Map used to associate a NetworkReply with ImageDownloadJobMetaData */
+	/** Map used to associate a NetworkReply with ImageDownloadJobMetaData. */
 	QMap<QNetworkReply*, ImageDownloadJobMetaData*> replyJobMetaMapping;
+
+	/** The maximum number of jobs to process simultaniously. */
+	int maxJobCount;
 
 	/**
 	 * Removes the given job from the pendingDownloadsJobs list
@@ -123,6 +126,16 @@ private:
 	 * @param meta  the metadata object associated with the reply
 	 */
 	void handleReplyContent(QNetworkReply* reply, ImageDownloadJobMetaData* meta);
+
+	/**
+	 * @param jobCount the maximum number of jobs to process simultaniously
+	 */
+	void setMaxJobCount(int jobCount);
+
+	/**
+	 * @returns the maximum number of jobs to process simultaniously
+	 */
+	int getMaxJobCount();
 
 private slots:
 	/**

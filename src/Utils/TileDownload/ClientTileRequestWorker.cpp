@@ -10,7 +10,7 @@
 ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
         TileRequestWorker::OnTileFetched onTileFetched,
         TileRequestWorker::OnTileFetchFailed onTileFetchFailed, QString configFile)
-	: TileRequestWorker(layers, onTileFetched, onTileFetchFailed, configFile) {
+	: TileRequestWorker(layers, onTileFetched, onTileFetchFailed, configFile), maxJobCount(5) {
 	QObject::connect(
 	    &this->networkManager, SIGNAL(finished(QNetworkReply*)),
 	    this, SLOT(downloadFinished(QNetworkReply*))
@@ -28,7 +28,7 @@ void ClientTileRequestWorker::scheduleJob(WorkerJob job) {
 }
 
 void ClientTileRequestWorker::processJobQueue() {
-	if (this->jobQueue.isEmpty()) {
+	if (this->jobQueue.isEmpty() || this->pendingDownloadJobs.size() >= this->getMaxJobCount()) {
 		return;
 	}
 
@@ -193,6 +193,16 @@ void ClientTileRequestWorker::handleReplyContent(QNetworkReply* reply,
 		ImageCache::getInstance().cacheImage(*metaImage, meta->layer, tile.getZoomLevel(), tile.getTileX(),
 		                                     tile.getTileY());
 	}
+}
+
+void ClientTileRequestWorker::setMaxJobCount(int jobCount) {
+    if (jobCount >= 1) {
+        this->maxJobCount = jobCount;
+    }
+}
+
+int ClientTileRequestWorker::getMaxJobCount() {
+    return this->maxJobCount;
 }
 
 MetaImage ClientTileRequestWorker::decodeBil16(const QByteArray& rawData, int width, int height) {
