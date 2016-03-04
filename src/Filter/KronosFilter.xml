@@ -487,10 +487,10 @@
             <Property name="SelectFlightInputScalars" show="0"/>
         </Hints>
     </SourceProxy>
-	 <SourceProxy name="DataDensityFilter" class="DataDensityFilter" label="Data Density Filter">
+	 <SourceProxy name="DataDensityFilter" class="DataDensityFilter" label="Kronos Point Density Reduction Filter">
             <Documentation
-                long_help="This filter can interpolate group points and return the data."
-                short_help="This filter can interpolate group points and return the data">
+                long_help="This filter can merge close points and averages their data."
+                short_help="This filter can merge close points and averages their data">
             </Documentation>
             <InputProperty
                 name="Input"
@@ -501,6 +501,7 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPolyData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
 				<IntVectorProperty name="Enable KMeans"
@@ -515,15 +516,7 @@
                 number_of_elements="1"
                 default_values="0.01">
                 <DoubleRangeDomain name="range" min="0.0" max="1.0" />
-            </DoubleVectorProperty>
-			<DoubleVectorProperty name="DensityDistance"
-                label="Absorption radius of points"
-                command="setDensityDistance"
-                number_of_elements="1"
-                default_values="0">
-                <DoubleRangeDomain name="range" min="0.0" max="100.0" />
-            </DoubleVectorProperty>
-		
+            </DoubleVectorProperty>		
         <PropertyGroup label="Data Point Reduction">
             <Property name="DataPercentage" />
         </PropertyGroup>
