@@ -28,7 +28,7 @@ private:
 	/**
 	 * transforms gps cooridinates (lat, long, height) to world/cartesian coodinate systen
 	 */
-	template<typename T> void gpsToWorldCoordinates(const Vector3<T>& gps, Vector3<T>& cartesian) {
+	template<typename T> void gpsToWorldCoordinates(const Spherical<T>& gps, Cartesian<T>& cartesian) {
 		if (transform) {
 			// Wrap around globe
 			cartesian = sphericalToCartesian(gps);
@@ -40,7 +40,7 @@ private:
 	/**
 	 * transforms gps cooridinates (lat, long, height) to world/cartesian coodinate systen, and also derivates
 	 */
-	template<typename T> void gpsToWorldAndDerivatives(const Vector3<T>& gps, Vector3<T>& cartesian,
+	template<typename T> void gpsToWorldAndDerivatives(const Spherical<T>& gps, Cartesian<T>& cartesian,
 	        T derivatives[3][3]) {
 
 		gpsToWorldCoordinates(gps, cartesian);
@@ -94,43 +94,39 @@ public:
 	 * InternalTransformPoint for floats
 	 */
 	void InternalTransformPoint(const float in[3], float out[3]) override {
-
-		Vector3f outV = Vector3f(out);
 		if (this->transformForward) {
-			gpsToWorldCoordinates(Vector3f(in), outV);
+			Cartesian<float> outV(out);
+			gpsToWorldCoordinates(Spherical<float>(in), outV);
+			copyVectorToArray(outV, out);
 		} else {
 			throw NoBackwardTransformationException("no backward transformation supported");
 		}
-		copyVectorToArray(outV, out);
 	}
 
 	/**
 	 * InternalTransformPoint for doubles
 	 */
 	void InternalTransformPoint(const double in[3], double out[3]) override {
-
-		Vector3d outV = Vector3d(out);
 		if (this->transformForward) {
-			gpsToWorldCoordinates(Vector3d(in), outV);
+			Cartesian<double> outV(out);
+			gpsToWorldCoordinates(Spherical<double>(in), outV);
+			copyVectorToArray(outV, out);
 		} else {
 			throw NoBackwardTransformationException("no backward transformation supported");
 		}
-		copyVectorToArray(outV, out);
 	}
 
 	/**
 	 * InternalTransformDerivative for floats (transforms point AND deriactive)
 	 */
 	void InternalTransformDerivative(const float in[3], float out[3], float derivative[3][3]) override {
-
-		Vector3f outV = Vector3f(out);
-
 		if (this->transformForward) {
-			gpsToWorldAndDerivatives(Vector3f(in), outV, derivative);
+			Cartesian<float> outV(out);
+			gpsToWorldAndDerivatives(Spherical<float>(in), outV, derivative);
+			copyVectorToArray<float>(outV, out);
 		} else {
 			throw NoBackwardTransformationException("no backward transformation supported");
 		}
-		copyVectorToArray<float>(outV, out);
 	}
 
 	/**
@@ -138,15 +134,13 @@ public:
 	 */
 	void InternalTransformDerivative(const double in[3], double out[3],
 	                                 double derivative[3][3]) override {
-
-		Vector3d outV = Vector3d(out);
-
 		if (this->transformForward) {
-			gpsToWorldAndDerivatives(Vector3d(in), outV, derivative);
+			Cartesian<double> outV(out);
+			gpsToWorldAndDerivatives(Spherical<double>(in), outV, derivative);
+			copyVectorToArray(outV, out);
 		} else {
 			throw NoBackwardTransformationException("no backward transformation supported");
 		}
-		copyVectorToArray(outV, out);
 	}
 
 	vtkAbstractTransform* MakeTransform() override {

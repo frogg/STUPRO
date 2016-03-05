@@ -23,13 +23,13 @@ inline double getGlobeRadius() {
  * @param gps the gps position to convert
  * @return the cartesian position of gps
  */
-template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
+template<typename T> Cartesian<T> sphericalToCartesian(const Spherical<T>& gps) {
 	//Radian of longitude
 	const T lonInRadian = gps.x * KRONOS_PI / 180;
 	//Radian of latitude
 	const T latInRadian = gps.y * KRONOS_PI / 180;
 
-	Vector3<T> retVal;
+	Cartesian<T> retVal;
 	//WATCH OUT: order of theses assignement, because of ParaView coordinate systems
 	retVal.z = (getGlobeRadius() + gps.z) * cos(latInRadian) * cos(lonInRadian);
 	retVal.x = (getGlobeRadius() + gps.z) * cos(latInRadian) * sin(lonInRadian);
@@ -37,7 +37,7 @@ template<typename T> Vector3<T> sphericalToCartesian(const Vector3<T>& gps) {
 	return retVal;
 }
 
-template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T jacobian[3][3]) {
+template<typename T> void sphericalToCartesianJacobian(const Spherical<T>& gps, T jacobian[3][3]) {
 	const T lonInRadian = gps.x * KRONOS_PI / 180;
 	const T latInRadian = gps.y * KRONOS_PI / 180;
 
@@ -66,9 +66,9 @@ template<typename T> void sphericalToCartesianJacobian(const Vector3<T>& gps, T 
  * @param gps the gps position to convert
  * @return the cartesian position of gps
  */
-template<typename T> Vector3<T> sphericalToCartesianFlat(const Vector3<T>& gps) {
+template<typename T> Cartesian<T> sphericalToCartesianFlat(const Spherical<T>& gps) {
 
-	Vector3<T> retVal;
+	Cartesian<T> retVal;
 
 	// Scale to 2D map size
 	retVal.x = (gps.x / 90.0) * getGlobeRadius();
@@ -78,7 +78,7 @@ template<typename T> Vector3<T> sphericalToCartesianFlat(const Vector3<T>& gps) 
 	return retVal;
 }
 
-template<typename T> void sphericalToCartesianFlatJacobian(const Vector3<T>& gps,
+template<typename T> void sphericalToCartesianFlatJacobian(const Spherical<T>& gps,
         T jacobian[3][3]) {
 
 	T factor = (1.0 / 90.0) * getGlobeRadius();
@@ -106,8 +106,8 @@ template<typename T> void sphericalToCartesianFlatJacobian(const Vector3<T>& gps
  * @param point the cartesian position
  * @return the gps position of point
  */
-template<typename T> Vector3<T> cartesianToSpherical(const Vector3<T>& point) {
-	Vector3<T> retVal;
+template<typename T> Spherical<T> cartesianToSpherical(const Cartesian<T>& point) {
+	Spherical<T> retVal;
 	retVal.z = point.length() - getGlobeRadius();
 	retVal.x = atan2(point.x, point.z) * 180 / KRONOS_PI;
 	retVal.y = asin(point.y / point.length()) * 180 / KRONOS_PI;
@@ -129,7 +129,7 @@ template<typename T> T abs(const Vector3<T>& gps) {
  * @param point1 the second point
  * @return the distance of the two points
  */
-template<typename T> float distance(const Vector3<T>& point1, const Vector3<T>& point2) {
+template<typename T> float distance(const Spherical<T>& point1, const Spherical<T>& point2) {
 	return (sphericalToCartesian(point1) - sphericalToCartesian(point2)).length();
 }
 
@@ -138,17 +138,17 @@ template<typename T> float distance(const Vector3<T>& point1, const Vector3<T>& 
  * @param gps the position to scale
  * @return the scaled position
  */
-template<typename T> Vector3<T> scaleTo(const Vector3<T>& gps, const T targetLength) {
+template<typename T> Spherical<T> scaleTo(const Spherical<T>& gps, const T targetLength) {
 	return Vector3<T>(gps.x, gps.y, targetLength);
 }
 
 /**
  * Get the point right between two other points (in spherical sense, so the result has the middle abs of gps1 and gps2)
  */
-template<typename T> Vector3<T> calculateCenter(const Vector3<T>& gps1, const Vector3<T>& gps2) {
-	Vector3<T> cartesian1 = sphericalToCartesian(gps1) / 2;
-	Vector3<T> cartesian2 = sphericalToCartesian(gps2) / 2;
-	Vector3<T> newPoint = cartesianToSpherical(cartesian1 + cartesian2);
+template<typename T> Spherical<T> calculateCenter(const Spherical<T>& gps1, const Spherical<T>& gps2) {
+	Cartesian<T> cartesian1 = sphericalToCartesian(gps1) / 2;
+	Cartesian<T> cartesian2 = sphericalToCartesian(gps2) / 2;
+	Spherical<T> newPoint = cartesianToSpherical(cartesian1 + cartesian2);
 	return scaleTo(newPoint, (gps1.z + gps2.z) / 2);
 }
 

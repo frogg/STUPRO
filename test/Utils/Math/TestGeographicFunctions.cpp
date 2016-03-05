@@ -15,7 +15,7 @@
 	}
 
 TEST(TestSphericalCoordinateFunctions, TestInverseTransform) {
-	Vector3d testV(90, 23, 100);
+	Spherical<double> testV(90, 23, 100);
 	EXPECT_V_EQ(testV, cartesianToSpherical(sphericalToCartesian(testV)));
 }
 
