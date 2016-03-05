@@ -18,6 +18,11 @@ bool TemperatureThresholdFilter::evaluatePoint(int pointIndex, Coordinate coordi
         vtkPointData* pointData) {
 	vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetArray("temperatures"));
+
+	if (!temperatureArray) {
+		return false;
+	}
+
 	float temperature = temperatureArray->GetTuple1(pointIndex);
 
 	return temperature >= this->lowerLimit && temperature <= this->upperLimit;

@@ -35,14 +35,17 @@ bool AIRSFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                vtkPointData* pointData) {
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
-	double time = timeArray->GetTuple1(pointIndex);
-
 	vtkSmartPointer<vtkFloatArray> soArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("SO2"));
-	float soIndex = soArray->GetTuple1(pointIndex);
-
 	vtkSmartPointer<vtkFloatArray> ashArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("ash"));
+
+	if (!timeArray || !soArray || !ashArray) {
+		return false;
+	}
+
+	double time = timeArray->GetTuple1(pointIndex);
+	float soIndex = soArray->GetTuple1(pointIndex);
 	float ashIndex = ashArray->GetTuple1(pointIndex);
 
 	return (this->lowerTimeLimit <= time && time <= this->upperTimeLimit)

@@ -68,8 +68,8 @@
             <DoubleVectorProperty name="Level of detail"
                 command="setLoD"
                 number_of_elements="1"
-                default_values="0.0">
-                <DoubleRangeDomain name="Level of detail" min="0.3" max="1.0" />
+                default_values="0.3">
+                <DoubleRangeDomain name="Level of detail" min="0.0" max="1.0" />
             </DoubleVectorProperty>
             <IntVectorProperty name="limit calculation depth"
                 command="setLimitDepth"

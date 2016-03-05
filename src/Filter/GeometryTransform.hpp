@@ -83,6 +83,13 @@ public:
 	}
 
 	/**
+	 * Check if transformation is enabled
+	 */
+	bool getTransform() {
+		return this->transform;
+	}
+
+	/**
 	 * change from forward transformation to backward transformation or the other way round. We only support forward transformation.
 	 */
 	void Inverse() override {

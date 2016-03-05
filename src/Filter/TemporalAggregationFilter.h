@@ -46,11 +46,6 @@ private:
 	void fail(QString message);
 
 	/**
-	 * Boolean flag denoting whether there was an error.
-	 */
-	bool error;
-
-	/**
 	 * This integer will store the current time step while this filter iterates through all of them
 	 * to aggregate data.
 	 */

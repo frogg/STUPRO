@@ -20,6 +20,9 @@ public:
 	                vtkInformationVector** inputVector,
 	                vtkInformationVector* outputVector) override;
 
+	int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
+	                       vtkInformationVector* outputVector) override;
+
 	int FillOutputPortInformation(int, vtkInformation* info) override;
 
 	int FillInputPortInformation(int, vtkInformation* info) override;
@@ -56,6 +59,7 @@ private:
 	double maxLenOfLineSegment = 0.0;
 	double radius = 0.0;
 	bool limitCalcDepth = true;
+	bool firstRequestInformation = true;
 
 	/**
 	 * @brief insertNextFlight calculate the neccessary points between start and end airport, insert them into the given data set

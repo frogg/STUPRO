@@ -8,6 +8,7 @@
 #include <vtkCellData.h>
 #include <vtkSmartPointer.h>
 #include <vtkStringArray.h>
+#include <vtkInformationVector.h>
 
 #include <QVector>
 #include <QString>
@@ -15,7 +16,7 @@
 #include "Utils/Math/Vector3.hpp"
 #include "Utils/Math/GeographicFunctions.hpp"
 #include "Utils/Misc/KronosLogger.hpp"
-#include "Utils/Misc/Macros.hpp"
+#include "Reader/DataReader/Data.hpp"
 
 vtkStandardNewMacro(GenerateGeodesics)
 
@@ -37,22 +38,19 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	vtkPolyData* output = vtkPolyData::GetData(outputVector);
 
 	if (!input) {
-		KRONOS_LOG_ERROR("Input Error. Aborting...");
 		return 0;
 	}
 
 	int numberOfFlights = input->GetNumberOfPoints();
 
-	if (!input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)
-	        || input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() !=
-	        numberOfFlights) {
-		KRONOS_LOG_ERROR("The input data has an unexpected format. Details:\n"
-		                 "    Number of input arrays: %i\n"
-		                 "    Array size: %i and %lld",
-		                 input->GetPointData()->GetNumberOfArrays(),
-		                 numberOfFlights,
-		                 input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples());
+	if (!input->GetPointData()->HasArray(DESTINATION_ARRAY_NAME)) {
 		return 0;
+	} else if (input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() !=
+	           numberOfFlights) {
+		vtkErrorMacro( << "The input data has an unexpected format. Details:" << endl
+		               << "    Number of input arrays: " << input->GetPointData()->GetNumberOfArrays() << endl
+		               << "    Array size: " << numberOfFlights << " and "
+		               << input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples());
 	}
 
 	// generate the geodesics
@@ -76,6 +74,10 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	                                 DEST_CODE_ARRAY_NAME));
 	vtkFloatArray* inFlightLength = vtkFloatArray::SafeDownCast(input->GetPointData()->GetArray(
 	                                    LENGTH_ARRAY_NAME));
+
+	if (!destinationPoints || !inPrio || !inAirline || !inStartCode || !inDestCode || !inFlightLength) {
+		return 0;
+	}
 
 	vtkSmartPointer<vtkIntArray> priorities  = vtkSmartPointer<vtkIntArray>::New();
 	priorities->SetNumberOfComponents(1);
@@ -119,6 +121,26 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	return 1;
 }
 
+int GenerateGeodesics::RequestInformation(vtkInformation* request,
+        vtkInformationVector** inputVector, vtkInformationVector* outputVector) {
+	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+	if (inInfo->Has(Data::VTK_DATA_TRANSFORMATION()) && firstRequestInformation) {
+		Data::Transformation dataTransformation = static_cast<Data::Transformation>(inInfo->Get(
+		            Data::VTK_DATA_TRANSFORMATION()));
+		if (dataTransformation == Data::TRANSFORMED) {
+			vtkErrorMacro( << "The geodesics generation filter does not work properly on transformed data.");
+		}
+	}
+	if (!inInfo->Has(Data::VTK_DATA_TYPE()) || inInfo->Get(Data::VTK_DATA_TYPE()) != Data::FLIGHTS) {
+		vtkErrorMacro( <<
+		               "The geodesics generation filter only works with Kronos Flight Data. Please proceed with caution.");
+		return 0;
+	}
+
+	firstRequestInformation = false;
+	return Superclass::RequestInformation(request, inputVector, outputVector);
+}
+
 int GenerateGeodesics::FillOutputPortInformation(int, vtkInformation* info) {
 	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
 	return 1;
@@ -127,6 +149,8 @@ int GenerateGeodesics::FillOutputPortInformation(int, vtkInformation* info) {
 int GenerateGeodesics::FillInputPortInformation(int, vtkInformation* info) {
 	info->Remove(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
+	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
+	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkUnstructuredGrid");
 	return 1;
 }
 
