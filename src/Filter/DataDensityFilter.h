@@ -7,9 +7,10 @@
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
-#include <qmap.h>
 #include <qlist.h>
 #include <Utils/Misc/PointCoordinates.hpp>
+#include <Utils/Misc/PointCoordinateComparator.hpp>
+#include <map>
 
 class DataDensityFilter : public vtkDataObjectAlgorithm {
 
@@ -23,7 +24,7 @@ public:
 	 * @param percentage The new percentage of points to keep
 	 */
 	void setDataPercentage(double percentage);
-	
+
 	/**
 	 * Callback method for setting whether the kMeans algorithm should be used.
 	 * @param enableKMeans True if kMeans should be used, false otherwise
@@ -47,28 +48,38 @@ private:
 
 	DataDensityFilter(const DataDensityFilter&);  // Not implemented.
 	void operator=(const DataDensityFilter&);  // Not implemented.
-	
+
+	/**
+	* The typedef for the map with our custom comparator,
+	* this is needed as the PointCoordinate > operator sorts
+	* the points in a way that does not match the original data here
+	*/
+	typedef std::map<PointCoordinates, QList<int>, PointCoordinateComparator> PointMap;
+
+
 	/**
 	 * Reduce a set of points using the kMeans algorithm.
 	 * @param input The input point set
 	 * @return A map of point coordinates of central points and a list of point IDs that belong to them
 	 */
-	QMap<PointCoordinates, QList<int>> reducePointsKMeans(vtkPointSet* input);
-	
+	PointMap reducePointsKMeans(vtkPointSet* input);
+
 	/**
 	 * Reduce a set of points using a simple approach.
 	 * @param input The input point set
 	 * @return A map of point coordinates of central points and a list of point IDs that belong to them
 	 */
-	QMap<PointCoordinates, QList<int>> reducePointsSimple(vtkPointSet* input);
-	
+	PointMap reducePointsSimple(vtkPointSet* input);
+
 	/**
 	 * Output poly data from a map of central point coordinates, their associated subordinate points and all point data.
 	 * @param centralPoints A map of point coordinates of central points and a list of point IDs that belong to them
 	 * @param input The input point set
 	 * @return A poly data object with all central points and averaged scalar values
 	 */
-	vtkSmartPointer<vtkPolyData> generateOutputData(QMap<PointCoordinates, QList<int>> centralPoints, vtkPointSet* input);
+	vtkSmartPointer<vtkPolyData> generateOutputData(PointMap
+	        centralPoints,
+	        vtkPointSet* input);
 
 	/**
 	 * The percentage of points that should be kept. 1 refers to keeping all points, 0 means keeping one point.

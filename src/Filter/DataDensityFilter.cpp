@@ -9,23 +9,17 @@
 #include <vtkObjectFactory.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
+#include <vtkPointData.h>
 
 #include <sstream>
 #include <algorithm>
 
-//TESTING
-#include <vtkPointData.h>
-#include <vtkAbstractArray.h>
-#include <vtkFloatArray.h>
-#include <vtkSetGet.h>
-#include <vtkInformation.h>
-#include <vtkInformationDoubleKey.h>
+
 
 DataDensityFilter::DataDensityFilter() { }
 DataDensityFilter::~DataDensityFilter() { }
 
 vtkStandardNewMacro(DataDensityFilter)
-
 int DataDensityFilter::FillOutputPortInformation(int port, vtkInformation* info) {
 	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
 	return 1;
@@ -50,14 +44,15 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 	vtkPointSet* input = vtkPointSet::SafeDownCast(inInfo->Get(vtkPolyData::DATA_OBJECT()));
 	vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkPolyData::DATA_OBJECT()));
 
-	QMap<PointCoordinates, QList<int>> reducedDataPoints;
-	
+	PointMap reducedDataPoints;
+
+	// Depending on the checkbox either use the kMeans or the simple algorithm
 	if (kMeansEnabled) {
 		reducedDataPoints = this->reducePointsKMeans(input);
 	} else {
 		reducedDataPoints = this->reducePointsSimple(input);
 	}
-	
+
 	output->ShallowCopy(this->generateOutputData(reducedDataPoints, input));
 
 	return 1;
@@ -78,7 +73,7 @@ void DataDensityFilter::PrintSelf(ostream& os, vtkIndent indent) {
 	os << indent << "Twitter Filter, Kronos Project" << endl;
 }
 
-QMap<PointCoordinates, QList<int>> DataDensityFilter::reducePointsKMeans(vtkPointSet* input) {
+DataDensityFilter::PointMap DataDensityFilter::reducePointsKMeans(vtkPointSet* input) {
 	// Get the points into the format needed for KMeans
 	vtkSmartPointer<vtkTable> inputData = vtkSmartPointer<vtkTable>::New();
 
@@ -111,12 +106,12 @@ QMap<PointCoordinates, QList<int>> DataDensityFilter::reducePointsKMeans(vtkPoin
 	kMeansStatistics->RequestSelectedColumns();
 
 	// Set the default number of clusters to the number of points that should be kept
-	kMeansStatistics->SetDefaultNumberOfClusters(std::max(int(this->dataPercentage *
+	kMeansStatistics->SetDefaultNumberOfClusters(std::max(int((1 - this->dataPercentage) *
 	        input->GetNumberOfPoints()), 1));
 
 	// Make the filter only do one iteration for a better performance since we do not need a precise kMeans approximation
 	kMeansStatistics->SetMaxNumIterations(1);
-
+	kMeansStatistics->SetAssessOption(true);
 	kMeansStatistics->Update();
 
 	// Extract the calculated cluster centers from the filter
@@ -130,40 +125,36 @@ QMap<PointCoordinates, QList<int>> DataDensityFilter::reducePointsKMeans(vtkPoin
 	vtkDoubleArray* coord0 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 0"));
 	vtkDoubleArray* coord1 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 1"));
 	vtkDoubleArray* coord2 = vtkDoubleArray::SafeDownCast(outputMeta->GetColumnByName("coord 2"));
-	
-	QMap<PointCoordinates, QList<int>> outputMap;
+
+	PointMap outputMap;
 
 	// Put the centroids into the map
 	for (int i = 0; i < coord0->GetNumberOfTuples(); ++i) {
 		PointCoordinates centroidCoordinates(coord0->GetValue(i), coord1->GetValue(i), coord2->GetValue(i));
 		QList<int> subordinatePoints;
-		
+
 		// Extract the point IDs in the centroid's bucket
-		for (int r = 0; r < kMeansStatistics->GetOutput()->GetNumberOfRows(); r++) {
-			vtkVariant v = kMeansStatistics->GetOutput()->GetValue(r, kMeansStatistics->GetOutput()->GetNumberOfColumns() - 1);
-			
+		for (int r = 0; r < kMeansStatistics->GetOutput()->GetNumberOfRows(); ++r) {
+			vtkVariant v = kMeansStatistics->GetOutput()->GetValue(r,
+			               kMeansStatistics->GetOutput()->GetNumberOfColumns() - 1);
 			if (v.ToInt() == i) {
 				subordinatePoints.append(r);
 			}
 		}
-		
-		outputMap.insert(centroidCoordinates, subordinatePoints);
+		outputMap.insert(std::make_pair(centroidCoordinates, subordinatePoints));
 	}
-	
+
 	return outputMap;
 }
 
-QMap<PointCoordinates, QList<int>> DataDensityFilter::reducePointsSimple(vtkPointSet* input) {
+DataDensityFilter::PointMap DataDensityFilter::reducePointsSimple(vtkPointSet* input) {
 	int numberOfPoints = input->GetNumberOfPoints();
-	QMap<PointCoordinates, QList<int>> outputMap;
-	
-	// Calculate the distance where points should be absorbed by central points
-	double absorptionDistance = 0.0;
-	
-	// Overkill code for calculating the convex hull sphere of the data points
+	PointMap outputMap;
+
+	// Get the width, height and depth of the data in order to set the absoprtion distance
 	double bounds[6];
 	input->GetBounds(bounds);
-	
+
 	double minX = bounds[0];
 	double maxX = bounds[1];
 	double minY = bounds[2];
@@ -173,128 +164,116 @@ QMap<PointCoordinates, QList<int>> DataDensityFilter::reducePointsSimple(vtkPoin
 	double width = maxX - minX;
 	double height = maxY - minY;
 	double depth = maxZ - minZ;
-	
-	PointCoordinates dataSetCenter(minX + (width / 2.0), minY + (height / 2.0), minZ + (depth / 2.0));
 
-	for (int i = 0; i < numberOfPoints; i++) {
-		double pointCoordinatesArray[3];
-		input->GetPoint(i, pointCoordinatesArray);
-		PointCoordinates pointCoordinates(pointCoordinatesArray[0], pointCoordinatesArray[1], pointCoordinatesArray[2]);
-		
-		absorptionDistance = std::max(absorptionDistance, dataSetCenter.getDistanceTo(pointCoordinates));
-	}
-	
-	absorptionDistance *= this->dataPercentage;
-	
+	double absorptionDistance = this->dataPercentage * (width + height + depth);
+
 	// This data structure maps a point index to a boolean flag denoting whether it has been absorped by a central point or has become a central point
-	QMap<int, bool> pointAbsorptionStatus;
-	
+	std::map<int, bool> pointAbsorptionStatus;
+
 	// In the beginning all points are unabsorbed
-	for (int i = 0; i < numberOfPoints; i++) {
+	for (int i = 0; i < numberOfPoints; ++i) {
 		pointAbsorptionStatus[i] = false;
 	}
-	
+
 	// Generate central points and assign close points to them
-	for (int i = 0; i < numberOfPoints; i++) {
+	for (int i = 0; i < numberOfPoints; ++i) {
 		if (pointAbsorptionStatus[i] == false) {
 			double centralPointCoordinatesArray[3];
 			input->GetPoint(i, centralPointCoordinatesArray);
-			PointCoordinates centralPointCoordinates(centralPointCoordinatesArray[0], centralPointCoordinatesArray[1], centralPointCoordinatesArray[2]);
+
+			PointCoordinates centralPointCoordinates(centralPointCoordinatesArray[0],
+			        centralPointCoordinatesArray[1], centralPointCoordinatesArray[2]);
 			QList<int> subordinatePointIndices;
-			
 			pointAbsorptionStatus[i] = true;
-			
-			for (int j = 0; j < numberOfPoints; j++) {
+
+			for (int j = 0; j < numberOfPoints; ++j) {
 				if (pointAbsorptionStatus[j] == false) {
 					double subordinatePointCoordinatesArray[3];
 					input->GetPoint(j, subordinatePointCoordinatesArray);
-					PointCoordinates subordinatePointCoordinates(subordinatePointCoordinatesArray[0], subordinatePointCoordinatesArray[1], subordinatePointCoordinatesArray[2]);
-					
-					if (centralPointCoordinates.getDistanceTo(subordinatePointCoordinates) <= absorptionDistance) {
+					PointCoordinates subordinatePointCoordinates(subordinatePointCoordinatesArray[0],
+					        subordinatePointCoordinatesArray[1], subordinatePointCoordinatesArray[2]);
+
+					if (centralPointCoordinates.getDistanceTo(subordinatePointCoordinates) < absorptionDistance) {
 						subordinatePointIndices.append(j);
 						pointAbsorptionStatus[j] = true;
 					}
 				}
 			}
-			
 			outputMap[centralPointCoordinates] = subordinatePointIndices;
 		}
 	}
-	
+
 	return outputMap;
 }
 
-vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(QMap<PointCoordinates, QList<int>> centralPoints, vtkPointSet* input) {
+vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(
+    PointMap centralPoints, vtkPointSet* input) {
 	vtkSmartPointer<vtkPolyData> output = vtkSmartPointer<vtkPolyData>::New();
-	
+
 	// Create the content of the output poly data object
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
 	vertices->Allocate(vertices->EstimateSize(1, centralPoints.size()));
 	vertices->InsertNextCell(centralPoints.size());
-	
+
 	// Create all arrays from the input data
 	QList<vtkSmartPointer<vtkDataArray>> inputArrays;
 	QList<vtkSmartPointer<vtkDataArray>> outputArrays;
 
-	for (int i = 0; i < input->GetPointData()->GetNumberOfArrays(); i++) {
-		vtkSmartPointer<vtkDataArray> inputArray = input->GetPointData()->GetArray(i);
+	for (int h = 0; h < input->GetPointData()->GetNumberOfArrays(); ++h) {
+		vtkSmartPointer<vtkDataArray> inputArray = input->GetPointData()->GetArray(h);
 
 		if (!inputArray) {
 			vtkErrorMacro( << "An input array could not be read.");
 			return 0;
 		}
-
 		if (inputArray->IsNumeric()) {
-			vtkSmartPointer<vtkDataArray> outputArray = vtkDataArray::CreateDataArray(inputArray->GetDataType());
+			vtkSmartPointer<vtkDataArray> outputArray = vtkDataArray::CreateDataArray(
+			            inputArray->GetDataType());
 
 			outputArray->SetNumberOfComponents(inputArray->GetNumberOfComponents());
 			outputArray->SetNumberOfTuples(centralPoints.size());
 			outputArray->SetName(inputArray->GetName());
-			
+
 			inputArrays.append(inputArray);
 			outputArrays.append(outputArray);
 		}
 	}
-	
-	QMap<PointCoordinates, QList<int>>::const_iterator i = centralPoints.constBegin();
+
+	// Iterate through all the central points and mean the data of the subordinate points
+	PointMap::const_iterator i = centralPoints.cbegin();
 	int centralPointIndex = 0;
-	while (i != centralPoints.constEnd()) {
-	    vertices->InsertCellPoint(points->InsertNextPoint(i.key().getX(), i.key().getY(), i.key().getZ()));
-		
-		for (int j = 0; j < inputArrays.size(); j++) {
+	while (i != centralPoints.cend()) {
+		vertices->InsertCellPoint(points->InsertNextPoint(i->first.getX(), i->first.getY(),
+		                          i->first.getZ()));
+
+		for (int j = 0; j < inputArrays.size(); ++j) {
 			std::vector<double> cumulativeAverage(inputArrays[j]->GetNumberOfComponents());
-			for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); l++) {
-				cumulativeAverage[l] = inputArrays[j]->GetTuple(centralPointIndex)[l] / float(2);
+			for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); ++l) {
+				cumulativeAverage[l] = inputArrays[j]->GetTuple(centralPointIndex)[l];
 			}
-			
-			QListIterator<int> k(i.value());
-			int subordinatePointCount = 1;
+
+			QListIterator<int> k(i->second);
 			while (k.hasNext()) {
 				int pointIndex = k.next();
-				
 				for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); l++) {
-					cumulativeAverage[l] = (subordinatePointCount * cumulativeAverage[l] + inputArrays[j]->GetTuple(pointIndex)[l]) / float(subordinatePointCount + 1);
+					cumulativeAverage[l] = (cumulativeAverage[l] + inputArrays[j]->GetTuple(pointIndex)[l] ) / 2;
 				}
-				
-				subordinatePointCount++;
 			}
-			
+
 			outputArrays[j]->InsertTuple(centralPointIndex, cumulativeAverage.data());
 		}
-		
+
 		centralPointIndex++;
-	    ++i;
+		++i;
 	}
-	
 	output->SetPoints(points);
 	output->SetVerts(vertices);
-	
+
 	// Add the output arrays to the data set
 	QList<vtkSmartPointer<vtkDataArray>>::iterator j;
 	for (j = outputArrays.begin(); j != outputArrays.end(); ++j) {
 		output->GetPointData()->AddArray(*j);
 	}
-	
 	return output;
 }
