@@ -20,7 +20,7 @@ class WindVelocityVectorCalculationFilter : public vtkDataObjectAlgorithm {
 public:
 	vtkTypeMacro(WindVelocityVectorCalculationFilter, vtkDataObjectAlgorithm);
 	static WindVelocityVectorCalculationFilter* New();
-	
+
 	WindVelocityVectorCalculationFilter();
 	~WindVelocityVectorCalculationFilter();
 
@@ -42,14 +42,15 @@ public:
 	void fail(QString message);
 
 private:
-	WindVelocityVectorCalculationFilter(const WindVelocityVectorCalculationFilter&);  // Not implemented.
+	WindVelocityVectorCalculationFilter(const
+	                                    WindVelocityVectorCalculationFilter&);  // Not implemented.
 	void operator=(const WindVelocityVectorCalculationFilter&);  // Not implemented.
 
 	/**
 	 * Boolean flag denoting whether there was an error.
 	 */
 	bool error;
-	
+
 	/**
 	 * The state of this filter's input data.
 	 */

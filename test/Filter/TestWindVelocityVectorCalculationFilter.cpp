@@ -22,7 +22,8 @@ TEST(TestWindVelocityVectorCalculationFilter, TestRawWindData) {
 	ASSERT_EQ(1, inputDataSet->GetNumberOfPoints());
 
 	// Set up the filter and its input
-	vtkSmartPointer<WindVelocityVectorCalculationFilter> filter = WindVelocityVectorCalculationFilter::New();
+	vtkSmartPointer<WindVelocityVectorCalculationFilter> filter =
+	    WindVelocityVectorCalculationFilter::New();
 	filter->SetInputData(0, inputDataSet);
 	filter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::WIND);
 	filter->GetInputInformation()->Set(Data::VTK_DATA_STATE(), Data::RAW);
@@ -31,12 +32,12 @@ TEST(TestWindVelocityVectorCalculationFilter, TestRawWindData) {
 	// Test the filter's output which should contain a computed velocity vector
 	vtkSmartPointer<vtkPolyData> outputDataSet = vtkSmartPointer<vtkPolyData>::New();
 	outputDataSet->ShallowCopy(vtkPolyData::SafeDownCast(filter->GetOutputDataObject(0)));
-	
+
 	// Extract the filter's output array
 	vtkSmartPointer<vtkFloatArray> windVelocityArray = vtkFloatArray::SafeDownCast(
-				outputDataSet->GetPointData()->GetArray("velocity"));
+	            outputDataSet->GetPointData()->GetArray("velocity"));
 	ASSERT_TRUE(windVelocityArray);
-	
+
 	// Finally, test the values against some pre-computed ones
 	EXPECT_NEAR(0.346, windVelocityArray->GetTuple3(0)[0], 0.001);
 	EXPECT_NEAR(-0.200, windVelocityArray->GetTuple3(0)[1], 0.001);
@@ -49,13 +50,15 @@ TEST(TestWindVelocityVectorCalculationFilter, TestInterpolatedWindData) {
 	kronosReader->SetFileName("res/test-data/temporal-interpolation-test/wind-test-data.kJson", false);
 
 	// Set up the filter and its input
-	vtkSmartPointer<TemporalInterpolationFilter> interpolationFilter = TemporalInterpolationFilter::New();
+	vtkSmartPointer<TemporalInterpolationFilter> interpolationFilter =
+	    TemporalInterpolationFilter::New();
 	interpolationFilter->SetInputConnection(kronosReader->GetOutputPort());
 	interpolationFilter->GetInputInformation()->Set(Data::VTK_DATA_TYPE(), Data::WIND);
 	interpolationFilter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
-	
+
 	// Send the interpolation filter's output through the wind velocity vector calculation filter
-	vtkSmartPointer<WindVelocityVectorCalculationFilter> filter = WindVelocityVectorCalculationFilter::New();
+	vtkSmartPointer<WindVelocityVectorCalculationFilter> filter =
+	    WindVelocityVectorCalculationFilter::New();
 	filter->SetInputConnection(interpolationFilter->GetOutputPort());
 
 	// Test integral values
@@ -117,7 +120,7 @@ TEST(TestWindVelocityVectorCalculationFilter, TestInterpolatedWindData) {
 TEST(TestWindVelocityVectorCalculationFilter, TestAggregatedWindData) {
 	// Read some test data
 	std::unique_ptr<JsonReader> jsonReader =
-		JsonReaderFactory::createReader("res/test-data/temporal-aggregation-test/wind-test-data.kJson");
+	    JsonReaderFactory::createReader("res/test-data/temporal-aggregation-test/wind-test-data.kJson");
 	vtkSmartPointer<vtkPolyData> inputDataSet = jsonReader->getVtkDataSet(0);
 
 	// Set up the filter and its input
@@ -127,9 +130,10 @@ TEST(TestWindVelocityVectorCalculationFilter, TestAggregatedWindData) {
 	aggregationFilter->GetInputInformation()->Set(Data::VTK_DATA_STATE(), Data::RAW);
 	aggregationFilter->GetInputInformation()->Set(Data::VTK_TIME_RESOLUTION(), 1);
 	aggregationFilter->Update();
-	
+
 	// Send the aggregation filter's output through the wind velocity vector calculation filter
-	vtkSmartPointer<WindVelocityVectorCalculationFilter> filter = WindVelocityVectorCalculationFilter::New();
+	vtkSmartPointer<WindVelocityVectorCalculationFilter> filter =
+	    WindVelocityVectorCalculationFilter::New();
 	filter->SetInputConnection(aggregationFilter->GetOutputPort());
 	filter->Update();
 
@@ -141,9 +145,9 @@ TEST(TestWindVelocityVectorCalculationFilter, TestAggregatedWindData) {
 
 	// Extract the filter's outputs
 	vtkSmartPointer<vtkDataArray> abstractWindVelocitiesArray = outputDataSet->GetPointData()
-			->GetArray("velocity");
+	        ->GetArray("velocity");
 	vtkSmartPointer<vtkFloatArray> windVelocitiesArray = vtkFloatArray::SafeDownCast(
-				abstractWindVelocitiesArray);
+	            abstractWindVelocitiesArray);
 	ASSERT_TRUE(windVelocitiesArray);
 
 	// Test the wind velocities that the filters have produced in cooperation

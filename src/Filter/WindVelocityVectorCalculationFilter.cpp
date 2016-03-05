@@ -34,12 +34,12 @@ int WindVelocityVectorCalculationFilter::RequestData(vtkInformation* info,
 
 	vtkInformation* outputInformation = outputVector->GetInformationObject(0);
 	vtkPolyData* outputData = vtkPolyData::SafeDownCast(outputInformation->Get(
-	                          vtkDataObject::DATA_OBJECT()));
-	
+	                              vtkDataObject::DATA_OBJECT()));
+
 	// Get the right array depending on this filter's input data state
 	QString speedArrayName;
 	QString directionArrayName;
-	
+
 	if (this->dataState == Data::RAW) {
 		speedArrayName = "speeds";
 		directionArrayName = "directions";
@@ -47,11 +47,13 @@ int WindVelocityVectorCalculationFilter::RequestData(vtkInformation* info,
 		speedArrayName = "Average Wind Speeds";
 		directionArrayName = "Average Wind Directions";
 	}
-							  
+
 	// Extract data arrays from the input data
-	vtkSmartPointer<vtkFloatArray> speedArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray(speedArrayName.toStdString().c_str()));
-	vtkSmartPointer<vtkFloatArray> directionArray = vtkFloatArray::SafeDownCast(inputData->GetPointData()->GetArray(directionArrayName.toStdString().c_str()));
-	
+	vtkSmartPointer<vtkFloatArray> speedArray = vtkFloatArray::SafeDownCast(
+	            inputData->GetPointData()->GetArray(speedArrayName.toStdString().c_str()));
+	vtkSmartPointer<vtkFloatArray> directionArray = vtkFloatArray::SafeDownCast(
+	            inputData->GetPointData()->GetArray(directionArrayName.toStdString().c_str()));
+
 	// Copy over all existing information since we only want to add an array
 	outputData->DeepCopy(inputData);
 
@@ -60,7 +62,7 @@ int WindVelocityVectorCalculationFilter::RequestData(vtkInformation* info,
 	velocities->SetNumberOfComponents(3);
 	velocities->SetNumberOfTuples(inputData->GetNumberOfPoints());
 	velocities->SetName("velocity");
-	
+
 	int tupleNumber = 0;
 	for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
 		// Calculate each point's velocity for use in flow visualisation
@@ -87,12 +89,14 @@ int WindVelocityVectorCalculationFilter::RequestInformation(vtkInformation* requ
         vtkInformationVector* outputVector) {
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
-	
+
 	// Check the meta information containing the data's type
 	if (inInfo->Has(Data::VTK_DATA_TYPE())) {
 		Data::Type dataType = static_cast<Data::Type>(inInfo->Get(Data::VTK_DATA_TYPE()));
 		if (dataType != Data::WIND) {
-			this->fail(QString("This filter calculates velocity vectors for wind data and therefore only works with wind data, but the input contains %1 data.").arg(Data::getDataTypeName(dataType)));
+			this->fail(
+			    QString("This filter calculates velocity vectors for wind data and therefore only works with wind data, but the input contains %1 data.").arg(
+			        Data::getDataTypeName(dataType)));
 			return 0;
 		}
 	} else {
