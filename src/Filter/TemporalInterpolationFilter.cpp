@@ -26,8 +26,7 @@ vtkStandardNewMacro(TemporalInterpolationFilter);
 const QList<Data::Type> TemporalInterpolationFilter::SUPPORTED_DATA_TYPES = QList<Data::Type>() <<
         Data::PRECIPITATION << Data::TEMPERATURE << Data::WIND << Data::CLOUD_COVERAGE << Data::TWEETS;
 
-TemporalInterpolationFilter::TemporalInterpolationFilter() : preprocessed(false), error(false),
-	currentTimeStep(0) {
+TemporalInterpolationFilter::TemporalInterpolationFilter() : preprocessed(false), currentTimeStep(0) {
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
 }
@@ -39,8 +38,7 @@ TemporalInterpolationFilter::~TemporalInterpolationFilter() {
 }
 
 void TemporalInterpolationFilter::fail(QString message) {
-	vtkErrorMacro( << message.toStdString());
-	this->error = true;
+	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(message).toStdString());
 }
 
 void TemporalInterpolationFilter::PrintSelf(ostream& os, vtkIndent indent) {
@@ -67,9 +65,6 @@ int TemporalInterpolationFilter::RequestInformation (
     vtkInformation* request,
     vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) {
-	if (this->error) {
-		return 0;
-	}
 
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -128,9 +123,6 @@ int TemporalInterpolationFilter::RequestData(
     vtkInformation* request,
     vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) {
-	if (this->error) {
-		return 0;
-	}
 
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -645,9 +637,6 @@ int TemporalInterpolationFilter::RequestUpdateExtent (
     vtkInformation* request,
     vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) {
-	if (this->error) {
-		return 0;
-	}
 
 	vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
 

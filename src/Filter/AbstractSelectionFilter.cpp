@@ -7,22 +7,17 @@
 #include <vtkExecutive.h>
 #include <vtkInformationExecutivePortVectorKey.h>
 
-AbstractSelectionFilter::AbstractSelectionFilter() : error(false) { }
+AbstractSelectionFilter::AbstractSelectionFilter() { }
 
 AbstractSelectionFilter::~AbstractSelectionFilter() { }
 
 void AbstractSelectionFilter::fail(QString message) {
-	vtkErrorMacro( << message.toStdString());
-	this->error = true;
+	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(message).toStdString());
 }
 
 int AbstractSelectionFilter::RequestData(vtkInformation* info,
         vtkInformationVector** inputVector,
         vtkInformationVector* outputVector) {
-	if (this->error) {
-		return 0;
-	}
-
 	// Get input and output data from the information vectors
 	vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
 	vtkPolyData* inputData = vtkPolyData::SafeDownCast(inputInformation->Get(
@@ -40,10 +35,6 @@ int AbstractSelectionFilter::RequestData(vtkInformation* info,
 		inputData->GetPoint(i, coordinates);
 		if (this->evaluatePoint(i, Coordinate(coordinates[0], coordinates[1]), inputData->GetPointData())) {
 			selectedPoints.append(i);
-		}
-
-		if (this->error) {
-			return 0;
 		}
 	}
 

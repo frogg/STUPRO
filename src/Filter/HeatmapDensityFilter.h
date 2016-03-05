@@ -66,11 +66,6 @@ private:
 	 * This filter's vertical grid resolution.
 	 */
 	int verticalResolution = 1;
-
-	/**
-	 * Boolean flag denoting whether there was an error.
-	 */
-	bool error;
 };
 
 #endif

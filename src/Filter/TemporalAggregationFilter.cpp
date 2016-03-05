@@ -15,7 +15,7 @@ vtkStandardNewMacro(TemporalAggregationFilter);
 const QList<Data::Type> TemporalAggregationFilter::SUPPORTED_DATA_TYPES = QList<Data::Type>() <<
         Data::PRECIPITATION << Data::TEMPERATURE << Data::WIND << Data::CLOUD_COVERAGE;
 
-TemporalAggregationFilter::TemporalAggregationFilter() : error(false), currentTimeStep(0),
+TemporalAggregationFilter::TemporalAggregationFilter() : currentTimeStep(0),
 	dataAggregator() {
 	this->SetNumberOfInputPorts(1);
 	this->SetNumberOfOutputPorts(1);
@@ -24,8 +24,7 @@ TemporalAggregationFilter::TemporalAggregationFilter() : error(false), currentTi
 TemporalAggregationFilter::~TemporalAggregationFilter() { }
 
 void TemporalAggregationFilter::fail(QString message) {
-	vtkErrorMacro( << message.toStdString());
-	this->error = true;
+	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(message).toStdString());
 }
 
 void TemporalAggregationFilter::PrintSelf(ostream& os, vtkIndent indent) {
@@ -52,10 +51,7 @@ int TemporalAggregationFilter::RequestInformation (
     vtkInformation* request,
     vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) {
-	if (this->error) {
-		return 0;
-	}
-
+        
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 
@@ -134,9 +130,6 @@ int TemporalAggregationFilter::RequestData(
     vtkInformation* request,
     vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) {
-	if (this->error) {
-		return 0;
-	}
 
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -185,9 +178,6 @@ int TemporalAggregationFilter::RequestUpdateExtent (
     vtkInformation* request,
     vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) {
-	if (this->error) {
-		return 0;
-	}
 
 	vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
 
