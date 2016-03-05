@@ -24,6 +24,10 @@ bool PrecipitationTypeFilter::evaluatePoint(int pointIndex, Coordinate coordinat
         vtkPointData* pointData) {
 	vtkSmartPointer<vtkIntArray> precipitationTypeArray = vtkIntArray::SafeDownCast(
 	            pointData->GetArray("precipitationTypes"));
+				
+	if (!precipitationTypeArray) {
+		return false;
+	}
 
 	// For the point that should be checked, get its data type from the VTK data array and look up
 	// in the QMap `precipitationTypeVisibilities` whether points with this data type should be

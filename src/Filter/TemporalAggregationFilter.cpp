@@ -36,6 +36,8 @@ void TemporalAggregationFilter::PrintSelf(ostream& os, vtkIndent indent) {
 int TemporalAggregationFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	if (port == 0) {
 		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
+        info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
+        info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkUnstructuredGrid");
 		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
 	}
 

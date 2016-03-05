@@ -37,6 +37,11 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 		    pointData->GetArray("precipitationRates");
 		vtkSmartPointer<vtkFloatArray> precipitationRateArray = vtkFloatArray::SafeDownCast(
 		            abstractPrecipitationRateArray);
+					
+		if (!precipitationRateArray) {
+			return;
+		}
+					
 		double currentPrecipitationRate = precipitationRateArray->GetValue(pointIndex);
 
 		if (this->aggregatedData.contains(coordinates)) {
@@ -66,6 +71,11 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 		vtkSmartPointer<vtkDataArray> abstractTemperatureArray = pointData->GetArray("temperatures");
 		vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
 		            abstractTemperatureArray);
+		
+		if (!temperatureArray) {
+			return;
+		}
+		
 		double currentTemperature = temperatureArray->GetValue(pointIndex);
 
 		if (this->aggregatedData.contains(coordinates)) {
@@ -91,11 +101,15 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 		vtkSmartPointer<vtkDataArray> abstractVelocitiesArray = pointData->GetArray("speeds");
 		vtkSmartPointer<vtkFloatArray> velocitiesArray = vtkFloatArray::SafeDownCast(
 		            abstractVelocitiesArray);
-		double currentVelocity = velocitiesArray->GetValue(pointIndex);
-
 		vtkSmartPointer<vtkDataArray> abstractBearingsArray = pointData->GetArray("directions");
 		vtkSmartPointer<vtkFloatArray> bearingsArray = vtkFloatArray::SafeDownCast(
 		            abstractBearingsArray);
+					
+		if (!velocitiesArray || !bearingsArray) {
+			return;
+		}
+		
+		double currentVelocity = velocitiesArray->GetValue(pointIndex);
 		double currentBearing = bearingsArray->GetValue(pointIndex);
 
 		if (this->aggregatedData.contains(coordinates)) {
@@ -124,6 +138,11 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 		vtkSmartPointer<vtkDataArray> abstractCoverageArray = pointData->GetArray("cloudCovers");
 		vtkSmartPointer<vtkFloatArray> coverageArray = vtkFloatArray::SafeDownCast(
 		            abstractCoverageArray);
+					
+		if (!coverageArray) {
+			return;
+		}
+					
 		double currentCoverage = coverageArray->GetValue(pointIndex);
 
 		if (this->aggregatedData.contains(coordinates)) {

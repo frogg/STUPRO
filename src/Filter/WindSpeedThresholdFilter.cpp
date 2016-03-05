@@ -18,6 +18,11 @@ bool WindSpeedThresholdFilter::evaluatePoint(int pointIndex, Coordinate coordina
         vtkPointData* pointData) {
 	vtkSmartPointer<vtkFloatArray> speedArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetArray("speeds"));
+				
+	if (!speedArray) {
+		return false;
+	}
+				
 	float speed = speedArray->GetTuple1(pointIndex);
 
 	return speed >= this->lowerLimit && speed <= this->upperLimit;

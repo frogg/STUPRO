@@ -37,23 +37,20 @@ bool CLaMSFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                 vtkPointData* pointData) {
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
-
 	vtkSmartPointer<vtkFloatArray> altitudeArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("altitude"));
-
 	vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("temperature"));
-
 	vtkSmartPointer<vtkFloatArray> pressureArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("pressure"));
-
 	vtkSmartPointer<vtkFloatArray> vorticityArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("pot_vorticity"));
-
 	vtkSmartPointer<vtkFloatArray> potTemperatureArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("pot_temperature"));
 
-
+    if (!timeArray || !altitudeArray || !temperatureArray || !pressureArray || !vorticityArray || !potTemperatureArray) {
+        return false;
+    }
 
 	double time = timeArray->GetTuple1(pointIndex);
 	float altitude = altitudeArray->GetTuple1(pointIndex);
