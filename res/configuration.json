@@ -1,6 +1,6 @@
 {
   "globe": {
-    "radius": 1.0,
+    "radius": 90.0,
     "flatMapSize" : {
       "width": 4.0,
       "height": 2.0
@@ -31,5 +31,10 @@
   "dataReader": {
     "maximumPriority": 10,
     "highestAltitude": 4000.0
+  },
+  "representation": {
+    "cullingTolerance": 0.05,
+    "useCulling": true
   }
+
 }

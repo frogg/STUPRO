@@ -3,8 +3,12 @@
 
 #include<vtkPolyDataAlgorithm.h>
 
-template<typename T> class Vector3;
 template<typename T> class QVector;
+
+template<typename T> class Spherical;
+template<typename T> class Cartesian;
+typedef Spherical<double> GPS;
+typedef Cartesian<double> World;
 
 class GenerateGeodesics : public vtkPolyDataAlgorithm {
 public:
@@ -63,7 +67,7 @@ private:
 	 * @param end the destination airport
 	 * @param dataSet the data set to insert the points
 	 */
-	void insertNextFlight(const Vector3<double>& start, const Vector3<double>& end,
+	void insertNextFlight(const GPS& start, const GPS& end,
 	                      vtkPolyData* const dataSet);
 
 	/**
@@ -72,7 +76,7 @@ private:
 	 * @param dataSet the data set to insert into
 	 * @param points the points to insert and connect
 	 */
-	void insertAndConnectPoints(vtkPolyData* dataSet, QVector<Vector3<double>>& points);
+	void insertAndConnectPoints(vtkPolyData* dataSet, QVector<GPS>& points);
 
 	/**
 	 * @brief getCircleCenterPoint get the center point to draw the geodesic circle
@@ -81,8 +85,8 @@ private:
 	 * @param radius the radius to use
 	 * @return the center point of a circle through point1 and point2 with radius
 	 */
-	Vector3<double> getCircleCenterPoint(const Vector3<double>& point1, const Vector3<double>& point2,
-	                                     double radius);
+	World getCircleCenterPoint(const World& point1, const World& point2,
+	                           double radius);
 
 	/**
 	 * @brief getPointInbetween calculates point between point1 and point2.
@@ -92,14 +96,14 @@ private:
 	 * @param center the circle center
 	 * @return a point inbetween
 	 */
-	Vector3<double> getPointInbetween(const Vector3<double>& point1, const Vector3<double>& point2,
-	                                  const Vector3<double>& center);
+	GPS getPointInbetween(const GPS& point1, const GPS& point2,
+	                      const World& center);
 
 	/**
 	 * @brief movePointToOppositeSide translates the point to the opposite side of the map(that is +- 180 lat)
 	 * @param point the point to move
 	 */
-	Vector3<double> moveToOtherSide(Vector3<double> point);
+	GPS moveToOtherSide(GPS point);
 };
 
 #endif // KRONOSGENERATEGEODESICS_H

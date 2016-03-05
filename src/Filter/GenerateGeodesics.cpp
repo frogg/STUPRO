@@ -14,7 +14,7 @@
 #include <QString>
 
 #include "Utils/Math/Vector3.hpp"
-#include "Utils/Math/SphericalCoordinateFunctions.h"
+#include "Utils/Math/GeographicFunctions.hpp"
 #include "Utils/Misc/KronosLogger.hpp"
 #include "Reader/DataReader/Data.hpp"
 
@@ -114,7 +114,7 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 			airlines->InsertNextValue(inAirline->GetValue(flight));
 			startCode->InsertNextValue(inStartCode->GetValue(flight));
 			destCode->InsertNextValue(inDestCode->GetValue(flight));
-			flightLengths->InsertNextValue(distance(start, destination));
+			flightLengths->InsertNextValue(inFlightLength->GetValue(flight));
 		}
 	}
 
@@ -154,7 +154,7 @@ int GenerateGeodesics::FillInputPortInformation(int, vtkInformation* info) {
 
 void GenerateGeodesics::setArcSize(double value) {
 	// this value is statistically determined
-	double v1 = 0.95 - 0.95 * pow(M_E, -4.25 * value);
+	double v1 = 0.95 - 0.95 * pow(KRONOS_E, -4.25 * value);
 	double v2 = cbrt(0.85 * value);
 	this->radius = (v1 + v2) / 2;
 
@@ -181,8 +181,8 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 	points.append(start);
 	points.append(end);
 
-	Cartesian center = getCircleCenterPoint(sphericalToCartesian
-	                                        (start), sphericalToCartesian(end), radius);
+	World center = getCircleCenterPoint(sphericalToCartesian
+	                                    (start), sphericalToCartesian(end), radius);
 
 	// calculate points between if necessary
 	int index = 1;
@@ -204,7 +204,7 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 			GPS center = p + v;
 			points.insert(index, center);
 
-			QVector<Vector3d> nextPoints;
+			QVector<GPS> nextPoints;
 			while (points.size() > index + 1) {
 				nextPoints.append(points.last());
 				points.remove(points.size() - 1);
@@ -221,10 +221,9 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 			treeDepth--;
 		}
 		if (this->limitCalcDepth && treeDepth > 10) {
-			vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point."
-			                 << endl
-			                 << "Remove the limit of the calculation depth if you need more detail. This may"
-			                 << " result in an infinity loop though, so be careful.")
+			vtkWarningMacro( << "  ==>> Possibly caught in infinite calculation. Advancing to next point.\n"
+			                 "Remove the limit of the calculation depth if you need more detail. This may"
+			                 " result in an infinity loop though, so be careful.");
 			index++;
 			treeDepth--;
 		}
@@ -234,7 +233,7 @@ void GenerateGeodesics::insertNextFlight(const GPS& start, const GPS& end,
 }
 
 void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
-        QVector<GPS >& points) {
+        QVector<GPS>& points) {
 	int currentPointIndex = dataSet->GetPoints()->GetNumberOfPoints();
 	dataSet->GetLines()->InsertNextCell(points.size());
 
@@ -251,28 +250,28 @@ void GenerateGeodesics::insertAndConnectPoints(vtkPolyData* dataSet,
 	}
 }
 
-Cartesian GenerateGeodesics::getCircleCenterPoint(const Cartesian& point1,
-        const Cartesian& point2, double radius) {
+World GenerateGeodesics::getCircleCenterPoint(const World& point1,
+        const World& point2, double radius) {
 	GPS middle = getPointInbetween(cartesianToSpherical(point1),
 	                               cartesianToSpherical(point2),
-	                               Vector3d(0, 0, 0));
+	                               World(0, 0, 0));
 
-	Cartesian circleCenter = sphericalToCartesian(middle) * radius;
+	World circleCenter = sphericalToCartesian(middle) * radius;
 
 	return circleCenter;
 }
 
 GPS GenerateGeodesics::getPointInbetween(const GPS& point1, const GPS& point2,
-        const Cartesian& center) {
-	Cartesian p1 = sphericalToCartesian(point1);
-	Cartesian p2 = sphericalToCartesian(point2);
+        const World& center) {
+	World p1 = sphericalToCartesian(point1);
+	World p2 = sphericalToCartesian(point2);
 
 	// normalize points (that is: make the center the origin)
 	p1 -= center;
 	p2 -= center;
 
 	// get point in between
-	Cartesian middle = p1 + p2;
+	World middle = p1 + p2;
 	// apply correct scale
 	middle = middle.normTyped() * (p1.lengthTyped() + p2.lengthTyped()) / 2;
 	// re-scale the point
