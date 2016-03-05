@@ -18,9 +18,6 @@
 #include "Utils/Misc/KronosLogger.hpp"
 #include "Reader/DataReader/Data.hpp"
 
-typedef Vector3d GPS;
-typedef Vector3d Cartesian;
-
 vtkStandardNewMacro(GenerateGeodesics)
 
 #define DESTINATION_ARRAY_NAME "destinations"
