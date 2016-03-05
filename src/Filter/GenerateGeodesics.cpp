@@ -8,6 +8,7 @@
 #include <vtkCellData.h>
 #include <vtkSmartPointer.h>
 #include <vtkStringArray.h>
+#include <vtkInformationVector.h>
 
 #include <QVector>
 #include <QString>
@@ -15,6 +16,7 @@
 #include "Utils/Math/Vector3.hpp"
 #include "Utils/Math/SphericalCoordinateFunctions.h"
 #include "Utils/Misc/KronosLogger.hpp"
+#include "Reader/DataReader/Data.hpp"
 
 typedef Vector3d GPS;
 typedef Vector3d Cartesian;
@@ -117,6 +119,26 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	}
 
 	return 1;
+}
+
+int GenerateGeodesics::RequestInformation(vtkInformation* request,
+        vtkInformationVector** inputVector, vtkInformationVector* outputVector) {
+	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
+	if (inInfo->Has(Data::VTK_DATA_TRANSFORMATION()) && firstRequestInformation) {
+		Data::Transformation dataTransformation = static_cast<Data::Transformation>(inInfo->Get(
+		            Data::VTK_DATA_TRANSFORMATION()));
+		if (dataTransformation == Data::TRANSFORMED) {
+			vtkErrorMacro( << "The geodesics generation filter does not properly work on transformed data.");
+		}
+	}
+	if (!inInfo->Has(Data::VTK_DATA_TYPE()) || inInfo->Get(Data::VTK_DATA_TYPE()) != Data::FLIGHTS) {
+		vtkErrorMacro( <<
+		               "The geodesics generation filter does only work with Kronos Flight Data. Please provied appropriate data.");
+		return 0;
+	}
+
+	firstRequestInformation = false;
+	return Superclass::RequestInformation(request, inputVector, outputVector);
 }
 
 int GenerateGeodesics::FillOutputPortInformation(int, vtkInformation* info) {
