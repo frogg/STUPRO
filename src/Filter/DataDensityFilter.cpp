@@ -263,7 +263,7 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(QMap<PointCoo
 	    vertices->InsertCellPoint(points->InsertNextPoint(i.key().getX(), i.key().getY(), i.key().getZ()));
 		
 		for (int j = 0; j < inputArrays.size(); j++) {
-			double cumulativeAverage[inputArrays[j]->GetNumberOfComponents()];
+			std::vector<double> cumulativeAverage(inputArrays[j]->GetNumberOfComponents());
 			for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); l++) {
 				cumulativeAverage[l] = inputArrays[j]->GetTuple(centralPointIndex)[l] / float(2);
 			}
@@ -280,7 +280,7 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(QMap<PointCoo
 				subordinatePointCount++;
 			}
 			
-			outputArrays[j]->InsertTuple(centralPointIndex, cumulativeAverage);
+			outputArrays[j]->InsertTuple(centralPointIndex, cumulativeAverage.data());
 		}
 		
 		centralPointIndex++;
