@@ -4,6 +4,7 @@
 #include <QString>
 #include <QSet>
 #include <Utils/TileDownload/TileRequestWorker.hpp>
+#include <memory>
 
 class ImageDownloader {
 public:

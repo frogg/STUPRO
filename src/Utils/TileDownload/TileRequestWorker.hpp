@@ -12,6 +12,7 @@
 #include <QQueue>
 
 #include <thread>
+#include <memory>
 
 /**
  * Represents a job to load an image tile that was not yet cached.
