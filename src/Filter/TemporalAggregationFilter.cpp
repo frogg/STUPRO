@@ -24,7 +24,8 @@ TemporalAggregationFilter::TemporalAggregationFilter() : currentTimeStep(0),
 TemporalAggregationFilter::~TemporalAggregationFilter() { }
 
 void TemporalAggregationFilter::fail(QString message) {
-	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(message).toStdString());
+	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(
+	                   message).toStdString());
 }
 
 void TemporalAggregationFilter::PrintSelf(ostream& os, vtkIndent indent) {
@@ -36,8 +37,8 @@ void TemporalAggregationFilter::PrintSelf(ostream& os, vtkIndent indent) {
 int TemporalAggregationFilter::FillInputPortInformation(int port, vtkInformation* info) {
 	if (port == 0) {
 		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
-        info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
-        info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkUnstructuredGrid");
+		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
+		info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkUnstructuredGrid");
 		info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 0);
 	}
 
@@ -53,7 +54,7 @@ int TemporalAggregationFilter::RequestInformation (
     vtkInformation* request,
     vtkInformationVector** inputVector,
     vtkInformationVector* outputVector) {
-        
+
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 

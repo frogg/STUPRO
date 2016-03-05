@@ -12,7 +12,8 @@ AbstractSelectionFilter::AbstractSelectionFilter() { }
 AbstractSelectionFilter::~AbstractSelectionFilter() { }
 
 void AbstractSelectionFilter::fail(QString message) {
-	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(message).toStdString());
+	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(
+	                   message).toStdString());
 }
 
 int AbstractSelectionFilter::RequestData(vtkInformation* info,
