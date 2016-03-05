@@ -135,7 +135,7 @@ int TemporalInterpolationFilter::RequestData(
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
-	vtkPolyData* input = vtkPolyData::GetData(inInfo);
+	vtkPointSet* input = vtkPointSet::GetData(inInfo);
 	vtkPolyData* output = vtkPolyData::GetData(outInfo);
 
 	if (this->hasPreprocessed()) {
@@ -349,12 +349,6 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 		windSpeeds->SetNumberOfTuples(interpolatedData.size());
 		windSpeeds->SetName("speeds");
 
-		vtkSmartPointer<vtkFloatArray> velocities
-		    = vtkSmartPointer<vtkFloatArray>::New();
-		velocities->SetNumberOfComponents(3);
-		velocities->SetNumberOfTuples(interpolatedData.size());
-		velocities->SetName("velocity");
-
 		int tupleNumber = 0;
 		for (QMap<PointCoordinates, InterpolationValue*>::iterator iterator = interpolatedData.begin();
 		        iterator != interpolatedData.end(); ++iterator) {
@@ -371,20 +365,11 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 			};
 			windSpeeds->SetTuple(tupleNumber, windSpeed);
 
-			float windBearingRadian = toRadians(dataPoint->getBearing());
-			double velocity[3] = {
-				(double) dataPoint->getSpeed()* sin(windBearingRadian),
-				(double) dataPoint->getSpeed()* cos(windBearingRadian),
-				0.0
-			};
-			velocities->SetTuple(tupleNumber, velocity);
-
 			tupleNumber++;
 		}
 
 		dataSet->GetPointData()->AddArray(windSpeeds);
 		dataSet->GetPointData()->AddArray(windDirections);
-		dataSet->GetPointData()->AddArray(velocities);
 
 		break;
 	}
@@ -431,7 +416,7 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 	return dataSet;
 }
 
-void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData* inputData) {
+void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPointSet* inputData) {
 	QMap<PointCoordinates, InterpolationValue*> timestepData;
 
 	for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
@@ -446,7 +431,7 @@ void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData* i
 }
 
 InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex,
-        vtkPolyData* inputData) {
+        vtkPointSet* inputData) {
 	int priority = 0;
 	int timestamp = 0;
 

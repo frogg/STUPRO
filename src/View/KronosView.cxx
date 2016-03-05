@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <Utils/Config/Configuration.hpp>
 #include <Utils/Math/Interpolator.hpp>
-#include <Utils/Math/SphericalCoordinateFunctions.h>
+#include <Utils/Math/GeographicFunctions.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
 #include <pqApplicationCore.h>
 #include <QCoreApplication>
@@ -118,14 +118,14 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 	camera->GetPosition(from.array());
 	if (onGlobe) {
 		// translate the camera position into a gps location
-		from = cartesianToSpherical(from);
+		from = cartesianToSpherical(Cartesian<double>(from));
 	}
 
 	// on the globe, the target position already is given in gps coordinates, but on the map we have
 	// to translate the target position to map coordinates
 	Vector3d to(longitude, latitude, distance);
 	if (!onGlobe) {
-		to = sphericalToCartesianFlat(to);
+		to = sphericalToCartesianFlat(Spherical<double>(to));
 	}
 
 	// focal point positions
@@ -162,7 +162,7 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 		);
 		// if we're on a globe, translate the camera's gps coordinates back to cartesian coordinates
 		if (onGlobe) {
-			pos = sphericalToCartesian(pos);
+			pos = sphericalToCartesian(Spherical<double>(pos));
 		}
 
 		// interpolate the focal point
@@ -221,9 +221,9 @@ void KronosView::moveCamera(float latitude, float longitude, float distance) {
 		this->animateMove(latitude, longitude, distance);
 	} else {
 		if (this->displayMode == Globe::DisplayGlobe) {
-			position = sphericalToCartesian(position);
+			position = sphericalToCartesian(Spherical<double>(position));
 		} else {
-			position = sphericalToCartesianFlat(position);
+			position = sphericalToCartesianFlat(Spherical<double>(position));
 
 			focus.x = position.x;
 			focus.y = position.y;
