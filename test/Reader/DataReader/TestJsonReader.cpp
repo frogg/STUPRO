@@ -279,7 +279,7 @@ TEST(TestJsonReader, WriteFlightsToVtkPolyData) {
 	);
 
 	EXPECT_FLOAT_EQ(
-	    12380.654,
+	    13388.745,
 	    flightLengthArray->GetValue(0)
 	);
 
