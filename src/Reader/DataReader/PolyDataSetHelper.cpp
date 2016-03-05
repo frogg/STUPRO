@@ -276,8 +276,8 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 
 			// Insert the new destination as a new tuple of latitude and longitude
 			double coordinates[2] = {
-				dataPoint->getDestination().lat(),
-				dataPoint->getDestination().lon()
+				dataPoint->getDestination().lon(),
+				dataPoint->getDestination().lat()
 			};
 			destinations->SetTuple(tupleNumber, coordinates);
 
@@ -410,12 +410,6 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 		directions->SetNumberOfTuples(relevantDataPoints.size());
 		directions->SetName("directions");
 
-		vtkSmartPointer<vtkFloatArray> velocities
-		    = vtkSmartPointer<vtkFloatArray>::New();
-		velocities->SetNumberOfComponents(3);
-		velocities->SetNumberOfTuples(relevantDataPoints.size());
-		velocities->SetName("velocity");
-
 		int tupleNumber = 0;
 		for (QList<DataPoint*>::iterator iterator = relevantDataPoints.begin();
 		        iterator != relevantDataPoints.end(); ++iterator) {
@@ -432,22 +426,11 @@ vtkSmartPointer<vtkPolyData> PolyDataSetHelper::createPolyDataSet(
 			};
 			directions->SetTuple(tupleNumber, direction);
 
-			// Calculate each point's velocity for use in flow visualisation
-			float windBearingRadian = toRadians(dataPoint->getDirection());
-
-			double velocity[3] = {
-				(double) dataPoint->getSpeed()* sin(windBearingRadian),
-				(double) dataPoint->getSpeed()* cos(windBearingRadian),
-				0.0
-			};
-			velocities->SetTuple(tupleNumber, velocity);
-
 			tupleNumber++;
 		}
 
 		dataSet->GetPointData()->AddArray(speeds);
 		dataSet->GetPointData()->AddArray(directions);
-		dataSet->GetPointData()->AddArray(velocities);
 		break;
 	}
 

@@ -1,5 +1,7 @@
 #ifndef __KronosRepresentation_h
 #define __KronosRepresentation_h
+#include <Reader/DataReader/Data.hpp>
+#include <View/KronosRepresentation/KronosLabelMapper.h>
 
 #include "vtkGeometryRepresentationWithFaces.h"
 #include "vtkPVClientServerCoreRenderingModule.h" //needed for exports
@@ -11,11 +13,12 @@
 #include "vtkActor.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkPointSource.h"
-#include "vtkLabelPlacementMapper.h"
+
 #include "vtkActor2D.h"
 #include "vtkLabelPlacementMapper.h"
 #include "vtkPointSetToLabelHierarchy.h"
 #include <qstring.h>
+
 
 class VTK_EXPORT KronosRepresentation : public vtkGeometryRepresentationWithFaces {
 public:
@@ -29,11 +32,7 @@ public:
 	 * @param val visibility variable
 	 */
 	void SetVisibility(bool val) override;
-	/**
-	 * Sets the depthbuffer to prevent rendering if obstruced.
-	 * @param val depthbuffer setter
-	 */
-	void SetDepthBuffer(bool val);
+
 protected:
 	//constructor and destructor
 	KronosRepresentation();
@@ -53,8 +52,18 @@ protected:
 	 * Called on close, removes actors of this representation from the view
 	 */
 	virtual bool RemoveFromView(vtkView* view) override;
-
-
+	/**
+	 *  Reprentation for the Cities Data
+	 */
+	void CitiesRepresentation(vtkPolyData* input);
+	/**
+	 *  Reprentation for the Tweet Data
+	 */
+	void TweetRepresentation(vtkPolyData* input);
+	/**
+	 *  Reprentation for the Flight Data
+	 */
+	void FlightRepresentation(vtkPolyData* input);
 
 private:
 	KronosRepresentation(const KronosRepresentation&); // Not implemented
@@ -67,17 +76,21 @@ private:
 	//Mapper for the points
 	vtkSmartPointer<vtkPolyDataMapper> pointMapper;
 	//Mapper for the labels
-	vtkSmartPointer<vtkLabelPlacementMapper> labelMapper;
-	//Actor which adds the Points to the view
-	vtkSmartPointer<vtkActor> pointActor;
+	vtkSmartPointer<KronosLabelMapper> labelMapper;
 	//Actor which adds the Lables to the view
 	vtkSmartPointer<vtkActor2D> labelActor;
 	//Filters the Data according to the priority
 	vtkSmartPointer<vtkPointSetToLabelHierarchy> pointSetToLabelHierarchyFilter;
+	//Input data
+	vtkSmartPointer<vtkPolyData> inputData;
 	//Boolean flag used to enable/disable the depthbuffer
 	bool useDepthBuffer;
 	//Boolean flag denoting whether there was an error.
 	bool error;
+	//Boolean flag denoting whether paraview is in powerwallmode
+	bool inPowerwallMode;
+	//Holds the current DataType
+	Data::Type currentDataType;
 };
 
 #endif

@@ -13,6 +13,9 @@ set(PLUGIN_MOC_SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/View/Widgets/PlaceSearchWidget.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Kronos.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Utils/Misc/SlotCallback.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Utils/TileDownload/TileRequestWorker.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Utils/TileDownload/ClientTileRequestWorker.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Utils/TileDownload/ServerTileRequestWorker.hpp"
 )
 
 # files to be moced for the paraview part

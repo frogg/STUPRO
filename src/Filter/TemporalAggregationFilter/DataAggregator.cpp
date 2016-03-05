@@ -37,6 +37,11 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 		    pointData->GetArray("precipitationRates");
 		vtkSmartPointer<vtkFloatArray> precipitationRateArray = vtkFloatArray::SafeDownCast(
 		            abstractPrecipitationRateArray);
+
+		if (!precipitationRateArray) {
+			return;
+		}
+
 		double currentPrecipitationRate = precipitationRateArray->GetValue(pointIndex);
 
 		if (this->aggregatedData.contains(coordinates)) {
@@ -66,6 +71,11 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 		vtkSmartPointer<vtkDataArray> abstractTemperatureArray = pointData->GetArray("temperatures");
 		vtkSmartPointer<vtkFloatArray> temperatureArray = vtkFloatArray::SafeDownCast(
 		            abstractTemperatureArray);
+
+		if (!temperatureArray) {
+			return;
+		}
+
 		double currentTemperature = temperatureArray->GetValue(pointIndex);
 
 		if (this->aggregatedData.contains(coordinates)) {
@@ -91,11 +101,15 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 		vtkSmartPointer<vtkDataArray> abstractVelocitiesArray = pointData->GetArray("speeds");
 		vtkSmartPointer<vtkFloatArray> velocitiesArray = vtkFloatArray::SafeDownCast(
 		            abstractVelocitiesArray);
-		double currentVelocity = velocitiesArray->GetValue(pointIndex);
-
 		vtkSmartPointer<vtkDataArray> abstractBearingsArray = pointData->GetArray("directions");
 		vtkSmartPointer<vtkFloatArray> bearingsArray = vtkFloatArray::SafeDownCast(
 		            abstractBearingsArray);
+
+		if (!velocitiesArray || !bearingsArray) {
+			return;
+		}
+
+		double currentVelocity = velocitiesArray->GetValue(pointIndex);
 		double currentBearing = bearingsArray->GetValue(pointIndex);
 
 		if (this->aggregatedData.contains(coordinates)) {
@@ -124,6 +138,11 @@ void DataAggregator::addPointData(int pointIndex, PointCoordinates coordinates, 
 		vtkSmartPointer<vtkDataArray> abstractCoverageArray = pointData->GetArray("cloudCovers");
 		vtkSmartPointer<vtkFloatArray> coverageArray = vtkFloatArray::SafeDownCast(
 		            abstractCoverageArray);
+
+		if (!coverageArray) {
+			return;
+		}
+
 		double currentCoverage = coverageArray->GetValue(pointIndex);
 
 		if (this->aggregatedData.contains(coordinates)) {
@@ -235,13 +254,6 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
 		aggregatedDirections->SetNumberOfTuples(this->aggregatedData.size());
 		aggregatedDirections->SetName("Average Wind Directions");
 
-		// Create the array that will hold the aggregated wind velocity vectors
-		vtkSmartPointer<vtkFloatArray> aggregatedVelocities =
-		    vtkSmartPointer<vtkFloatArray>::New();
-		aggregatedVelocities->SetNumberOfComponents(3);
-		aggregatedVelocities->SetNumberOfTuples(this->aggregatedData.size());
-		aggregatedVelocities->SetName("velocity");
-
 		// Iterate over all points in the aggregated data
 		QMap<PointCoordinates, AggregationValue*>::iterator i;
 		int tupleNumber = 0;
@@ -263,21 +275,11 @@ vtkSmartPointer<vtkPolyData> DataAggregator::getPolyData() {
 			};
 			aggregatedDirections->SetTuple(tupleNumber, aggregatedBearing);
 
-			// Calculate and add the point's average velocity vector
-			float windBearingRadian = currentValue->getAverageBearing() * (float) (KRONOS_PI / 180);
-			double aggregatedVelocity[3] = {
-				(double) currentValue->getAverageVelocity()* sin(windBearingRadian),
-				(double) currentValue->getAverageVelocity()* cos(windBearingRadian),
-				0.0
-			};
-			aggregatedVelocities->SetTuple(tupleNumber, aggregatedVelocity);
-
 			tupleNumber++;
 		}
 
 		dataSet->GetPointData()->AddArray(aggregatedSpeeds);
 		dataSet->GetPointData()->AddArray(aggregatedDirections);
-		dataSet->GetPointData()->AddArray(aggregatedVelocities);
 		break;
 	}
 	case Data::CLOUD_COVERAGE: {

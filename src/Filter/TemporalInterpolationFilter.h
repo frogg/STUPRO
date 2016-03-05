@@ -9,6 +9,7 @@
 #include <vtkPassInputTypeAlgorithm.h>
 #include <vtkDataSet.h>
 #include <vtkSmartPointer.h>
+#include <vtkPointSet.h>
 
 #include <qstring.h>
 #include <qlist.h>
@@ -51,7 +52,7 @@ private:
 	 * @param timestep The timestep the data should be stored under
 	 * @param inputData The data to be stored
 	 */
-	void storeTimestepData(int timestep, vtkPolyData* inputData);
+	void storeTimestepData(int timestep, vtkPointSet* inputData);
 
 	/**
 	 * Create a temporal data point from the data available in a `vtkPolyData` object.
@@ -59,7 +60,7 @@ private:
 	 * @param inputData The poly data object containing the point data
 	 * @return A temporal data point of the right type with all available data
 	 */
-	InterpolationValue* createDataPoint(int pointIndex, vtkPolyData* inputData);
+	InterpolationValue* createDataPoint(int pointIndex, vtkPointSet* inputData);
 
 	/**
 	 * Fill in all missing points of integral time steps in this filter's point data map using linear interpolation. All scalar values are assumed to be constant up until new data is available.
@@ -99,11 +100,6 @@ private:
 	 * Boolean flag denoting whether the filter has successfully finished preprocessing.
 	 */
 	bool preprocessed;
-
-	/**
-	 * Boolean flag denoting whether there was an error.
-	 */
-	bool error;
 
 	/**
 	 * This integer will store the current time step while this filter iterates through all of them

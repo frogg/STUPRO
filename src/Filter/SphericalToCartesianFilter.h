@@ -20,6 +20,12 @@ public:
 	/**
 	 * Documentation see vtkAlgorithm
 	 */
+	int ExecuteInformation(vtkInformation* request, vtkInformationVector** inVector,
+	                       vtkInformationVector* outputVector) override;
+
+	/**
+	 * Documentation see vtkAlgorithm
+	 */
 	int FillOutputPortInformation(int, vtkInformation* info) override;
 
 	/**
@@ -38,6 +44,8 @@ private:
 
 	SphericalToCartesianFilter(const SphericalToCartesianFilter&);  // Not implemented.
 	void operator=(const SphericalToCartesianFilter&);  // Not implemented.
+
+	bool firstRequestInformation = true;
 };
 
 #endif /* SphericalToCartesianFilter_hpp */

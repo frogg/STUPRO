@@ -20,12 +20,24 @@ public:
 	void SetFileName(std::string name);
 
 	/**
+	 * Set the name of the file this reader should use.
+	 * @param name Path of the file that should be read
+	 * @param startCaching True if this reader should start caching data for future use in a separate thread, false otherwise
+	 */
+	void SetFileName(std::string name, bool startCaching);
+
+	/**
 	 * Set the camera position this reader uses to calculate the level of detail.
 	 * @param x X value of the camera position
 	 * @param y Y value of the camera position
 	 * @param z Z value of the camera position
 	 */
 	void SetCameraPosition(double x, double y, double z);
+
+	/**
+	 * Abort and wait for any background data caching that may be in progress.
+	 */
+	void abortCaching();
 
 	/**
 	 * Initialize a new Kronos reader.
@@ -97,6 +109,11 @@ private:
 	 * This thread will pre-cache data in the background once the reader has been created.
 	 */
 	std::thread cacheThread;
+
+	/**
+	 * Boolean flag denoting whether this reader has been caching data in the background.
+	 */
+	bool cachingInThread;
 
 };
 

@@ -1,12 +1,53 @@
 <ServerManagerConfiguration>
     <ProxyGroup name="filters">
-        <SourceProxy name="SphericalToCartesianFilter" class="SphericalToCartesianFilter" label="Kronos Spherical to Cartesian">
+    	<SourceProxy name="SphericalToCartesianFilter" class="SphericalToCartesianFilter" label="Kronos Spherical to Cartesian">
             <Documentation
                 long_help="This filter can convert GPS data (longitude/latitude/height) to cartesian coordinates in order to 'wrap' the data around a globe."
                 short_help="Convert GPS-Data to cartesian coordinates">
             </Documentation>
-            <InputProperty
-                name="Input"
+            <InputProperty name="Input"
+                           command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkImageData"/>
+		    		<DataType value="vtkRectilinearGrid"/>
+                </DataTypeDomain>
+            </InputProperty>
+	    	<IntVectorProperty name="transform"
+            			command="setTransform"
+            			number_of_elements="1"
+            			default_values="1">
+				<BooleanDomain name="bool"/>
+	    	</IntVectorProperty>
+        </SourceProxy>
+        <SourceProxy name="WindVelocityVectorCalculationFilter" class="WindVelocityVectorCalculationFilter" label="Kronos Wind Velocity Vector Calculation Filter">
+            <Documentation
+                long_help="This filter can calculate velocity vectors from given wind data for use with flow visualisation."
+                short_help="Calculate wind velocity vectors">
+            </Documentation>
+            <InputProperty name="Input"
+                           command="SetInputConnection">
+                <ProxyGroupDomain name="groups">
+                    <Group name="sources"/>
+                    <Group name="filters"/>
+                </ProxyGroupDomain>
+                <DataTypeDomain name="input_type">
+                    <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
+                </DataTypeDomain>
+            </InputProperty>
+        </SourceProxy>
+        <SourceProxy name="GenerateGeodesics" class="GenerateGeodesics" label="Kronos Generate Flight Geodesics">
+            <Documentation
+                long_help=""
+                short_help="">
+            </Documentation>
+            <InputProperty name="Input"
                 command="SetInputConnection">
                 <ProxyGroupDomain name="groups">
                     <Group name="sources"/>
@@ -14,19 +55,28 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
-                    <DataType value="vtkImageData"/>
-                    <DataType value="vtkRectilinearGrid"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
-            <IntVectorProperty name="transform"
-                command="setTransform"
+            <DoubleVectorProperty name="ArcSize"
+                command="setArcSize"
+                number_of_elements="1"
+                default_values="0.0">
+                <DoubleRangeDomain name="arc" min="0.0" max="1.0" />
+            </DoubleVectorProperty>
+            <DoubleVectorProperty name="Level of detail"
+                command="setLoD"
+                number_of_elements="1"
+                default_values="0.3">
+                <DoubleRangeDomain name="Level of detail" min="0.0" max="1.0" />
+            </DoubleVectorProperty>
+            <IntVectorProperty name="limit calculation depth"
+                command="setLimitDepth"
                 number_of_elements="1"
                 default_values="1">
                 <BooleanDomain name="bool"/>
             </IntVectorProperty>
-            <Hints>
-                <ShowInMenu category="Kronos" />
-            </Hints>
         </SourceProxy>
 		<SourceProxy name="TerrainHeightFilter" class="TerrainHeightFilter"
 			label="Kronos Terrain Height">
@@ -68,6 +118,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <IntVectorProperty name="Display precipitation of undefined type"
@@ -120,6 +172,7 @@
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPolyData"/>
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                     <DataType value="vtkImageData"/>
                 </DataTypeDomain>
             </InputProperty>
@@ -157,8 +210,10 @@
                 <Group name="filters"/>
             </ProxyGroupDomain>
             <DataTypeDomain name="input_type">
-                    <DataType value="vtkPointSet"/>
-                </DataTypeDomain>
+                <DataType value="vtkPointSet"/>
+                <DataType value="vtkPolyData"/>
+                <DataType value="vtkUnstructuredGrid"/>
+            </DataTypeDomain>
             </InputProperty>
             <StringVectorProperty command="ignore"
                 element_types="0 0 0 0 2"
@@ -220,6 +275,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <StringVectorProperty command="ignore"
@@ -282,6 +339,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>
@@ -299,6 +358,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>
@@ -316,6 +377,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <IntVectorProperty name="AuthorMatchingMode"
@@ -413,6 +476,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <IntVectorProperty name="AirlineMatchingMode"
@@ -1196,6 +1261,7 @@
     <ParaViewFilters>
         <Category name="Kronos" menu_label="Kronos">
             <Filter name="SphericalToCartesianFilter" />
+            <Filter name="GenerateGeodesics" />
             <Filter name="PrecipitationTypeFilter" />
             <Filter name="TwitterHeatmapFilter" />
             <Filter name="FlightFilter" />
@@ -1205,6 +1271,7 @@
             <Filter name="WindSpeedThresholdFilter" />
             <Filter name="TwitterFilter" />
             <Filter name="TerrainHeightFilter" />
+            <Filter name="WindVelocityVectorCalculationFilter" />
         </Category>
         <Category name="SciVis" menu_label="SciVis">
             <Filter name="MIPASFilter" />

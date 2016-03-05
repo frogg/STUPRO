@@ -37,22 +37,17 @@ bool MIPASFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
                                 vtkPointData* pointData) {
 	vtkSmartPointer<vtkDoubleArray> timeArray = vtkDoubleArray::SafeDownCast(
 	            pointData->GetAbstractArray("time"));
-
 	vtkSmartPointer<vtkFloatArray> altitudeArray = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("altitude"));
-
 	vtkSmartPointer<vtkUnsignedIntArray> orbitArray = vtkUnsignedIntArray::SafeDownCast(
 	            pointData->GetAbstractArray("orbit_id"));
-
 	vtkSmartPointer<vtkUnsignedCharArray> profileArray = vtkUnsignedCharArray::SafeDownCast(
 	            pointData->GetAbstractArray("profile_id"));
-
 	vtkSmartPointer<vtkUnsignedCharArray> detectionArray = vtkUnsignedCharArray::SafeDownCast(
 	            pointData->GetAbstractArray("detection"));
 
-	if (!timeArray || !altitudeArray || !orbitArray) {
-		this->fail("One of the arrays (\"time\", \"altitude\" or \"orbit_id\") seems to be invalid or missing.");
-		return 0;
+	if (!timeArray || !altitudeArray || !orbitArray || !profileArray || !detectionArray) {
+		return false;
 	}
 
 	double time = timeArray->GetTuple1(pointIndex);

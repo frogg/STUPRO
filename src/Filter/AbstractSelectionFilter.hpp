@@ -57,11 +57,6 @@ public:
 private:
 	AbstractSelectionFilter(const AbstractSelectionFilter&);  // Not implemented.
 	void operator=(const AbstractSelectionFilter&);  // Not implemented.
-
-	/**
-	 * Boolean flag denoting whether there was an error.
-	 */
-	bool error;
 };
 
 #endif
