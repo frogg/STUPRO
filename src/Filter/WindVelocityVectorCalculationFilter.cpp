@@ -1,15 +1,19 @@
-#include <Filter/WindVelocityVectorCalculationFilter.hpp>
+#include <Filter/WindVelocityVectorCalculationFilter.h>
 
 #include <vtkFloatArray.h>
 #include <vtkCellArray.h>
 #include <vtkPolyData.h>
 #include <vtkExecutive.h>
+#include <vtkObjectFactory.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkInformationExecutivePortVectorKey.h>
 
 #include <Utils/Math/Functions.hpp>
 
 WindVelocityVectorCalculationFilter::WindVelocityVectorCalculationFilter() : error(false) { }
 WindVelocityVectorCalculationFilter::~WindVelocityVectorCalculationFilter() { }
+
+vtkStandardNewMacro(WindVelocityVectorCalculationFilter);
 
 void WindVelocityVectorCalculationFilter::fail(QString message) {
 	vtkErrorMacro( << message.toStdString());

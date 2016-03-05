@@ -18,6 +18,9 @@
  */
 class WindVelocityVectorCalculationFilter : public vtkDataObjectAlgorithm {
 public:
+	vtkTypeMacro(WindVelocityVectorCalculationFilter, vtkDataObjectAlgorithm);
+	static WindVelocityVectorCalculationFilter* New();
+	
 	WindVelocityVectorCalculationFilter();
 	~WindVelocityVectorCalculationFilter();
 
