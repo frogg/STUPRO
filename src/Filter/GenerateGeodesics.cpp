@@ -115,7 +115,7 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 			airlines->InsertNextValue(inAirline->GetValue(flight));
 			startCode->InsertNextValue(inStartCode->GetValue(flight));
 			destCode->InsertNextValue(inDestCode->GetValue(flight));
-			flightLengths->InsertNextValue(distance(start, destination));
+			flightLengths->InsertNextValue(inFlightLength->GetValue(flight));
 		}
 	}
 
