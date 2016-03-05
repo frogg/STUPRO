@@ -145,7 +145,8 @@ template<typename T> Spherical<T> scaleTo(const Spherical<T>& gps, const T targe
 /**
  * Get the point right between two other points (in spherical sense, so the result has the middle abs of gps1 and gps2)
  */
-template<typename T> Spherical<T> calculateCenter(const Spherical<T>& gps1, const Spherical<T>& gps2) {
+template<typename T> Spherical<T> calculateCenter(const Spherical<T>& gps1,
+        const Spherical<T>& gps2) {
 	Cartesian<T> cartesian1 = sphericalToCartesian(gps1) / 2;
 	Cartesian<T> cartesian2 = sphericalToCartesian(gps2) / 2;
 	Spherical<T> newPoint = cartesianToSpherical(cartesian1 + cartesian2);
