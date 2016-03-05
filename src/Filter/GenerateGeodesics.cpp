@@ -42,10 +42,11 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	}
 
 	int numberOfFlights = input->GetNumberOfPoints();
-	
+
 	if (!input->GetPointData()->HasArray(DESTINATION_ARRAY_NAME)) {
 		return 0;
-	} else if (input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() != numberOfFlights) {
+	} else if (input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() !=
+	           numberOfFlights) {
 		vtkErrorMacro( << "The input data has an unexpected format. Details:" << endl
 		               << "    Number of input arrays: " << input->GetPointData()->GetNumberOfArrays() << endl
 		               << "    Array size: " << numberOfFlights << " and "
@@ -73,7 +74,7 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	                                 DEST_CODE_ARRAY_NAME));
 	vtkFloatArray* inFlightLength = vtkFloatArray::SafeDownCast(input->GetPointData()->GetArray(
 	                                    LENGTH_ARRAY_NAME));
-										
+
 	if (!destinationPoints || !inPrio || !inAirline || !inStartCode || !inDestCode || !inFlightLength) {
 		return 0;
 	}
