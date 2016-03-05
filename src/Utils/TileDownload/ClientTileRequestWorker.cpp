@@ -120,7 +120,7 @@ void ClientTileRequestWorker::handleDownload(QNetworkReply* reply) {
 	// handle content
 	this->handleReplyContent(reply, meta.get());
 
-	if (!job->failed && job->pendingReplies.isEmpty()) {
+	if (job->pendingReplies.isEmpty()) {
 		ImageTile tile = job->incompleteTile;
 
 		// the job is finished, so delete it

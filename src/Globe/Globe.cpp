@@ -14,6 +14,7 @@
 #include <Utils/Math/Vector3.hpp>
 #include <Utils/Math/Vector4.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
+#include <Utils/Misc/KronosLogger.hpp>
 #include <Utils/TileDownload/ImageTile.hpp>
 #include <vtkAlgorithm.h>
 #include <vtkCamera.h>

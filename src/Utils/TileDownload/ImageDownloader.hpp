@@ -3,10 +3,6 @@
 
 #include <QString>
 #include <QSet>
-#include <Utils/Misc/KronosLogger.hpp>
-#include <Utils/TileDownload/ConfigUtil.hpp>
-#include <Utils/TileDownload/ImageLayerDescription.hpp>
-#include <Utils/TileDownload/ImageTile.hpp>
 #include <Utils/TileDownload/TileRequestWorker.hpp>
 
 class ImageDownloader {

@@ -4,6 +4,7 @@
 #include <Utils/Misc/MakeUnique.hpp>
 #include <Utils/Misc/ServerUtils.hpp>
 #include <Utils/TileDownload/ClientTileRequestWorker.hpp>
+#include <Utils/TileDownload/ConfigUtil.hpp>
 #include <Utils/TileDownload/ServerTileRequestWorker.hpp>
 
 #include <thread>

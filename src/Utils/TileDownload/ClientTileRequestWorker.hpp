@@ -3,16 +3,13 @@
 
 #include <Utils/TileDownload/TileRequestWorker.hpp>
 
-#include <QEventLoop>
 #include <QList>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QMetaType>
 
 
 struct ImageDownloadJob : public WorkerJob {
 	bool aborted = false;
-	bool failed = false;
 	QSet<QNetworkReply*> pendingReplies;
 
 	ImageDownloadJob() = default;
@@ -57,6 +54,16 @@ public:
 	                        QString configFile = "./res/layers.json");
 
 	virtual ~ClientTileRequestWorker();
+
+	/**
+	 * @param jobCount the maximum number of jobs to process simultaniously
+	 */
+	void setMaxJobCount(int jobCount);
+
+	/**
+	 * @returns the maximum number of jobs to process simultaniously
+	 */
+	int getMaxJobCount();
 
 protected:
 	/**
@@ -126,16 +133,6 @@ private:
 	 * @param meta  the metadata object associated with the reply
 	 */
 	void handleReplyContent(QNetworkReply* reply, ImageDownloadJobMetaData* meta);
-
-	/**
-	 * @param jobCount the maximum number of jobs to process simultaniously
-	 */
-	void setMaxJobCount(int jobCount);
-
-	/**
-	 * @returns the maximum number of jobs to process simultaniously
-	 */
-	int getMaxJobCount();
 
 private slots:
 	/**
