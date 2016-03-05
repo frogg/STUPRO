@@ -21,7 +21,7 @@ int AbstractSelectionFilter::RequestData(vtkInformation* info,
         vtkInformationVector* outputVector) {
 	// Get input and output data from the information vectors
 	vtkInformation* inputInformation = inputVector[0]->GetInformationObject(0);
-	vtkPolyData* inputData = vtkPolyData::SafeDownCast(inputInformation->Get(
+	vtkPointSet* inputData = vtkPointSet::SafeDownCast(inputInformation->Get(
 	                             vtkDataObject::DATA_OBJECT()));
 
 	vtkInformation* outputInformation = outputVector->GetInformationObject(0);

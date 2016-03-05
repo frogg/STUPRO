@@ -137,7 +137,7 @@ int TemporalAggregationFilter::RequestData(
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
-	vtkPolyData* input = vtkPolyData::GetData(inInfo);
+	vtkPointSet* input = vtkPointSet::GetData(inInfo);
 	vtkPolyData* output = vtkPolyData::GetData(outInfo);
 
 	if (this->currentTimeStep == 0) {
