@@ -34,24 +34,22 @@ void GenerateGeodesics::PrintSelf(std::ostream& os, vtkIndent indent) {
 
 int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** inputVector,
                                    vtkInformationVector* outputVector) {
-	vtkPolyData* input = vtkPolyData::GetData(inputVector[0]);
+	vtkPointSet* input = vtkPointSet::GetData(inputVector[0]);
 	vtkPolyData* output = vtkPolyData::GetData(outputVector);
 
 	if (!input) {
-		vtkErrorMacro( << "Input Error. Aborting...");
 		return 0;
 	}
 
 	int numberOfFlights = input->GetNumberOfPoints();
-
-	if (!input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)
-	        || input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() !=
-	        numberOfFlights) {
+	
+	if (!input->GetPointData()->HasArray(DESTINATION_ARRAY_NAME)) {
+		return 0;
+	} else if (input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples() != numberOfFlights) {
 		vtkErrorMacro( << "The input data has an unexpected format. Details:" << endl
 		               << "    Number of input arrays: " << input->GetPointData()->GetNumberOfArrays() << endl
 		               << "    Array size: " << numberOfFlights << " and "
 		               << input->GetPointData()->GetArray(DESTINATION_ARRAY_NAME)->GetNumberOfTuples());
-		return 0;
 	}
 
 	// generate the geodesics
@@ -75,6 +73,10 @@ int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** 
 	                                 DEST_CODE_ARRAY_NAME));
 	vtkFloatArray* inFlightLength = vtkFloatArray::SafeDownCast(input->GetPointData()->GetArray(
 	                                    LENGTH_ARRAY_NAME));
+										
+	if (!destinationPoints || !inPrio || !inAirline || !inStartCode || !inDestCode || !inFlightLength) {
+		return 0;
+	}
 
 	vtkSmartPointer<vtkIntArray> priorities  = vtkSmartPointer<vtkIntArray>::New();
 	priorities->SetNumberOfComponents(1);
@@ -125,12 +127,12 @@ int GenerateGeodesics::RequestInformation(vtkInformation* request,
 		Data::Transformation dataTransformation = static_cast<Data::Transformation>(inInfo->Get(
 		            Data::VTK_DATA_TRANSFORMATION()));
 		if (dataTransformation == Data::TRANSFORMED) {
-			vtkErrorMacro( << "The geodesics generation filter does not properly work on transformed data.");
+			vtkErrorMacro( << "The geodesics generation filter does not work properly on transformed data.");
 		}
 	}
 	if (!inInfo->Has(Data::VTK_DATA_TYPE()) || inInfo->Get(Data::VTK_DATA_TYPE()) != Data::FLIGHTS) {
 		vtkErrorMacro( <<
-		               "The geodesics generation filter does only work with Kronos Flight Data. Please provied appropriate data.");
+		               "The geodesics generation filter only works with Kronos Flight Data. Please proceed with caution.");
 		return 0;
 	}
 
@@ -146,6 +148,8 @@ int GenerateGeodesics::FillOutputPortInformation(int, vtkInformation* info) {
 int GenerateGeodesics::FillInputPortInformation(int, vtkInformation* info) {
 	info->Remove(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
 	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
+	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
+	info->Append(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkUnstructuredGrid");
 	return 1;
 }
 

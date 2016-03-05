@@ -37,6 +37,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPolyData"/>
+                    <DataType value="vtkUnstructuredGrid"/>
+                    <DataType value="vtkPointSet"/>
                 </DataTypeDomain>
             </InputProperty>
             <DoubleVectorProperty name="ArcSize"
