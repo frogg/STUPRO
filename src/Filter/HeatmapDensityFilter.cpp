@@ -37,7 +37,7 @@ void HeatmapDensityFilter::PrintSelf(ostream& os, vtkIndent indent) {
 vtkStandardNewMacro(HeatmapDensityFilter);
 
 void HeatmapDensityFilter::fail(QString message) {
-	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(
+	vtkErrorMacro( << QString("%1 This filter may not work, please proceed with caution.").arg(
 	                   message).toStdString());
 }
 

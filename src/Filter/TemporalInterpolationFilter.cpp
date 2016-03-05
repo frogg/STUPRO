@@ -39,7 +39,7 @@ TemporalInterpolationFilter::~TemporalInterpolationFilter() {
 }
 
 void TemporalInterpolationFilter::fail(QString message) {
-	vtkErrorMacro( << QString("%1. This filter may not work, please proceed with caution.").arg(
+	vtkErrorMacro( << QString("%1 This filter may not work, please proceed with caution.").arg(
 	                   message).toStdString());
 }
 
