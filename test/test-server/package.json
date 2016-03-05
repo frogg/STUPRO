@@ -1,0 +1,14 @@
+{
+  "name": "kronos-downloader-test-server",
+  "version": "1.0.0",
+  "description": "Provides a super basic mock-image-tile-provider",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "private": true,
+  "author": "Jonas Auer",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}

@@ -37,11 +37,17 @@
 	#define COLOR_RED ""
 #endif
 
+static std::ostream outStream(std::cout.rdbuf());
+
+inline void setLoggerOutStream(std::ostream& stream) {
+	outStream.rdbuf(stream.rdbuf());
+}
+
 template<typename... Args>
 inline void kronos_log(const char* debugLevel, const char* function, const char* file, int line,
                        const char* const formatted) {
 
-	std::cout << debugLevel << " "
+	outStream << debugLevel << " "
 	          << function
 #ifdef KRONOS_LOG_FILE_NAMES
 	          << " (" << file << ":" << line << ")"

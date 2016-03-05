@@ -88,7 +88,7 @@ void HeightmapSampler::initHeightmap() {
 				errorText = ex.what();
 			});
 
-			downloader.fetchTile(zoomLevel, lon, lat);
+			downloader.requestTile(zoomLevel, lon, lat);
 
 			async.sleep();
 

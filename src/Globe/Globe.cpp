@@ -14,6 +14,7 @@
 #include <Utils/Math/Vector3.hpp>
 #include <Utils/Math/Vector4.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
+#include <Utils/Misc/KronosLogger.hpp>
 #include <Utils/TileDownload/ImageTile.hpp>
 #include <vtkAlgorithm.h>
 #include <vtkCamera.h>
@@ -304,7 +305,7 @@ void Globe::showTile(int lon, int lat) {
 		tile.setVisibile(true);
 
 		// Start loading process.
-		myDownloader.fetchTile(myZoomLevel, lon, lat);
+		myDownloader.requestTile(myZoomLevel, lon, lat);
 
 		KRONOS_LOG_DEBUG("fetching tile %d/%d", lon, lat);
 	} else {
@@ -349,7 +350,7 @@ void Globe::createTileHandles() {
 void Globe::eraseTileHandles() {
 
 	// Cancel all pending downloads.
-	myDownloader.abortAllDownloads();
+	myDownloader.abortAllRequests();
 
 	for (auto& handle : myTileHandles) {
 		if (handle.isActive()) {
