@@ -36,7 +36,7 @@ void GenerateGeodesics::PrintSelf(std::ostream& os, vtkIndent indent) {
 
 int GenerateGeodesics::RequestData(vtkInformation* info, vtkInformationVector** inputVector,
                                    vtkInformationVector* outputVector) {
-	vtkPolyData* input = vtkPolyData::GetData(inputVector[0]);
+	vtkPointSet* input = vtkPointSet::GetData(inputVector[0]);
 	vtkPolyData* output = vtkPolyData::GetData(outputVector);
 
 	if (!input) {

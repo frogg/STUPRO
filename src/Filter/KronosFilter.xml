@@ -54,7 +54,9 @@
                     <Group name="filters"/>
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
-                    <DataType value="vtkPolyData"/>
+                    <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <DoubleVectorProperty name="ArcSize"
@@ -116,6 +118,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <IntVectorProperty name="Display precipitation of undefined type"
@@ -168,6 +172,7 @@
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPolyData"/>
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                     <DataType value="vtkImageData"/>
                 </DataTypeDomain>
             </InputProperty>
@@ -205,8 +210,10 @@
                 <Group name="filters"/>
             </ProxyGroupDomain>
             <DataTypeDomain name="input_type">
-                    <DataType value="vtkPointSet"/>
-                </DataTypeDomain>
+                <DataType value="vtkPointSet"/>
+                <DataType value="vtkPolyData"/>
+                <DataType value="vtkUnstructuredGrid"/>
+            </DataTypeDomain>
             </InputProperty>
             <StringVectorProperty command="ignore"
                 element_types="0 0 0 0 2"
@@ -268,6 +275,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <StringVectorProperty command="ignore"
@@ -330,6 +339,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>
@@ -347,6 +358,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
         </SourceProxy>
@@ -364,6 +377,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <IntVectorProperty name="AuthorMatchingMode"
@@ -461,6 +476,8 @@
                 </ProxyGroupDomain>
                 <DataTypeDomain name="input_type">
                     <DataType value="vtkPointSet"/>
+		    		<DataType value="vtkPolyData"/>
+		    		<DataType value="vtkUnstructuredGrid"/>
                 </DataTypeDomain>
             </InputProperty>
             <IntVectorProperty name="AirlineMatchingMode"

@@ -135,7 +135,7 @@ int TemporalInterpolationFilter::RequestData(
 	vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
-	vtkPolyData* input = vtkPolyData::GetData(inInfo);
+	vtkPointSet* input = vtkPointSet::GetData(inInfo);
 	vtkPolyData* output = vtkPolyData::GetData(outInfo);
 
 	if (this->hasPreprocessed()) {
@@ -416,7 +416,7 @@ vtkSmartPointer<vtkPolyData> TemporalInterpolationFilter::getOutputPolyData(doub
 	return dataSet;
 }
 
-void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData* inputData) {
+void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPointSet* inputData) {
 	QMap<PointCoordinates, InterpolationValue*> timestepData;
 
 	for (int i = 0; i < inputData->GetNumberOfPoints(); i++) {
@@ -431,7 +431,7 @@ void TemporalInterpolationFilter::storeTimestepData(int timestep, vtkPolyData* i
 }
 
 InterpolationValue* TemporalInterpolationFilter::createDataPoint(int pointIndex,
-        vtkPolyData* inputData) {
+        vtkPointSet* inputData) {
 	int priority = 0;
 	int timestamp = 0;
 
