@@ -45,7 +45,7 @@ int HeatmapDensityFilter::RequestData(vtkInformation* info,
                                       vtkInformationVector** inputVector,
                                       vtkInformationVector* outputVector) {
 	// Get the input data
-	vtkPolyData* dataInput = vtkPolyData::GetData(inputVector[0], 0);
+	vtkPointSet* dataInput = vtkPointSet::GetData(inputVector[0], 0);
 
 	// Compute the bounds of the input data
 	double bounds[6];
