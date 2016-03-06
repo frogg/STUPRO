@@ -8,8 +8,8 @@
 #include <QString>
 
 #ifndef _MSC_VER
-template<typename T> class Spherical;
-template<typename T> class Cartesian;
+	template<typename T> class Spherical;
+	template<typename T> class Cartesian;
 #endif
 
 /**

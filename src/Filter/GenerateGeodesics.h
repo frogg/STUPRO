@@ -6,12 +6,12 @@
 template<typename T> class QVector;
 
 #ifndef _MSC_VER
-template<typename T> class Spherical;
-template<typename T> class Cartesian;
+	template<typename T> class Spherical;
+	template<typename T> class Cartesian;
 #else
-template<typename T> class Vector3;
-template<typename T> using Spherical = Vector3<T>;
-template<typename T> using Cartesian = Vector3<T>;
+	template<typename T> class Vector3;
+	template<typename T> using Spherical = Vector3<T>;
+	template<typename T> using Cartesian = Vector3<T>;
 #endif
 typedef Spherical<double> GPS;
 typedef Cartesian<double> World;
