@@ -228,8 +228,9 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(
 			vtkErrorMacro( << "An input array could not be read.");
 			return 0;
 		}
-		
-		vtkSmartPointer<vtkAbstractArray> outputArray = vtkAbstractArray::CreateArray(inputArray->GetDataType());
+
+		vtkSmartPointer<vtkAbstractArray> outputArray = vtkAbstractArray::CreateArray(
+		            inputArray->GetDataType());
 
 		outputArray->SetNumberOfComponents(inputArray->GetNumberOfComponents());
 		outputArray->SetNumberOfTuples(centralPoints.size());
@@ -251,12 +252,12 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(
 				// For numeric input arrays, calculate the average for all values of subordinate points associated with the central point
 				vtkSmartPointer<vtkDataArray> inputArray = vtkDataArray::SafeDownCast(inputArrays[j]);
 				vtkSmartPointer<vtkDataArray> outputArray = vtkDataArray::SafeDownCast(outputArrays[j]);
-				
+
 				if (!inputArray || !outputArray) {
 					vtkErrorMacro( << "There was an error while calculating the average.");
 					return 0;
 				}
-				
+
 				std::vector<double> cumulativeAverage(inputArrays[j]->GetNumberOfComponents());
 				for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); ++l) {
 					cumulativeAverage[l] = inputArray->GetTuple(centralPointIndex)[l];
@@ -273,7 +274,7 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(
 				outputArray->InsertTuple(centralPointIndex, cumulativeAverage.data());
 			} else {
 				// For non-numeric input arrays, simply keep the value of the central point
-				
+
 				outputArrays[j]->SetTuple(centralPointIndex, centralPointIndex, inputArrays[j]);
 			}
 		}
