@@ -8,7 +8,6 @@ set(KRONOS_QT_VERSION "4" CACHE STRING "Qt Version to use when building Kronos")
 set(PARAVIEW_QT_VERSION ${KRONOS_QT_VERSION})
 
 set(KRONOS_BIN_DIR ${CMAKE_BINARY_DIR}/src CACHE PATH "Output path of Kronos binaries")
-set(TEST_BIN_DIR ${CMAKE_BINARY_DIR}/test CACHE PATH "Output path of Unit Test binaries")
 
 # use ccache if possible to speed up the build process
 find_program(CCACHE_FOUND ccache)
@@ -27,11 +26,14 @@ if(SAVE_TEMPS)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -save-temps")
 endif(SAVE_TEMPS)
 
+option(BUILD_TESTING "Build the testing environment" ON)
+
 # register subprojects
 add_subdirectory(src)
 
 # add test subproject only on unix (workaround until GTest is introduced)
-if(UNIX)
+if(BUILD_TESTING)
+  set(TEST_BIN_DIR ${CMAKE_BINARY_DIR}/test CACHE PATH "Output path of Unit Test binaries")
   add_subdirectory(test)
   # enable ctest capabilities
   enable_testing()
