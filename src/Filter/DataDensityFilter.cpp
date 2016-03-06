@@ -10,6 +10,7 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkPointData.h>
+#include <vtkAbstractArray.h>
 
 #include <sstream>
 #include <algorithm>
@@ -217,30 +218,28 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(
 	vertices->InsertNextCell(centralPoints.size());
 
 	// Create all arrays from the input data
-	QList<vtkSmartPointer<vtkDataArray>> inputArrays;
-	QList<vtkSmartPointer<vtkDataArray>> outputArrays;
+	QList<vtkSmartPointer<vtkAbstractArray>> inputArrays;
+	QList<vtkSmartPointer<vtkAbstractArray>> outputArrays;
 
 	for (int h = 0; h < input->GetPointData()->GetNumberOfArrays(); ++h) {
-		vtkSmartPointer<vtkDataArray> inputArray = input->GetPointData()->GetArray(h);
+		vtkSmartPointer<vtkAbstractArray> inputArray = input->GetPointData()->GetAbstractArray(h);
 
 		if (!inputArray) {
 			vtkErrorMacro( << "An input array could not be read.");
 			return 0;
 		}
-		if (inputArray->IsNumeric()) {
-			vtkSmartPointer<vtkDataArray> outputArray = vtkDataArray::CreateDataArray(
-			            inputArray->GetDataType());
+		
+		vtkSmartPointer<vtkAbstractArray> outputArray = vtkAbstractArray::CreateArray(inputArray->GetDataType());
 
-			outputArray->SetNumberOfComponents(inputArray->GetNumberOfComponents());
-			outputArray->SetNumberOfTuples(centralPoints.size());
-			outputArray->SetName(inputArray->GetName());
+		outputArray->SetNumberOfComponents(inputArray->GetNumberOfComponents());
+		outputArray->SetNumberOfTuples(centralPoints.size());
+		outputArray->SetName(inputArray->GetName());
 
-			inputArrays.append(inputArray);
-			outputArrays.append(outputArray);
-		}
+		inputArrays.append(inputArray);
+		outputArrays.append(outputArray);
 	}
 
-	// Iterate through all the central points and mean the data of the subordinate points
+	// Iterate through all the central points and calculate the arithmetic mean of the subordinate point's data
 	PointMap::const_iterator i = centralPoints.cbegin();
 	int centralPointIndex = 0;
 	while (i != centralPoints.cend()) {
@@ -248,20 +247,35 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(
 		                          i->first.getZ()));
 
 		for (int j = 0; j < inputArrays.size(); ++j) {
-			std::vector<double> cumulativeAverage(inputArrays[j]->GetNumberOfComponents());
-			for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); ++l) {
-				cumulativeAverage[l] = inputArrays[j]->GetTuple(centralPointIndex)[l];
-			}
-
-			QListIterator<int> k(i->second);
-			while (k.hasNext()) {
-				int pointIndex = k.next();
-				for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); l++) {
-					cumulativeAverage[l] = (cumulativeAverage[l] + inputArrays[j]->GetTuple(pointIndex)[l] ) / 2;
+			if (inputArrays[j]->IsNumeric()) {
+				// For numeric input arrays, calculate the average for all values of subordinate points associated with the central point
+				vtkSmartPointer<vtkDataArray> inputArray = vtkDataArray::SafeDownCast(inputArrays[j]);
+				vtkSmartPointer<vtkDataArray> outputArray = vtkDataArray::SafeDownCast(outputArrays[j]);
+				
+				if (!inputArray || !outputArray) {
+					vtkErrorMacro( << "There was an error while calculating the average.");
+					return 0;
 				}
-			}
+				
+				std::vector<double> cumulativeAverage(inputArrays[j]->GetNumberOfComponents());
+				for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); ++l) {
+					cumulativeAverage[l] = inputArray->GetTuple(centralPointIndex)[l];
+				}
 
-			outputArrays[j]->InsertTuple(centralPointIndex, cumulativeAverage.data());
+				QListIterator<int> k(i->second);
+				while (k.hasNext()) {
+					int pointIndex = k.next();
+					for (int l = 0; l < inputArrays[j]->GetNumberOfComponents(); l++) {
+						cumulativeAverage[l] = (cumulativeAverage[l] + inputArray->GetTuple(pointIndex)[l]) / 2;
+					}
+				}
+
+				outputArray->InsertTuple(centralPointIndex, cumulativeAverage.data());
+			} else {
+				// For non-numeric input arrays, simply keep the value of the central point
+				
+				outputArrays[j]->SetTuple(centralPointIndex, centralPointIndex, inputArrays[j]);
+			}
 		}
 
 		centralPointIndex++;
@@ -271,7 +285,7 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(
 	output->SetVerts(vertices);
 
 	// Add the output arrays to the data set
-	QList<vtkSmartPointer<vtkDataArray>>::iterator j;
+	QList<vtkSmartPointer<vtkAbstractArray>>::iterator j;
 	for (j = outputArrays.begin(); j != outputArrays.end(); ++j) {
 		output->GetPointData()->AddArray(*j);
 	}
