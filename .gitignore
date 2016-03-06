@@ -19,3 +19,6 @@ scripts/data-conversion/*.config
 
 # precompiled header files
 *.pch
+
+# autosaves
+*.autosave

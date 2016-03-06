@@ -10,8 +10,8 @@ template<typename T> class QVector;
 	template<typename T> class Cartesian;
 #else
 	template<typename T> class Vector3;
-	template<typename T> using Spherical = Vector3<T>;
-	template<typename T> using Cartesian = Vector3<T>;
+	#define Spherical Vector3
+	#define Cartesian Vector3
 #endif
 typedef Spherical<double> GPS;
 typedef Cartesian<double> World;

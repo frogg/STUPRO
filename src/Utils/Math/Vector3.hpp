@@ -7,6 +7,8 @@
 #include <cmath>
 #include <QString>
 
+#define _MSC_VER
+
 #ifndef _MSC_VER
 	template<typename T> class Spherical;
 	template<typename T> class Cartesian;
@@ -483,8 +485,10 @@ public:
 	using Vector3<T>::Vector3;
 };
 #else
-template<typename T> using Spherical = Vector3<T>;
-template<typename T> using Cartesian = Vector3<T>;
+#define Spherical Vector3
+#define Cartesian Vector3
 #endif
+
+#undef _MSC_VER
 
 #endif
