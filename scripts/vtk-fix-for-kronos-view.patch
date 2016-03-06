@@ -1,0 +1,25 @@
+From 6f482d3e7be40fa8f2d2dccca695d3227f76f61e Mon Sep 17 00:00:00 2001
+From: Tobias Beeh <st112280@stud.uni-stuttgart.de>
+Date: Sun, 6 Mar 2016 11:36:11 +0100
+Subject: [PATCH] fixed a kronos bug upstream
+
+---
+ GUISupport/Qt/QVTKWidget.cxx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/GUISupport/Qt/QVTKWidget.cxx b/GUISupport/Qt/QVTKWidget.cxx
+index 3a67241..28d4db7 100644
+--- a/GUISupport/Qt/QVTKWidget.cxx
++++ b/GUISupport/Qt/QVTKWidget.cxx
+@@ -712,7 +712,7 @@ void QVTKWidget::x11_setup_window()
+ 
+   // can't get visual, oh well.
+   // continue with Qt's default visual as it usually works
+-  if(!vi)
++  //if(!vi)
+     {
+     if(visible)
+       {
+-- 
+1.9.1
+
