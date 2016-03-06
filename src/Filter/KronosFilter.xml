@@ -236,6 +236,7 @@
                 </FieldDataDomain>
             </StringVectorProperty>
             <Hints>
+                <ShowInMenu category="Kronos" />
                 <Property name="SelectInputScalars" show="0"/>
             </Hints>
             <DoubleVectorProperty command="setThreshold"
@@ -300,6 +301,7 @@
                 </FieldDataDomain>
             </StringVectorProperty>
             <Hints>
+                <ShowInMenu category="Kronos" />
                 <Property name="SelectInputScalars" show="0"/>
             </Hints>
             <DoubleVectorProperty command="setThreshold"
@@ -534,9 +536,6 @@
                     </RequiredProperties>
                 </FieldDataDomain>
             </StringVectorProperty>
-            <Hints>
-                <Property name="SelectFlightInputScalars" show="0"/>
-            </Hints>
             <DoubleVectorProperty command="setFlightLengthThreshold"
                 default_values="0 0"
                 label="Flight Length Range"
@@ -568,6 +567,7 @@
             </PropertyGroup>
             <Hints>
                 <ShowInMenu category="Kronos" />
+                <Property name="SelectFlightInputScalars" show="0" />
             </Hints>
         </SourceProxy>
 
@@ -1254,7 +1254,45 @@
           </Hints>
       </SourceProxy>
 
-
+      <SourceProxy name="DataDensityFilter" class="DataDensityFilter" label="Kronos Point Density Reduction Filter">
+             <Documentation
+                 long_help="This filter can merge close points and averages their data."
+                 short_help="This filter can merge close points and averages their data">
+             </Documentation>
+             <InputProperty
+                 name="Input"
+                 command="SetInputConnection">
+                 <ProxyGroupDomain name="groups">
+                     <Group name="sources"/>
+                     <Group name="filters"/>
+                 </ProxyGroupDomain>
+                 <DataTypeDomain name="input_type">
+                     <DataType value="vtkPolyData"/>
+                     <DataType value="vtkUnstructuredGrid"/>
+                 </DataTypeDomain>
+             </InputProperty>
+                 <IntVectorProperty name="kMeansEnabled"
+                         label="Enable KMeans"
+                         command="setKMeansEnabled"
+                         number_of_elements="1"
+                         default_values="0">
+         <BooleanDomain name="bool"/>
+         </IntVectorProperty>
+             <DoubleVectorProperty name="DataPercentage"
+                 label="Data Reduction Factor"
+                 command="setDataPercentage"
+                 number_of_elements="1"
+                 default_values="0.01">
+                 <DoubleRangeDomain name="range" min="0.0" max="1.0" />
+             </DoubleVectorProperty>		
+         <PropertyGroup label="Data Point Reduction">
+             <Property name="kMeansEnabled" />
+             <Property name="DataPercentage" />
+         </PropertyGroup>
+         <Hints>
+             <ShowInMenu category="Kronos" />
+         </Hints>
+         </SourceProxy>
 
 
     </ProxyGroup>
@@ -1272,6 +1310,7 @@
             <Filter name="TwitterFilter" />
             <Filter name="TerrainHeightFilter" />
             <Filter name="WindVelocityVectorCalculationFilter" />
+            <Filter name="DataDensityFilter" />
         </Category>
         <Category name="SciVis" menu_label="SciVis">
             <Filter name="MIPASFilter" />
