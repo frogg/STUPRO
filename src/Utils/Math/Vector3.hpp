@@ -7,8 +7,10 @@
 #include <cmath>
 #include <QString>
 
+#ifndef _MSC_VER
 template<typename T> class Spherical;
 template<typename T> class Cartesian;
+#endif
 
 /**
  * Generic 3-dimensional vector class (vector in the mathematical sense).
@@ -236,12 +238,14 @@ public:
 		return QString("(%1|%2|%3)").arg(x).arg(y).arg(z).toStdString();
 	}
 
+#ifndef _MSC_VER
 	operator Cartesian<T>() const {
 		return Cartesian<T>(this->x, this->y, this->z);
 	}
 	operator Spherical<T>() const {
 		return Spherical<T>(this->x, this->y, this->z);
 	}
+#endif
 };
 
 template<typename T>
@@ -469,6 +473,7 @@ typedef Vector3<unsigned int> Vector3u;
 typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
 
+#ifndef _MSC_VER
 template<typename T> class Spherical : public Vector3<T> {
 public:
 	using Vector3<T>::Vector3;
@@ -477,5 +482,9 @@ template<typename T> class Cartesian : public Vector3<T> {
 public:
 	using Vector3<T>::Vector3;
 };
+#else
+template<typename T> using Spherical = Vector3<T>;
+template<typename T> using Cartesian = Vector3<T>;
+#endif
 
 #endif
