@@ -14,6 +14,7 @@
 #include <Utils/Math/Vector3.hpp>
 #include <Utils/Math/Vector4.hpp>
 #include <Utils/Misc/MakeUnique.hpp>
+#include <Utils/Misc/KronosLogger.hpp>
 #include <Utils/TileDownload/ImageTile.hpp>
 #include <vtkAlgorithm.h>
 #include <vtkCamera.h>
@@ -176,52 +177,76 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 	// Define viewport rectangle in screenspace coordinates.
 	static const RectF screenRect(-1.f, -1.f, 2.f, 2.f);
 
-	// TODO: Implement culling for flat map!
-	if (getDisplayMode() == DisplayMap) {
-		return true;
-	}
-
 	// Get location of current tile.
 	GlobeTile::Location loc(myZoomLevel, lon, lat);
 
-	// Assume that the current tile is not visible.
-	bool visible = false;
+	// Create array of tile corner positions.
+	std::array<Vector4f, 4> tileCornerPositions;
 
-	// Calculate surface normals of the current tile's corners.
-	std::array<Vector4f, 4> tileCornerNormals;
-	tileCornerNormals[0] = Vector4f(loc.getNormalVector(Vector2f(0.f, 0.f)), 0.f);
-	tileCornerNormals[1] = Vector4f(loc.getNormalVector(Vector2f(0.f, 1.f)), 0.f);
-	tileCornerNormals[2] = Vector4f(loc.getNormalVector(Vector2f(1.f, 0.f)), 0.f);
-	tileCornerNormals[3] = Vector4f(loc.getNormalVector(Vector2f(1.f, 1.f)), 0.f);
+	// Perform backface culling for globe (not applicable for flat map).
+	if (getDisplayMode() == DisplayGlobe) {
 
-	// Copy array in case it is needed for position calculations later.
-	std::array<Vector4f, 4> tileCornerPositions = tileCornerNormals;
+		// Assume that the current tile is not visible.
+		bool visible = false;
 
-	for (auto& tileNormal : tileCornerNormals) {
-		// Transform the surface normal by the normal transformation matrix calculated earlier.
-		normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
+		// Calculate surface normals of the current tile's corners.
+		std::array<Vector4f, 4> tileCornerNormals;
+		tileCornerNormals[0] = Vector4f(loc.getNormalVector(Vector2f(0.f, 0.f)), 0.f);
+		tileCornerNormals[1] = Vector4f(loc.getNormalVector(Vector2f(0.f, 1.f)), 0.f);
+		tileCornerNormals[2] = Vector4f(loc.getNormalVector(Vector2f(1.f, 0.f)), 0.f);
+		tileCornerNormals[3] = Vector4f(loc.getNormalVector(Vector2f(1.f, 1.f)), 0.f);
 
-		// Check if normal points away from the camera.
-		if (tileNormal.xyz().dot(cameraDirection) < 0.f) {
-			// Other direction? Tile is facing towards viewer, disallow backface culling.
-			visible = true;
-			break;
+		// Copy array in case it is needed for position calculations later.
+		tileCornerPositions = tileCornerNormals;
+
+		for (auto& tileNormal : tileCornerNormals) {
+			// Transform the surface normal by the normal transformation matrix calculated earlier.
+			normalTransform->MultiplyPoint(tileNormal.array(), tileNormal.array());
+
+			// Check if normal points away from the camera.
+			if (tileNormal.xyz().dot(cameraDirection) < 0.f) {
+				// Other direction? Tile is facing towards viewer, disallow backface culling.
+				visible = true;
+				break;
+			}
 		}
-	}
 
-	// If tile is facing away from camera, it can not possibly be visible.
-	if (!visible) {
-		return false;
+		// If tile is facing away from camera, it can not possibly be visible.
+		if (!visible) {
+			return false;
+		}
+
+		// Transform tile corner normals into tile position.
+		for (auto& tilePosition : tileCornerPositions) {
+
+			// Convert normal to position by multiplication with radius.
+			tilePosition *= Configuration::getInstance().getFloat("globe.radius");
+
+			// Set homogeneous component to 1 for correct projection calculation.
+			tilePosition.w = 1.f;
+		}
+	} else {
+		// Get flat map bounding rectangle for current globe tile.
+		RectF bounds = loc.getBounds();
+
+		// Calculate downscaling factor.
+		float scaleFactor = Configuration::getInstance().getFloat("globe.radius") / 90;
+
+		// Downscale rectangle to match flat map size.
+		bounds.x *= scaleFactor;
+		bounds.y *= scaleFactor;
+		bounds.w *= scaleFactor;
+		bounds.h *= scaleFactor;
+
+		// Assign tile corner positions.
+		tileCornerPositions[0] = Vector4f(bounds.x1y1(), 0.f, 1.f);
+		tileCornerPositions[1] = Vector4f(bounds.x2y1(), 0.f, 1.f);
+		tileCornerPositions[2] = Vector4f(bounds.x1y2(), 0.f, 1.f);
+		tileCornerPositions[3] = Vector4f(bounds.x2y2(), 0.f, 1.f);
 	}
 
 	// Transform tile position to screenspace.
 	for (auto& tilePosition : tileCornerPositions) {
-
-		// Convert normal to position by multiplication with radius.
-		tilePosition *= Configuration::getInstance().getFloat("globe.radius");
-
-		// Set homogeneous component to 1 for correct projection calculation.
-		tilePosition.w = 1.f;
 
 		// Transform point by view-projection matrix.
 		compositeTransform->MultiplyPoint(tilePosition.array(), tilePosition.array());
@@ -234,10 +259,7 @@ bool Globe::isTileInViewFrustum(int lon, int lat, vtkMatrix4x4* normalTransform,
 	RectF boundingBox = priv::getBoundingBox<float, 4>(tileCornerPositions);
 
 	// Intersect the bounding box with the screenspace boundaries.
-	visible = boundingBox.intersects(screenRect);
-
-	// Return final visibility state.
-	return visible;
+	return boundingBox.intersects(screenRect);
 }
 
 void Globe::setTileVisibility(int lon, int lat, bool visibility) {
@@ -283,7 +305,7 @@ void Globe::showTile(int lon, int lat) {
 		tile.setVisibile(true);
 
 		// Start loading process.
-		myDownloader.fetchTile(myZoomLevel, lon, lat);
+		myDownloader.requestTile(myZoomLevel, lon, lat);
 
 		KRONOS_LOG_DEBUG("fetching tile %d/%d", lon, lat);
 	} else {
@@ -292,6 +314,9 @@ void Globe::showTile(int lon, int lat) {
 
 		// Get reference to underlying globe tile.
 		GlobeTile& tile = handle.getResource();
+
+		// Update the tile's shader uniforms (in case display mode has changed).
+		tile.updateUniforms();
 
 		// Make tile visible.
 		tile.setVisibile(true);
@@ -325,7 +350,7 @@ void Globe::createTileHandles() {
 void Globe::eraseTileHandles() {
 
 	// Cancel all pending downloads.
-	myDownloader.abortAllDownloads();
+	myDownloader.abortAllRequests();
 
 	for (auto& handle : myTileHandles) {
 		if (handle.isActive()) {

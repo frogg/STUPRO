@@ -4,6 +4,8 @@
 #include <thread>
 #include <QCoreApplication>
 #include <QTimer>
+#include <Utils/Misc/KronosLogger.hpp>
+#include <fstream>
 
 KronosTestRunner::KronosTestRunner(int argc, char** argv) : argc(argc), argv(argv) { }
 
@@ -24,6 +26,13 @@ void KronosTestRunner::runTests() {
 }
 
 int main(int argc, char* argv[]) {
+	// redirect the kronos logger output to a file
+	std::ofstream out("kronos.log");
+	setLoggerOutStream(out);
+
+	// start the test runner
 	KronosTestRunner runner(argc, argv);
-	return runner.run();
+	int exitCode = runner.run();
+
+	return exitCode;
 }

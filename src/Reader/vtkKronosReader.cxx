@@ -14,12 +14,11 @@
 
 #include <math.h>
 #include <algorithm>
-#include <thread>
 #include <vector>
 
 vtkStandardNewMacro(vtkKronosReader);
 
-vtkKronosReader::vtkKronosReader() : error(false), zoomLevel(0) {
+vtkKronosReader::vtkKronosReader() : error(false), zoomLevel(0), cachingInThread(false) {
 	// Initialize values that are read from the program configuration
 	try {
 		this->globeRadius = Configuration::getInstance().getDouble("globe.radius");
@@ -36,10 +35,18 @@ vtkKronosReader::vtkKronosReader() : error(false), zoomLevel(0) {
 }
 
 vtkKronosReader::~vtkKronosReader() {
+	this->abortCaching();
 	this->jsonReader.reset();
 }
 
-void vtkKronosReader::SetFileName(std::string name) {
+void vtkKronosReader::abortCaching() {
+	if (this->jsonReader && this->cachingInThread) {
+		this->jsonReader->abortCaching();
+		this->cacheThread.join();
+	}
+}
+
+void vtkKronosReader::SetFileName(std::string name, bool startCaching) {
 	this->fileName = QString::fromStdString(name);
 
 	try {
@@ -49,8 +56,14 @@ void vtkKronosReader::SetFileName(std::string name) {
 		return;
 	}
 
-	std::thread cacheThread(&JsonReader::cacheAllData, this->jsonReader.get());
-	cacheThread.detach();
+	if (startCaching) {
+		this->cacheThread = std::thread(&JsonReader::cacheAllData, this->jsonReader.get());
+		this->cachingInThread = true;
+	}
+}
+
+void vtkKronosReader::SetFileName(std::string name) {
+	this->SetFileName(name, true);
 }
 
 void vtkKronosReader::SetCameraPosition(double x, double y, double z) {
@@ -109,6 +122,10 @@ int vtkKronosReader::RequestInformation(vtkInformation* request, vtkInformationV
 	// Initialise the data state as an entry to the output information
 	outInfo->Set(Data::VTK_DATA_STATE(), Data::RAW);
 	request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_STATE());
+
+	// Initialize the transformation info
+	outInfo->Set(Data::VTK_DATA_TRANSFORMATION(), Data::UNTRANSFORMED);
+	request->Append(vtkExecutive::KEYS_TO_COPY(), Data::VTK_DATA_TRANSFORMATION());
 
 	// If applicable, append the time resolution as an entry to the output information
 	if (this->jsonReader->hasTemporalData()) {

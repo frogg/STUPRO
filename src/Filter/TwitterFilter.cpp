@@ -29,7 +29,6 @@ bool TwitterFilter::evaluatePoint(int pointIndex, Coordinate coordinate,
 
 
 	if (!contentData || !authorData || !numberOfRetweets) {
-		this->fail("The string arrays containing tweet contents, authors or the number of retweets seem to be invalid.");
 		return false;
 	}
 

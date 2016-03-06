@@ -5,6 +5,10 @@
 #include <Utils/Math/ArithmeticFunctors.hpp>
 #include <limits>
 #include <cmath>
+#include <QString>
+
+template<typename T> class Spherical;
+template<typename T> class Cartesian;
 
 /**
  * Generic 3-dimensional vector class (vector in the mathematical sense).
@@ -226,6 +230,17 @@ public:
 		y = func(y, v.y);
 		z = func(z, v.z);
 		return *this;
+	}
+
+	std::string toString() const {
+		return QString("(%1|%2|%3)").arg(x).arg(y).arg(z).toStdString();
+	}
+
+	operator Cartesian<T>() const {
+		return Cartesian<T>(this->x, this->y, this->z);
+	}
+	operator Spherical<T>() const {
+		return Spherical<T>(this->x, this->y, this->z);
 	}
 };
 
@@ -453,5 +468,14 @@ typedef Vector3<int> Vector3i;
 typedef Vector3<unsigned int> Vector3u;
 typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
+
+template<typename T> class Spherical : public Vector3<T> {
+public:
+	using Vector3<T>::Vector3;
+};
+template<typename T> class Cartesian : public Vector3<T> {
+public:
+	using Vector3<T>::Vector3;
+};
 
 #endif

@@ -33,6 +33,11 @@ bool FlightFilter::isVisibleBasedOnAirline(int pointIndex, vtkPointData* pointDa
 	} else {
 		vtkSmartPointer<vtkStringArray> airlines = vtkStringArray::SafeDownCast(
 		            pointData->GetAbstractArray("airlines"));
+
+		if (!airlines) {
+			return false;
+		}
+
 		QString airline = QString::fromStdString(airlines->GetValue(pointIndex));
 		airline.remove(' ');
 
@@ -57,6 +62,11 @@ bool FlightFilter::isVisibleBasedOnAirline(int pointIndex, vtkPointData* pointDa
 bool FlightFilter::isVisibleBasedOnOriginAirportCode(int pointIndex, vtkPointData* pointData) {
 	vtkSmartPointer<vtkStringArray> originAirportCodes = vtkStringArray::SafeDownCast(
 	            pointData->GetAbstractArray("originAirportCodes"));
+
+	if (!originAirportCodes) {
+		return false;
+	}
+
 	QString originAirportCode = QString::fromStdString(originAirportCodes->GetValue(pointIndex));
 
 	if (this->visibleOriginAirportCodes.count() == 0) {
@@ -76,6 +86,11 @@ bool FlightFilter::isVisibleBasedOnOriginAirportCode(int pointIndex, vtkPointDat
 bool FlightFilter::isVisibleBasedOnDestinationAirportCode(int pointIndex, vtkPointData* pointData) {
 	vtkSmartPointer<vtkStringArray> destinationAirportCodes = vtkStringArray::SafeDownCast(
 	            pointData->GetAbstractArray("destinationAirportCodes"));
+
+	if (!destinationAirportCodes) {
+		return false;
+	}
+
 	QString destinationAirportCode = QString::fromStdString(destinationAirportCodes->GetValue(
 	                                     pointIndex));
 	if (this->visibleDestinationAirportCodes.count() == 0) {
@@ -95,6 +110,11 @@ bool FlightFilter::isVisibleBasedOnDestinationAirportCode(int pointIndex, vtkPoi
 bool FlightFilter::isVisibleBasedOnFlightLength(int pointIndex, vtkPointData* pointData) {
 	vtkSmartPointer<vtkFloatArray> flightLengths = vtkFloatArray::SafeDownCast(
 	            pointData->GetAbstractArray("flightLengths"));
+
+	if (!flightLengths) {
+		return false;
+	}
+
 	double flightLength = flightLengths->GetTuple1(pointIndex);
 	return this->minFlightLength <= flightLength && flightLength <= this->maxFlightLength;
 }

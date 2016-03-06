@@ -48,7 +48,6 @@ public:
 	 */
 	virtual bool evaluatePoint(int pointIndex, Coordinate coordinate, vtkPointData* pointData) = 0;
 
-protected:
 	/**
 	 * Display an error message and remember that this filter does not hold valid data.
 	 * @param message The error message to be shown to the user
@@ -58,11 +57,6 @@ protected:
 private:
 	AbstractSelectionFilter(const AbstractSelectionFilter&);  // Not implemented.
 	void operator=(const AbstractSelectionFilter&);  // Not implemented.
-
-	/**
-	 * Boolean flag denoting whether there was an error.
-	 */
-	bool error;
 };
 
 #endif
