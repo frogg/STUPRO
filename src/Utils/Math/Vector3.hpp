@@ -7,8 +7,6 @@
 #include <cmath>
 #include <QString>
 
-#define _MSC_VER
-
 #ifndef _MSC_VER
 	template<typename T> class Spherical;
 	template<typename T> class Cartesian;
@@ -488,7 +486,5 @@ public:
 #define Spherical Vector3
 #define Cartesian Vector3
 #endif
-
-#undef _MSC_VER
 
 #endif
