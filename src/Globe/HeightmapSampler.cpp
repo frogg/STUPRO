@@ -57,8 +57,9 @@ float HeightmapSampler::sample(float longitude, float latitude) const {
 
 HeightmapSampler::HeightmapSampler() {
 	float earthRadius = Configuration::getInstance().getFloat("globe.earthRadius");
+	float globeRadius = Configuration::getInstance().getFloat("globe.radius");
 	float globeHeightFactor = Configuration::getInstance().getFloat("globe.heightFactor");
-	heightFactor = globeHeightFactor / earthRadius;
+	heightFactor = globeRadius * globeHeightFactor / earthRadius;
 	initHeightmap();
 }
 

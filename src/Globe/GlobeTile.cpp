@@ -36,7 +36,7 @@ RectF GlobeTile::Location::getBounds() const {
 
 RectF GlobeTile::Location::getFlippedBounds() const {
 	RectF bounds = getBounds();
-	return RectF(bounds.x, bounds.h - bounds.y - 180.f, bounds.w, bounds.h);
+	return RectF(bounds.x, - bounds.y - bounds.h, bounds.w, bounds.h);
 }
 
 Vector3f GlobeTile::Location::getNormalVector(Vector2f interpolation) const {

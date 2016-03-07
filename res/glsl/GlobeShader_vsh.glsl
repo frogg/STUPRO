@@ -58,7 +58,7 @@ void propFuncVS()
 	
 	// Get height value from the alpha channel of the texture.
 	float heightSample = texture2D(heightTexture, gl_TexCoord[0].xy).a;
-	float radius = max((heightSample * (maxHeight - minHeight) + minHeight) * heightFactor, 0.0);
+	float radius = max((heightSample * (maxHeight - minHeight) + minHeight) * heightFactor * globeRadius, 0.0);
 	//float heightSample = 0.0;
 	
 	// Initialize input position
