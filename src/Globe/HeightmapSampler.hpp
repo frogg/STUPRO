@@ -18,9 +18,17 @@ public:
 
 	/**
 	 * Returns the height (in meters) at the specified location, multiplied with the globe's height
-	 * factor.
+	 * factor. Optionally, a constant offset (in meters) can be applied to the output value.
 	 */
-	float sample(float longitude, float latitude) const;
+	float sample(float longitude, float latitude, float offset = 0.f) const;
+
+	/**
+	 * Returns the height (in meters) at the specified location, multiplied with the globe's height
+	 * factor. Optionally, a constant offset (in meters) can be applied to the output value.
+	 *
+	 * This function guarantees a return value of zero or greater.
+	 */
+	float sampleClamped(float longitude, float latitude, float offset = 0.f) const;
 
 private:
 

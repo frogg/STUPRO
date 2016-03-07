@@ -12,7 +12,8 @@
     "tilePoolSize": 64,
     "timerDelay": 17,
     "terrainHeightFilter" : {
-      "heightmapZoomLevel": 0
+      "heightmapZoomLevel": 0,
+      "constantIncrease": 500.0
     },
     "zoom": {
       "nearDistance": 1.05,

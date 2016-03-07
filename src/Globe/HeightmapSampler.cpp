@@ -21,7 +21,7 @@ HeightmapSampler& HeightmapSampler::getInstance() {
 	return *instance;
 }
 
-float HeightmapSampler::sample(float longitude, float latitude) const {
+float HeightmapSampler::sample(float longitude, float latitude, float offset) const {
 	if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
 		return 0;
 	}
@@ -52,7 +52,13 @@ float HeightmapSampler::sample(float longitude, float latitude) const {
 
 	short sample = heightmap.samples[pixelY * heightmap.width + pixelX];
 
-	return sample * heightFactor;
+	return (sample + offset) * heightFactor;
+}
+
+float HeightmapSampler::sampleClamped(float longitude, float latitude, float offset) const {
+	float heightSample = std::max<float>(0.f, sample(longitude, latitude));
+
+	return heightSample + offset * heightFactor;
 }
 
 HeightmapSampler::HeightmapSampler() {

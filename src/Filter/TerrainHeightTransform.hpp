@@ -1,14 +1,8 @@
-/*
- * TerrainHeightTransform.hpp
- *
- *  Created on: Feb 23, 2016
- *      Author: bbq
- */
-
 #ifndef SRC_FILTER_TERRAINHEIGHTTRANSFORM_HPP_
 #define SRC_FILTER_TERRAINHEIGHTTRANSFORM_HPP_
 
 #include <Globe/HeightmapSampler.hpp>
+#include <Utils/Config/Configuration.hpp>
 #include <Utils/Math/Vector3.hpp>
 #include <vtkAbstractTransform.h>
 
@@ -27,11 +21,14 @@ private:
 		output.x = input.x;
 		output.y = input.y;
 
+		static float constantIncrease =
+		    Configuration::getInstance().getFloat("globe.terrainHeightFilter.constantIncrease");
+
 		if (clamped) {
 			output.z = input.z
-			           + std::max<T>(0, HeightmapSampler::getInstance().sample(input.x, -input.y));
+			           + HeightmapSampler::getInstance().sampleClamped(input.x, -input.y, constantIncrease);
 		} else {
-			output.z = input.z + HeightmapSampler::getInstance().sample(input.x, -input.y);
+			output.z = input.z + HeightmapSampler::getInstance().sample(input.x, -input.y, constantIncrease);
 		}
 	}
 
