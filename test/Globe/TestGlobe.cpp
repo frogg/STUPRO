@@ -26,12 +26,10 @@ TEST(TestGlobe, tileLocation) {
 	EXPECT_EQ(loc123.longitude, 2);
 	EXPECT_EQ(loc123.latitude, 3);
 
-	// Test outermost zoom level rectangle bounds. Invert Y axis of flipped tile (this only works because it is zoomLevel 0).
+	// Test outermost zoom level rectangle bounds. Y-coordinate should be the same.
 	RectF rect000 = loc000.getBounds();
 	RectF rect000Flipped = loc000.getFlippedBounds();
-	RectF rect000FlippedYInvert = rect000Flipped;
-	rect000FlippedYInvert.y *= -1.f;
-	EXPECT_EQ_RECT(rect000, rect000FlippedYInvert);
+	EXPECT_EQ_RECT(rect000, rect000Flipped);
 
 	// Test inner tile at x=2 y=3 with zoomLevel 3.
 	// The globe should have a width of 2^4 = 16 Tiles and a height of 2^3 = 8 Tiles.
