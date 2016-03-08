@@ -86,9 +86,7 @@ void vtkKronosReader::recalculateZoomLevel() {
 	zoom = std::min(zoom, this->maximumPriority);
 	zoom = std::max(zoom, 0);
 
-	std::cout << "zoom: " << zoom << std::endl;
-
-	this->zoomLevel = this->maximumPriority - zoom;
+	this->zoomLevel = zoom;
 }
 
 void vtkKronosReader::fail(QString message) {
