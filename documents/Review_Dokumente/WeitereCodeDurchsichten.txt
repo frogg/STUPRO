@@ -1,0 +1,1 @@
+Weitere Durchsichten wurden vor jedem Pull Request durchgeführt und sind in github unter "https://github.com/quappi/STUPRO/pulls?q=is%3Apr+is%3Aclosed" dokumentiert.
