@@ -91,7 +91,7 @@ private:
 	 * Boolean flag denoting whether the kMeans algorithm should be used.
 	 */
 	bool kMeansEnabled;
-	
+
 	QList<int> centroidIndices;
 };
 
