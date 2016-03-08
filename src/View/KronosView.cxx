@@ -314,10 +314,8 @@ double KronosView::getDefaultAnimationTargetDistance() const {
 	return this->defaultAnimationTargetDistance;
 }
 
-void KronosView::moveCameraOutOfGlobe()
-{
-	if (this->displayMode == Globe::DisplayGlobe)
-	{
+void KronosView::moveCameraOutOfGlobe() {
+	if (this->displayMode == Globe::DisplayGlobe) {
 		vtkCamera* camera = GetActiveCamera();
 
 		Vector3d cameraPosition;
@@ -328,8 +326,7 @@ void KronosView::moveCameraOutOfGlobe()
 		double globeRadius = Configuration::getInstance().getDouble("globe.radius");
 		double minDistance = (cameraThreshold + 1.0) * globeRadius;
 
-		if (cameraDistance < minDistance)
-		{
+		if (cameraDistance < minDistance) {
 			// Add tiny epsilon to minimum distance to prevent possible infinite loops.
 			cameraPosition = cameraPosition.normTyped() * minDistance * 1.00001;
 
@@ -338,8 +335,7 @@ void KronosView::moveCameraOutOfGlobe()
 			camera->GetDirectionOfProjection(cameraDirection.array());
 
 			// Check if camera is behind globe.
-			if (cameraPosition.normTyped().dot(cameraDirection.normTyped()) > 0.0)
-			{
+			if (cameraPosition.normTyped().dot(cameraDirection.normTyped()) > 0.0) {
 				// Place camera on the other side of the globe.
 				cameraPosition *= -1.0;
 			}

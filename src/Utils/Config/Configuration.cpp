@@ -15,8 +15,7 @@
 Configuration& Configuration::getInstance() {
 	static bool configLoaded = false;
 	static Configuration instance;
-	if (!configLoaded)
-	{
+	if (!configLoaded) {
 		instance.loadConfigurationFile();
 		configLoaded = true;
 	}

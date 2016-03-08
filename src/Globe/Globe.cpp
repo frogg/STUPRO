@@ -110,18 +110,15 @@ unsigned int Globe::getZoomLevel() const {
 	return myZoomLevel;
 }
 
-void Globe::lockZoomLevel()
-{
+void Globe::lockZoomLevel() {
 	myIsZoomLevelLocked = true;
 }
 
-void Globe::unlockZoomLevel()
-{
+void Globe::unlockZoomLevel() {
 	myIsZoomLevelLocked = false;
 }
 
-bool Globe::isZoomLevelLocked() const
-{
+bool Globe::isZoomLevelLocked() const {
 	return myIsZoomLevelLocked;
 }
 
