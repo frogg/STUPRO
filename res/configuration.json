@@ -17,7 +17,7 @@
       "constantIncrease": 500.0
     },
     "zoom": {
-      "nearDistance": 1.05,
+      "nearDistance": 1.5,
       "nearZoom": 3,
       "farDistance": 7.5,
       "farZoom": 0,
