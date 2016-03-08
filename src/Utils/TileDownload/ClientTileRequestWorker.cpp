@@ -13,12 +13,12 @@ ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
         TileRequestWorker::OnTileFetchFailed onTileFetchFailed, QString configFile)
 	: TileRequestWorker(layers, onTileFetched, onTileFetchFailed, configFile), maxJobCount(5) {
 
-    // make sure all requests get cancelled when the plugin gets unloaded
+	// make sure all requests get cancelled when the plugin gets unloaded
 	if (Kronos::getInstance()) {
-        this->shutdownHandlerId = Kronos::getInstance()->registerShutdownHandler([this]{
-            this->requestAbort();
-        });
-    }
+		this->shutdownHandlerId = Kronos::getInstance()->registerShutdownHandler([this] {
+			this->requestAbort();
+		});
+	}
 
 	QObject::connect(
 	    &this->networkManager, SIGNAL(finished(QNetworkReply*)),
@@ -31,9 +31,9 @@ ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
 }
 
 ClientTileRequestWorker::~ClientTileRequestWorker() {
-    if (Kronos::getInstance()) {
-        Kronos::getInstance()->unregisterShutdownHandler(this->shutdownHandlerId);
-    }
+	if (Kronos::getInstance()) {
+		Kronos::getInstance()->unregisterShutdownHandler(this->shutdownHandlerId);
+	}
 }
 
 void ClientTileRequestWorker::scheduleJob(WorkerJob job) {
