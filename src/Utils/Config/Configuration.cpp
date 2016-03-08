@@ -13,8 +13,12 @@
 #include <iostream>
 
 Configuration& Configuration::getInstance() {
+	static bool configLoaded = false;
 	static Configuration instance;
-	instance.loadConfigurationFile();
+	if (!configLoaded) {
+		instance.loadConfigurationFile();
+		configLoaded = true;
+	}
 	return instance;
 }
 

@@ -150,11 +150,6 @@ private:
 	void initRenderer();
 
 	/**
-	 * Registers all callback functions used later during runtime.
-	 */
-	void registerTimerCallback();
-
-	/**
 	 * Initializes an instance of the this->globe as a unique pointer.
 	 */
 	void initGlobe();
@@ -177,6 +172,11 @@ private:
 	 * @param animationDuration the time in seconds the animation should take
 	 */
 	void animateMove(double latitude, double longitude, double distance, double animationDuration);
+
+	/**
+	 * Moves the camera out of the globe if it is inside of it.
+	 */
+	void moveCameraOutOfGlobe();
 
 	Globe::DisplayMode displayMode;
 	std::unique_ptr<Globe> globe;

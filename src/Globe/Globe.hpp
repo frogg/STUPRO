@@ -13,7 +13,6 @@
 #include <vtkSmartPointer.h>
 #include <QEventLoop>
 #include <QTimer>
-#include <atomic>
 #include <mutex>
 #include <queue>
 #include <array>
@@ -75,6 +74,21 @@ public:
 	unsigned int getZoomLevel() const;
 
 	/**
+	 * Prevents the zoom level from being changed until the corresponding unlock function is called.
+	 */
+	void lockZoomLevel();
+
+	/**
+	 * Allows the zoom level to change again after the unlock function is called.
+	 */
+	void unlockZoomLevel();
+
+	/**
+	 * @return whether the zoom level is currently locked.
+	 */
+	bool isZoomLevelLocked() const;
+
+	/**
 	 * Enum holding the available display modes for the globe.
 	 */
 	enum DisplayMode {
@@ -110,6 +124,7 @@ private:
 	 * Returns the index of the specified tile within the tile array.
 	 */
 	unsigned int getTileIndex(int lon, int lat) const;
+	unsigned int getTileIndex(int lon, int lat, unsigned int zoomLevel) const;
 
 	/**
 	 * Returns a specific tile from the globe. The lon/lat pair is given in tile indices starting
@@ -129,10 +144,12 @@ private:
 	 *
 	 * @param lon The integer longitude to get the tile at
 	 * @param lat The integer latitiude to get the tile at
+	 * @param zoomLevel (Optional) The zoom level to get the tile at. Default = current zoom level.
 	 *
 	 * @return a handle to the globe tile at the specified longitude/latitude index
 	 */
 	ResourcePool<GlobeTile>::Handle getTileHandleAt(int lon, int lat) const;
+	ResourcePool<GlobeTile>::Handle getTileHandleAt(int lon, int lat, unsigned int zoomLevel) const;
 
 	/**
 	 * Assigns the globe tile handle at the specified tile coordinate.
@@ -165,14 +182,14 @@ private:
 	void hideTile(int lon, int lat);
 
 	/**
-	 * Resizes the tile handle list to the current zoom level.
+	 * Creates all tile handles for all zoom levels.
 	 */
 	void createTileHandles();
 
 	/**
-	 * Hides all currently visible globe tiles and erases the handles.
+	 * Disables all tiles of the current zoom level.
 	 */
-	void eraseTileHandles();
+	void hideAllTiles();
 
 	/**
 	 * Loads all fetched globe tiles.
@@ -232,7 +249,7 @@ private:
 	SlotCallback myTimerCallback;
 
 	ResourcePool<GlobeTile> myTilePool;
-	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;
+	std::vector<std::vector<ResourcePool<GlobeTile>::Handle> > myTileHandles;
 
 	/**
 	 * Map from minimum terrain height difference to plane source resolution.
@@ -251,11 +268,10 @@ private:
 	std::vector<LODSetting> myLODTable;
 
 	unsigned int myZoomLevel;
+	bool myIsZoomLevelLocked;
 
 	DisplayMode myDisplayMode;
 	float myDisplayModeInterpolation;
-
-	std::atomic_flag myIsClean;
 };
 
 #endif

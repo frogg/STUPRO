@@ -1,5 +1,6 @@
 #include <View/Widgets/PlaceSearchWidget.h>
 
+#include <Utils/Config/Configuration.hpp>
 #include <Utils/Misc/KronosLogger.hpp>
 #include <View/vtkSMKronosViewProxy.h>
 
@@ -7,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
+
 
 #include <pqActiveObjects.h>
 #include <pqRenderView.h>
@@ -62,8 +64,13 @@ PlaceSearchWidget::PlaceSearchWidget(QWidget* parent, Qt::WindowFlags flags)
 
 	// try to open a database connection
 	try {
-		this->citiesDatabase = new CitiesDatabase("kronos", "stuproUser", "weloveparaview", "127.0.0.1",
-		        5432);
+		QString databaseName = Configuration::getInstance().getString("postgres.database");
+		QString databaseUser = Configuration::getInstance().getString("postgres.user");
+		QString databasePassword = Configuration::getInstance().getString("postgres.password");
+		QString serverAddress = Configuration::getInstance().getString("postgres.serverAddress");
+		int serverPort = Configuration::getInstance().getInteger("postgres.serverPort");
+		this->citiesDatabase = new CitiesDatabase(databaseName, databaseUser, databasePassword,
+		        serverAddress, serverPort);
 		this->citiesDatabase->openDatabase();
 	} catch (std::exception const& e) {
 		KRONOS_LOG_WARN("Error opening a connection to the cities database: '%s'", e.what());
