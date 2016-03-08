@@ -33,8 +33,8 @@ const float halfPi = 0.5 * pi;
 // Converts a lat/long flat position into a x/y/z globe position.
 vec3 transformLatLong(float lon, float lat, float radius)
 {
-	lat = lat * halfPi / planeSize;
-	lon = lon * twoPi / planeSize;
+	lat = lat * halfPi;
+	lon = lon * twoPi;
 	
 	float cosLat = cos(lat);
 	float sinLat = sin(lat);

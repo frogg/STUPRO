@@ -1,3 +1,5 @@
+#include "KronosView.h"
+
 #include <cmath>
 #include <stddef.h>
 #include <Utils/Config/Configuration.hpp>
@@ -7,14 +9,25 @@
 #include <pqApplicationCore.h>
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <Utils/Misc/Macros.hpp>
+#include <Utils/Misc/MakeUnique.hpp>
+#include <pqActiveObjects.h>
+#include <pqView.h>
+#include <Utils/Config/Configuration.hpp>
+#include <Utils/Math/Vector3.hpp>
+#include <vtkActor.h>
+#include <vtkAlgorithm.h>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
+#include <vtkCubeSource.h>
 #include <vtkObjectFactory.h>
-#include <KronosView.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkProperty.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkCubeSource.h>
 #include <vtkProperty.h>
+#include <vtkPVInteractorStyle.h>
 
 vtkStandardNewMacro(KronosView);
 
@@ -42,6 +55,7 @@ void KronosView::initRenderer() {
 		[](vtkObject * object, unsigned long eid, void* clientdata, void* calldata) {
 			KronosView* view = (KronosView*)clientdata;
 			if (view->getGlobe()) {
+				view->moveCameraOutOfGlobe();
 				view->getGlobe()->onCameraChanged();
 			}
 		});
@@ -139,11 +153,15 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 	// calculate a distance control point based on the distance of the animation for creating a
 	// zoom-out-and-back-in effect
 	Vector2d latLongDelta(to.x - from.x, to.y - from.y);
-	double distanceControlPoint = latLongDelta.lengthTyped() / (onGlobe ? 100 : 1) + std::min(from.z,
-	                              to.z);
+	double distanceControlPoint = latLongDelta.lengthTyped() / ((onGlobe ? 100 : 1) /
+	                              Configuration::getInstance().getFloat("globe.radius")) + std::min(from.z,
+	                                      to.z);
 
 	// get the turn angle of the camera, so we can animate it
 	double rollFrom = camera->GetRoll();
+
+	// lock the globe's zoom level to prevent unnecessary tile reloading.
+	getGlobe()->lockZoomLevel();
 
 	// animate the camera movement frame after frame for a total duration of about animationDuration
 	double animationTime = 0.0;
@@ -178,6 +196,7 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 		// render the scene with the new camera position
 		this->ResetCameraClippingRange();
 		this->GetRenderWindow()->Render();
+		this->GetInteractorStyle()->SetCenterOfRotation(focal.array());
 
 		// make sure paraview doesn't become completely unresponsive during the transition
 		// NOTE: allowing user input events to be processed would mean allowing two animations to
@@ -201,6 +220,9 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 			animationTime = animationDuration;
 		}
 	}
+
+	// unlock the zoom level again.
+	getGlobe()->unlockZoomLevel();
 }
 
 void KronosView::moveCamera(float latitude, float longitude) {
@@ -294,4 +316,36 @@ void KronosView::setDefaultAnimationTargetDistance(double distance) {
 
 double KronosView::getDefaultAnimationTargetDistance() const {
 	return this->defaultAnimationTargetDistance;
+}
+
+void KronosView::moveCameraOutOfGlobe() {
+	if (this->displayMode == Globe::DisplayGlobe) {
+		vtkCamera* camera = GetActiveCamera();
+
+		Vector3d cameraPosition;
+		camera->GetPosition(cameraPosition.array());
+
+		double cameraDistance = cameraPosition.lengthTyped();
+		double cameraThreshold = Configuration::getInstance().getDouble("globe.cameraThreshold");
+		double globeRadius = Configuration::getInstance().getDouble("globe.radius");
+		double minDistance = (cameraThreshold + 1.0) * globeRadius;
+
+		if (cameraDistance < minDistance) {
+			// Add tiny epsilon to minimum distance to prevent possible infinite loops.
+			cameraPosition = cameraPosition.normTyped() * minDistance * 1.00001;
+
+			// Get camera direction.
+			Vector3d cameraDirection;
+			camera->GetDirectionOfProjection(cameraDirection.array());
+
+			// Check if camera is behind globe.
+			if (cameraPosition.normTyped().dot(cameraDirection.normTyped()) > 0.0) {
+				// Place camera on the other side of the globe.
+				cameraPosition *= -1.0;
+			}
+
+			// Assign camera position.
+			camera->SetPosition(cameraPosition.array());
+		}
+	}
 }
