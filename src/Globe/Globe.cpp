@@ -127,7 +127,8 @@ ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat) const {
 	return getTileHandleAt(lon, lat, myZoomLevel);
 }
 
-ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat, unsigned int zoomLevel) const {
+ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat,
+        unsigned int zoomLevel) const {
 	unsigned int index = getTileIndex(lon, lat, zoomLevel);
 
 	assert(index < myTileHandles[zoomLevel].size());
@@ -360,19 +361,17 @@ void Globe::hideTile(int lon, int lat) {
 
 void Globe::createTileHandles() {
 	unsigned int nearZoom = Configuration::getInstance().getInteger("globe.zoom.nearZoom");
-	
+
 	myTileHandles.resize(nearZoom + 1);
-	
-	for (unsigned int zoomLevel = 0; zoomLevel <= nearZoom; ++zoomLevel)
-	{
+
+	for (unsigned int zoomLevel = 0; zoomLevel <= nearZoom; ++zoomLevel) {
 		unsigned int height = 1 << zoomLevel;
 		unsigned int width = height * 2;
 		myTileHandles[zoomLevel].resize(width * height);
 	}
 }
 
-void Globe::hideAllTiles()
-{
+void Globe::hideAllTiles() {
 	for (auto& handle : myTileHandles[myZoomLevel]) {
 		if (handle.isActive()) {
 			hideTile(handle.getResource().getLocation().longitude, handle.getResource().getLocation().latitude);
@@ -400,7 +399,8 @@ void Globe::loadGlobeTiles() {
 
 void Globe::loadGlobeTile(const ImageTile& tile) {
 
-	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY(), tile.getZoomLevel());
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY(),
+	        tile.getZoomLevel());
 
 	bool handleIsActive = handle.isActive();
 
