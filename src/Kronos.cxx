@@ -4,7 +4,6 @@
 #include <Utils/Misc/KronosLogger.hpp>
 
 #include <exception>
-#include <iostream>
 #include <QString>
 
 Kronos* Kronos::instance = 0;
@@ -40,9 +39,31 @@ void Kronos::onStartup() {
 void Kronos::onShutdown() {
 	std::cout << "### ON SHUTDOWN ###" << std::endl;
 
+	for (ShutdownHandlerHandle handle : this->shutdownHandlers) {
+		try {
+			handle.handler();
+		} catch (...) { }
+	}
+
 	this->initialized = false;
 }
 
 bool Kronos::isInitialized() {
 	return this->initialized;
+}
+
+int Kronos::registerShutdownHandler(ShutdownHandler handler) {
+	ShutdownHandlerHandle handle(handler);
+	this->shutdownHandlers.append(handle);
+	return handle.id;
+}
+
+void Kronos::unregisterShutdownHandler(int handlerId) {
+	QMutableListIterator<ShutdownHandlerHandle> iterator(this->shutdownHandlers);
+	while (iterator.hasNext()) {
+		if (iterator.next().id == handlerId) {
+			iterator.remove();
+			break;
+		}
+	}
 }
