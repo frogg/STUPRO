@@ -11,11 +11,13 @@
 #include <vtkInformationVector.h>
 #include <vtkPointData.h>
 #include <vtkAbstractArray.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkCleanUnstructuredGrid.h>
 
 #include <sstream>
 #include <algorithm>
 
-
+#include <qmap.h>
 
 DataDensityFilter::DataDensityFilter() { }
 DataDensityFilter::~DataDensityFilter() { }
@@ -43,18 +45,27 @@ int DataDensityFilter::RequestData(vtkInformation* info,
 
 	// Get the actual objects from the obtained information
 	vtkPointSet* input = vtkPointSet::SafeDownCast(inInfo->Get(vtkPolyData::DATA_OBJECT()));
+	
+	vtkSmartPointer<vtkCleanUnstructuredGrid> cleanFilter = vtkCleanUnstructuredGrid::New();
+	cleanFilter->SetInputData(input);
+	cleanFilter->Update();
+	
+	vtkSmartPointer<vtkUnstructuredGrid> cleanedInput = vtkSmartPointer<vtkUnstructuredGrid>::New();
+	cleanedInput->ShallowCopy(vtkUnstructuredGrid::SafeDownCast(cleanFilter->GetOutput()));
+	
 	vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkPolyData::DATA_OBJECT()));
 
 	PointMap reducedDataPoints;
+	this->centroidIndices.clear();
 
 	// Depending on the checkbox either use the kMeans or the simple algorithm
 	if (kMeansEnabled) {
-		reducedDataPoints = this->reducePointsKMeans(input);
+		reducedDataPoints = this->reducePointsKMeans(cleanedInput);
 	} else {
-		reducedDataPoints = this->reducePointsSimple(input);
+		reducedDataPoints = this->reducePointsSimple(cleanedInput);
 	}
 
-	output->ShallowCopy(this->generateOutputData(reducedDataPoints, input));
+	output->ShallowCopy(this->generateOutputData(reducedDataPoints, cleanedInput));
 
 	return 1;
 }
@@ -175,6 +186,8 @@ DataDensityFilter::PointMap DataDensityFilter::reducePointsSimple(vtkPointSet* i
 	for (int i = 0; i < numberOfPoints; ++i) {
 		pointAbsorptionStatus[i] = false;
 	}
+	
+	QMap<PointCoordinates, int> indices;
 
 	// Generate central points and assign close points to them
 	for (int i = 0; i < numberOfPoints; ++i) {
@@ -186,6 +199,8 @@ DataDensityFilter::PointMap DataDensityFilter::reducePointsSimple(vtkPointSet* i
 			        centralPointCoordinatesArray[1], centralPointCoordinatesArray[2]);
 			QList<int> subordinatePointIndices;
 			pointAbsorptionStatus[i] = true;
+			
+			indices[centralPointCoordinates] = i;
 
 			for (int j = 0; j < numberOfPoints; ++j) {
 				if (pointAbsorptionStatus[j] == false) {
@@ -202,6 +217,11 @@ DataDensityFilter::PointMap DataDensityFilter::reducePointsSimple(vtkPointSet* i
 			}
 			outputMap[centralPointCoordinates] = subordinatePointIndices;
 		}
+	}
+	
+	typedef PointMap::iterator it_type;
+	for(it_type iterator = outputMap.begin(); iterator != outputMap.end(); iterator++) {
+		this->centroidIndices.append(indices[iterator->first]);
 	}
 
 	return outputMap;
@@ -274,8 +294,11 @@ vtkSmartPointer<vtkPolyData> DataDensityFilter::generateOutputData(
 				outputArray->InsertTuple(centralPointIndex, cumulativeAverage.data());
 			} else {
 				// For non-numeric input arrays, simply keep the value of the central point
-
-				outputArrays[j]->SetTuple(centralPointIndex, centralPointIndex, inputArrays[j]);
+				if (this->centroidIndices.size() > 0) {
+					outputArrays[j]->SetTuple(centralPointIndex, this->centroidIndices[centralPointIndex], inputArrays[j]);
+				} else {
+					outputArrays[j]->SetTuple(centralPointIndex, centralPointIndex, inputArrays[j]);
+				}
 			}
 		}
 
