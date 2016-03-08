@@ -124,6 +124,7 @@ private:
 	 * Returns the index of the specified tile within the tile array.
 	 */
 	unsigned int getTileIndex(int lon, int lat) const;
+	unsigned int getTileIndex(int lon, int lat, unsigned int zoomLevel) const;
 
 	/**
 	 * Returns a specific tile from the globe. The lon/lat pair is given in tile indices starting
@@ -143,10 +144,12 @@ private:
 	 *
 	 * @param lon The integer longitude to get the tile at
 	 * @param lat The integer latitiude to get the tile at
+	 * @param zoomLevel (Optional) The zoom level to get the tile at. Default = current zoom level.
 	 *
 	 * @return a handle to the globe tile at the specified longitude/latitude index
 	 */
 	ResourcePool<GlobeTile>::Handle getTileHandleAt(int lon, int lat) const;
+	ResourcePool<GlobeTile>::Handle getTileHandleAt(int lon, int lat, unsigned int zoomLevel) const;
 
 	/**
 	 * Assigns the globe tile handle at the specified tile coordinate.
@@ -179,14 +182,14 @@ private:
 	void hideTile(int lon, int lat);
 
 	/**
-	 * Resizes the tile handle list to the current zoom level.
+	 * Creates all tile handles for all zoom levels.
 	 */
 	void createTileHandles();
 
 	/**
-	 * Hides all currently visible globe tiles and erases the handles.
+	 * Disables all tiles of the current zoom level.
 	 */
-	void eraseTileHandles();
+	void hideAllTiles();
 
 	/**
 	 * Loads all fetched globe tiles.
@@ -246,7 +249,7 @@ private:
 	SlotCallback myTimerCallback;
 
 	ResourcePool<GlobeTile> myTilePool;
-	std::vector<ResourcePool<GlobeTile>::Handle> myTileHandles;
+	std::vector<std::vector<ResourcePool<GlobeTile>::Handle> > myTileHandles;
 
 	/**
 	 * Map from minimum terrain height difference to plane source resolution.
