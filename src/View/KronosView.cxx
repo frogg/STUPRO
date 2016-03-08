@@ -25,7 +25,9 @@
 #include <vtkProperty.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <cmath>
+#include <vtkCubeSource.h>
+#include <vtkProperty.h>
+#include <vtkPVInteractorStyle.h>
 
 vtkStandardNewMacro(KronosView);
 
@@ -151,8 +153,9 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 	// calculate a distance control point based on the distance of the animation for creating a
 	// zoom-out-and-back-in effect
 	Vector2d latLongDelta(to.x - from.x, to.y - from.y);
-	double distanceControlPoint = latLongDelta.lengthTyped() / (onGlobe ? 100 : 1) + std::min(from.z,
-	                              to.z);
+	double distanceControlPoint = latLongDelta.lengthTyped() / ((onGlobe ? 100 : 1) /
+	                              Configuration::getInstance().getFloat("globe.radius")) + std::min(from.z,
+	                                      to.z);
 
 	// get the turn angle of the camera, so we can animate it
 	double rollFrom = camera->GetRoll();
@@ -193,6 +196,7 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 		// render the scene with the new camera position
 		this->ResetCameraClippingRange();
 		this->GetRenderWindow()->Render();
+		this->GetInteractorStyle()->SetCenterOfRotation(focal.array());
 
 		// make sure paraview doesn't become completely unresponsive during the transition
 		// NOTE: allowing user input events to be processed would mean allowing two animations to
