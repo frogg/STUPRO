@@ -35,6 +35,12 @@
   "representation": {
     "cullingTolerance": 0.05,
     "useCulling": true
+  },
+  "postgres": {
+    "database": "kronos",
+    "user": "stuproUser",
+    "password": "weloveparaview",
+    "serverAddress": "localhost",
+    "serverPort": 5432
   }
-
 }
