@@ -140,8 +140,8 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 	// calculate a distance control point based on the distance of the animation for creating a
 	// zoom-out-and-back-in effect
 	Vector2d latLongDelta(to.x - from.x, to.y - from.y);
-	double distanceControlPoint = latLongDelta.lengthTyped() / (onGlobe ? 100 : 1) /
-	                              Configuration::getInstance().getFloat("globe.radius") + std::min(from.z,
+	double distanceControlPoint = latLongDelta.lengthTyped() / ((onGlobe ? 100 : 1) /
+	                              Configuration::getInstance().getFloat("globe.radius")) + std::min(from.z,
 	                                      to.z);
 
 	// get the turn angle of the camera, so we can animate it
