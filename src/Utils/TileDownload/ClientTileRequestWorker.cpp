@@ -2,6 +2,7 @@
 #include <Utils/TileDownload/ImageCache.hpp>
 
 #include <Utils/Misc/MakeUnique.hpp>
+#include <Kronos.h>
 
 #include <QNetworkRequest>
 #include <QRegExp>
@@ -11,6 +12,14 @@ ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
         TileRequestWorker::OnTileFetched onTileFetched,
         TileRequestWorker::OnTileFetchFailed onTileFetchFailed, QString configFile)
 	: TileRequestWorker(layers, onTileFetched, onTileFetchFailed, configFile), maxJobCount(5) {
+
+	// make sure all requests get cancelled when the plugin gets unloaded
+	if (Kronos::getInstance()) {
+		this->shutdownHandlerId = Kronos::getInstance()->registerShutdownHandler([this] {
+			this->requestAbort();
+		});
+	}
+
 	QObject::connect(
 	    &this->networkManager, SIGNAL(finished(QNetworkReply*)),
 	    this, SLOT(downloadFinished(QNetworkReply*))
@@ -21,7 +30,11 @@ ClientTileRequestWorker::ClientTileRequestWorker(QSet<QString> layers,
 	timer->start(1);
 }
 
-ClientTileRequestWorker::~ClientTileRequestWorker() { }
+ClientTileRequestWorker::~ClientTileRequestWorker() {
+	if (Kronos::getInstance()) {
+		Kronos::getInstance()->unregisterShutdownHandler(this->shutdownHandlerId);
+	}
+}
 
 void ClientTileRequestWorker::scheduleJob(WorkerJob job) {
 	this->jobQueue.append(job);

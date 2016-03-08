@@ -91,6 +91,9 @@ private:
 	/** The maximum number of jobs to process simultaniously. */
 	int maxJobCount;
 
+	/** Stores the ID of the shutdown handler, enabling us to unregister it later on. */
+	int shutdownHandlerId;
+
 	/**
 	 * Removes the given job from the pendingDownloadsJobs list
 	 *
