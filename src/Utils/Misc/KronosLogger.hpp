@@ -92,7 +92,7 @@ inline void kronos_log(const char* debugLevel, const char* function, const char*
 #include <unistd.h>
 
 inline void handleSegfault(int sig) {
-	#ifdef QT_DEBUG
+#ifdef QT_DEBUG
 	int items = 10;
 	void* array[items];
 	size_t size;
@@ -104,11 +104,11 @@ inline void handleSegfault(int sig) {
 	backtrace_symbols_fd(array, size, STDERR_FILENO);
 
 	exit(1);
-	#else
+#else
 	printf("Thanks for using Kronos!\n");
 
 	exit(0);
-	#endif
+#endif
 }
 #endif
 
