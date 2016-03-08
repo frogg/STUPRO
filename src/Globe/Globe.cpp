@@ -43,6 +43,7 @@ myTimerCallback([this](void* unused) {
 	updateDisplayMode(false);
 }),
 myZoomLevel(0),
+myIsZoomLevelLocked(false),
 myDisplayMode(DisplayGlobe),
 myDisplayModeInterpolation(0.f) {
 
@@ -70,9 +71,7 @@ myDisplayModeInterpolation(0.f) {
 }
 
 Globe::~Globe() {
-
-	// This is to abort all current tile downloads.
-	eraseTileHandles();
+	myDownloader.abortAllRequests();
 }
 
 vtkSmartPointer<vtkPolyDataMapper> Globe::getPlaneMapper(float heightDifference) const {
@@ -98,10 +97,9 @@ vtkRenderer& Globe::getRenderer() const {
 }
 
 void Globe::setZoomLevel(unsigned int zoomLevel) {
-	if (myZoomLevel != zoomLevel) {
-		eraseTileHandles();
+	if (!isZoomLevelLocked() && myZoomLevel != zoomLevel) {
+		hideAllTiles();
 		myZoomLevel = zoomLevel;
-		createTileHandles();
 	}
 }
 
@@ -109,30 +107,51 @@ unsigned int Globe::getZoomLevel() const {
 	return myZoomLevel;
 }
 
+void Globe::lockZoomLevel() {
+	myIsZoomLevelLocked = true;
+}
+
+void Globe::unlockZoomLevel() {
+	myIsZoomLevelLocked = false;
+}
+
+bool Globe::isZoomLevelLocked() const {
+	return myIsZoomLevelLocked;
+}
+
 GlobeTile& Globe::getTileAt(int lon, int lat) const {
 	return getTileHandleAt(lon, lat).getResource();
 }
 
 ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat) const {
-	unsigned int index = getTileIndex(lon, lat);
+	return getTileHandleAt(lon, lat, myZoomLevel);
+}
 
-	assert(index < myTileHandles.size());
+ResourcePool<GlobeTile>::Handle Globe::getTileHandleAt(int lon, int lat,
+        unsigned int zoomLevel) const {
+	unsigned int index = getTileIndex(lon, lat, zoomLevel);
 
-	return myTileHandles[index];
+	assert(index < myTileHandles[zoomLevel].size());
+
+	return myTileHandles[zoomLevel][index];
 }
 
 void Globe::setTileHandleAt(int lon, int lat, ResourcePool<GlobeTile>::Handle handle) {
 	unsigned int index = getTileIndex(lon, lat);
 
-	assert(index < myTileHandles.size());
+	assert(index < myTileHandles[myZoomLevel].size());
 
-	myTileHandles[index] = handle;
+	myTileHandles[myZoomLevel][index] = handle;
 }
 
 unsigned int Globe::getTileIndex(int lon, int lat) const {
-	GlobeTile::Location loc = GlobeTile::Location(myZoomLevel, lon, lat).getWrappedLocation();
+	return getTileIndex(lon, lat, myZoomLevel);
+}
 
-	unsigned int index = (1 << myZoomLevel) * loc.latitude * 2 + loc.longitude;
+unsigned int Globe::getTileIndex(int lon, int lat, unsigned int zoomLevel) const {
+	GlobeTile::Location loc = GlobeTile::Location(zoomLevel, lon, lat).getWrappedLocation();
+
+	unsigned int index = (1 << zoomLevel) * loc.latitude * 2 + loc.longitude;
 	return index;
 }
 
@@ -341,24 +360,22 @@ void Globe::hideTile(int lon, int lat) {
 }
 
 void Globe::createTileHandles() {
-	unsigned int height = 1 << myZoomLevel;
-	unsigned int width = height * 2;
+	unsigned int nearZoom = Configuration::getInstance().getInteger("globe.zoom.nearZoom");
 
-	myTileHandles.resize(width * height);
+	myTileHandles.resize(nearZoom + 1);
+
+	for (unsigned int zoomLevel = 0; zoomLevel <= nearZoom; ++zoomLevel) {
+		unsigned int height = 1 << zoomLevel;
+		unsigned int width = height * 2;
+		myTileHandles[zoomLevel].resize(width * height);
+	}
 }
 
-void Globe::eraseTileHandles() {
-
-	// Cancel all pending downloads.
-	myDownloader.abortAllRequests();
-
-	for (auto& handle : myTileHandles) {
+void Globe::hideAllTiles() {
+	for (auto& handle : myTileHandles[myZoomLevel]) {
 		if (handle.isActive()) {
 			hideTile(handle.getResource().getLocation().longitude, handle.getResource().getLocation().latitude);
 		}
-
-		// Clear handle.
-		handle = ResourcePool<GlobeTile>::Handle();
 	}
 }
 
@@ -382,12 +399,8 @@ void Globe::loadGlobeTiles() {
 
 void Globe::loadGlobeTile(const ImageTile& tile) {
 
-	if (myZoomLevel != tile.getZoomLevel()) {
-		KRONOS_LOG_WARN("Attempt to load zoom-mismatched tile %d,%d", tile.getTileX(), tile.getTileY());
-		return;
-	}
-
-	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY());
+	ResourcePool<GlobeTile>::Handle handle = getTileHandleAt(tile.getTileX(), tile.getTileY(),
+	        tile.getZoomLevel());
 
 	bool handleIsActive = handle.isActive();
 
@@ -444,7 +457,7 @@ void Globe::updateDisplayMode(bool instant) {
 		return;
 	}
 
-	for (const auto& tile : myTileHandles) {
+	for (const auto& tile : myTileHandles[myZoomLevel]) {
 		if (tile.isActive()) {
 			tile.getResource().updateUniforms();
 		}

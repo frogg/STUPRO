@@ -78,13 +78,15 @@ void vtkKronosReader::SetCameraPosition(double x, double y, double z) {
 
 void vtkKronosReader::recalculateZoomLevel() {
 	double stepSize = (this->highestAltitude - this->globeRadius) / this->maximumPriority;
-	int zoom = int(5 * pow((this->cameraPosition.length() - this->globeRadius) / stepSize, 0.35));
+	// int zoom = int(5 * pow((this->cameraPosition.length() - this->globeRadius) / stepSize, 0.35));
+	int zoom = std::round(-3.2676 * std::log(0.0015571 * (this->cameraPosition.length() -
+	                      this->globeRadius)));
 
 	// Cap the zoom level to a value between zero and the maximum priority
 	zoom = std::min(zoom, this->maximumPriority);
 	zoom = std::max(zoom, 0);
 
-	this->zoomLevel = this->maximumPriority - zoom;
+	this->zoomLevel = zoom;
 }
 
 void vtkKronosReader::fail(QString message) {
