@@ -1,3 +1,5 @@
+#include "KronosView.h"
+
 #include <cmath>
 #include <stddef.h>
 #include <Utils/Config/Configuration.hpp>
@@ -7,14 +9,23 @@
 #include <pqApplicationCore.h>
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <Utils/Misc/Macros.hpp>
+#include <Utils/Misc/MakeUnique.hpp>
+#include <pqActiveObjects.h>
+#include <pqView.h>
+#include <Utils/Config/Configuration.hpp>
+#include <Utils/Math/Vector3.hpp>
+#include <vtkActor.h>
+#include <vtkAlgorithm.h>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
+#include <vtkCubeSource.h>
 #include <vtkObjectFactory.h>
-#include <KronosView.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkProperty.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
-#include <vtkCubeSource.h>
-#include <vtkProperty.h>
+#include <cmath>
 
 vtkStandardNewMacro(KronosView);
 
@@ -42,6 +53,7 @@ void KronosView::initRenderer() {
 		[](vtkObject * object, unsigned long eid, void* clientdata, void* calldata) {
 			KronosView* view = (KronosView*)clientdata;
 			if (view->getGlobe()) {
+				view->moveCameraOutOfGlobe();
 				view->getGlobe()->onCameraChanged();
 			}
 		});
@@ -294,4 +306,40 @@ void KronosView::setDefaultAnimationTargetDistance(double distance) {
 
 double KronosView::getDefaultAnimationTargetDistance() const {
 	return this->defaultAnimationTargetDistance;
+}
+
+void KronosView::moveCameraOutOfGlobe()
+{
+	if (this->displayMode == Globe::DisplayGlobe)
+	{
+		vtkCamera* camera = GetActiveCamera();
+
+		Vector3d cameraPosition;
+		camera->GetPosition(cameraPosition.array());
+
+		double cameraDistance = cameraPosition.lengthTyped();
+		double cameraThreshold = Configuration::getInstance().getDouble("globe.cameraThreshold");
+		double globeRadius = Configuration::getInstance().getDouble("globe.radius");
+		double minDistance = (cameraThreshold + 1.0) * globeRadius;
+
+		if (cameraDistance < minDistance)
+		{
+			// Add tiny epsilon to minimum distance to prevent possible infinite loops.
+			cameraPosition = cameraPosition.normTyped() * minDistance * 1.00001;
+
+			// Get camera direction.
+			Vector3d cameraDirection;
+			camera->GetDirectionOfProjection(cameraDirection.array());
+
+			// Check if camera is behind globe.
+			if (cameraPosition.normTyped().dot(cameraDirection.normTyped()) > 0.0)
+			{
+				// Place camera on the other side of the globe.
+				cameraPosition *= -1.0;
+			}
+
+			// Assign camera position.
+			camera->SetPosition(cameraPosition.array());
+		}
+	}
 }
