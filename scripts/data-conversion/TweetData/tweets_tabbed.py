@@ -2,6 +2,7 @@ import json
 from DataUtility import DataUtility
 import datetime
 import time
+from random import randint
 
 
 d = DataUtility()
@@ -19,7 +20,7 @@ for tweet in twitterjsondata:
 		tweet["latitude"] = float(tweet["lat"])
 		tweet["children"] = []
 		#tweet["timestamp"] = 0
-		tweet["numberOfRetweets"] = 10
+		tweet["numberOfRetweets"] = randint(0,101)
 		
 		timestamp = tweet["timestamp"]
 		#print tweet
