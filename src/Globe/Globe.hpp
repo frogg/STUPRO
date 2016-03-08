@@ -13,7 +13,6 @@
 #include <vtkSmartPointer.h>
 #include <QEventLoop>
 #include <QTimer>
-#include <atomic>
 #include <mutex>
 #include <queue>
 #include <array>
@@ -73,6 +72,21 @@ public:
 	 * @return the globe's vertical tile count in powers of two
 	 */
 	unsigned int getZoomLevel() const;
+	
+	/**
+	 * Prevents the zoom level from being changed until the corresponding unlock function is called.
+	 */
+	void lockZoomLevel();
+	
+	/**
+	 * Allows the zoom level to change again after the unlock function is called.
+	 */
+	void unlockZoomLevel();
+	
+	/**
+	 * @return whether the zoom level is currently locked.
+	 */
+	bool isZoomLevelLocked() const;
 
 	/**
 	 * Enum holding the available display modes for the globe.
@@ -251,11 +265,10 @@ private:
 	std::vector<LODSetting> myLODTable;
 
 	unsigned int myZoomLevel;
+	bool myIsZoomLevelLocked;
 
 	DisplayMode myDisplayMode;
 	float myDisplayModeInterpolation;
-
-	std::atomic_flag myIsClean;
 };
 
 #endif

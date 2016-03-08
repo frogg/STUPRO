@@ -43,6 +43,7 @@ myTimerCallback([this](void* unused) {
 	updateDisplayMode(false);
 }),
 myZoomLevel(0),
+myIsZoomLevelLocked(false),
 myDisplayMode(DisplayGlobe),
 myDisplayModeInterpolation(0.f) {
 
@@ -98,7 +99,7 @@ vtkRenderer& Globe::getRenderer() const {
 }
 
 void Globe::setZoomLevel(unsigned int zoomLevel) {
-	if (myZoomLevel != zoomLevel) {
+	if (!isZoomLevelLocked() && myZoomLevel != zoomLevel) {
 		eraseTileHandles();
 		myZoomLevel = zoomLevel;
 		createTileHandles();
@@ -107,6 +108,21 @@ void Globe::setZoomLevel(unsigned int zoomLevel) {
 
 unsigned int Globe::getZoomLevel() const {
 	return myZoomLevel;
+}
+
+void Globe::lockZoomLevel()
+{
+	myIsZoomLevelLocked = true;
+}
+
+void Globe::unlockZoomLevel()
+{
+	myIsZoomLevelLocked = false;
+}
+
+bool Globe::isZoomLevelLocked() const
+{
+	return myIsZoomLevelLocked;
 }
 
 GlobeTile& Globe::getTileAt(int lon, int lat) const {

@@ -157,6 +157,9 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 	// get the turn angle of the camera, so we can animate it
 	double rollFrom = camera->GetRoll();
 
+	// lock the globe's zoom level to prevent unnecessary tile reloading.
+	getGlobe()->lockZoomLevel();
+
 	// animate the camera movement frame after frame for a total duration of about animationDuration
 	double animationTime = 0.0;
 	while (animationTime <= animationDuration) {
@@ -213,6 +216,9 @@ void KronosView::animateMove(double latitude, double longitude, double distance,
 			animationTime = animationDuration;
 		}
 	}
+
+	// unlock the zoom level again.
+	getGlobe()->unlockZoomLevel();
 }
 
 void KronosView::moveCamera(float latitude, float longitude) {
