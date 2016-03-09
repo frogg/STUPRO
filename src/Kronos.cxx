@@ -9,9 +9,6 @@
 Kronos* Kronos::instance = 0;
 
 Kronos* Kronos::getInstance() {
-	if (Kronos::instance == 0) {
-		throw new InvalidStateException("No Kronos instance exists at the moment");
-	}
 	return Kronos::instance;
 }
 
