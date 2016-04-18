@@ -7,6 +7,10 @@ STUPRO 2015
 ### Satellitengestützte Terrainvisualisierung zur Umweltbeobachtung und Präsentation relevanter Observationen
 (Satellite-based terrain visualization for environmental monitoring and presentation of relevant observations)
 
+
+
+![alt text](https://raw.githubusercontent.com/quappi/STUPRO/develop/screenshots/kronos_banner.png?token=AE9oyX3JdFRkCNEjB7H8wxjN53hdspUxks5XHfKEwA%3D%3D "Kronos Banner")
+
 [![dev-branch build status](https://magnum.travis-ci.com/quappi/STUPRO.svg?token=YqyzbapTc49r8AJqkBGb&branch=develop)](https://magnum.travis-ci.com/quappi/STUPRO/) ![c++](https://img.shields.io/badge/language-C++-blue.svg)
 
 Installation
