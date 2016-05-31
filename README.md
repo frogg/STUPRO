@@ -54,7 +54,7 @@ If all dependencies are installed, building Kronos is as easy as configuring it 
 
 When the Makefiles are done, simply run `make` to build Kronos.
 
-To run Kronos, switch to the `src` directory inside your build folder and run `./paraview_stupro`.
+To run Kronos, switch to the `src` directory inside your build folder and run `./kronos`.
 
 #### Windows specific
 When building on Windows, you should use the cmake-gui client. Load the folders and upon clicking on "Configure", choose the same compiler-version you used for ParaView. Most likely, it will be the `Visual Studio 12 2013 Win64`-compiler. Once you're finished generating the solution, you should execute the PowerShell-script (`scripts/windows-add-freetype-dependencies.ps1`) to add the missing FreeType-dependencies.
