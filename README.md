@@ -1,4 +1,4 @@
-Kronos
+![alt text](https://raw.githubusercontent.com/quappi/STUPRO/develop/res/combination-mark-thin.png "Kronos Logo")
 ======
 
 STUPRO 2015
